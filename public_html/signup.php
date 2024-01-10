@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("ssssss", $name, $username, $position, $role, $hashedPassword, $status);
 
     if ($stmt->execute()) {
-        $resultMessage = "Registration successful. You can now <a href='login.php'>login</a> with your new account.";
+        $resultMessage = "Registration successful. After approval you can <a href='login.php'>login</a> with your new account.";
     } else {
         $resultMessage = "Registration failed. Please try again.";
     }
@@ -106,9 +106,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group">
                 <label for="position">Position</label>
                 <select class="form-control" id="position" name="position">
-                    <option value="Principal Investigator">Principal Investigator (PI)</option>
+                    <option value="Principal Investigator">Principal Investigator</option>
                     <option value="Research Scientist">Research Scientist</option>
                     <option value="Postdoctoral Researcher">Postdoctoral Researcher</option>
+                    <option value="PhD Student">PhD Student</option>
+                    <option value="Masters Student">Masters Student</option>
+                    <option value="Undergraduate">Undergraduate</option>
+                    <option value="Laboratory Technician">Laboratory Technician</option>
+                    <option value="Research Associate">Research Associate</option>
+                    <option value="Lab Manager">Lab Manager</option>
+                    <option value="Animal Care Technician">Animal Care Technician</option>
+                    <option value="Interns and Volunteers">Interns and Volunteers</option>
                 </select>
             </div>
             <div class="form-group">
