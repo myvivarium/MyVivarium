@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("ssssss", $name, $username, $position, $role, $hashedPassword, $status);
 
     if ($stmt->execute()) {
-        $resultMessage = "Registration successful. After approval you can <a href='login.php'>login</a> with your new account.";
+        $resultMessage = "Registration successful. After approval you can <a href='index.php'>login</a> with your new account.";
     } else {
         $resultMessage = "Registration failed. Please try again.";
     }
