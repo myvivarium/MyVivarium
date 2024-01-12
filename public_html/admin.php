@@ -2,29 +2,31 @@
 session_start();
 require 'dbcon.php';
 
-// Check if the user is logged in as admin
+// Check if the user is logged in and has admin role
 if ($_SESSION['role'] !== 'admin') {
-    header("Location: index.php"); // Redirect to index.php if not logged in as admin
+    // Redirect non-admin users to the index page
+    header("Location: index.php");
     exit;
 }
 
+// Handle POST requests for user status updates
 if (isset($_POST['username']) && isset($_POST['action'])) {
     $username = $_POST['username'];
     $action = $_POST['action'];
 
+    // Initialize query variables
     $query = "";
-    $status = "";
 
+    // Determine the action to take: approve, set to pending, or delete user
     if ($action === 'approve') {
         $query = "UPDATE users SET status='approved' WHERE username=?";
-        $status = "approved";
     } elseif ($action === 'pending') {
         $query = "UPDATE users SET status='pending' WHERE username=?";
-        $status = "pending";
     } elseif ($action === 'delete') {
         $query = "DELETE FROM users WHERE username=?";
     }
 
+    // Execute the prepared statement if a valid action is set
     if (!empty($query)) {
         $statement = mysqli_prepare($con, $query);
         mysqli_stmt_bind_param($statement, "s", $username);
@@ -33,49 +35,43 @@ if (isset($_POST['username']) && isset($_POST['action'])) {
     }
 }
 
+// Fetch all users from the database
 $query = "SELECT * FROM users";
 $result = mysqli_query($con, $query);
 
-mysqli_close($con);
-
 require 'header.php';
+mysqli_close($con);
 ?>
 
 <!doctype html>
 <html lang="en">
+
 <head>
-    <!-- Required meta tags -->
+    <!-- Meta tags and Bootstrap CSS -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    
-    <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <title>Admin</title>
 
+    <!-- Custom styles -->
     <style>
-        /* General Styles */
         body {
             margin: 0;
             padding: 0;
         }
-
-        /* Center Main Content */
         .main-content {
             justify-content: center;
             align-items: center;
         }
     </style>
 </head>
-<body>
 
+<body>
     <div class="container">
         <div class="row align-items-center">
-            <!-- Main content -->
+            <!-- Main content area -->
             <main class="col-md-12">
                 <div class="container mt-5">
                     <h4 class="mb-3">Approve Users</h4>
@@ -92,6 +88,7 @@ require 'header.php';
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- Loop through each user and display their data -->
                                 <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                                     <tr>
                                         <td><?= $row['name']; ?></td>
@@ -100,7 +97,8 @@ require 'header.php';
                                         <td><?= $row['role']; ?></td>
                                         <td><?= $row['status']; ?></td>
                                         <td>
-                                        <form action="admin.php" method="post">
+                                            <!-- Form for user status update -->
+                                            <form action="admin.php" method="post">
                                                 <input type="hidden" name="username" value="<?= $row['username']; ?>">
                                                 <button type="submit" class="btn btn-success btn-sm" name="action" value="approve">Approve</button>
                                                 <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending">Pending</button>
@@ -117,8 +115,9 @@ require 'header.php';
         </div>
     </div>
 
+    <!-- Include footer -->
     <?php include 'footer.php'; ?>
 
 </body>
-</html>
 
+</html>

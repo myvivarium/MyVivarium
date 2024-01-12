@@ -58,7 +58,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h2>Sathyanesan Lab's Vivarium</h2>
+                    <h2>Sathyanesan Lab Vivarium</h2>
                 </div>
                 <div class="col-md-4 text-end">
                     <!-- Navigation Menu -->

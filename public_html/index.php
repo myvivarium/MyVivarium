@@ -130,7 +130,6 @@ if (isset($_POST['login'])) {
         .forgot-password-link {
             text-align: right;
             margin-left: 100px;
-            /* Adjust margin as needed for spacing */
         }
     </style>
 </head>
@@ -139,7 +138,7 @@ if (isset($_POST['login'])) {
 
     <!-- Header with Lab Name -->
     <header class="bg-dark text-white text-center py-3">
-        <h1>Sathyanesan Lab's Vivarium</h1>
+        <h1>Sathyanesan Lab Vivarium</h1>
     </header>
 
     <!-- Main Content -->
@@ -196,7 +195,9 @@ if (isset($_POST['login'])) {
                     <h3>Login</h3>
                     <!-- Display error message if set -->
                     <?php if (isset($error_message)) { ?>
-                        <div class="alert alert-danger"><?php echo $error_message; ?></div>
+                        <div class="alert alert-danger">
+                            <?php echo $error_message; ?>
+                        </div>
                     <?php } ?>
                     <form method="POST" action="">
                         <div class="form-group">
@@ -227,19 +228,23 @@ if (isset($_POST['login'])) {
                 <!-- Feature Box 1 -->
                 <div style="margin:50px 0px 50px 0px;" class="col-md-6 mb-6 mx-auto feature-box text-center">
                     <h3>Real-Time Environmental Monitoring</h3>
-                    <p>Gain unparalleled insights into the conditions of your vivarium. Our IoT sensors continuously track temperature and humidity levels, ensuring a stable and controlled environment for your research animals.</p>
+                    <p>Gain unparalleled insights into the conditions of your vivarium. Our IoT sensors continuously
+                        track temperature and humidity levels, ensuring a stable and controlled environment for your
+                        research animals.</p>
                 </div>
 
                 <!-- Feature Box 2 -->
                 <div style="margin:50px 0px 50px 0px;" class="col-md-6 mb-6 mx-auto feature-box text-center">
                     <h3>Effortless Cage and Mouse Tracking</h3>
-                    <p>Seamlessly monitor every cage and mouse in your facility. No more manual record-keeping or confusion.</p>
+                    <p>Seamlessly monitor every cage and mouse in your facility. No more manual record-keeping or
+                        confusion.</p>
                 </div>
 
                 <!-- Feature Box 3 -->
                 <div style="margin:50px 0px 50px 0px;" class="col-md-6 mb-6 mx-auto feature-box text-center">
                     <h3>Security and Compliance</h3>
-                    <p>Rest easy knowing your data is secure and compliant with industry regulations. We prioritize data integrity and confidentiality.</p>
+                    <p>Rest easy knowing your data is secure and compliant with industry regulations. We prioritize data
+                        integrity and confidentiality.</p>
                 </div>
             </div>
         </div>
