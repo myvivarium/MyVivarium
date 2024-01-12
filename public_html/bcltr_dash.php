@@ -1,29 +1,19 @@
 <?php
-session_start();
 require 'dbcon.php';
 
-// Check if the user is not logged in, redirect them to index.php
-if (!isset($_SESSION['name'])) {
-    header("Location: index.php");
-    exit;
-}
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
 
-// Fetch the distinct cage IDs from the database
-$query = "SELECT DISTINCT `cage_id` FROM hc_basic";
-$result = mysqli_query($con, $query);
-
-// Handle the search filter
-$searchQuery = '';
-if (isset($_GET['search'])) {
-    $searchQuery = urldecode($_GET['search']); // Decode the search parameter
-    $query = "SELECT * FROM hc_basic";
-    if (!empty($searchQuery)) {
-        $query .= " WHERE `cage_id` LIKE '%$searchQuery%'";
-    }
+    // Fetch the breedingcage litter record with the specified ID
+    $query = "SELECT * FROM bc_litter WHERE `cage_id` = '$id'";
     $result = mysqli_query($con, $query);
+
+} else {
+    $_SESSION['message'] = 'ID parameter is missing.';
+    header("Location: bc_dash.php");
+    exit();
 }
 
-require 'header.php';
 ?>
 
 <!-- Start of the HTML -->
@@ -41,9 +31,12 @@ require 'header.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
 
-    <title>Dashboard | Holding Cage</title>
+
+    <title>Dashboard | Breeding Cage</title>
 
     <style>
         /* General Styles */
@@ -115,67 +108,65 @@ require 'header.php';
             <div class="col-md-12">
                 <div class="card">
 
-                    <!-- Holding Cage Header -->
+                    <!-- Breeding Cage Header -->
                     <div class="card-header">
-                        <h4>Holding Cage Dashboard
-                            <a href="hc_addn.php" class="btn btn-primary float-end">Add New Holding Cage</a>
+                        <h4>Litter Details for the Cage <?= $id?>
+                        <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary float-end">Add New Litter Data</a>
                         </h4>
                     </div>
 
                     <div class="card-body">
-                        <!-- Holding Cage Search Box -->
-                        <form method="GET" action="">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="Enter cage ID" name="search" value="<?= htmlspecialchars($searchQuery) ?>">
-                                <button class="btn btn-primary" type="submit">Search</button>
-                            </div>
-                        </form>
 
                         <div class="table-wrapper">
                             <table class="table table-bordered" id="mouseTable">
                                 <thead>
-                                    <th>Cage ID</th>
-                                    <th>Strain</th>
+                                    <th>DOM</th>
+                                    <th>Litter DOB</th>
+                                    <th>Pups Alive</th>
+                                    <th>Pups Dead</th>
+                                    <th>Pups Male</th>
+                                    <th>Pups Female</th>
                                     <th>Remarks</th>
                                     <th>Action</th>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    while ($row = mysqli_fetch_assoc($result)) {
-                                        $cageID = $row['cage_id'];
-                                        $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$cageID'";
-                                        $cageResult = mysqli_query($con, $query);
-                                        while ($holdingcage = mysqli_fetch_assoc($cageResult)) {
+                                    while ($litter = mysqli_fetch_assoc($result)) {
                                     ?>
                                             <tr>
-                                                <td rowspan="<?= mysqli_num_rows($cageResult); ?>"><?= $holdingcage['cage_id']; ?></td>
-                                                <td><?= $holdingcage['strain']; ?></td>
-                                                <td><?= $holdingcage['remarks']; ?></td>
+                                                <td><?= $litter['dom']; ?></td>
+                                                <td><?= $litter['litter_dob']; ?></td>
+                                                <td><?= $litter['pups_alive']; ?></td>
+                                                <td><?= $litter['pups_dead']; ?></td>
+                                                <td><?= $litter['pups_male']; ?></td>
+                                                <td><?= $litter['pups_female']; ?></td>
+                                                <td><?= $litter['remarks']; ?></td>
                                                 <td>
-                                                    <a href="hc_view.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-primary">View</a>
-                                                    <a href="hc_prnt.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">Print</a>
-                                                    <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
-                                                    <a href="hc_drop.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-danger">Delete</a>
+                                                    <!-- Edit Button -->
+                                                    <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-secondary">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+
+                                                    <!-- Delete Button -->
+                                                    <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-danger">
+                                                        <i class="fa fa-trash"></i>
+                                                    </a>
                                                 </td>
+
                                             </tr>
                                     <?php
                                         }
-                                    }
                                     ?>
                                 </tbody>
                             </table>
                         </div>
-                        <?php if (isset($_GET['search'])) : ?>
-                            <div style="text-align: center;">
-                                <a href="hc_dash.php" class="btn btn-secondary">Go Back To Holding Cage Dashboard</a>
-                            </div>
-                        <?php endif; ?>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <?php include 'footer.php'; ?>
+
 </body>
 
 </html>

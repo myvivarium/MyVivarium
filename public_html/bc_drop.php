@@ -6,15 +6,15 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Delete the table with the specified ID
-    $deleteQuery = "DELETE FROM hc_basic WHERE `cage_id` = '$id'";
+    $deleteQuery = "DELETE FROM bc_basic WHERE `cage_id` = '$id'";
     mysqli_query($con, $deleteQuery);
 
     $_SESSION['message'] = 'Cage '.$id.' deleted successfully.';
-    header("Location: hc_dash.php");
+    header("Location: bc_dash.php");
     exit();
 } else {
     $_SESSION['message'] = 'ID parameter is missing.';
-    header("Location: hc_dash.php");
+    header("Location: bc_dash.php");
     exit();
 }
 ?>

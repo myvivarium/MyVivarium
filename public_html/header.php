@@ -71,7 +71,7 @@
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
                                 <li><a class="dropdown-item" href="hc_dash.php">Holding Cage</a></li>
-                                <li><a class="dropdown-item" href="#">Breeding Cage</a></li>
+                                <li><a class="dropdown-item" href="bc_dash.php">Breeding Cage</a></li>
                             </ul>
                         </div>
                         <?php

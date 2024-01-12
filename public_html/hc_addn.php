@@ -9,7 +9,7 @@ if (!isset($_SESSION['name'])) {
 }
 
 // Query to retrieve options where role is 'PI'
-$query = "SELECT name FROM udaytonadmin WHERE role = 'PI'";
+$query = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result = $con->query($query);
 
 // Check if the form is submitted
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dob = $_POST['dob'];
     $sex = $_POST['sex'];
     $parent_cg = $_POST['parent_cg'];
-    $parent_cg = $_POST['remarks'];
+    $remarks = $_POST['remarks'];
     $mouse_id_1 = $_POST['mouse_id_1'];
     $genotype_1 = $_POST['genotype_1'];
     $notes_1 = $_POST['notes_1'];

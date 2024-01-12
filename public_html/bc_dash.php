@@ -9,16 +9,17 @@ if (!isset($_SESSION['name'])) {
 }
 
 // Fetch the distinct cage IDs from the database
-$query = "SELECT DISTINCT `cage_id` FROM hc_basic";
+$query = "SELECT DISTINCT `cage_id` FROM bc_basic";
 $result = mysqli_query($con, $query);
 
 // Handle the search filter
 $searchQuery = '';
 if (isset($_GET['search'])) {
     $searchQuery = urldecode($_GET['search']); // Decode the search parameter
-    $query = "SELECT * FROM hc_basic";
+    $query = "SELECT * FROM bc_basic";
     if (!empty($searchQuery)) {
-        $query .= " WHERE `cage_id` LIKE '%$searchQuery%'";
+        $query .= " WHERE `cage_id` LIKE '%$searchQuery%' OR `male_id` LIKE '%$searchQuery%' OR `female_id` LIKE '%$searchQuery%'
+        ";
     }
     $result = mysqli_query($con, $query);
 }
@@ -43,7 +44,7 @@ require 'header.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
-    <title>Dashboard | Holding Cage</title>
+    <title>Dashboard | Breeding Cage</title>
 
     <style>
         /* General Styles */
@@ -115,15 +116,15 @@ require 'header.php';
             <div class="col-md-12">
                 <div class="card">
 
-                    <!-- Holding Cage Header -->
+                    <!-- Breeding Cage Header -->
                     <div class="card-header">
-                        <h4>Holding Cage Dashboard
-                            <a href="hc_addn.php" class="btn btn-primary float-end">Add New Holding Cage</a>
+                        <h4>Breeding Cage Dashboard
+                            <a href="bc_addn.php" class="btn btn-primary float-end">Add New Breeding Cage</a>
                         </h4>
                     </div>
 
                     <div class="card-body">
-                        <!-- Holding Cage Search Box -->
+                        <!-- Breeding Cage Search Box -->
                         <form method="GET" action="">
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" placeholder="Enter cage ID" name="search" value="<?= htmlspecialchars($searchQuery) ?>">
@@ -135,27 +136,27 @@ require 'header.php';
                             <table class="table table-bordered" id="mouseTable">
                                 <thead>
                                     <th>Cage ID</th>
-                                    <th>Strain</th>
-                                    <th>Remarks</th>
+                                    <th>Male ID</th>
+                                    <th>Female ID</th>
                                     <th>Action</th>
                                 </thead>
                                 <tbody>
                                     <?php
                                     while ($row = mysqli_fetch_assoc($result)) {
                                         $cageID = $row['cage_id'];
-                                        $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$cageID'";
+                                        $query = "SELECT * FROM bc_basic WHERE `cage_id` = '$cageID'";
                                         $cageResult = mysqli_query($con, $query);
-                                        while ($holdingcage = mysqli_fetch_assoc($cageResult)) {
+                                        while ($breedingcage = mysqli_fetch_assoc($cageResult)) {
                                     ?>
                                             <tr>
-                                                <td rowspan="<?= mysqli_num_rows($cageResult); ?>"><?= $holdingcage['cage_id']; ?></td>
-                                                <td><?= $holdingcage['strain']; ?></td>
-                                                <td><?= $holdingcage['remarks']; ?></td>
+                                                <td rowspan="<?= mysqli_num_rows($cageResult); ?>"><?= $breedingcage['cage_id']; ?></td>
+                                                <td><?= $breedingcage['male_id']; ?></td>
+                                                <td><?= $breedingcage['female_id']; ?></td>
                                                 <td>
-                                                    <a href="hc_view.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-primary">View</a>
-                                                    <a href="hc_prnt.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">Print</a>
-                                                    <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
-                                                    <a href="hc_drop.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-danger">Delete</a>
+                                                    <a href="bc_view.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-primary">View</a>
+                                                    <a href="bc_prnt.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-success">Print</a>
+                                                    <a href="bc_edit.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
+                                                    <a href="bc_drop.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-danger">Delete</a>
                                                 </td>
                                             </tr>
                                     <?php
@@ -167,7 +168,7 @@ require 'header.php';
                         </div>
                         <?php if (isset($_GET['search'])) : ?>
                             <div style="text-align: center;">
-                                <a href="hc_dash.php" class="btn btn-secondary">Go Back To Holding Cage Dashboard</a>
+                                <a href="bc_dash.php" class="btn btn-secondary">Go Back To Breeding Cage Dashboard</a>
                             </div>
                         <?php endif; ?>
                     </div>
