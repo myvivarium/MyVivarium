@@ -145,7 +145,7 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="iacuc" class="form-label">IACUC</label>
-                                <input type="text" class="form-control" id="iacuc" name="iacuc" value="<?= $breedingcage['iacuc']; ?>" required>
+                                <input type="text" class="form-control" id="iacuc" name="iacuc" value="<?= $breedingcage['iacuc']; ?>">
                             </div>
 
                             <div class="mb-3">
@@ -175,7 +175,7 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="remarks" class="form-label">Remarks</label>
-                                <input type="text" class="form-control" id="remarks" name="remarks" value="<?= $breedingcage['remarks']; ?>" required>
+                                <input type="text" class="form-control" id="remarks" name="remarks" value="<?= $breedingcage['remarks']; ?>">
                             </div>
 
                             <button type="submit" class="btn btn-primary">Save Changes</button>

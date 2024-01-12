@@ -120,7 +120,7 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="litter_dob" class="form-label">Litter DOB</label>
-                                <input type="date" class="form-control" id="litter_dob" name="litter_dob" value="<?= $breedingcage['litter_dob']; ?>" required>
+                                <input type="date" class="form-control" id="litter_dob" name="litter_dob" value="<?= $breedingcage['litter_dob']; ?>">
                             </div>
 
                             <div class="mb-3">
@@ -145,7 +145,7 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="remarks" class="form-label">Remarks</label>
-                                <input type="text" class="form-control" id="remarks" name="remarks" value="<?= $breedingcage['remarks']; ?>" required>
+                                <input type="text" class="form-control" id="remarks" name="remarks" value="<?= $breedingcage['remarks']; ?>">
                             </div>
 
                             <button type="submit" class="btn btn-primary">Save Changes</button>

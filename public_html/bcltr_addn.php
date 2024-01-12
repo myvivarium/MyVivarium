@@ -95,7 +95,7 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="litter_dob" class="form-label">Litter DOB</label>
-                <input type="date" class="form-control" id="litter_dob" name="litter_dob" required>
+                <input type="date" class="form-control" id="litter_dob" name="litter_dob">
             </div>
 
             <div class="mb-3">
@@ -120,7 +120,7 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="remarks" class="form-label">Remarks</label>
-                <input type="text" class="form-control" id="remarks" name="remarks" required>
+                <input type="text" class="form-control" id="remarks" name="remarks">
             </div>
 
             <button type="submit" class="btn btn-primary">Add Data</button>
