@@ -27,7 +27,8 @@ if (isset($_GET['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -96,7 +97,6 @@ if (isset($_GET['id'])) {
         .btn-secondary:hover {
             background-color: #FF4500;
         }
-
     </style>
 </head>
 
@@ -110,8 +110,10 @@ if (isset($_GET['id'])) {
 
                     <!-- Breeding Cage Header -->
                     <div class="card-header">
-                        <h4>Litter Details for the Cage <?= $id?>
-                        <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary float-end">Add New Litter Data</a>
+                        <h4>Litter Details for the Cage
+                            <?= $id ?>
+                            <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary float-end">Add
+                                New Litter Data</a>
                         </h4>
                     </div>
 
@@ -132,30 +134,46 @@ if (isset($_GET['id'])) {
                                 <tbody>
                                     <?php
                                     while ($litter = mysqli_fetch_assoc($result)) {
-                                    ?>
-                                            <tr>
-                                                <td><?= $litter['dom']; ?></td>
-                                                <td><?= $litter['litter_dob']; ?></td>
-                                                <td><?= $litter['pups_alive']; ?></td>
-                                                <td><?= $litter['pups_dead']; ?></td>
-                                                <td><?= $litter['pups_male']; ?></td>
-                                                <td><?= $litter['pups_female']; ?></td>
-                                                <td><?= $litter['remarks']; ?></td>
-                                                <td>
-                                                    <!-- Edit Button -->
-                                                    <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-secondary">
-                                                        <i class="fa fa-edit"></i>
-                                                    </a>
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <?= $litter['dom']; ?>
+                                            </td>
+                                            <td>
+                                                <?= $litter['litter_dob']; ?>
+                                            </td>
+                                            <td>
+                                                <?= $litter['pups_alive']; ?>
+                                            </td>
+                                            <td>
+                                                <?= $litter['pups_dead']; ?>
+                                            </td>
+                                            <td>
+                                                <?= $litter['pups_male']; ?>
+                                            </td>
+                                            <td>
+                                                <?= $litter['pups_female']; ?>
+                                            </td>
+                                            <td>
+                                                <?= $litter['remarks']; ?>
+                                            </td>
+                                            <td>
+                                                <!-- Edit Button -->
+                                                <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']); ?>"
+                                                    class="btn btn-secondary">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
 
-                                                    <!-- Delete Button -->
-                                                    <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-danger">
-                                                        <i class="fa fa-trash"></i>
-                                                    </a>
-                                                </td>
+                                                <!-- Delete Button -->
+                                                <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']); ?>"
+                                                    class="btn btn-danger">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </td>
 
-                                            </tr>
-                                    <?php
-                                        }
+                                        </tr>
+                                        <?php
+                                    }
                                     ?>
                                 </tbody>
                             </table>

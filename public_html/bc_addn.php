@@ -67,7 +67,7 @@ require 'header.php';
 <html lang="en">
 
 <head>
-    
+
     <script>
         function goBack() {
             window.history.back();
@@ -82,8 +82,9 @@ require 'header.php';
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -161,14 +162,14 @@ require 'header.php';
 
             <button type="submit" class="btn btn-primary">Add Cage</button>
             <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
-        
+
         </form>
-        
+
         <div style="text-align: center;">
             <a href="bc_dash.php" class="btn btn-secondary">Dashboard</a>
         </div>
     </div>
-    
+
     <br>
     <?php include 'footer.php'; ?>
 </body>

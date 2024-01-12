@@ -39,7 +39,8 @@ if (isset($_GET['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
     <title>View Holding Cage</title>
 
@@ -47,16 +48,18 @@ if (isset($_GET['id'])) {
         * {
             margin: 0;
             padding: 0;
-            }
+        }
 
         span {
             font-size: 8pt;
             padding: 0px;
             line-height: 1;
             display: inline-block;
-            }
+        }
 
-        .table tr td { line-height: 1px; }
+        .table tr td {
+            line-height: 1px;
+        }
     </style>
 
 </head>
@@ -64,63 +67,83 @@ if (isset($_GET['id'])) {
 <body>
 
     <div class="container">
-        <br>    
-        <table style="margin: 50px 0px 0px 0px; width: 5in; height: 1.5 in;" class="table table-bordered border-dark align-middle" id="mouseTable">
+        <br>
+        <table style="margin: 50px 0px 0px 0px; width: 5in; height: 1.5 in;"
+            class="table table-bordered border-dark align-middle" id="mouseTable">
             <tr>
                 <td style="width:30%;">
                     <span style="font-weight: bold;">Holding Cage Card</span>
                 </td>
                 <td style="width:30%;">
                     <span style="font-weight: bold;">Cage #: </span>
-                    <span><?= $holdingcage['cage_id'];?></span>
+                    <span>
+                        <?= $holdingcage['cage_id']; ?>
+                    </span>
                 </td>
                 <td rowspan="5" style="width:40%; text-align:center;">
-                    <img src="<?php echo "https://chart.googleapis.com/chart?chs=120x120&cht=qr&chl=https://myvivarium.online/hc_view.php?id=" . $holdingcage['cage_id'] . "&choe=UTF-8"; ?>" alt="QR Code">
+                    <img src="<?php echo "https://chart.googleapis.com/chart?chs=120x120&cht=qr&chl=https://myvivarium.online/hc_view.php?id=" . $holdingcage['cage_id'] . "&choe=UTF-8"; ?>"
+                        alt="QR Code">
                 </td>
             </tr>
             <tr>
                 <td style="width:30%;">
                     <span style="font-weight: bold;">PI Name: </span>
-                    <span><?= $holdingcage['pi_name']; ?></span>
+                    <span>
+                        <?= $holdingcage['pi_name']; ?>
+                    </span>
                 </td>
                 <td style="width:30%;">
-                    <span style="font-weight: bold;">Strain: </span> 
-                    <span><?= $holdingcage['strain']; ?></span>
+                    <span style="font-weight: bold;">Strain: </span>
+                    <span>
+                        <?= $holdingcage['strain']; ?>
+                    </span>
                 </td>
             </tr>
-            <tr> 
+            <tr>
                 <td style="width:30%;">
                     <span style="font-weight: bold;">IACUC: </span>
-                    <span><?= $holdingcage['iacuc']; ?></span>
+                    <span>
+                        <?= $holdingcage['iacuc']; ?>
+                    </span>
                 </td>
                 <td style="width:30%;">
                     <span style="font-weight: bold;">User: </span>
-                    <span><?= $holdingcage['user']; ?></span>
+                    <span>
+                        <?= $holdingcage['user']; ?>
+                    </span>
                 </td>
             </tr>
             <tr>
                 <td style="width:30%;">
                     <span style="font-weight: bold;">Qty: </span>
-                    <span><?= $holdingcage['qty']; ?></span>
+                    <span>
+                        <?= $holdingcage['qty']; ?>
+                    </span>
                 </td>
                 <td style="width:30%;">
                     <span style="font-weight: bold;">DOB: </span>
-                    <span><?= $holdingcage['dob']; ?></span>
+                    <span>
+                        <?= $holdingcage['dob']; ?>
+                    </span>
                 </td>
             </tr>
             <tr style="border-bottom: none;">
                 <td style="width:30%;">
-                    <span style="font-weight: bold;">Sex: </span> 
-                    <span><?= $holdingcage['sex']; ?></span>
+                    <span style="font-weight: bold;">Sex: </span>
+                    <span>
+                        <?= $holdingcage['sex']; ?>
+                    </span>
                 </td>
                 <td style="width:30%;">
                     <span style="font-weight: bold;">Parent Cage: </span>
-                    <span><?= $holdingcage['parent_cg']; ?></span>
+                    <span>
+                        <?= $holdingcage['parent_cg']; ?>
+                    </span>
                 </td>
             </tr>
         </table>
 
-        <table style="margin: 0px; width: 5in;" class="table table-bordered border-dark align-middle" id="mouseTable">    
+        <table style="margin: 0px; width: 5in;" class="table table-bordered border-dark align-middle" id="mouseTable">
             <tr>
                 <td style="width:30%;">
                     <span style="font-weight: bold;">Mouse ID:</span>
@@ -134,57 +157,87 @@ if (isset($_GET['id'])) {
             </tr>
             <tr>
                 <td style="width:30%;">
-                    <span><?= $holdingcage['mouse_id_1']; ?></span>
+                    <span>
+                        <?= $holdingcage['mouse_id_1']; ?>
+                    </span>
                 </td>
                 <td style="width:30%;">
-                    <span><?= $holdingcage['genotype_1']; ?></span>
+                    <span>
+                        <?= $holdingcage['genotype_1']; ?>
+                    </span>
                 </td>
                 <td style="width:40%;">
-                    <span><?= $holdingcage['notes_1']; ?></span>
+                    <span>
+                        <?= $holdingcage['notes_1']; ?>
+                    </span>
                 </td>
             </tr>
             <tr>
                 <td style="width:30%;">
-                    <span><?= $holdingcage['mouse_id_2']; ?></span>
+                    <span>
+                        <?= $holdingcage['mouse_id_2']; ?>
+                    </span>
                 </td>
                 <td style="width:30%;">
-                    <span><?= $holdingcage['genotype_2']; ?></span>
+                    <span>
+                        <?= $holdingcage['genotype_2']; ?>
+                    </span>
                 </td>
                 <td style="width:40%;">
-                    <span><?= $holdingcage['notes_2']; ?></span>
+                    <span>
+                        <?= $holdingcage['notes_2']; ?>
+                    </span>
                 </td>
             </tr>
             <tr>
                 <td style="width:30%;">
-                    <span><?= $holdingcage['mouse_id_3']; ?></span>
+                    <span>
+                        <?= $holdingcage['mouse_id_3']; ?>
+                    </span>
                 </td>
                 <td style="width:30%;">
-                    <span><?= $holdingcage['genotype_3']; ?></span>
+                    <span>
+                        <?= $holdingcage['genotype_3']; ?>
+                    </span>
                 </td>
                 <td style="width:40%;">
-                    <span><?= $holdingcage['notes_3']; ?></span>
+                    <span>
+                        <?= $holdingcage['notes_3']; ?>
+                    </span>
                 </td>
             </tr>
             <tr>
                 <td style="width:30%;">
-                    <span><?= $holdingcage['mouse_id_4']; ?></span>
+                    <span>
+                        <?= $holdingcage['mouse_id_4']; ?>
+                    </span>
                 </td>
                 <td style="width:30%;">
-                    <span><?= $holdingcage['genotype_4']; ?></span>
+                    <span>
+                        <?= $holdingcage['genotype_4']; ?>
+                    </span>
                 </td>
                 <td style="width:40%;">
-                    <span><?= $holdingcage['notes_4']; ?></span>
+                    <span>
+                        <?= $holdingcage['notes_4']; ?>
+                    </span>
                 </td>
             </tr>
             <tr>
                 <td style="width:30%;">
-                    <span><?= $holdingcage['mouse_id_5']; ?></span>
+                    <span>
+                        <?= $holdingcage['mouse_id_5']; ?>
+                    </span>
                 </td>
                 <td style="width:30%;">
-                    <span><?= $holdingcage['genotype_5']; ?></span>
+                    <span>
+                        <?= $holdingcage['genotype_5']; ?>
+                    </span>
                 </td>
                 <td style="width:40%;">
-                    <span><?= $holdingcage['notes_5']; ?></span>
+                    <span>
+                        <?= $holdingcage['notes_5']; ?>
+                    </span>
                 </td>
             </tr>
         </table>

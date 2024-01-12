@@ -42,7 +42,8 @@ require 'header.php';
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -87,50 +88,72 @@ require 'header.php';
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>View Holding Cage <?= $holdingcage['cage_id']; ?></h4>
+                        <h4>View Holding Cage
+                            <?= $holdingcage['cage_id']; ?>
+                        </h4>
                     </div>
                     <br>
                     <div class="table-wrapper">
                         <table class="table table-bordered" id="mouseTable">
                             <tr>
                                 <th><span>Cage #: </span></th>
-                                <td><span><?= $holdingcage['cage_id']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['cage_id']; ?>
+                                    </span></td>
                             </tr>
                             <tr>
                                 <th><span>PI Name</span></th>
-                                <td><span><?= $holdingcage['pi_name']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['pi_name']; ?>
+                                    </span></td>
                             </tr>
                             <tr>
                                 <th><span>Strain</span></th>
-                                <td><span><?= $holdingcage['strain']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['strain']; ?>
+                                    </span></td>
                             </tr>
                             <tr>
                                 <th><span>IACUC</span></th>
-                                <td><span><?= $holdingcage['iacuc']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['iacuc']; ?>
+                                    </span></td>
                             </tr>
                             <tr>
                                 <th><span>User</span></th>
-                                <td><span><?= $holdingcage['user']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['user']; ?>
+                                    </span></td>
                             </tr>
                             <tr>
                                 <th><span>Qty</span></th>
-                                <td><span><?= $holdingcage['qty']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['qty']; ?>
+                                    </span></td>
                             </tr>
                             <tr>
                                 <th><span>DOB</span></th>
-                                <td><span><?= $holdingcage['dob']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['dob']; ?>
+                                    </span></td>
                             </tr>
                             <tr>
                                 <th><span>Sex</span></th>
-                                <td><span><?= $holdingcage['sex']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['sex']; ?>
+                                    </span></td>
                             </tr>
                             <tr>
                                 <th><span>Parent Cage</span></th>
-                                <td><span><?= $holdingcage['parent_cg']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['parent_cg']; ?>
+                                    </span></td>
                             </tr>
                             <tr>
                                 <th><span>Remarks</span></th>
-                                <td><span><?= $holdingcage['remarks']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['remarks']; ?>
+                                    </span></td>
                             </tr>
                         </table>
 
@@ -143,9 +166,15 @@ require 'header.php';
                                 <th><span>Notes</span></th>
                             </tr>
                             <tr>
-                                <td><span><?= $holdingcage['mouse_id_1']; ?></span></td>
-                                <td><span><?= $holdingcage['genotype_1']; ?></span></td>
-                                <td><span><?= $holdingcage['notes_1']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['mouse_id_1']; ?>
+                                    </span></td>
+                                <td><span>
+                                        <?= $holdingcage['genotype_1']; ?>
+                                    </span></td>
+                                <td><span>
+                                        <?= $holdingcage['notes_1']; ?>
+                                    </span></td>
                             </tr>
                         </table>
 
@@ -158,9 +187,15 @@ require 'header.php';
                                 <th><span>Notes</span></th>
                             </tr>
                             <tr>
-                                <td><span><?= $holdingcage['mouse_id_2']; ?></span></td>
-                                <td><span><?= $holdingcage['genotype_2']; ?></span></td>
-                                <td><span><?= $holdingcage['notes_2']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['mouse_id_2']; ?>
+                                    </span></td>
+                                <td><span>
+                                        <?= $holdingcage['genotype_2']; ?>
+                                    </span></td>
+                                <td><span>
+                                        <?= $holdingcage['notes_2']; ?>
+                                    </span></td>
                             </tr>
                         </table>
 
@@ -173,9 +208,15 @@ require 'header.php';
                                 <th><span>Notes</span></th>
                             </tr>
                             <tr>
-                                <td><span><?= $holdingcage['mouse_id_3']; ?></span></td>
-                                <td><span><?= $holdingcage['genotype_3']; ?></span></td>
-                                <td><span><?= $holdingcage['notes_3']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['mouse_id_3']; ?>
+                                    </span></td>
+                                <td><span>
+                                        <?= $holdingcage['genotype_3']; ?>
+                                    </span></td>
+                                <td><span>
+                                        <?= $holdingcage['notes_3']; ?>
+                                    </span></td>
                             </tr>
                         </table>
 
@@ -188,9 +229,15 @@ require 'header.php';
                                 <th><span>Notes</span></th>
                             </tr>
                             <tr>
-                                <td><span><?= $holdingcage['mouse_id_4']; ?></span></td>
-                                <td><span><?= $holdingcage['genotype_4']; ?></span></td>
-                                <td><span><?= $holdingcage['notes_4']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['mouse_id_4']; ?>
+                                    </span></td>
+                                <td><span>
+                                        <?= $holdingcage['genotype_4']; ?>
+                                    </span></td>
+                                <td><span>
+                                        <?= $holdingcage['notes_4']; ?>
+                                    </span></td>
                             </tr>
                         </table>
 
@@ -203,9 +250,15 @@ require 'header.php';
                                 <th><span>Notes</span></th>
                             </tr>
                             <tr>
-                                <td><span><?= $holdingcage['mouse_id_5']; ?></span></td>
-                                <td><span><?= $holdingcage['genotype_5']; ?></span></td>
-                                <td><span><?= $holdingcage['notes_5']; ?></span></td>
+                                <td><span>
+                                        <?= $holdingcage['mouse_id_5']; ?>
+                                    </span></td>
+                                <td><span>
+                                        <?= $holdingcage['genotype_5']; ?>
+                                    </span></td>
+                                <td><span>
+                                        <?= $holdingcage['notes_5']; ?>
+                                    </span></td>
                             </tr>
                         </table>
                     </div>
@@ -222,7 +275,7 @@ require 'header.php';
     </div>
 
     <br>
-    <?php include 'footer.php'; ?>    
+    <?php include 'footer.php'; ?>
 
 </body>
 

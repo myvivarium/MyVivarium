@@ -37,7 +37,8 @@ require 'header.php';
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -103,7 +104,6 @@ require 'header.php';
         .btn-secondary:hover {
             background-color: #FF4500;
         }
-
     </style>
 </head>
 
@@ -126,7 +126,8 @@ require 'header.php';
                         <!-- Holding Cage Search Box -->
                         <form method="GET" action="">
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="Enter cage ID" name="search" value="<?= htmlspecialchars($searchQuery) ?>">
+                                <input type="text" class="form-control" placeholder="Enter cage ID" name="search"
+                                    value="<?= htmlspecialchars($searchQuery) ?>">
                                 <button class="btn btn-primary" type="submit">Search</button>
                             </div>
                         </form>
@@ -146,26 +147,36 @@ require 'header.php';
                                         $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$cageID'";
                                         $cageResult = mysqli_query($con, $query);
                                         while ($holdingcage = mysqli_fetch_assoc($cageResult)) {
-                                    ?>
+                                            ?>
                                             <tr>
-                                                <td rowspan="<?= mysqli_num_rows($cageResult); ?>"><?= $holdingcage['cage_id']; ?></td>
-                                                <td><?= $holdingcage['strain']; ?></td>
-                                                <td><?= $holdingcage['remarks']; ?></td>
+                                                <td rowspan="<?= mysqli_num_rows($cageResult); ?>">
+                                                    <?= $holdingcage['cage_id']; ?>
+                                                </td>
                                                 <td>
-                                                    <a href="hc_view.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-primary">View</a>
-                                                    <a href="hc_prnt.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">Print</a>
-                                                    <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
-                                                    <a href="hc_drop.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-danger">Delete</a>
+                                                    <?= $holdingcage['strain']; ?>
+                                                </td>
+                                                <td>
+                                                    <?= $holdingcage['remarks']; ?>
+                                                </td>
+                                                <td>
+                                                    <a href="hc_view.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>"
+                                                        class="btn btn-primary">View</a>
+                                                    <a href="hc_prnt.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>"
+                                                        class="btn btn-success">Print</a>
+                                                    <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>"
+                                                        class="btn btn-secondary">Edit</a>
+                                                    <a href="hc_drop.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>"
+                                                        class="btn btn-danger">Delete</a>
                                                 </td>
                                             </tr>
-                                    <?php
+                                            <?php
                                         }
                                     }
                                     ?>
                                 </tbody>
                             </table>
                         </div>
-                        <?php if (isset($_GET['search'])) : ?>
+                        <?php if (isset($_GET['search'])): ?>
                             <div style="text-align: center;">
                                 <a href="hc_dash.php" class="btn btn-secondary">Go Back To Holding Cage Dashboard</a>
                             </div>

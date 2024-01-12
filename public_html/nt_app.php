@@ -140,28 +140,38 @@ $result = $stmt->get_result();
 
 <body>
     <div class="container" style="max-width: 800px; margin: 50px auto;">
-        
-      
+
+
         <div class="popup" id="addNotePopup">
             <span class="close-btn" onclick="togglePopup()">X</span>
             <form id="addNoteForm" method="post" action="nt_add.php">
-            <?php if (isset($_GET['id'])): ?>
-                <label for="cage_id">For Cage ID: <?= $_GET['id']; ?></label>
-                <input type="hidden" id="cage_id" name="cage_id" value="<?= $_GET['id']; ?>" style="display: inline-block; vertical-align: middle;">
-            <?php endif; ?>
-                <textarea id="note_text" name="note_text" placeholder="Type your sticky note here..." required></textarea>
+                <?php if (isset($_GET['id'])): ?>
+                    <label for="cage_id">For Cage ID:
+                        <?= $_GET['id']; ?>
+                    </label>
+                    <input type="hidden" id="cage_id" name="cage_id" value="<?= $_GET['id']; ?>"
+                        style="display: inline-block; vertical-align: middle;">
+                <?php endif; ?>
+                <textarea id="note_text" name="note_text" placeholder="Type your sticky note here..."
+                    required></textarea>
                 <button type="submit" name="add_note">Add Note</button>
             </form>
         </div>
 
         <div class="overlay" id="overlay" onclick="togglePopup()"></div>
 
-        <?php while ($row = $result->fetch_assoc()) : ?>
+        <?php while ($row = $result->fetch_assoc()): ?>
             <div class="sticky-note">
                 <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
-                <span class="userid"><?php echo $row['user_id']; ?></span>
-                <p><?php echo nl2br($row['note_text']); ?></p>
-                <span class="timestamp"><?php echo $row['created_at']; ?></span>
+                <span class="userid">
+                    <?php echo $row['user_id']; ?>
+                </span>
+                <p>
+                    <?php echo nl2br($row['note_text']); ?>
+                </p>
+                <span class="timestamp">
+                    <?php echo $row['created_at']; ?>
+                </span>
             </div>
         <?php endwhile; ?>
 
@@ -182,7 +192,7 @@ $result = $stmt->get_result();
         }
 
         // Submit form using AJAX
-        $('#addNoteForm').submit(function(e) {
+        $('#addNoteForm').submit(function (e) {
             e.preventDefault();
             var formData = $(this).serialize();
 
@@ -190,12 +200,12 @@ $result = $stmt->get_result();
                 type: 'POST',
                 url: 'nt_add.php',
                 data: formData,
-                success: function() {
+                success: function () {
                     togglePopup(); // Close the popup after successful submission
                     // Optionally, you can reload the notes here
                     location.reload();
                 },
-                error: function(error) {
+                error: function (error) {
                     console.log('Error:', error);
                 }
             });
@@ -205,16 +215,16 @@ $result = $stmt->get_result();
         function removeNote(noteId) {
             $.ajax({
                 type: 'POST',
-                url: 'nt_rmv.php', 
+                url: 'nt_rmv.php',
                 data: {
                     note_id: noteId
                 },
-                success: function() {
+                success: function () {
                     $('#note-' + noteId).remove(); // Remove the note from the DOM
                     // Optionally, you can reload the notes here
                     location.reload();
                 },
-                error: function(error) {
+                error: function (error) {
                     console.log('Error:', error);
                 }
             });

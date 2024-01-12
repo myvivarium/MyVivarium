@@ -9,7 +9,7 @@ if (isset($_GET['id'])) {
     $deleteQuery = "DELETE FROM hc_basic WHERE `cage_id` = '$id'";
     mysqli_query($con, $deleteQuery);
 
-    $_SESSION['message'] = 'Cage '.$id.' deleted successfully.';
+    $_SESSION['message'] = 'Cage ' . $id . ' deleted successfully.';
     header("Location: hc_dash.php");
     exit();
 } else {

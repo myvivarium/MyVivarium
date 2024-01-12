@@ -1,5 +1,4 @@
 <?php
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -168,11 +167,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     </div>
     <br>
 
-    <br>
     <!-- Footer Section -->
-    <div class="header-footer">
-        <p style="color:white">&copy; 2024 MyVivarium.online. All rights reserved.</p>
-    </div>
+    <br>
+    <?php include 'footer.php'; ?>
+
 </body>
 
 </html>

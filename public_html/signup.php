@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <style>
         /* Add your CSS styles here */
         .container {
@@ -90,6 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </style>
 </head>
+
 <body>
     <!-- Header with Lab Name -->
     <header class="bg-dark text-white text-center py-3">
@@ -120,7 +122,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </select>
             </div>
             <div class="form-group">
-                <label for="email">Email Address <span class="note">(Your email address will be your username for login)</span></label>
+                <label for="email">Email Address <span class="note">(Your email address will be your username for
+                        login)</span></label>
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
             <div class="form-group">
@@ -132,16 +135,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <br>
             <a href="index.php" class="btn btn-secondary">Go Back</a>
         </form>
-        <?php if (!empty($resultMessage)) { 
+        <?php if (!empty($resultMessage)) {
             echo "<p class='result-message'>$resultMessage</p>";
         } ?>
     </div>
-    <br>
+
     <!-- Footer Section -->
-    <div class="header-footer">
-        <p style="color:white">&copy; 2024 MyVivarium.online. All rights reserved.</p>
-    </div>
+    <br>
+    <?php include 'footer.php'; ?>
 
 </body>
-</html>
 
+</html>

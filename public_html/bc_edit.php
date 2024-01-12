@@ -97,7 +97,8 @@ require 'header.php';
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -121,13 +122,16 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="cage_id" class="form-label">Cage ID</label>
-                                <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= $breedingcage['cage_id']; ?>" required>
+                                <input type="text" class="form-control" id="cage_id" name="cage_id"
+                                    value="<?= $breedingcage['cage_id']; ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="pi_name" class="form-label">PI Name</label>
                                 <select class="form-control" id="pi_name" name="pi_name" required>
-                                    <option value="<?= htmlspecialchars($breedingcage['pi_name']); ?>" selected><?= htmlspecialchars($breedingcage['pi_name']); ?></option>
+                                    <option value="<?= htmlspecialchars($breedingcage['pi_name']); ?>" selected>
+                                        <?= htmlspecialchars($breedingcage['pi_name']); ?>
+                                    </option>
                                     <?php
                                     while ($row = $result1->fetch_assoc()) {
                                         if ($row['name'] != $breedingcage['pi_name']) {
@@ -140,42 +144,50 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="cross" class="form-label">Cross</label>
-                                <input type="text" class="form-control" id="cross" name="cross" value="<?= $breedingcage['cross']; ?>" required>
+                                <input type="text" class="form-control" id="cross" name="cross"
+                                    value="<?= $breedingcage['cross']; ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="iacuc" class="form-label">IACUC</label>
-                                <input type="text" class="form-control" id="iacuc" name="iacuc" value="<?= $breedingcage['iacuc']; ?>">
+                                <input type="text" class="form-control" id="iacuc" name="iacuc"
+                                    value="<?= $breedingcage['iacuc']; ?>">
                             </div>
 
                             <div class="mb-3">
                                 <label for="user" class="form-label">User</label>
-                                <input type="text" class="form-control" id="user" name="user" value="<?= $breedingcage['user']; ?>" required>
+                                <input type="text" class="form-control" id="user" name="user"
+                                    value="<?= $breedingcage['user']; ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="male_id" class="form-label">Male ID</label>
-                                <input type="text" class="form-control" id="male_id" name="male_id" value="<?= $breedingcage['male_id']; ?>" required>
+                                <input type="text" class="form-control" id="male_id" name="male_id"
+                                    value="<?= $breedingcage['male_id']; ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="female_id" class="form-label">Female ID</label>
-                                <input type="text" class="form-control" id="female_id" name="female_id" value="<?= $breedingcage['female_id']; ?>" required>
+                                <input type="text" class="form-control" id="female_id" name="female_id"
+                                    value="<?= $breedingcage['female_id']; ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="male_dob" class="form-label">Male DOB</label>
-                                <input type="date" class="form-control" id="male_dob" name="male_dob" value="<?= $breedingcage['male_dob']; ?>" required>
+                                <input type="date" class="form-control" id="male_dob" name="male_dob"
+                                    value="<?= $breedingcage['male_dob']; ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="female_dob" class="form-label">Female DOB</label>
-                                <input type="date" class="form-control" id="female_dob" name="female_dob" value="<?= $breedingcage['female_dob']; ?>" required>
+                                <input type="date" class="form-control" id="female_dob" name="female_dob"
+                                    value="<?= $breedingcage['female_dob']; ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="remarks" class="form-label">Remarks</label>
-                                <input type="text" class="form-control" id="remarks" name="remarks" value="<?= $breedingcage['remarks']; ?>">
+                                <input type="text" class="form-control" id="remarks" name="remarks"
+                                    value="<?= $breedingcage['remarks']; ?>">
                             </div>
 
                             <button type="submit" class="btn btn-primary">Save Changes</button>
