@@ -4,7 +4,8 @@ require 'dbcon.php';
 
 // Check if the user is not logged in, redirect them to index.php
 if (!isset($_SESSION['name'])) {
-    header("Location: index.php");
+    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: index.php?redirect=$currentUrl");
     exit;
 }
 

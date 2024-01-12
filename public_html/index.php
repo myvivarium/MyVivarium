@@ -11,8 +11,16 @@ require 'dbcon.php';
 
 // Check if the user is already logged in
 if (isset($_SESSION['name'])) {
-    header("Location: home.php"); // Redirect to admin landing page if already logged in
-    exit;
+    // After login
+    if (isset($_GET['redirect'])) {
+        $url = urldecode($_GET['redirect']);
+        header("Location: $url");
+        exit;
+    } else {
+        // Redirect to default page
+        header("Location: home.php");
+        exit;
+    }
 }
 
 // Handle admin login form submission
@@ -36,8 +44,15 @@ if (isset($_POST['login'])) {
             $_SESSION['name'] = $row['name'];
             $_SESSION['username'] = $row['username'];
             $_SESSION['role'] = $row['role'];
-            header("Location: home.php");
-            exit;
+            if (isset($_GET['redirect'])) {
+                $url = urldecode($_GET['redirect']);
+                header("Location: $url");
+                exit;
+            } else {
+                // Redirect to default page
+                header("Location: home.php");
+                exit;
+            }
         } else {
             // Password verification failed, set error message
             $error_message = "Login failed due to the wrong password.";
@@ -113,8 +128,9 @@ if (isset($_POST['login'])) {
         }
 
         .forgot-password-link {
-        text-align: right;
-        margin-left: 100px; /* Adjust margin as needed for spacing */
+            text-align: right;
+            margin-left: 100px;
+            /* Adjust margin as needed for spacing */
         }
     </style>
 </head>
@@ -178,10 +194,10 @@ if (isset($_POST['login'])) {
             <div class="col-md-6">
                 <div class="login-form">
                     <h3>Login</h3>
-                           <!-- Display error message if set -->
-                            <?php if (isset($error_message)) { ?>
-                                <div class="alert alert-danger"><?php echo $error_message; ?></div>
-                            <?php } ?>
+                    <!-- Display error message if set -->
+                    <?php if (isset($error_message)) { ?>
+                        <div class="alert alert-danger"><?php echo $error_message; ?></div>
+                    <?php } ?>
                     <form method="POST" action="">
                         <div class="form-group">
                             <label for="username">Username or Email Address</label>
@@ -231,7 +247,7 @@ if (isset($_POST['login'])) {
     </div>
 
     <?php include 'footer.php'; ?>
-    
+
     <!-- Bootstrap and jQuery JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

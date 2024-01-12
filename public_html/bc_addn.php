@@ -27,25 +27,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $remarks = $_POST['remarks'];
 
     // Check if the cage_id already exists
-    $check_query = "SELECT * FROM bc_basic WHERE cage_id = '$cage_id'";
-    $check_result = mysqli_query($con, $check_query);
+    $check_query = $con->prepare("SELECT * FROM bc_basic WHERE cage_id = ?");
+    $check_query->bind_param("s", $cage_id);
+    $check_query->execute();
+    $check_result = $check_query->get_result();
 
-    if (mysqli_num_rows($check_result) > 0) {
-        // Cage_id already exists, throw an error
+    if ($check_result->num_rows > 0) {
         $_SESSION['error'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
     } else {
-        // Cage_id does not exist, proceed with insertion
-        $query1 = "INSERT INTO bc_basic (`cage_id`, `pi_name`, `cross`, `iacuc`, `user`, `male_id`, `female_id`, `male_dob`, `female_dob`, `remarks`) VALUES ('$cage_id', '$pi_name', '$cross', '$iacuc', '$user', '$male_id', '$female_id', '$male_dob', '$female_dob', '$remarks')";
-        
-        $result1 = mysqli_query($con, $query1);
+        // Prepare the insert query with placeholders
+        $insert_query = $con->prepare("INSERT INTO bc_basic (`cage_id`, `pi_name`, `cross`, `iacuc`, `user`, `male_id`, `female_id`, `male_dob`, `female_dob`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        // Check if the insertion was successful
-        if ($result1) {
+        // Bind parameters
+        $insert_query->bind_param("ssssssssss", $cage_id, $pi_name, $cross, $iacuc, $user, $male_id, $female_id, $male_dob, $female_dob, $remarks);
+
+        // Execute the statement and check if it was successful
+        if ($insert_query->execute()) {
             $_SESSION['message'] = "New breeding cage added successfully.";
         } else {
-            $_SESSION['message'] = "Failed to add new breeding cage.";
+            $_SESSION['error'] = "Failed to add new breeding cage.";
         }
+
+        // Close the prepared statement
+        $insert_query->close();
     }
+
+    // Close the check query prepared statement
+    $check_query->close();
 
     // Redirect back to the main page
     header("Location: bc_dash.php");

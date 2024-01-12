@@ -49,17 +49,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Cage_id already exists, throw an error
         $_SESSION['error'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
     } else {
-        // Cage_id does not exist, proceed with insertion
-        $query1 = "INSERT INTO hc_basic (`cage_id`, `pi_name`, `strain`, `iacuc`, `user`, `qty`, `dob`, `sex`, `parent_cg`, `remarks`, `mouse_id_1`, `genotype_1`, `notes_1`, `mouse_id_2`, `genotype_2`, `notes_2`, `mouse_id_3`, `genotype_3`, `notes_3`, `mouse_id_4`, `genotype_4`, `notes_4`, `mouse_id_5`, `genotype_5`, `notes_5`) VALUES ('$cage_id', '$pi_name', '$strain', '$iacuc', '$user', '$qty', '$dob', '$sex', '$parent_cg', '$remarks', '$mouse_id_1', '$genotype_1', '$notes_1', '$mouse_id_2', '$genotype_2', '$notes_2', '$mouse_id_3', '$genotype_3', '$notes_3', '$mouse_id_4', '$genotype_4', '$notes_4', '$mouse_id_5', '$genotype_5', '$notes_5')";
-        
-        $result1 = mysqli_query($con, $query1);
+        // Prepare the SQL statement with placeholders
+        $query1 = "INSERT INTO hc_basic (`cage_id`, `pi_name`, `strain`, `iacuc`, `user`, `qty`, `dob`, `sex`, `parent_cg`, `remarks`, `mouse_id_1`, `genotype_1`, `notes_1`, `mouse_id_2`, `genotype_2`, `notes_2`, `mouse_id_3`, `genotype_3`, `notes_3`, `mouse_id_4`, `genotype_4`, `notes_4`, `mouse_id_5`, `genotype_5`, `notes_5`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = $con->prepare($query1);
+
+        // Bind parameters
+        $stmt->bind_param("sssssisssssssssssssssssss", $cage_id, $pi_name, $strain, $iacuc, $user, $qty, $dob, $sex, $parent_cg, $remarks, $mouse_id_1, $genotype_1, $notes_1, $mouse_id_2, $genotype_2, $notes_2, $mouse_id_3, $genotype_3, $notes_3, $mouse_id_4, $genotype_4, $notes_4, $mouse_id_5, $genotype_5, $notes_5);
+
+        // Execute the statement
+        $result1 = $stmt->execute();
 
         // Check if the insertion was successful
         if ($result1) {
             $_SESSION['message'] = "New holding cage added successfully.";
         } else {
-            $_SESSION['message'] = "Failed to add new holding cage.";
+            $_SESSION['message'] = "Failed to add new holding cage: " . $stmt->error;
         }
+
+        // Close the prepared statement
+        $stmt->close();
     }
 
     // Redirect back to the main page
@@ -74,7 +83,7 @@ require 'header.php';
 <html lang="en">
 
 <head>
-    
+
     <script>
         function goBack() {
             window.history.back();
@@ -87,10 +96,9 @@ require 'header.php';
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -190,7 +198,7 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="notes_1" class="form-label">Manitenance Notes</label>
+                <label for="notes_1" class="form-label">Maintenance Notes</label>
                 <input type="text" class="form-control" id="notes_1" name="notes_1">
             </div>
 
@@ -206,7 +214,7 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="notes_2" class="form-label">Manitenance Notes</label>
+                <label for="notes_2" class="form-label">Maintenance Notes</label>
                 <input type="text" class="form-control" id="notes_2" name="notes_2">
             </div>
 
@@ -222,7 +230,7 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="notes_3" class="form-label">Manitenance Notes</label>
+                <label for="notes_3" class="form-label">Maintenance Notes</label>
                 <input type="text" class="form-control" id="notes_3" name="notes_3">
             </div>
 
@@ -238,7 +246,7 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="notes_4" class="form-label">Manitenance Notes</label>
+                <label for="notes_4" class="form-label">Maintenance Notes</label>
                 <input type="text" class="form-control" id="notes_4" name="notes_4">
             </div>
 
@@ -254,20 +262,20 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="notes_5" class="form-label">Manitenance Notes</label>
+                <label for="notes_5" class="form-label">Maintenance Notes</label>
                 <input type="text" class="form-control" id="notes_5" name="notes_5">
             </div>
-            
+
             <button type="submit" class="btn btn-primary">Add Cage</button>
             <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
-        
+
         </form>
-        
+
         <div style="text-align: center;">
             <a href="hc_dash.php" class="btn btn-secondary">Dashboard</a>
         </div>
     </div>
-    
+
     <br>
     <?php include 'footer.php'; ?>
 </body>

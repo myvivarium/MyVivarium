@@ -57,38 +57,52 @@ if (isset($_GET['id'])) {
             $genotype_5 = mysqli_real_escape_string($con, $_POST['genotype_5']);
             $notes_5 = mysqli_real_escape_string($con, $_POST['notes_5']);
 
-            // Update the holdingcage record
             $updateQuery = "UPDATE hc_basic SET
-                `cage_id` = '$cage_id',
-                `pi_name` = '$pi_name',
-                `strain` = '$strain',
-                `iacuc` = '$iacuc',
-                `user` = '$user',
-                `qty` = '$qty',
-                `dob` = '$dob',
-                `sex` = '$sex',
-                `parent_cg` = '$parent_cg',
-                `remarks` = '$remarks',
-                `mouse_id_1` = '$mouse_id_1',
-                `genotype_1` = '$genotype_1',
-                `notes_1` = '$notes_1'
-                `mouse_id_2` = '$mouse_id_2',
-                `genotype_2` = '$genotype_2',
-                `notes_2` = '$notes_2'
-                `mouse_id_3` = '$mouse_id_3',
-                `genotype_3` = '$genotype_3',
-                `notes_3` = '$notes_3'
-                `mouse_id_4` = '$mouse_id_4',
-                `genotype_4` = '$genotype_4',
-                `notes_4` = '$notes_4'
-                `mouse_id_5` = '$mouse_id_5',
-                `genotype_5` = '$genotype_5',
-                `notes_5` = '$notes_5'
-                WHERE `cage_id` = '$id'";
+                            `cage_id` = ?,
+                            `pi_name` = ?,
+                            `strain` = ?,
+                            `iacuc` = ?,
+                            `user` = ?,
+                            `qty` = ?,
+                            `dob` = ?,
+                            `sex` = ?,
+                            `parent_cg` = ?,
+                            `remarks` = ?,
+                            `mouse_id_1` = ?,
+                            `genotype_1` = ?,
+                            `notes_1` = ?,
+                            `mouse_id_2` = ?,
+                            `genotype_2` = ?,
+                            `notes_2` = ?,
+                            `mouse_id_3` = ?,
+                            `genotype_3` = ?,
+                            `notes_3` = ?,
+                            `mouse_id_4` = ?,
+                            `genotype_4` = ?,
+                            `notes_4` = ?,
+                            `mouse_id_5` = ?,
+                            `genotype_5` = ?,
+                            `notes_5` = ?
+                            WHERE `cage_id` = ?";
 
-            mysqli_query($con, $updateQuery);
+            $stmt = $con->prepare($updateQuery);
 
-            $_SESSION['message'] = 'Entry updated successfully.';
+            // Bind parameters to the prepared statement
+            $stmt->bind_param("sssssissssssssssssssssssss", $cage_id, $pi_name, $strain, $iacuc, $user, $qty, $dob, $sex, $parent_cg, $remarks, $mouse_id_1, $genotype_1, $notes_1, $mouse_id_2, $genotype_2, $notes_2, $mouse_id_3, $genotype_3, $notes_3, $mouse_id_4, $genotype_4, $notes_4, $mouse_id_5, $genotype_5, $notes_5, $id);
+
+            // Execute the statement
+            $result = $stmt->execute();
+
+            // Check if the update was successful
+            if ($result) {
+                $_SESSION['message'] = 'Entry updated successfully.';
+            } else {
+                $_SESSION['error'] = 'Update failed: ' . $stmt->error;
+            }
+
+            // Close the prepared statement
+            $stmt->close();
+
             header("Location: hc_dash.php");
             exit();
         }
@@ -236,7 +250,7 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="notes_1" class="form-label">Manitenance Notes</label>
+                                <label for="notes_1" class="form-label">Maintenance Notes</label>
                                 <input type="text" class="form-control" id="notes_1" name="notes_1" value="<?= $holdingcage['notes_1']; ?>">
                             </div>
 
@@ -253,7 +267,7 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="notes_2" class="form-label">Manitenance Notes</label>
+                                <label for="notes_2" class="form-label">Maintenance Notes</label>
                                 <input type="text" class="form-control" id="notes_2" name="notes_2" value="<?= $holdingcage['notes_2']; ?>">
                             </div>
 
@@ -269,7 +283,7 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="notes_3" class="form-label">Manitenance Notes</label>
+                                <label for="notes_3" class="form-label">Maintenance Notes</label>
                                 <input type="text" class="form-control" id="notes_3" name="notes_3" value="<?= $holdingcage['notes_3']; ?>">
                             </div>
 
@@ -286,7 +300,7 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="notes_4" class="form-label">Manitenance Notes</label>
+                                <label for="notes_4" class="form-label">Maintenance Notes</label>
                                 <input type="text" class="form-control" id="notes_4" name="notes_4" value="<?= $holdingcage['notes_4']; ?>">
                             </div>
 
@@ -303,7 +317,7 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="notes_5" class="form-label">Manitenance Notes</label>
+                                <label for="notes_5" class="form-label">Maintenance Notes</label>
                                 <input type="text" class="form-control" id="notes_5" name="notes_5" value="<?= $holdingcage['notes_5']; ?>">
                             </div>
 

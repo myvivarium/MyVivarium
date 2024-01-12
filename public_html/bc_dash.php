@@ -121,6 +121,7 @@ require 'header.php';
                         <h4>Breeding Cage Dashboard
                             <a href="bc_addn.php" class="btn btn-primary float-end">Add New Breeding Cage</a>
                         </h4>
+                        <p>Note: Litter data can be inputted on the view page.</p>
                     </div>
 
                     <div class="card-body">

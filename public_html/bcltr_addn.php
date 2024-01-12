@@ -11,10 +11,9 @@ if (!isset($_SESSION['name'])) {
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Check if the form is submitted
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Retrieve form data
-        $cage_id = $id;
+        $cage_id = $id; // Assuming $id is already sanitized
         $dom = $_POST['dom'];
         $litter_dob = $_POST['litter_dob'];
         $pups_alive = $_POST['pups_alive'];
@@ -23,16 +22,21 @@ if (isset($_GET['id'])) {
         $pups_female = $_POST['pups_female'];
         $remarks = $_POST['remarks'];
 
-        $query1 = "INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES ('$cage_id', '$dom', '$litter_dob', '$pups_alive', '$pups_dead', '$pups_male', '$pups_female', '$remarks')";
+        // Prepare the insert query with placeholders
+        $query1 = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-        $result1 = mysqli_query($con, $query1);
+        // Bind parameters
+        $query1->bind_param("ssssssss", $cage_id, $dom, $litter_dob, $pups_alive, $pups_dead, $pups_male, $pups_female, $remarks);
 
-        // Check if the insertion was successful
-        if ($result1) {
+        // Execute the statement and check if it was successful
+        if ($query1->execute()) {
             $_SESSION['message'] = "New litter data added successfully.";
         } else {
-            $_SESSION['message'] = "Failed to add new litter data.";
+            $_SESSION['error'] = "Failed to add new litter data: " . $query1->error;
         }
+
+        // Close the prepared statement
+        $query1->close();
 
         // Redirect back to the main page
         header("Location: bc_view.php?id=" . rawurlencode($id));

@@ -13,40 +13,50 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the breedingcage record with the specified ID
-    $query = "SELECT * FROM bc_litter WHERE `id` = '$id'";
-    $result = mysqli_query($con, $query);
+    $query = $con->prepare("SELECT * FROM bc_litter WHERE `id` = ?");
+    $query->bind_param("s", $id);
+    $query->execute();
+    $result = $query->get_result();
 
-    if (mysqli_num_rows($result) > 0) {
-        $breedingcage = mysqli_fetch_assoc($result);
+    if ($result->num_rows > 0) {
+        $breedingcage = $result->fetch_assoc();
+        $cage_id = $breedingcage['cage_id']; // Store cage_id for later use
 
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Retrieve form data
-            // Retrieve and sanitize form data
-            $cage_id = $breedingcage['cage_id'];
-            $dom = mysqli_real_escape_string($con, $_POST['dom']);
-            $litter_dob = mysqli_real_escape_string($con, $_POST['litter_dob']);
-            $pups_alive = mysqli_real_escape_string($con, $_POST['pups_alive']);
-            $pups_dead = mysqli_real_escape_string($con, $_POST['pups_dead']);
-            $pups_male = mysqli_real_escape_string($con, $_POST['pups_male']);
-            $pups_female = mysqli_real_escape_string($con, $_POST['pups_female']);
-            $remarks = mysqli_real_escape_string($con, $_POST['remarks']);
+            $dom = $_POST['dom'];
+            $litter_dob = $_POST['litter_dob'];
+            $pups_alive = $_POST['pups_alive'];
+            $pups_dead = $_POST['pups_dead'];
+            $pups_male = $_POST['pups_male'];
+            $pups_female = $_POST['pups_female'];
+            $remarks = $_POST['remarks'];
 
-            // Update the breedingcage record
-            $updateQuery = "UPDATE bc_litter SET
-                `cage_id` = '$cage_id',
-                `dom` = '$dom',
-                `litter_dob` = '$litter_dob',
-                `pups_alive` = '$pups_alive',
-                `pups_dead` = '$pups_dead',
-                `pups_male` = '$pups_male',
-                `pups_female` = '$pups_female',
-                `remarks` = '$remarks'
-                WHERE `id` = '$id'";
+            // Prepare the update query with placeholders
+            $updateQuery = $con->prepare("UPDATE bc_litter SET
+                `cage_id` = ?, 
+                `dom` = ?, 
+                `litter_dob` = ?, 
+                `pups_alive` = ?, 
+                `pups_dead` = ?, 
+                `pups_male` = ?, 
+                `pups_female` = ?, 
+                `remarks` = ? 
+                WHERE `id` = ?");
 
-            mysqli_query($con, $updateQuery);
+            // Bind parameters
+            $updateQuery->bind_param("sssiiiiss", $cage_id, $dom, $litter_dob, $pups_alive, $pups_dead, $pups_male, $pups_female, $remarks, $id);
 
-            $_SESSION['message'] = 'Litter data updated successfully.';
+            // Execute the statement and check if it was successful
+            if ($updateQuery->execute()) {
+                $_SESSION['message'] = 'Litter data updated successfully.';
+            } else {
+                $_SESSION['error'] = 'Update failed: ' . $updateQuery->error;
+            }
+
+            $updateQuery->close();
+
             header("Location: bc_view.php?id=" . rawurlencode($cage_id));
             exit();
         }
@@ -55,11 +65,13 @@ if (isset($_GET['id'])) {
         header("Location: bc_view.php?id=" . rawurlencode($cage_id));
         exit();
     }
+    $query->close();
 } else {
     $_SESSION['message'] = 'ID parameter is missing.';
     header("Location: bc_view.php?id=" . rawurlencode($cage_id));
     exit();
 }
+
 
 require 'header.php';
 ?>

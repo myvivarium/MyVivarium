@@ -38,23 +38,33 @@ if (isset($_GET['id'])) {
             $female_dob = mysqli_real_escape_string($con, $_POST['female_dob']);
             $remarks = mysqli_real_escape_string($con, $_POST['remarks']);
 
-            // Update the breedingcage record
-            $updateQuery = "UPDATE bc_basic SET
-                `cage_id` = '$cage_id',
-                `pi_name` = '$pi_name',
-                `cross` = '$cross',
-                `iacuc` = '$iacuc',
-                `user` = '$user',
-                `male_id` = '$male_id',
-                `female_id` = '$female_id',
-                `male_dob` = '$male_dob',
-                `female_dob` = '$female_dob',
-                `remarks` = '$remarks'
-                WHERE `cage_id` = '$id'";
+            // Prepare the update query with placeholders
+            $updateQuery = $con->prepare("UPDATE bc_basic SET 
+                                    `cage_id` = ?, 
+                                    `pi_name` = ?, 
+                                    `cross` = ?, 
+                                    `iacuc` = ?, 
+                                    `user` = ?, 
+                                    `male_id` = ?, 
+                                    `female_id` = ?, 
+                                    `male_dob` = ?, 
+                                    `female_dob` = ?, 
+                                    `remarks` = ? 
+                                    WHERE `cage_id` = ?");
 
-            mysqli_query($con, $updateQuery);
+            // Bind parameters
+            $updateQuery->bind_param("sssssssssss", $cage_id, $pi_name, $cross, $iacuc, $user, $male_id, $female_id, $male_dob, $female_dob, $remarks, $id);
 
-            $_SESSION['message'] = 'Entry updated successfully.';
+            // Execute the statement and check if it was successful
+            if ($updateQuery->execute()) {
+                $_SESSION['message'] = 'Entry updated successfully.';
+            } else {
+                $_SESSION['error'] = 'Update failed: ' . $updateQuery->error;
+            }
+
+            // Close the prepared statement
+            $updateQuery->close();
+
             header("Location: bc_dash.php");
             exit();
         }

@@ -1,4 +1,5 @@
 <?php
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -47,13 +48,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             $mail->Username = SMTP_USERNAME;
             $mail->Password = SMTP_PASSWORD;
             $mail->SMTPSecure = SMTP_ENCRYPTION;
-    
+
             $mail->setFrom(SENDER_EMAIL, SENDER_NAME);
             $mail->addAddress($to);
             $mail->isHTML(false);
             $mail->Subject = $subject;
             $mail->Body = $message;
-    
+
             $mail->send();
             $resultMessage = "Password reset instructions have been sent to your email address.";
         } catch (Exception $e) {
@@ -64,13 +65,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     }
 
     $stmt->close();
-    $updateStmt->close();
+    if (isset($updateStmt)) {
+        $updateStmt->close();
+    }
     $con->close();
 }
 ?>
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -128,19 +132,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             text-align: center;
             margin-top: 15px;
             padding: 10px;
-            background-color: #dff0d8; /* Green background color */
-            border: 1px solid #3c763d; /* Green border color */
-            color: #3c763d; /* Green text color */
+            background-color: #dff0d8;
+            /* Green background color */
+            border: 1px solid #3c763d;
+            /* Green border color */
+            color: #3c763d;
+            /* Green text color */
             border-radius: 5px;
         }
-
     </style>
 </head>
+
 <body>
     <!-- Header with Lab Name -->
     <header class="bg-dark text-white text-center py-3">
         <h1>Sathyanesan Lab's Vivarium</h1>
-    </div>
+        </div>
     </header>
     <br>
     <br>
@@ -153,7 +160,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             </div>
             <button type="submit" class="btn btn-primary" name="reset">Reset Password</button>
         </form>
-        <?php if (isset($resultMessage)) { echo "<p class='result-message'>$resultMessage</p>"; } ?>
+        <?php if (isset($resultMessage)) {
+            echo "<p class='result-message'>$resultMessage</p>";
+        } ?>
         <br>
         <a href="index.php" class="btn btn-secondary">Go Back</a>
     </div>
@@ -165,4 +174,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         <p style="color:white">&copy; 2024 MyVivarium.online. All rights reserved.</p>
     </div>
 </body>
+
 </html>
