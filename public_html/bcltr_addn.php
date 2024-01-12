@@ -15,7 +15,7 @@ if (isset($_GET['id'])) {
         // Retrieve form data
         $cage_id = $id; // Assuming $id is already sanitized
         $dom = $_POST['dom'];
-        $litter_dob = $_POST['litter_dob'];
+        $litter_dob = $_POST['litter_dob'] ?: NULL;
         $pups_alive = $_POST['pups_alive'];
         $pups_dead = $_POST['pups_dead'];
         $pups_male = $_POST['pups_male'];
@@ -82,7 +82,7 @@ require 'header.php';
 <body>
 
     <div class="container mt-4">
-        <h4>Add New Litter Data</h4>
+        <h4>Add New Litter Data <?= $id?></h4>
 
         <?php include('message.php'); ?>
 

@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (mysqli_num_rows($check_result) > 0) {
         // Cage_id already exists, throw an error
-        $_SESSION['error'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
+        $_SESSION['message'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
     } else {
         // Prepare the SQL statement with placeholders
         $query1 = "INSERT INTO hc_basic (`cage_id`, `pi_name`, `strain`, `iacuc`, `user`, `qty`, `dob`, `sex`, `parent_cg`, `remarks`, `mouse_id_1`, `genotype_1`, `notes_1`, `mouse_id_2`, `genotype_2`, `notes_2`, `mouse_id_3`, `genotype_3`, `notes_3`, `mouse_id_4`, `genotype_4`, `notes_4`, `mouse_id_5`, `genotype_5`, `notes_5`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result1) {
             $_SESSION['message'] = "New holding cage added successfully.";
         } else {
-            $_SESSION['message'] = "Failed to add new holding cage: " . $stmt->error;
+            $_SESSION['message'] = "Failed to add new holding cage: ";
         }
 
         // Close the prepared statement
