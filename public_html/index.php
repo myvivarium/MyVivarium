@@ -9,6 +9,15 @@ global $username;
 session_start();
 require 'dbcon.php';
 
+// Query to fetch the lab name
+$labQuery = "SELECT lab_name FROM data LIMIT 1";
+$labResult = mysqli_query($con, $labQuery);
+
+$labName = "My Vivarium"; // A default value in case the query fails or returns no result
+if ($row = mysqli_fetch_assoc($labResult)) {
+    $labName = $row['lab_name'];
+}
+
 // Check if the user is already logged in
 if (isset($_SESSION['name'])) {
     // After login
@@ -44,6 +53,7 @@ if (isset($_POST['login'])) {
             $_SESSION['name'] = $row['name'];
             $_SESSION['username'] = $row['username'];
             $_SESSION['role'] = $row['role'];
+            $_SESSION['position'] = $row['position'];
             if (isset($_GET['redirect'])) {
                 $url = urldecode($_GET['redirect']);
                 header("Location: $url");
@@ -72,7 +82,7 @@ if (isset($_POST['login'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sathyanesan Lab's Vivarium</title>
+    <title><?php echo htmlspecialchars($labName); ?></title>
 
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -138,7 +148,7 @@ if (isset($_POST['login'])) {
 
     <!-- Header with Lab Name -->
     <header class="bg-dark text-white text-center py-3">
-        <h1>Sathyanesan Lab Vivarium</h1>
+        <h1><?php echo htmlspecialchars($labName); ?></h1>
     </header>
 
     <!-- Main Content -->
@@ -222,7 +232,7 @@ if (isset($_POST['login'])) {
         <!-- New Row for Unique Features -->
         <div class="row mt-4">
             <div style="margin:50px 0px 50px 0px;" class="col-md-12">
-                <h2 class="text-center">Welcome to MyVivarium.online</h2>
+                <h2 class="text-center">Welcome to <?php echo htmlspecialchars($labName); ?></h2>
                 <p class="text-center italic">Elevate Your Research with IoT-Enhanced Colony Management</p>
 
                 <!-- Feature Box 1 -->

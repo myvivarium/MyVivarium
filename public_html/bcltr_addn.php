@@ -22,7 +22,7 @@ if (isset($_GET['id'])) {
         $pups_female = $_POST['pups_female'];
         $remarks = $_POST['remarks'];
 
-        // Prepare the insert query with placeholders
+        // Prepare the insert query with placeholders 
         $query1 = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
         // Bind parameters
@@ -77,7 +77,7 @@ require 'header.php';
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <title>Add New | Breeding Cage</title>
+    <title>Add New Litter Data | <?php echo htmlspecialchars($labName); ?></title>
 
 </head>
 

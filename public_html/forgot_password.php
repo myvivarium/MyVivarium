@@ -2,13 +2,24 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+require 'dbcon.php';
+
 require 'vendor/autoload.php'; // Include PHPMailer autoload file
 
 require 'email_credentials.php';
 
+// Query to fetch the lab name
+$labQuery = "SELECT lab_name FROM data LIMIT 1";
+$labResult = mysqli_query($con, $labQuery);
+
+$labName = "My Vivarium"; // A default value in case the query fails or returns no result
+if ($row = mysqli_fetch_assoc($labResult)) {
+    $labName = $row['lab_name'];
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 
-    require 'dbcon.php';
+
 
     $email = $_POST['email'];
 
@@ -77,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forgot Password</title>
+    <title>Forgot Password | <?php echo htmlspecialchars($labName); ?></title>
 
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -145,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 <body>
     <!-- Header with Lab Name -->
     <header class="bg-dark text-white text-center py-3">
-        <h1>Sathyanesan Lab Vivarium</h1>
+        <h1><?php echo htmlspecialchars($labName); ?></h1>
         </div>
     </header>
     <br>

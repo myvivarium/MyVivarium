@@ -33,11 +33,14 @@ if (isset($_GET['id'])) {
             $pups_female = $_POST['pups_female'];
             $remarks = $_POST['remarks'];
 
+            // Check if litter_dob is provided
+            $litter_dob_provided = !empty($_POST['litter_dob']);
+
             // Prepare the update query with placeholders
             $updateQuery = $con->prepare("UPDATE bc_litter SET
                 `cage_id` = ?, 
                 `dom` = ?, 
-                `litter_dob` = ?, 
+                " . ($litter_dob_provided ? "`litter_dob` = ?, " : "") . " 
                 `pups_alive` = ?, 
                 `pups_dead` = ?, 
                 `pups_male` = ?, 
@@ -46,7 +49,11 @@ if (isset($_GET['id'])) {
                 WHERE `id` = ?");
 
             // Bind parameters
-            $updateQuery->bind_param("sssiiiiss", $cage_id, $dom, $litter_dob, $pups_alive, $pups_dead, $pups_male, $pups_female, $remarks, $id);
+            if ($litter_dob_provided) {
+                $updateQuery->bind_param("sssiiiiss", $cage_id, $dom, $litter_dob, $pups_alive, $pups_dead, $pups_male, $pups_female, $remarks, $id);
+            } else {
+                $updateQuery->bind_param("ssiiiiss", $cage_id, $dom, $pups_alive, $pups_dead, $pups_male, $pups_female, $remarks, $id);
+            }
 
             // Execute the statement and check if it was successful
             if ($updateQuery->execute()) {
@@ -96,7 +103,7 @@ require 'header.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <title>Edit Breeding Cage</title>
+    <title>Edit Litter Data | <?php echo htmlspecialchars($labName); ?></title>
 
 </head>
 

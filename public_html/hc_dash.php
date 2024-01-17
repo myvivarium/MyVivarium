@@ -44,7 +44,7 @@ require 'header.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
-    <title>Dashboard | Holding Cage</title>
+    <title>Dashboard Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
         /* General Styles */
@@ -136,7 +136,6 @@ require 'header.php';
                             <table class="table table-bordered" id="mouseTable">
                                 <thead>
                                     <th>Cage ID</th>
-                                    <th>Strain</th>
                                     <th>Remarks</th>
                                     <th>Action</th>
                                 </thead>
@@ -151,9 +150,6 @@ require 'header.php';
                                             <tr>
                                                 <td rowspan="<?= mysqli_num_rows($cageResult); ?>">
                                                     <?= $holdingcage['cage_id']; ?>
-                                                </td>
-                                                <td>
-                                                    <?= $holdingcage['strain']; ?>
                                                 </td>
                                                 <td>
                                                     <?= $holdingcage['remarks']; ?>

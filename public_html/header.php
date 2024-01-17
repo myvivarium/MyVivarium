@@ -1,10 +1,24 @@
+<?php
+
+require 'dbcon.php';
+
+// Query to fetch the lab name
+$labQuery = "SELECT lab_name FROM data LIMIT 1";
+$labResult = mysqli_query($con, $labQuery);
+
+$labName = "My Vivarium"; // A default value in case the query fails or returns no result
+if ($row = mysqli_fetch_assoc($labResult)) {
+    $labName = $row['lab_name'];
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sathyanesan Lab's Vivarium</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -64,7 +78,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h2>Sathyanesan Lab Vivarium</h2>
+                    <h2><?php echo htmlspecialchars($labName); ?></h2>
                 </div>
                 <div class="col-md-4 text-end">
                     <!-- Navigation Menu -->

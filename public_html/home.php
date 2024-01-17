@@ -33,7 +33,7 @@ require 'header.php';
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <title>Home</title>
+    <title>Home | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
         /* General Styles */
@@ -97,9 +97,7 @@ require 'header.php';
             <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h2>Welcome,
-                    <?php echo $_SESSION['name']; ?><span>, [
-                        <?php echo $_SESSION['role']; ?>]
-                    </span>
+                    <?php echo $_SESSION['name']; ?><span>, [<?php echo $_SESSION['position']; ?>]</span>
                 </h2>
             </div>
 
@@ -137,7 +135,7 @@ require 'header.php';
             </div>
 
             <div style="margin-top: 50px;">
-                <h2>My Vivarium - IOT Sensors</h2>
+                <h2><?php echo htmlspecialchars($labName); ?> - IOT Sensors</h2>
             </div>
 
             <!-- Your embedded iframe -->
@@ -164,7 +162,7 @@ require 'header.php';
             </div>
 
             <div style="margin-top: 50px;">
-                <h2>My Vivarium - Lab Sticky Notes</h2>
+                <h2><?php echo htmlspecialchars($labName); ?> - Lab Sticky Notes</h2>
                 <button class="add-note-btn" onclick="togglePopup()">Add Note</button>
                 <?php include 'nt_app.php'; ?>
             </div>

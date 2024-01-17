@@ -102,7 +102,7 @@ require 'header.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <title>Edit Breeding Cage</title>
+    <title>Edit Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
 </head>
 
