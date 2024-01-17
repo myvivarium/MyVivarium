@@ -1,10 +1,11 @@
 <?php
-session_start();
-require 'dbcon.php';
+session_start(); // Start a new session
+require 'dbcon.php'; // Include the database connection file
 
 $resultMessage = "";
-$updateStmt = null; // Initialize $updateStmt
+$updateStmt = null; // Initialize $updateStmt for later use
 
+// Check if the form is submitted via POST and the reset button was clicked
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     $token = $_POST['token'];
     $newPassword = $_POST['new_password'];
@@ -12,23 +13,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 
     // Check if new password and confirm password are the same
     if ($newPassword === $confirmPassword) {
-        // Check if the token exists and is valid
+        // Prepare SQL to check if the token exists and is valid
         $query = "SELECT * FROM users WHERE reset_token = ? AND reset_token_expiration >= NOW()";
         $stmt = $con->prepare($query);
         $stmt->bind_param("s", $token);
         $stmt->execute();
         $result = $stmt->get_result();
 
+        // Check if the token is valid
         if ($result->num_rows == 1) {
-            // Token is valid, update the password
+            // Fetch user data
             $row = $result->fetch_assoc();
             $username = $row['username'];
 
+            // Prepare SQL to update the user's password
             $updateQuery = "UPDATE users SET password = ?, reset_token = NULL, reset_token_expiration = NULL WHERE username = ?";
             $updateStmt = $con->prepare($updateQuery);
             $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
             $updateStmt->bind_param("ss", $hashedPassword, $username);
 
+            // Execute the update and set a success or failure message
             if ($updateStmt->execute()) {
                 $resultMessage = "Password reset successfully. You can now <a href='index.php'>login</a> with your new password.";
             } else {
@@ -38,6 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             $resultMessage = "Invalid or expired token. Please request a new password reset.";
         }
 
+        // Close the statement
         $stmt->close();
         if (isset($updateStmt)) {
             $updateStmt->close();
@@ -46,25 +51,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         $resultMessage = "New Password and Confirm Password do not match.";
     }
 
+    // Close the database connection
     $con->close();
 }
 ?>
-
-<!-- The rest of your HTML code goes here -->
-
 
 <!DOCTYPE html>
 <html>
 
 <head>
+    <!-- Page Metadata -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
-
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Add your CSS styles here */
+        /* CSS styles for layout and appearance */
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -125,16 +128,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 </head>
 
 <body>
-    <!-- Header with Lab Name -->
+    <!-- Header Section -->
     <header class="bg-dark text-white text-center py-3">
-        <h1>Sathyanesan Lab's Vivarium</h1>
+        <h1>Sathyanesan Lab Vivarium</h1>
     </header>
     <br>
     <br>
     <div class="container">
         <h2>Reset Password</h2>
         <form method="POST" action="">
-            <!-- Hidden Token Field -->
+            <!-- Hidden field for the token -->
             <input type="hidden" id="token" name="token" value="<?= htmlspecialchars($_GET['token']); ?>">
 
             <!-- New Password Field -->
@@ -149,10 +152,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
                 <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
             </div>
 
-            <!-- Reset Password Button -->
+            <!-- Submit Button -->
             <button type="submit" class="btn btn-primary" name="reset">Reset Password</button>
         </form>
 
+        <!-- Display Result Message -->
         <?php if (!empty($resultMessage)) {
             echo "<p class='result-message'>$resultMessage</p>";
         } ?>
@@ -165,3 +169,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     <?php include 'footer.php'; ?>
 
 </body>
+
+</html>

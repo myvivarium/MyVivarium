@@ -145,7 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 <body>
     <!-- Header with Lab Name -->
     <header class="bg-dark text-white text-center py-3">
-        <h1>Sathyanesan Lab's Vivarium</h1>
+        <h1>Sathyanesan Lab Vivarium</h1>
         </div>
     </header>
     <br>
