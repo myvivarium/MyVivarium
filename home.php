@@ -15,6 +15,17 @@ $result = $con->query("SELECT COUNT(*) AS count FROM bc_basic");
 $row = $result->fetch_assoc();
 $matingCount = $row['count'];
 
+// Query to fetch the iot sensors link
+$dataQuery = "SELECT * FROM data LIMIT 1";
+$dataResult = mysqli_query($con, $dataQuery);
+
+if ($datarow = mysqli_fetch_assoc($dataResult)) {
+    $r1_temp = $datarow['r1_temp'];
+    $r1_humi = $datarow['r1_humi'];
+    $r1_illu = $datarow['r1_illu'];
+    $r1_pres = $datarow['r1_pres'];
+}
+
 require 'header.php';
 ?>
 
@@ -142,22 +153,22 @@ require 'header.php';
             <div class="iframe-container">
                 <!-- Top Left Iframe -->
                 <iframe class="iframe-top-left"
-                    src="https://sensor.sathyanesanlab-iot.work/d-solo/e5cd9da9-01e9-4e72-b022-a8c39ba0a1e5/myvivarium-sensor-data?orgId=1&from=now-6h&to=now&refresh=5s&theme=light&panelId=2"
+                    src="<?php echo $r1_temp; ?>"
                     width="450" height="300" frameborder="0"></iframe>
 
                 <!-- Top Right Iframe -->
                 <iframe class="iframe-top-right"
-                    src="https://sensor.sathyanesanlab-iot.work/d-solo/e5cd9da9-01e9-4e72-b022-a8c39ba0a1e5/myvivarium-sensor-data?orgId=1&from=now-6h&to=now&refresh=5s&theme=light&panelId=1"
+                    src="<?php echo $r1_humi; ?>"
                     width="450" height="300" frameborder="0"></iframe>
 
                 <!-- Bottom Left Iframe -->
                 <iframe class="iframe-bottom-left"
-                    src="https://sensor.sathyanesanlab-iot.work/d-solo/e5cd9da9-01e9-4e72-b022-a8c39ba0a1e5/myvivarium-sensor-data?&orgId=1&from=now-6h&to=now&refresh=5s&theme=light&panelId=3"
+                    src="<?php echo $r1_illu; ?>"
                     width="450" height="300" frameborder="0"></iframe>
 
                 <!-- Bottom Right Iframe -->
                 <iframe class="iframe-bottom-right"
-                    src="https://sensor.sathyanesanlab-iot.work/d-solo/e5cd9da9-01e9-4e72-b022-a8c39ba0a1e5/myvivarium-sensor-data?&orgId=1&from=now-6h&to=now&refresh=5s&theme=light&panelId=4"
+                    src="<?php echo $r1_pres; ?>"
                     width="450" height="300" frameborder="0"></iframe>
             </div>
 
