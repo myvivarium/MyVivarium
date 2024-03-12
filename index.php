@@ -211,7 +211,7 @@ if (isset($_POST['login'])) {
                     <?php } ?>
                     <form method="POST" action="">
                         <div class="form-group">
-                            <label for="username">Username or Email Address</label>
+                            <label for="username">Email Address</label>
                             <input type="text" class="form-control" id="username" name="username" required>
                         </div>
                         <div class="form-group">

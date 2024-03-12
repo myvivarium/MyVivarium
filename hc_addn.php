@@ -173,8 +173,8 @@ require 'header.php';
                 <label for="sex" class="form-label">Sex</label>
                 <select class="form-control" id="sex" name="sex" required>
                     <option value="" disabled selected>Select Sex</option>
-                    <option value="male">Male</option>
-                    <option value="male">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
                 </select>
             </div>
 
