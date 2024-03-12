@@ -167,9 +167,9 @@ if (isset($_GET['id'])) {
                     </span>
                 </td>
                 <td style="width:40%;">
-                    <span>
+                    <!--<span>
                         <?= $holdingcage['notes_1']; ?>
-                    </span>
+                    </span>-->
                 </td>
             </tr>
             <tr>
