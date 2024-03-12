@@ -167,9 +167,9 @@ if (isset($_GET['id'])) {
                     </span>
                 </td>
                 <td style="width:40%;">
-                    <!--<span>
+                    <!-- <span>
                         <?= $holdingcage['notes_1']; ?>
-                    </span>-->
+                    </span> -->
                 </td>
             </tr>
             <tr>
@@ -184,9 +184,9 @@ if (isset($_GET['id'])) {
                     </span>
                 </td>
                 <td style="width:40%;">
-                    <span>
+                    <!-- <span>
                         <?= $holdingcage['notes_2']; ?>
-                    </span>
+                    </span> -->
                 </td>
             </tr>
             <tr>
@@ -201,9 +201,9 @@ if (isset($_GET['id'])) {
                     </span>
                 </td>
                 <td style="width:40%;">
-                    <span>
+                    <!-- <span>
                         <?= $holdingcage['notes_3']; ?>
-                    </span>
+                    </span> -->
                 </td>
             </tr>
             <tr>
@@ -218,9 +218,9 @@ if (isset($_GET['id'])) {
                     </span>
                 </td>
                 <td style="width:40%;">
-                    <span>
+                    <!-- <span>
                         <?= $holdingcage['notes_4']; ?>
-                    </span>
+                    </span> -->
                 </td>
             </tr>
             <tr>
@@ -235,9 +235,9 @@ if (isset($_GET['id'])) {
                     </span>
                 </td>
                 <td style="width:40%;">
-                    <span>
+                    <!-- <span>
                         <?= $holdingcage['notes_5']; ?>
-                    </span>
+                    </span> -->
                 </td>
             </tr>
         </table>
