@@ -205,9 +205,9 @@ if (isset($_GET['id'])) {
                         </span>
                     </td>
                     <td style="width:20%;">
-                        <span>
+                        <!-- <span>
                             <?= $litter['remarks']; ?>
-                        </span>
+                        </span> -->
                     </td>
                 </tr>
                 <?php
