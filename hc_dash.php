@@ -42,7 +42,15 @@ require 'header.php';
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-
+    <script>
+    function confirmDeletion(id) {
+        var confirmDelete = confirm("Are you sure you want to delete this cage?");
+        if (confirmDelete) {
+            // If confirmed, redirect to the PHP script with the ID and a confirm flag
+            window.location.href = "delete_cage.php?id=" + id + "&confirm=true";
+        }
+    }
+    </script>
     <title>Dashboard Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
@@ -157,7 +165,7 @@ require 'header.php';
                                                     <a href="hc_prnt.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">Print</a>
                                                     <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
                                                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
-                                                        <a href="hc_drop.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-danger">Delete</a>
+                                                        <a href="#" onclick="confirmDeletion('<?php echo $row['cage_id']; ?>')" class="btn btn-danger">Delete</a>
                                                     <?php endif; ?>
                                                 </td>
                                             </tr>
