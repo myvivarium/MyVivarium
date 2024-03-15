@@ -171,7 +171,7 @@ require 'header.php';
                                                     <a href="bc_prnt.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-success">Print</a>
                                                     <a href="bc_edit.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
                                                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
-                                                        <a hhref="#" onclick="confirmDeletion('<?php echo $holdingcage['cage_id']; ?>')" class="btn btn-danger">Delete</a>
+                                                        <a hhref="#" onclick="confirmDeletion('<?php echo $breedingcage['cage_id']; ?>')" class="btn btn-danger">Delete</a>
                                                     <?php endif; ?>
                                                 </td>
                                             </tr>
