@@ -44,7 +44,7 @@ require 'header.php';
 
     <script>
     function confirmDeletion(id) {
-        var confirmDelete = confirm("Are you sure you want to delete this cage?");
+        var confirmDelete = confirm("Are you sure you want to delete this cage - '" + id + "'?");
         if (confirmDelete) {
             // If confirmed, redirect to the PHP script with the ID and a confirm flag
             window.location.href = "hc_drop.php?id=" + id + "&confirm=true";
