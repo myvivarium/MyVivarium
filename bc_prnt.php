@@ -84,7 +84,7 @@ if (isset($_GET['id'])) {
                     </span>
                 </td>
                 <td rowspan="5" style="width:40%; text-align:center;">
-                    <img src="<?php echo "https://chart.googleapis.com/chart?chs=120x120&cht=qr&chl=https://myvivarium.online/bc_view.php?id=" . $breedingcage['cage_id'] . "&choe=UTF-8"; ?>"
+                    <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/bc_view.php?id=" . $breedingcage['cage_id'] . "&choe=UTF-8"; ?>"
                         alt="QR Code">
                 </td>
             </tr>
