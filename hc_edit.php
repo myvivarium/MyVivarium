@@ -368,7 +368,10 @@ require 'header.php';
                                     // Assume $files is fetched from database as per previous discussions
                                     while ($file = $files->fetch_assoc()) {
                                         echo "<a href='" . htmlspecialchars($file['file_path']) . "' download='" . htmlspecialchars($file['file_name']) . "'>" . htmlspecialchars($file['file_name']) . "</a> ";
-                                        echo "<a href='delete_file.php?id=" . intval($file['id']) . "' onclick='return confirm(\"Are you sure you want to delete this file?\");'>Delete</a><br>";
+                                        echo "<a href='delete_file.php?id=$file_id' class='btn btn-danger' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'>
+                                        <i class='fas fa-trash'></i>
+                                    </a>
+                                    <br>";
                                     }
                                     ?>
                                 </div>
