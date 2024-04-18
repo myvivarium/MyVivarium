@@ -103,6 +103,9 @@ if (isset($_GET['id'])) {
                 $_SESSION['error'] = 'Update failed: ' . $stmt->error;
             }
 
+            // Close the prepared statement
+            $stmt->close();
+
             if (isset($_FILES['fileUpload'])) {
                 $targetDirectory = "uploads/";
                 $originalFileName = basename($_FILES['fileUpload']['name']);
@@ -114,7 +117,7 @@ if (isset($_GET['id'])) {
                     if (move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetFilePath)) {
                         // Insert file info into the database
                         $insert = $con->prepare("INSERT INTO files (file_name, file_path, cage_id) VALUES (?, ?, ?)");
-                        $insert->bind_param("ssi", $originalFileName, $targetFilePath, $cage_id);
+                        $insert->bind_param("sss", $originalFileName, $targetFilePath, $cage_id);
                         $insert->execute();
 
                         if ($insert) {
@@ -129,9 +132,6 @@ if (isset($_GET['id'])) {
                     $_SESSION['error'] =  "Sorry, file already exists.";
                 }
             }
-
-            // Close the prepared statement
-            $stmt->close();
 
             header("Location: hc_dash.php");
             exit();
