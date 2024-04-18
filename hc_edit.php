@@ -100,7 +100,7 @@ if (isset($_GET['id'])) {
             if ($result) {
                 $_SESSION['message'] = 'Entry updated successfully.';
             } else {
-                $_SESSION['error'] = 'Update failed: ' . $stmt->error;
+                $_SESSION['message'] = 'Update failed: ' . $stmt->error;
             }
 
             // Close the prepared statement
@@ -123,13 +123,13 @@ if (isset($_GET['id'])) {
                         if ($insert) {
                             $_SESSION['message'] = "File uploaded successfully.";
                         } else {
-                            $_SESSION['error'] =  "File upload failed, please try again.";
+                            $_SESSION['message'] =  "File upload failed, please try again.";
                         }
                     } else {
-                        $_SESSION['error'] =  "Sorry, there was an error uploading your file.";
+                        $_SESSION['message'] =  "Sorry, there was an error uploading your file.";
                     }
                 } else {
-                    $_SESSION['error'] =  "Sorry, file already exists.";
+                    $_SESSION['message'] =  "Sorry, file already exists.";
                 }
             }
 
