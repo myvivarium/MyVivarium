@@ -24,6 +24,9 @@ if (isset($_GET['id'])) {
     $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
     $result = mysqli_query($con, $query);
 
+    $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
+    $files = $con->query($query2);
+
     if (mysqli_num_rows($result) === 1) {
         $holdingcage = mysqli_fetch_assoc($result);
 
@@ -126,10 +129,6 @@ if (isset($_GET['id'])) {
                     echo "Sorry, file already exists.";
                 }
             }
-
-            $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
-            $files = $con->query($query2);
-
 
             // Close the prepared statement
             $stmt->close();
