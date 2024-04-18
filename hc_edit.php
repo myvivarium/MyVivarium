@@ -365,9 +365,16 @@ require 'header.php';
 
                                 <div class="card-body">
                                     <?php
-                                    // Assume $files is fetched from database as per previous discussions
+                                    // Assuming $files is fetched from the database
                                     while ($file = $files->fetch_assoc()) {
-                                        echo "<a href='" . htmlspecialchars($file['file_path']) . "' download='" . htmlspecialchars($file['file_name']) . "'>" . htmlspecialchars($file['file_name']) . "</a> ";
+                                        $file_path = htmlspecialchars($file['file_path']);
+                                        $file_name = htmlspecialchars($file['file_name']);
+                                        $file_id = intval($file['id']);
+
+                                        // Display the file name as a downloadable link
+                                        echo "<a href='$file_path' download='$file_name'>$file_name</a> ";
+
+                                        // Create a button with a trash icon for deleting files
                                         echo "<a href='delete_file.php?id=$file_id' class='btn btn-danger' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'> <i class='fas fa-trash'></i></a><br>";
                                     }
                                     ?>
