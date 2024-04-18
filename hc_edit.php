@@ -371,11 +371,10 @@ require 'header.php';
                                     }
                                     ?>
                                 </div>
-                            </div>
-
-                            <div class="mb-3">
+                                <div class="mb-3">
                                 <label for="fileUpload" class="form-label">Upload File</label>
                                 <input type="file" class="form-control" id="fileUpload" name="fileUpload">
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary">Save Changes</button>
