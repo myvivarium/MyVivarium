@@ -372,21 +372,20 @@ require 'header.php';
                                     ?>
                                 </div>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="fileUpload" class="form-label">Upload File</label>
+                                <input type="file" class="form-control" id="fileUpload" name="fileUpload">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
+
+                        </form>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="fileUpload" class="form-label">Upload File</label>
-                        <input type="file" class="form-control" id="fileUpload" name="fileUpload">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
-
-                    </form>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
     <br>
