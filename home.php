@@ -38,11 +38,8 @@ require 'header.php';
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <!-- Bootstrap JS for Dropdown -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <title>Home | <?php echo htmlspecialchars($labName); ?></title>
 
@@ -105,8 +102,7 @@ require 'header.php';
     <div class="container">
         <div class="row align-items-center">
 
-            <div
-                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h2>Welcome,
                     <?php echo $_SESSION['name']; ?><span>, [<?php echo $_SESSION['position']; ?>]</span>
                 </h2>
@@ -152,25 +148,46 @@ require 'header.php';
             <!-- Your embedded iframe -->
             <div class="iframe-container">
                 <!-- Top Left Iframe -->
-                <iframe class="iframe-top-left"
-                    src="<?php echo $r1_temp; ?>"
-                    width="450" height="300" frameborder="0"></iframe>
+                <iframe class="iframe-top-left" src="<?php echo $r1_temp; ?>" width="450" height="300" frameborder="0"></iframe>
 
                 <!-- Top Right Iframe -->
-                <iframe class="iframe-top-right"
-                    src="<?php echo $r1_humi; ?>"
-                    width="450" height="300" frameborder="0"></iframe>
+                <iframe class="iframe-top-right" src="<?php echo $r1_humi; ?>" width="450" height="300" frameborder="0"></iframe>
 
                 <!-- Bottom Left Iframe -->
-                <iframe class="iframe-bottom-left"
-                    src="<?php echo $r1_illu; ?>"
-                    width="450" height="300" frameborder="0"></iframe>
+                <iframe class="iframe-bottom-left" src="<?php echo $r1_illu; ?>" width="450" height="300" frameborder="0"></iframe>
 
                 <!-- Bottom Right Iframe -->
-                <iframe class="iframe-bottom-right"
-                    src="<?php echo $r1_pres; ?>"
-                    width="450" height="300" frameborder="0"></iframe>
+                <iframe class="iframe-bottom-right" src="<?php echo $r1_pres; ?>" width="450" height="300" frameborder="0"></iframe>
             </div>
+
+            <?php
+            // Check if the temperature data for Room 2 is not null
+            if (!is_null($r2_temp) || !is_null($r2_humi) || !is_null($r2_illu) || !is_null($r2_pres)) {
+            ?>
+
+                <div style="margin-top: 50px;">
+                    <h2><?php echo htmlspecialchars($labName); ?> - Room 2 IOT Sensors</h2>
+                </div>
+
+                <!-- Embedded iframe container for Room 2 -->
+                <div class="iframe-container">
+                    <!-- Top Left Iframe for Room 2 Temperature -->
+                    <iframe class="iframe-top-left" src="<?php echo $r2_temp; ?>" width="450" height="300" frameborder="0"></iframe>
+
+                    <!-- Top Right Iframe for Room 2 Humidity -->
+                    <iframe class="iframe-top-right" src="<?php echo $r2_humi; ?>" width="450" height="300" frameborder="0"></iframe>
+
+                    <!-- Bottom Left Iframe for Room 2 Illuminance -->
+                    <iframe class="iframe-bottom-left" src="<?php echo $r2_illu; ?>" width="450" height="300" frameborder="0"></iframe>
+
+                    <!-- Bottom Right Iframe for Room 2 Pressure -->
+                    <iframe class="iframe-bottom-right" src="<?php echo $r2_pres; ?>" width="450" height="300" frameborder="0"></iframe>
+                </div>
+
+            <?php
+            }
+            ?>
+
 
             <div style="margin-top: 50px;">
                 <h2><?php echo htmlspecialchars($labName); ?> - Lab Sticky Notes</h2>
