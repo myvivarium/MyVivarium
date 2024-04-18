@@ -24,6 +24,10 @@ if ($datarow = mysqli_fetch_assoc($dataResult)) {
     $r1_humi = $datarow['r1_humi'];
     $r1_illu = $datarow['r1_illu'];
     $r1_pres = $datarow['r1_pres'];
+    $r2_temp = $datarow['r2_temp'];
+    $r2_humi = $datarow['r2_humi'];
+    $r2_illu = $datarow['r2_illu'];
+    $r2_pres = $datarow['r2_pres'];
 }
 
 require 'header.php';
