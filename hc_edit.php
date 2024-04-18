@@ -118,15 +118,15 @@ if (isset($_GET['id'])) {
                         $insert->execute();
 
                         if ($insert) {
-                            echo "File uploaded successfully.";
+                            $_SESSION['message'] = "File uploaded successfully.";
                         } else {
-                            echo "File upload failed, please try again.";
+                            $_SESSION['error'] =  "File upload failed, please try again.";
                         }
                     } else {
-                        echo "Sorry, there was an error uploading your file.";
+                        $_SESSION['error'] =  "Sorry, there was an error uploading your file.";
                     }
                 } else {
-                    echo "Sorry, file already exists.";
+                    $_SESSION['error'] =  "Sorry, file already exists.";
                 }
             }
 
@@ -362,6 +362,7 @@ require 'header.php';
                                 <div class="card-header">
                                     <h4>Manage Files</h4>
                                 </div>
+
                                 <div class="card-body">
                                     <?php
                                     // Assume $files is fetched from database as per previous discussions
@@ -371,9 +372,10 @@ require 'header.php';
                                     }
                                     ?>
                                 </div>
+
                                 <div class="mb-3">
-                                <label for="fileUpload" class="form-label">Upload File</label>
-                                <input type="file" class="form-control" id="fileUpload" name="fileUpload">
+                                    <label for="fileUpload" class="form-label">Upload File</label>
+                                    <input type="file" class="form-control" id="fileUpload" name="fileUpload">
                                 </div>
                             </div>
 
