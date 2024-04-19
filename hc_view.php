@@ -17,6 +17,9 @@ if (isset($_GET['id'])) {
     $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
     $result = mysqli_query($con, $query);
 
+    $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
+    $files = $con->query($query2);
+
     if (mysqli_num_rows($result) === 1) {
         $holdingcage = mysqli_fetch_assoc($result);
     } else {
@@ -259,6 +262,43 @@ require 'header.php';
                             </tr>
                         </table>
                     </div>
+
+                    <!-- Display Files Section -->
+                    <div class="card mt-4">
+                                <div class="card-header">
+                                    <h4>Manage Files</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>File Name</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                // Assuming $files is fetched from the database
+                                                while ($file = $files->fetch_assoc()) {
+                                                    $file_path = htmlspecialchars($file['file_path']);
+                                                    $file_name = htmlspecialchars($file['file_name']);
+                                                    $file_id = intval($file['id']);
+
+                                                    echo "<tr>";
+                                                    echo "<td>$file_name</td>";
+                                                    echo "<td>
+                                                    <a href='<?= $file_path ?>' download='<?= $file_name ?>' class='btn btn-sm btn-outline-primary'> <i class='fas fa-cloud-download-alt fa-sm'></i></a>
+                                                    </td>";
+
+                                                    echo "</tr>";
+                                                }
+                                                ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                 </div>
             </div>
         </div>
