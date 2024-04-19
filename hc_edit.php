@@ -362,29 +362,48 @@ require 'header.php';
                                 <div class="card-header">
                                     <h4>Manage Files</h4>
                                 </div>
-
                                 <div class="card-body">
-                                    <?php
-                                    // Assuming $files is fetched from the database
-                                    while ($file = $files->fetch_assoc()) {
-                                        $file_path = htmlspecialchars($file['file_path']);
-                                        $file_name = htmlspecialchars($file['file_name']);
-                                        $file_id = intval($file['id']);
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>File Name</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                // Assuming $files is fetched from the database
+                                                while ($file = $files->fetch_assoc()) {
+                                                    $file_path = htmlspecialchars($file['file_path']);
+                                                    $file_name = htmlspecialchars($file['file_name']);
+                                                    $file_id = intval($file['id']);
 
-                                        // Display the file name as a downloadable link
-                                        echo "<a href='$file_path' download='$file_name'>$file_name</a>  ";
+                                                    echo "<tr>";
+                                                    echo "<td><a href='$file_path' download='$file_name'>$file_name</a></td>";
+                                                    echo "<a href='delete_file.php?url=hc_edit&id=$file_id' class='btn-sm' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'> <i class='fas fa-trash fa-sm' style='color:red'></i></a><br>";
 
-                                        // Create a button with a trash icon for deleting files
-                                        echo "<a href='delete_file.php?url=hc_edit&id=$file_id' class='btn-sm' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'> <i class='fas fa-trash fa-sm' style='color:red'></i></a><br>";
-                                    }
-                                    ?>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="fileUpload" class="form-label">Upload File</label>
-                                    <input type="file" class="form-control" id="fileUpload" name="fileUpload">
+                                                    echo "</tr>";
+                                                }
+                                                ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- Upload Files Section -->
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h4>Upload New File</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="input-group mb-3">
+                                        <input type="file" class="form-control" id="fileUpload" name="fileUpload">
+                                    </div>
+                                </div>
+                            </div>
+
 
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                             <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
