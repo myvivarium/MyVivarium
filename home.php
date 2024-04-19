@@ -119,7 +119,7 @@ require 'header.php';
                         <div class="col-md-6">
                             <div class="card text-center">
                                 <div class="card-header bg-primary text-white">
-                                    <a href="hc_dash.php">Holding Cage</a>
+                                    <a href="hc_dash.php" style="color: white; text-decoration: none;">Holding Cage</a>
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">
@@ -132,7 +132,7 @@ require 'header.php';
                         <div class="col-md-6">
                             <div class="card text-center">
                                 <div class="card-header bg-primary text-white">
-                                    <a href="bc_dash.php">Breeding Cage</a>
+                                    <a href="bc_dash.php" style="color: white; text-decoration: none;">Breeding Cage</a>
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">
