@@ -265,40 +265,40 @@ require 'header.php';
 
                     <!-- Display Files Section -->
                     <div class="card mt-4">
-                                <div class="card-header">
-                                    <h4>Manage Files</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>File Name</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php
-                                                // Assuming $files is fetched from the database
-                                                while ($file = $files->fetch_assoc()) {
-                                                    $file_path = htmlspecialchars($file['file_path']);
-                                                    $file_name = htmlspecialchars($file['file_name']);
-                                                    $file_id = intval($file['id']);
+                        <div class="card-header">
+                            <h4>Manage Files</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>File Name</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        // Assuming $files is fetched from the database
+                                        while ($file = $files->fetch_assoc()) {
+                                            $file_path = htmlspecialchars($file['file_path']);
+                                            $file_name = htmlspecialchars($file['file_name']);
+                                            $file_id = intval($file['id']);
 
-                                                    echo "<tr>";
-                                                    echo "<td>$file_name</td>";
-                                                    echo "<td>
+                                            echo "<tr>";
+                                            echo "<td>$file_name</td>";
+                                            echo "<td>
                                                     <a href='<?= $file_path ?>' download='<?= $file_name ?>' class='btn btn-sm btn-outline-primary'> <i class='fas fa-cloud-download-alt fa-sm'></i></a>
                                                     </td>";
-
-                                                    echo "</tr>";
-                                                }
-                                                ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                                            echo "</tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
                             </div>
+                        </div>
+                    </div>
+                    <br>
                 </div>
             </div>
         </div>
