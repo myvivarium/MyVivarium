@@ -372,10 +372,10 @@ require 'header.php';
                                         $file_id = intval($file['id']);
 
                                         // Display the file name as a downloadable link
-                                        echo "<a href='$file_path' download='$file_name'>$file_name</a> ";
+                                        echo "<a href='$file_path' download='$file_name'>$file_name</a>  ";
 
                                         // Create a button with a trash icon for deleting files
-                                        echo "<a href='delete_file.php?url=hc_edit&id=$file_id' class='btn btn-danger btn-sm' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'> <i class='fas fa-trash fa-xs'></i></a><br>";
+                                        echo "<a href='delete_file.php?url=hc_edit&id=$file_id' class='btn btn-danger btn-xs' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'> <i class='fas fa-trash fa-xs'></i></a><br>";
                                     }
                                     ?>
                                 </div>
