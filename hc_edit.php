@@ -107,31 +107,36 @@ if (isset($_GET['id'])) {
             $stmt->close();
 
             if (isset($_FILES['fileUpload'])) {
-                $targetDirectory = "uploads/";
+                $targetDirectory = "uploads/$cage_id/"; // Modify the target directory
+            
+                // Create the cage_id specific sub-directory if it doesn't exist
+                if (!file_exists($targetDirectory)) {
+                    mkdir($targetDirectory, 0777, true); // true for recursive create (if needed)
+                }
+            
                 $originalFileName = basename($_FILES['fileUpload']['name']);
-                $targetFilePath = $targetDirectory . basename($_FILES['fileUpload']['name']);
+                $targetFilePath = $targetDirectory . $originalFileName;
                 $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-
+            
                 // Check if file already exists
                 if (!file_exists($targetFilePath)) {
                     if (move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetFilePath)) {
                         // Insert file info into the database
                         $insert = $con->prepare("INSERT INTO files (file_name, file_path, cage_id) VALUES (?, ?, ?)");
                         $insert->bind_param("sss", $originalFileName, $targetFilePath, $cage_id);
-                        $insert->execute();
-
-                        if ($insert) {
+                        if ($insert->execute()) {
                             $_SESSION['message'] = "File uploaded successfully.";
                         } else {
-                            $_SESSION['message'] =  "File upload failed, please try again.";
+                            $_SESSION['message'] = "File upload failed, please try again.";
                         }
                     } else {
-                        $_SESSION['message'] =  "Sorry, there was an error uploading your file.";
+                        $_SESSION['message'] = "Sorry, there was an error uploading your file.";
                     }
                 } else {
-                    $_SESSION['message'] =  "Sorry, file already exists.";
+                    $_SESSION['message'] = "Sorry, file already exists.";
                 }
             }
+            
 
             header("Location: hc_dash.php");
             exit();
