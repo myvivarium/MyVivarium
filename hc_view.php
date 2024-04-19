@@ -289,9 +289,7 @@ require 'header.php';
 
                                             echo "<tr>";
                                             echo "<td>$file_name</td>";
-                                            echo "<td>
-                                                    <a href='<?= $file_path ?>' download='<?= $file_name ?>' class='btn btn-sm btn-outline-primary'> <i class='fas fa-cloud-download-alt fa-sm'></i></a>
-                                                    </td>";
+                                            echo "<td><a href='$file_path' download='$file_name' class='btn btn-sm btn-outline-primary'> <i class='fas fa-cloud-download-alt fa-sm'></i></a></td>";
                                             echo "</tr>";
                                         }
                                         ?>
