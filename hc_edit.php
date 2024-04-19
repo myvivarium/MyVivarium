@@ -407,7 +407,7 @@ require 'header.php';
                                 </div>
                             </div>
 
-
+                            <br>                    
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                             <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
 
