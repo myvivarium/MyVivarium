@@ -383,7 +383,7 @@ require 'header.php';
                                                     echo "<td>$file_name</td>";
                                                     echo "<td>
                                                     <a href='delete_file.php?url=hc_edit&id=$file_id' class='btn-sm' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'> <i class='fas fa-trash fa-sm' style='color:red'></i></a>
-                                                     <a href='$file_path' download='$file_name' class='btn-sm'><i class='fas fa-cloud-arrow-down fa-sm' style='color:blue'></i></a>
+                                                    <a href='<?= $file_path ?>' download='<?= $file_name ?>' class='btn btn-sm btn-outline-primary'> <i class='fas fa-cloud-download-alt'></i></a>
                                                     </td>";
 
                                                     echo "</tr>";
