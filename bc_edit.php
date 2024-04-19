@@ -147,7 +147,7 @@ require 'header.php';
                     </div>
 
                     <div class="card-body">
-                        <form method="POST" action="bc_edit.php?id=<?= $id; ?>">
+                        <form method="POST" action="bc_edit.php?id=<?= $id; ?>" enctype="multipart/form-data">
 
                             <div class="mb-3">
                                 <label for="cage_id" class="form-label">Cage ID</label>
