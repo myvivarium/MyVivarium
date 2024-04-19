@@ -62,7 +62,7 @@ if (isset($_GET['id'])) {
             if ($updateQuery->execute()) {
                 $_SESSION['message'] = 'Entry updated successfully.';
             } else {
-                $_SESSION['error'] = 'Update failed: ' . $updateQuery->error;
+                $_SESSION['message'] = 'Update failed: ' . $updateQuery->error;
             }
 
             // Close the prepared statement
