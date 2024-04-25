@@ -54,8 +54,33 @@ require 'header.php';
 
     <script>
         function showQrCodePopup(cageId) {
-            var url = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/bc_view.php?id=' + cageId; // URL to the PHP script that generates the QR code
-            var popup = window.open(url, "QR Code", "width=400,height=400");
+            // Create the popup window
+            var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
+
+            // URL to generate the QR code image
+            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://myvivarium.online/bc_view.php?id=' + cageId;
+
+            // HTML content for the popup, including a dynamic title and the QR code image
+            var htmlContent = `
+            <html>
+            <head>
+                <title>QR Code for Cage ${cageId}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; text-align: center; padding-top: 40px; }
+                    h1 { color: #333; }
+                    img { margin-top: 20px; }
+                </style>
+            </head>
+            <body>
+                <h1>QR Code for Cage ${cageId}</h1>
+                <img src="${qrUrl}" alt="QR Code for Cage ${cageId}" />
+            </body>
+            </html>
+        `;
+
+            // Write the HTML content to the popup document
+            popup.document.write(htmlContent);
+            popup.document.close(); // Close the document for further writing
         }
     </script>
 
