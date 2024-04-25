@@ -56,8 +56,7 @@ if (isset($_GET['id'])) {
 
     <div class="container">
         <br>
-        <table style="margin: 0px 0px 0px 0px; width: 1.5in; height: 1.5 in;"
-            class="table table-bordered border-dark" id="mouseTable">
+        <table style="width: 1.5in; height: 1.5 in;">
             <tr>
                 <td style="width:40%; text-align:center;">
                     <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/hc_view.php?id=" . $id . "&choe=UTF-8"; ?>"
