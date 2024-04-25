@@ -59,7 +59,7 @@ if (isset($_GET['id'])) {
         <table style="margin: 50px 0px 0px 0px; width: 5in; height: 1.5 in;"
             class="table table-bordered border-dark align-middle" id="mouseTable">
             <tr>
-                <td rowspan="5" style="width:40%; text-align:center;">
+                <td style="width:40%; text-align:center;">
                     <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/hc_view.php?id=" . $id . "&choe=UTF-8"; ?>"
                         alt="QR Code">
                 </td>
