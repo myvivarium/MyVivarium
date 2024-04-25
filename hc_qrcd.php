@@ -60,7 +60,7 @@ if (isset($_GET['id'])) {
             class="table table-bordered border-dark align-middle" id="mouseTable">
             <tr>
                 <td rowspan="5" style="width:40%; text-align:center;">
-                    <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/hc_view.php?id=" . $holdingcage['cage_id'] . "&choe=UTF-8"; ?>"
+                    <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/hc_view.php?id=" . $id . "&choe=UTF-8"; ?>"
                         alt="QR Code">
                 </td>
             </tr>
