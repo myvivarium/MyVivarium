@@ -53,9 +53,31 @@ require 'header.php';
     </script>
 
     <script>
+        // Get the modal
+        var modal = document.getElementById("qrCodeModal");
+
+        // Get the image element
+        var img = document.getElementById("qrCodeImage");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
         function showQrCodePopup(cageId) {
             var url = 'hc_qrcd.php?id=' + cageId; // URL to the PHP script that generates the QR code
-            var popup = window.open(url, "QR Code", "width=400,height=400");
+            img.src = url; // Set the source of the image to the URL
+            modal.style.display = "block"; // Display the modal
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
         }
     </script>
 
@@ -118,6 +140,56 @@ require 'header.php';
 
         .btn-secondary:hover {
             background-color: #FF4500;
+        }
+
+        /* Modal CSS */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            /* Auto margins for centering vertically and horizontally */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            /* Width can be adjusted as needed */
+            /* Transform and translate for true center alignment */
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -196,6 +268,14 @@ require 'header.php';
         </div>
     </div>
     <?php include 'footer.php'; ?>
+
+    <!-- Modal HTML -->
+    <div id="qrCodeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="qrCodeImage" src="" alt="QR Code" style="width:100%; max-width:400px;">
+        </div>
+    </div>
 </body>
 
 </html>
