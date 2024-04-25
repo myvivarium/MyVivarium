@@ -54,7 +54,7 @@ require 'header.php';
 
     <script>
         function showQrCodePopup(cageId) {
-            var url = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/hc_view.php?id=' + cageId; // URL to the PHP script that generates the QR code
+            var url = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/bc_view.php?id=' + cageId; // URL to the PHP script that generates the QR code
             var popup = window.open(url, "QR Code", "width=400,height=400");
         }
     </script>
@@ -176,7 +176,7 @@ require 'header.php';
                                                 <td>
                                                     <a href="bc_view.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-primary">View</a>
                                                     <a href="bc_prnt.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-success">Print</a>
-                                                    <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($holdingcage['cage_id']); ?>')" class="btn btn-success">QR</a>
+                                                    <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($breedingcage['cage_id']); ?>')" class="btn btn-success">QR</a>
                                                     <a href="bc_edit.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
                                                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
                                                         <a hhref="#" onclick="confirmDeletion('<?php echo $breedingcage['cage_id']; ?>')" class="btn btn-danger">Delete</a>
