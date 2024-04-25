@@ -11,6 +11,18 @@ if (!isset($_SESSION['name'])) {
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
+
+    // Fetch the holdingcage record with the specified ID
+    $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
+    $result = mysqli_query($con, $query);
+
+    if (mysqli_num_rows($result) === 1) {
+        $holdingcage = mysqli_fetch_assoc($result);
+    } else {
+        $_SESSION['message'] = 'Invalid ID.';
+        header("Location: hc_dash.php");
+        exit();
+    }
 } else {
     $_SESSION['message'] = 'ID parameter is missing.';
     header("Location: hc_dash.php");
@@ -60,7 +72,7 @@ if (isset($_GET['id'])) {
             class="table table-bordered border-dark" id="mouseTable">
             <tr>
                 <td style="width:40%; text-align:center;">
-                    <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/hc_view.php?id=" . $id . "&choe=UTF-8"; ?>"
+                    <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/hc_view.php?id=" . $holdingcage['cage_id'] . "&choe=UTF-8"; ?>"
                         alt="QR Code">
                 </td>
             </tr>
