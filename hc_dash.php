@@ -163,6 +163,7 @@ require 'header.php';
                                                 <td>
                                                     <a href="hc_view.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-primary">View</a>
                                                     <a href="hc_prnt.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">Print</a>
+                                                    <a href="hc_qrcd.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">QR Code</a>
                                                     <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
                                                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
                                                         <a href="#" onclick="confirmDeletion('<?php echo $holdingcage['cage_id']; ?>')" class="btn btn-danger">Delete</a>
