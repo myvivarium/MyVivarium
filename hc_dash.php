@@ -43,14 +43,22 @@ require 'header.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-    function confirmDeletion(id) {
-        var confirmDelete = confirm("Are you sure you want to delete this cage - '" + id + "'?");
-        if (confirmDelete) {
-            // If confirmed, redirect to the PHP script with the ID and a confirm flag
-            window.location.href = "hc_drop.php?id=" + id + "&confirm=true";
+        function confirmDeletion(id) {
+            var confirmDelete = confirm("Are you sure you want to delete this cage - '" + id + "'?");
+            if (confirmDelete) {
+                // If confirmed, redirect to the PHP script with the ID and a confirm flag
+                window.location.href = "hc_drop.php?id=" + id + "&confirm=true";
+            }
         }
-    }
     </script>
+
+    <script>
+        function showQrCodePopup(cageId) {
+            var url = 'hc_qrcd.php?id=' + cageId; // URL to the PHP script that generates the QR code
+            var popup = window.open(url, "QR Code", "width=400,height=400");
+        }
+    </script>
+
     <title>Dashboard Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
@@ -163,7 +171,7 @@ require 'header.php';
                                                 <td>
                                                     <a href="hc_view.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-primary">View</a>
                                                     <a href="hc_prnt.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">Print</a>
-                                                    <a href="hc_qrcd.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">QR Code</a>
+                                                    <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($holdingcage['cage_id']); ?>')" class="btn btn-success">QR Code</a>
                                                     <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
                                                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
                                                         <a href="#" onclick="confirmDeletion('<?php echo $holdingcage['cage_id']; ?>')" class="btn btn-danger">Delete</a>
