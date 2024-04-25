@@ -56,7 +56,7 @@ if (isset($_GET['id'])) {
 
     <div class="container">
         <br>
-        <table style="margin: 50px 0px 0px 0px; width: 1.5in; height: 1.5 in;"
+        <table style="margin: 0px 0px 0px 0px; width: 1.5in; height: 1.5 in;"
             class="table table-bordered border-dark align-middle" id="mouseTable">
             <tr>
                 <td style="width:40%; text-align:center;">
