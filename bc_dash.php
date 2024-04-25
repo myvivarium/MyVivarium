@@ -43,13 +43,20 @@ require 'header.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-    function confirmDeletion(id) {
-        var confirmDelete = confirm("Are you sure you want to delete this cage - '" + id + "'?");
-        if (confirmDelete) {
-            // If confirmed, redirect to the PHP script with the ID and a confirm flag
-            window.location.href = "bc_drop.php?id=" + id + "&confirm=true";
+        function confirmDeletion(id) {
+            var confirmDelete = confirm("Are you sure you want to delete this cage - '" + id + "'?");
+            if (confirmDelete) {
+                // If confirmed, redirect to the PHP script with the ID and a confirm flag
+                window.location.href = "bc_drop.php?id=" + id + "&confirm=true";
+            }
         }
-    }
+    </script>
+
+    <script>
+        function showQrCodePopup(cageId) {
+            var url = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://myvivarium.online/hc_view.php?id=' + cageId; // URL to the PHP script that generates the QR code
+            var popup = window.open(url, "QR Code", "width=400,height=400");
+        }
     </script>
 
     <title>Dashboard Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
@@ -169,6 +176,7 @@ require 'header.php';
                                                 <td>
                                                     <a href="bc_view.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-primary">View</a>
                                                     <a href="bc_prnt.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-success">Print</a>
+                                                    <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($holdingcage['cage_id']); ?>')" class="btn btn-success">QR</a>
                                                     <a href="bc_edit.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
                                                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
                                                         <a hhref="#" onclick="confirmDeletion('<?php echo $breedingcage['cage_id']; ?>')" class="btn btn-danger">Delete</a>
