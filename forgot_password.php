@@ -9,12 +9,13 @@ require 'vendor/autoload.php'; // Include PHPMailer autoload file
 require 'email_credentials.php';
 
 // Query to fetch the lab name
-$labQuery = "SELECT lab_name FROM data LIMIT 1";
+$labQuery = "SELECT lab_name,url FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
 $labName = "My Vivarium"; // A default value in case the query fails or returns no result
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
+    $url = $row['url'];
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
@@ -42,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         $updateStmt->execute();
 
         // Send the password reset email
-        $resetLink = "https://myvivarium.online/reset_password.php?token=$resetToken";
+        $resetLink = "https://".$url."/reset_password.php?token=$resetToken";
 
         $to = $email;
         $subject = 'Password Reset';

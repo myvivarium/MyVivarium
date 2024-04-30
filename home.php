@@ -145,6 +145,11 @@ require 'header.php';
                     </div>
                 </div>
             </div>
+            
+            <?php
+            // Check if the temperature data for Room 1 is not null
+            if (!empty($r1_temp) || !empty($r1_humi) || !empty($r1_illu) || !empty($r1_pres)) {
+            ?>
 
             <div style="margin-top: 50px;">
                 <h2><?php echo htmlspecialchars($labName); ?> - IOT Sensors</h2>
@@ -166,8 +171,12 @@ require 'header.php';
             </div>
 
             <?php
+            }
+            ?>
+
+            <?php
             // Check if the temperature data for Room 2 is not null
-            if (!is_null($r2_temp) || !is_null($r2_humi) || !is_null($r2_illu) || !is_null($r2_pres)) {
+            if (!empty($r2_temp) || !empty($r2_humi) || !empty($r2_illu) || !empty($r2_pres)) {
             ?>
 
                 <div style="margin-top: 50px;">
