@@ -144,11 +144,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <a href="index.php" class="btn btn-secondary">Go Back</a>
         </form>
         <br>
-        echo <div class="alert alert-warning" role="alert"></div>
+        
         <?php if (!empty($resultMessage)) {  
+            echo "<div class=\"alert alert-warning\" role=\"alert\"></div>";
             echo $resultMessage;
+            echo "</div>";
         } ?>
-        </div>
+        
         <br>
     </div>
     <br>
