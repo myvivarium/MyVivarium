@@ -90,6 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <header class="bg-dark text-white text-center py-3">
         <h1><?php echo htmlspecialchars($labName); ?></h1>
     </header>
+    <br>
     <div class="container">
         <h2>Sign Up</h2>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
@@ -126,12 +127,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
             <button type="submit" class="btn btn-primary" name="signup">Sign Up</button>
+            <br>
             <a href="index.php" class="btn btn-secondary">Go Back</a>
         </form>
         <?php if (!empty($resultMessage)) {
             echo "<p class='result-message'>$resultMessage</p>";
         } ?>
     </div>
+    <br>
     <?php include 'footer.php'; ?>
 </body>
 
