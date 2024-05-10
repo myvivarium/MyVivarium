@@ -2,13 +2,33 @@
 
 <style>
     /* Header and Footer Styling */
-    .header-footer {
-            background-color: #343a40;
-            padding: 20px 0;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-        }
+    html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.site-content {
+    flex: 1;
+}
+
+.header-footer {
+    background-color: #343a40;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+}
+
+/* Additional footer styles */
+.header-footer p {
+    margin: 0;  /* Removes default paragraph margins */
+}
+
 </style>
 <div class="header-footer">
     <p style="color:white">&copy;
