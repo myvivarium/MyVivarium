@@ -16,6 +16,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if the honeypot field is filled
     if (!empty($_POST['honeypot'])) {
         $resultMessage = "Spam detected! Please try again.";
+        // Redirect to the same page with a query parameter for message display
+        header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]) . "?message=" . urlencode($resultMessage));
+        exit;
     } else {
         $name = $_POST['name'];
         $username = $_POST['email'];
@@ -41,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("ssssss", $name, $username, $position, $role, $hashedPassword, $status);
 
             if ($stmt->execute()) {
-                $resultMessage = "Registration successful. After approval, you can <a href='index.php'>login</a> with your new account.";
+                $resultMessage = "Registration successful. After approval you can <a href='index.php'>login</a> with your new account.";
             } else {
                 $resultMessage = "Registration failed. Please try again.";
             }
@@ -50,9 +53,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $checkEmailStmt->close();
+        // Redirect to the same page with a query parameter for message display
+        header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]) . "?message=" . urlencode($resultMessage));
+        exit;
     }
-    $con->close(); // Close the database connection
 }
+$con->close(); // Close the database connection
+
+// Get the message from the URL if it exists
+if (isset($_GET['message'])) {
+    $resultMessage = urldecode($_GET['message']);
+}
+
 ?>
 
 <!DOCTYPE html>
