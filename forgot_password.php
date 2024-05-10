@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         $expirationTimeUnix = time() + 3600; // Example Unix timestamp
         $expirationTime = date('Y-m-d H:i:s', $expirationTimeUnix);
 
-        $updateQuery = "UPDATE users SET reset_token = ?, reset_token_expiration = ? WHERE username = ?";
+        $updateQuery = "UPDATE users SET reset_token = ?, reset_token_expiration = ?, login_attempts = 0, account_locked = NULL WHERE username = ?";
         $updateStmt = $con->prepare($updateQuery);
         $updateStmt->bind_param("sss", $resetToken, $expirationTime, $email);
         $updateStmt->execute();
