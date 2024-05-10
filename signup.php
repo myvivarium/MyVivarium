@@ -146,7 +146,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <br>
         
         <?php if (!empty($resultMessage)) {  
-            echo "<div class=\"alert alert-warning\" role=\"alert\"></div>";
+            echo "<div class=\"alert alert-warning\" role=\"alert\">";
             echo $resultMessage;
             echo "</div>";
         } ?>
