@@ -30,15 +30,17 @@ if (isset($_POST['login'])) {
     $result = mysqli_stmt_get_result($statement);
 
     if ($row = mysqli_fetch_assoc($result)) {
-        if ($row['account_locked'] is not NULL && new DateTime() < new DateTime($row['account_locked'])) {
+        // Check if the account is locked and the current time is less than the unlock time
+        if (!is_null($row['account_locked']) && new DateTime() < new DateTime($row['account_locked'])) {
             $error_message = "Account is temporarily locked. Please try again later.";
         } else {
+            // Proceed with password verification
             if (password_verify($password, $row['password'])) {
                 $_SESSION['name'] = $row['name'];
                 $_SESSION['username'] = $row['username'];
                 $_SESSION['role'] = $row['role'];
                 $_SESSION['position'] = $row['position'];
-                // Reset login attempts
+                // Reset login attempts and unlock the account if needed
                 $reset_attempts = "UPDATE users SET login_attempts = 0, account_locked = NULL WHERE username=?";
                 $reset_stmt = mysqli_prepare($con, $reset_attempts);
                 mysqli_stmt_bind_param($reset_stmt, "s", $username);
@@ -46,14 +48,17 @@ if (isset($_POST['login'])) {
                 header("Location: home.php");
                 exit;
             } else {
+                // Increment failed login attempts
                 $new_attempts = $row['login_attempts'] + 1;
                 if ($new_attempts >= 3) {
-                    $lock_time = "UPDATE users SET account_locked = ADDDATE(NOW(), INTERVAL 1 HOUR), login_attempts = 3 WHERE username=?";
+                    // Lock the account for 1 hour after 3 failed attempts
+                    $lock_time = "UPDATE users SET account_locked = DATE_ADD(NOW(), INTERVAL 1 HOUR), login_attempts = 3 WHERE username=?";
                     $lock_stmt = mysqli_prepare($con, $lock_time);
                     mysqli_stmt_bind_param($lock_stmt, "s", $username);
                     mysqli_stmt_execute($lock_stmt);
                     $error_message = "Account is temporarily locked due to too many failed login attempts.";
                 } else {
+                    // Update the number of failed attempts in the database
                     $update_attempts = "UPDATE users SET login_attempts = ? WHERE username=?";
                     $update_stmt = mysqli_prepare($con, $update_attempts);
                     mysqli_stmt_bind_param($update_stmt, "is", $new_attempts, $username);
