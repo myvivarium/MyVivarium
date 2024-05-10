@@ -24,19 +24,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $role = "user";
         $status = "pending";
 
-        // Hash the password using bcrypt
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        // Check if the email already exists
+        $checkEmailQuery = "SELECT username FROM users WHERE username = ?";
+        $checkEmailStmt = $con->prepare($checkEmailQuery);
+        $checkEmailStmt->bind_param("s", $username);
+        $checkEmailStmt->execute();
+        $checkEmailStmt->store_result();
 
-        $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssss", $name, $username, $position, $role, $hashedPassword, $status);
-
-        if ($stmt->execute()) {
-            $resultMessage = "Registration successful. After approval you can <a href='index.php'>login</a> with your new account.";
+        if ($checkEmailStmt->num_rows > 0) {
+            $resultMessage = "Email address already registered. Please try logging in or use a different email.";
         } else {
-            $resultMessage = "Registration failed. Please try again.";
+            // Hash the password using bcrypt
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+            $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssss", $name, $username, $position, $role, $hashedPassword, $status);
+
+            if ($stmt->execute()) {
+                $resultMessage = "Registration successful. After approval, you can <a href='index.php'>login</a> with your new account.";
+            } else {
+                $resultMessage = "Registration failed. Please try again.";
+            }
+
+            $stmt->close();
         }
 
-        $stmt->close();
+        $checkEmailStmt->close();
     }
     $con->close(); // Close the database connection
 }
