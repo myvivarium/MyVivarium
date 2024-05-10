@@ -32,7 +32,7 @@ if (isset($_POST['login'])) {
     if ($row = mysqli_fetch_assoc($result)) {
         // Check if the account is locked and the current time is less than the unlock time
         if (!is_null($row['account_locked']) && new DateTime() < new DateTime($row['account_locked'])) {
-            $error_message = "Account is temporarily locked. Please try again later.";
+            $error_message = "Account is temporarily locked. Please try again later after 10 mins.";
         } else {
             // Proceed with password verification
             if (password_verify($password, $row['password'])) {
@@ -52,11 +52,11 @@ if (isset($_POST['login'])) {
                 $new_attempts = $row['login_attempts'] + 1;
                 if ($new_attempts >= 3) {
                     // Lock the account for 1 hour after 3 failed attempts
-                    $lock_time = "UPDATE users SET account_locked = DATE_ADD(NOW(), INTERVAL 1 HOUR), login_attempts = 3 WHERE username=?";
+                    $lock_time = "UPDATE users SET account_locked = DATE_ADD(NOW(), INTERVAL 10 MINUTE), login_attempts = 3 WHERE username=?";
                     $lock_stmt = mysqli_prepare($con, $lock_time);
                     mysqli_stmt_bind_param($lock_stmt, "s", $username);
                     mysqli_stmt_execute($lock_stmt);
-                    $error_message = "Account is temporarily locked due to too many failed login attempts.";
+                    $error_message = "Account is temporarily locked for 10 mins due to too many failed login attempts.";
                 } else {
                     // Update the number of failed attempts in the database
                     $update_attempts = "UPDATE users SET login_attempts = ? WHERE username=?";
