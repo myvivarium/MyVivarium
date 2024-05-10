@@ -1,43 +1,28 @@
 <?php
-
-// Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-global $username;
 session_start();
 require 'dbcon.php';
 
-// Query to fetch the lab name
 $labQuery = "SELECT lab_name FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
-$labName = "My Vivarium"; // A default value in case the query fails or returns no result
+$labName = "My Vivarium";
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
 }
 
-// Check if the user is already logged in
 if (isset($_SESSION['name'])) {
-    // After login
-    if (isset($_GET['redirect'])) {
-        $url = urldecode($_GET['redirect']);
-        header("Location: $url");
-        exit;
-    } else {
-        // Redirect to default page
-        header("Location: home.php");
-        exit;
-    }
+    header("Location: home.php");
+    exit;
 }
 
-// Handle admin login form submission
 if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Fetch hashed password and salt from the database based on username
     $query = "SELECT * FROM users WHERE username=? AND status='approved'";
     $statement = mysqli_prepare($con, $query);
     mysqli_stmt_bind_param($statement, "s", $username);
@@ -45,35 +30,46 @@ if (isset($_POST['login'])) {
     $result = mysqli_stmt_get_result($statement);
 
     if ($row = mysqli_fetch_assoc($result)) {
-        $storedHashedPassword = $row['password'];
-
-        // Verify the entered password against the stored hash
-        if (password_verify($password, $storedHashedPassword)) {
-            // Passwords match, login successful
-            $_SESSION['name'] = $row['name'];
-            $_SESSION['username'] = $row['username'];
-            $_SESSION['role'] = $row['role'];
-            $_SESSION['position'] = $row['position'];
-            if (isset($_GET['redirect'])) {
-                $url = urldecode($_GET['redirect']);
-                header("Location: $url");
-                exit;
-            } else {
-                // Redirect to default page
+        if ($row['account_locked'] is not NULL && new DateTime() < new DateTime($row['account_locked'])) {
+            $error_message = "Account is temporarily locked. Please try again later.";
+        } else {
+            if (password_verify($password, $row['password'])) {
+                $_SESSION['name'] = $row['name'];
+                $_SESSION['username'] = $row['username'];
+                $_SESSION['role'] = $row['role'];
+                $_SESSION['position'] = $row['position'];
+                // Reset login attempts
+                $reset_attempts = "UPDATE users SET login_attempts = 0, account_locked = NULL WHERE username=?";
+                $reset_stmt = mysqli_prepare($con, $reset_attempts);
+                mysqli_stmt_bind_param($reset_stmt, "s", $username);
+                mysqli_stmt_execute($reset_stmt);
                 header("Location: home.php");
                 exit;
+            } else {
+                $new_attempts = $row['login_attempts'] + 1;
+                if ($new_attempts >= 3) {
+                    $lock_time = "UPDATE users SET account_locked = ADDDATE(NOW(), INTERVAL 1 HOUR), login_attempts = 3 WHERE username=?";
+                    $lock_stmt = mysqli_prepare($con, $lock_time);
+                    mysqli_stmt_bind_param($lock_stmt, "s", $username);
+                    mysqli_stmt_execute($lock_stmt);
+                    $error_message = "Account is temporarily locked due to too many failed login attempts.";
+                } else {
+                    $update_attempts = "UPDATE users SET login_attempts = ? WHERE username=?";
+                    $update_stmt = mysqli_prepare($con, $update_attempts);
+                    mysqli_stmt_bind_param($update_stmt, "is", $new_attempts, $username);
+                    mysqli_stmt_execute($update_stmt);
+                    $error_message = "Invalid password. Please try again.";
+                }
             }
-        } else {
-            // Password verification failed, set error message
-            $error_message = "Login failed due to the wrong password.";
         }
     } else {
-        // No user found with the provided username, set error message
-        $error_message = "Login failed due to the wrong username.";
+        $error_message = "No user found with that username.";
     }
+    mysqli_stmt_close($statement);
 }
-
+mysqli_close($con);
 ?>
+
 
 
 <!DOCTYPE html>
