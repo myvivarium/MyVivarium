@@ -143,9 +143,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <br>
             <a href="index.php" class="btn btn-secondary">Go Back</a>
         </form>
-        <?php if (!empty($resultMessage)) {
-            echo "<p class='result-message'>$resultMessage</p>";
+        <br>
+        echo <div class="alert alert-warning" role="alert"></div>
+        <?php if (!empty($resultMessage)) {  
+            echo $resultMessage;
         } ?>
+        </div>
+        <br>
     </div>
     <br>
     <?php include 'footer.php'; ?>
