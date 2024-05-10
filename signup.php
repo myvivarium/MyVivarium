@@ -44,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -58,9 +59,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 5px;
             background-color: #f9f9f9;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         .btn {
             display: block;
             width: 100%;
@@ -71,15 +74,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 3px;
             cursor: pointer;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
         .note {
             color: #888;
             font-size: 12px;
         }
     </style>
 </head>
+
 <body>
     <header class="bg-dark text-white text-center py-3">
         <h1><?php echo htmlspecialchars($labName); ?></h1>
@@ -98,7 +104,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group">
                 <label for="position">Position</label>
                 <select class="form-control" id="position" name="position">
-                    <!-- Options omitted for brevity -->
+                    <option value="Principal Investigator">Principal Investigator</option>
+                    <option value="Research Scientist">Research Scientist</option>
+                    <option value="Postdoctoral Researcher">Postdoctoral Researcher</option>
+                    <option value="PhD Student">PhD Student</option>
+                    <option value="Masters Student">Masters Student</option>
+                    <option value="Undergraduate">Undergraduate</option>
+                    <option value="Laboratory Technician">Laboratory Technician</option>
+                    <option value="Research Associate">Research Associate</option>
+                    <option value="Lab Manager">Lab Manager</option>
+                    <option value="Animal Care Technician">Animal Care Technician</option>
+                    <option value="Interns and Volunteers">Interns and Volunteers</option>
                 </select>
             </div>
             <div class="form-group">
@@ -118,4 +134,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <?php include 'footer.php'; ?>
 </body>
+
 </html>
