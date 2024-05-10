@@ -1,24 +1,19 @@
 <?php
-$resultMessage = "";
-
+session_start();  // Start or resume a session
 require 'dbcon.php'; // Include your database connection file
 
 // Query to fetch the lab name
 $labQuery = "SELECT lab_name FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
-
 $labName = "My Vivarium"; // A default value in case the query fails or returns no result
+
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Check if the honeypot field is filled
     if (!empty($_POST['honeypot'])) {
-        $resultMessage = "Spam detected! Please try again.";
-        // Redirect to the same page with a query parameter for message display
-        header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]) . "?message=" . urlencode($resultMessage));
-        exit;
+        $_SESSION['resultMessage'] = "Spam detected! Please try again.";
     } else {
         $name = $_POST['name'];
         $username = $_POST['email'];
@@ -35,36 +30,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $checkEmailStmt->store_result();
 
         if ($checkEmailStmt->num_rows > 0) {
-            $resultMessage = "Email address already registered. Please try logging in or use a different email.";
+            $_SESSION['resultMessage'] = "Email address already registered. Please try logging in or use a different email.";
         } else {
-            // Hash the password using bcrypt
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
             $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("ssssss", $name, $username, $position, $role, $hashedPassword, $status);
 
             if ($stmt->execute()) {
-                $resultMessage = "Registration successful. After approval you can <a href='index.php'>login</a> with your new account.";
+                $_SESSION['resultMessage'] = "Registration successful. After approval, you can <a href='index.php'>login</a> with your new account.";
             } else {
-                $resultMessage = "Registration failed. Please try again.";
+                $_SESSION['resultMessage'] = "Registration failed. Please try again.";
             }
-
             $stmt->close();
         }
-
         $checkEmailStmt->close();
-        // Redirect to the same page with a query parameter for message display
-        header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]) . "?message=" . urlencode($resultMessage));
-        exit;
     }
-}
-$con->close(); // Close the database connection
-
-// Get the message from the URL if it exists
-if (isset($_GET['message'])) {
-    $resultMessage = urldecode($_GET['message']);
+    $con->close();
+    // Redirect to the same script to avoid POST resubmission issues
+    header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+    exit;
 }
 
+// Retrieve and clear the session message after displaying
+$resultMessage = isset($_SESSION['resultMessage']) ? $_SESSION['resultMessage'] : "";
+unset($_SESSION['resultMessage']);  // Clear the message from session
 ?>
 
 <!DOCTYPE html>
