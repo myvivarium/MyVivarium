@@ -160,6 +160,7 @@ require 'header.php';
                     <div class="card-header">
                         <h4>Holding Cage Dashboard
                             <a href="hc_addn.php" class="btn btn-primary float-end">Add New Holding Cage</a>
+                            <a href="hc_prnt_crd.php" class="btn btn-success float-end">Print Cage Card</a>
                         </h4>
                     </div>
 
@@ -196,7 +197,7 @@ require 'header.php';
                                                 </td>
                                                 <td>
                                                     <a href="hc_view.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-primary">View</a>
-                                                    <a href="hc_prnt.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">Print</a>
+                                                    <!--<a href="hc_prnt.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">Print</a>-->
                                                     <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($holdingcage['cage_id']); ?>')" class="btn btn-success">QR</a>
                                                     <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
                                                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
