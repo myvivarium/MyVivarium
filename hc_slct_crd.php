@@ -93,7 +93,7 @@ require 'header.php';
             $('#cageIds').select2({
                 placeholder: "Select Cage IDs",
                 allowClear: true,
-                width: '100%'
+                width: '50%'
             });
         });
     </script>
