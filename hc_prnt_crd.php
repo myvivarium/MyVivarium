@@ -2,6 +2,13 @@
 session_start();
 require 'dbcon.php';
 
+$labQuery = "SELECT * FROM data LIMIT 1";
+$labResult = mysqli_query($con, $labQuery);
+
+if ($row = mysqli_fetch_assoc($labResult)) {
+    $url = $row['url'];
+}
+
 // Check if the user is not logged in, redirect them to index.php
 if (!isset($_SESSION['name'])) {
     header("Location: index.php");
@@ -10,18 +17,21 @@ if (!isset($_SESSION['name'])) {
 
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
-    $id = $_GET['id'];
+    $ids = explode(',', $_GET['id']);
+    $holdingcages = [];
 
-    // Fetch the holdingcage record with the specified ID
-    $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
-    $result = mysqli_query($con, $query);
+    foreach ($ids as $id) {
+        // Fetch the holdingcage record with the specified ID
+        $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
+        $result = mysqli_query($con, $query);
 
-    if (mysqli_num_rows($result) === 1) {
-        $holdingcage = mysqli_fetch_assoc($result);
-    } else {
-        $_SESSION['message'] = 'Invalid ID.';
-        header("Location: hc_dash.php");
-        exit();
+        if (mysqli_num_rows($result) === 1) {
+            $holdingcages[] = mysqli_fetch_assoc($result);
+        } else {
+            $_SESSION['message'] = "Invalid ID: $id";
+            header("Location: hc_dash.php");
+            exit();
+        }
     }
 } else {
     $_SESSION['message'] = 'ID parameter is missing.';
@@ -54,7 +64,6 @@ if (isset($_GET['id'])) {
         }
 
         table {
-            border: 1px solid grey;
             box-sizing: border-box;
             border-collapse: collapse;
             margin: 0;
@@ -64,7 +73,7 @@ if (isset($_GET['id'])) {
 
         th,
         td {
-            border: 1px solid grey;
+            border: 1px solid black;
             box-sizing: border-box;
             border-collapse: collapse;
         }
@@ -72,69 +81,93 @@ if (isset($_GET['id'])) {
 </head>
 
 <body>
-    <table style="width: 10in;height: 6in;border-collapse: collapse;margin: 1.25in 0.50in;">
-        <tr style="height: 3in;">
-            <td style="width: 5in;vertical-align:top">
-
-                <!--Cage1-->
-                <table border="1" style="width: 5in;height: 1.5in;" id="cage1A">
+    <table style="width: 10in; height: 6in; border-collapse: collapse; margin: 1.25in 0.50in; border: 1px dashed grey;">
+        <?php foreach ($holdingcages as $index => $holdingcage): ?>
+        
+            <?php if ($index % 2 === 0): ?>
+                <tr style="height: 3in; border: 1px dashed grey; vertical-align:top;">
+            <?php endif; ?>
+        
+            <td style="width: 5in; border: 1px dashed grey;">
+                <!--Cage <?= $index + 1 ?>-->
+                <table border="1" style="width: 5in; height: 1.5in;" id="cage<?= $index + 1 ?>A">
                     <tr>
-                        <td style="width: 40%;"> <span style="font-weight: bold; font-size: 10pt; text-transform: uppercase;">Holding Cage Card</span> </td>
-                        <td style="width:40%;"> <span style="font-weight: bold;">Cage #: </span> <span> <?= $holdingcage["cage_id"] ?> </span> </td>
-                        <td rowspan="5" style="width:20%; text-align:center;"> <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://myvivarium.online/hc_view.php?id=" . $holdingcage["cage_id"] . "&choe=UTF-8"; ?>" alt="QR Code"> </td>
+                        <td colspan="3" style="width: 100%; text-align:center;">
+                            <span style="font-weight: bold; font-size: 10pt; text-transform: uppercase; padding:3px;"> Holding Cage - # <?= $holdingcage["cage_id"] ?> </span>
+                        </td>
                     </tr>
                     <tr>
-                        <td style="width:40%;"> <span style="font-weight: bold;">PI Name: </span> <span> <?= $holdingcage["pi_name"] ?> </span> </td>
-                        <td style="width:40%;"> <span style="font-weight: bold;">Strain: </span> <span> <?= $holdingcage["strain"] ?> </span> </td>
+                        <td style="width:40%;">
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">PI Name:</span>
+                            <span><?= $holdingcage["pi_name"] ?></span>
+                        </td>
+                        <td style="width:40%;">
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Strain:</span>
+                            <span><?= $holdingcage["strain"] ?></span>
+                        </td>
+                        <td rowspan="4" style="width:20%; text-align:center;">
+                            <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=75x75&data=https://".$url."/hc_view.php?id=".$holdingcage["cage_id"]."&choe=UTF-8"; ?>" alt="QR Code">
+                        </td>
                     </tr>
                     <tr>
-                        <td style="width:40%;"> <span style="font-weight: bold;">IACUC: </span> <span> <?= $holdingcage["iacuc"] ?> </span> </td>
-                        <td style="width:40%;"> <span style="font-weight: bold;">User: </span> <span> <?= $holdingcage["user"] ?> </span> </td>
+                        <td style="width:40%;">
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">IACUC:</span>
+                            <span><?= $holdingcage["iacuc"] ?></span>
+                        </td>
+                        <td style="width:40%;">
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">User:</span>
+                            <span><?= $holdingcage["user"] ?></span>
+                        </td>
                     </tr>
                     <tr>
-                        <td style="width:40%;"> <span style="font-weight: bold;">Qty: </span> <span> <?= $holdingcage["qty"] ?> </span> </td>
-                        <td style="width:40%;"> <span style="font-weight: bold;">DOB: </span> <span> <?= $holdingcage["dob"] ?> </span> </td>
+                        <td style="width:40%;">
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Qty:</span>
+                            <span><?= $holdingcage["qty"] ?></span>
+                        </td>
+                        <td style="width:40%;">
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">DOB:</span>
+                            <span><?= $holdingcage["dob"] ?></span>
+                        </td>
                     </tr>
                     <tr style="border-bottom: none;">
-                        <td style="width:40%;"> <span style="font-weight: bold;">Sex: </span> <span> <?= $holdingcage["sex"] ?> </span> </td>
-                        <td style="width:40%;"> <span style="font-weight: bold;">Parent Cage: </span> <span> <?= $holdingcage["parent_cg"] ?> </span> </td>
+                        <td style="width:40%;">
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Sex:</span>
+                            <span><?= $holdingcage["sex"] ?></span>
+                        </td>
+                        <td style="width:40%;">
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Parent Cage:</span>
+                            <span><?= $holdingcage["parent_cg"] ?></span>
+                        </td>
                     </tr>
                 </table>
 
-                <table border="1" style="width: 5in;height: 1.5in;" id="cage1B">
+                <table border="1" style="width: 5in; height: 1.5in;" id="cage<?= $index + 1 ?>B">
                     <tr>
-                        <td style="width:40%;"> <span style="font-weight: bold;">Mouse ID:</span> </td>
-                        <td style="width:60%;"> <span style="font-weight: bold;">Genotype:</span> </td>
+                        <td style="width:40%;">
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Mouse ID</span>
+                        </td>
+                        <td style="width:60%;">
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Genotype</span>
+                        </td>
                     </tr>
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
                     <tr>
-                        <td style="width:40%;"> <span> <?= $holdingcage["mouse_id_1"] ?> </span> </td>
-                        <td style="width:60%;"> <span> <?= $holdingcage["genotype_1"] ?> </span> </td>
+                        <td style="width:40%; padding:3px;">
+                            <span><?= $holdingcage["mouse_id_$i"] ?></span>
+                        </td>
+                        <td style="width:60%; padding:3px;">
+                            <span><?= $holdingcage["genotype_$i"] ?></span>
+                        </td>
                     </tr>
-                    <tr>
-                        <td style="width:40%;"> <span> <?= $holdingcage["mouse_id_2"] ?> </span> </td>
-                        <td style="width:60%;"> <span> <?= $holdingcage["genotype_2"] ?> </span> </td>
-                    </tr>
-                    <tr>
-                        <td style="width:40%;"> <span> <?= $holdingcage["mouse_id_3"] ?> </span> </td>
-                        <td style="width:60%;"> <span> <?= $holdingcage["genotype_3"] ?> </span> </td>
-                    </tr>
-                    <tr>
-                        <td style="width:40%;"> <span> <?= $holdingcage["mouse_id_4"] ?> </span> </td>
-                        <td style="width:60%;"> <span> <?= $holdingcage["genotype_4"] ?> </span> </td>
-                    </tr>
-                    <tr>
-                        <td style="width:40%;"> <span> <?= $holdingcage["mouse_id_5"] ?> </span> </td>
-                        <td style="width:60%;"> <span> <?= $holdingcage["genotype_5"] ?> </span> </td>
-                    </tr>
+                    <?php endfor; ?>
                 </table>
-
             </td>
-            <td>Card 2</td>
-        </tr>
-        <tr>
-            <td>Card 3</td>
-            <td>Card 4</td>
-        </tr>
+            
+            <?php if ($index % 2 === 1 || $index === count($holdingcages) - 1): ?>
+                </tr>
+            <?php endif; ?>
+
+        <?php endforeach; ?>
     </table>
 </body>
 
