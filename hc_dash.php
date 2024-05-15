@@ -157,12 +157,14 @@ require 'header.php';
                 <div class="card">
 
                     <!-- Holding Cage Header -->
-                    <div class="card-header">
-                        <h4>Holding Cage Dashboard
-                            <a href="hc_addn.php" class="btn btn-primary">Add New Holding Cage</a>
-                            <a href="hc_prnt_crd.php" class="btn btn-success">Print Cage Card</a>
-                        </h4>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Holding Cage Dashboard</h4>
+                    <div>
+                        <a href="hc_addn.php" class="btn btn-primary">Add New Holding Cage</a>
+                        <a href="hc_prnt_crd.php" class="btn btn-success">Print Cage Card</a>
                     </div>
+                    </div>
+
 
                     <div class="card-body">
                         <!-- Holding Cage Search Box -->
