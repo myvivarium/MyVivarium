@@ -60,7 +60,7 @@ if (isset($_GET['id'])) {
     <title>Printable 2x2 Card Table</title>
     <style>
         @page {
-            size: letter;
+            size: letter landscape;
             margin: 0;
         }
 
