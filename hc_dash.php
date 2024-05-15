@@ -161,7 +161,7 @@ require 'header.php';
                     <h4>Holding Cage Dashboard</h4>
                     <div>
                         <a href="hc_addn.php" class="btn btn-primary">Add New Holding Cage</a>
-                        <a href="hc_prnt_crd.php" class="btn btn-success">Print Cage Card</a>
+                        <a href="hc_slct_crd.php" class="btn btn-success">Print Cage Card</a>
                     </div>
                     </div>
 
