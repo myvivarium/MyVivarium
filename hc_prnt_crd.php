@@ -81,14 +81,14 @@ if (isset($_GET['id'])) {
 </head>
 
 <body>
-    <table style="width: 10in; height: 6in; border-collapse: collapse; margin: 1.25in 0.50in; border: 1px dashed grey;">
+    <table style="width: 10in; height: 6in; border-collapse: collapse; margin: 1.25in 0.50in; border: 1px dashed #D3D3D3;">
         <?php foreach ($holdingcages as $index => $holdingcage): ?>
         
             <?php if ($index % 2 === 0): ?>
                 <tr style="height: 3in; border: 1px dashed grey; vertical-align:top;">
             <?php endif; ?>
         
-            <td style="width: 5in; border: 1px dashed grey;">
+            <td style="width: 5in; border: 1px dashed #D3D3D3;">
                 <!--Cage <?= $index + 1 ?>-->
                 <table border="1" style="width: 5in; height: 1.5in;" id="cage<?= $index + 1 ?>A">
                     <tr>
