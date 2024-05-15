@@ -56,7 +56,15 @@ if (isset($_POST['login'])) {
                 $reset_stmt = mysqli_prepare($con, $reset_attempts);
                 mysqli_stmt_bind_param($reset_stmt, "s", $username);
                 mysqli_stmt_execute($reset_stmt);
-                header("Location: home.php");
+                if (isset($_GET['redirect'])) {
+                    $url = urldecode($_GET['redirect']);
+                    header("Location: $url");
+                    exit;
+                } else {
+                    // Redirect to default page
+                    header("Location: home.php");
+                    exit;
+                }
                 exit;
             } else {
                 // Increment failed login attempts
