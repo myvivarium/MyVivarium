@@ -47,53 +47,71 @@ if (isset($_GET['id'])) {
     <meta charset="UTF-8">
     <title>Printable 2x2 Card Table</title>
     <style>
-        body,
-        html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-        }
+    body,
+    html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+    }
 
-        span {
-            font-size: 8pt;
-            padding: 0px;
-            line-height: 1;
-            display: inline-block;
-        }
+    span {
+        font-size: 8pt;
+        padding: 0px;
+        line-height: 1;
+        display: inline-block;
+    }
 
-        table {
-            box-sizing: border-box;
-            border-collapse: collapse;
-            margin: 0;
-            padding: 0;
-            border-spacing: 0;
-        }
+    table {
+        box-sizing: border-box;
+        border-collapse: collapse;
+        margin: 0;
+        padding: 0;
+        border-spacing: 0;
+    }
 
-        th,
-        td {
-            border: 1px solid black;
-            box-sizing: border-box;
-            border-collapse: collapse;
-        }
+
+    table#cageA tr td {
+        border: 1px solid black;
+        box-sizing: border-box;
+        border-collapse: collapse;
+        margin: 0;
+        padding: 0;
+        border-spacing: 0;
+    }
+
+    table#cageB tr td {
+        border: 1px solid black;
+        box-sizing: border-box;
+        border-collapse: collapse;
+        margin: 0;
+        padding: 0;
+        border-spacing: 0;
+    }
+
+    table#cageB tr:first-child td {
+        border-top: none;
+    }
     </style>
 </head>
 
 <body>
-    <table style="width: 10in; height: 6in; border-collapse: collapse; margin: 1.25in 0.50in; border: 1px dashed #D3D3D3;">
+    <table
+        style="width: 10in; height: 6in; border-collapse: collapse; margin: 1.25in 0.50in; border: 1px dashed #D3D3D3;">
         <?php foreach ($holdingcages as $index => $holdingcage): ?>
-        
-            <?php if ($index % 2 === 0): ?>
-                <tr style="height: 3in; border: 1px dashed grey; vertical-align:top;">
+
+        <?php if ($index % 2 === 0): ?>
+        <tr style="height: 3in; border: 1px dashed #D3D3D3; vertical-align:top;">
             <?php endif; ?>
-        
+
             <td style="width: 5in; border: 1px dashed #D3D3D3;">
                 <!--Cage <?= $index + 1 ?>-->
-                <table border="1" style="width: 5in; height: 1.5in;" id="cage<?= $index + 1 ?>A">
+                <table border="1" style="width: 5in; height: 1.5in;" id="cageA">
                     <tr>
                         <td colspan="3" style="width: 100%; text-align:center;">
-                            <span style="font-weight: bold; font-size: 10pt; text-transform: uppercase; padding:3px;"> Holding Cage - # <?= $holdingcage["cage_id"] ?> </span>
+                            <span style="font-weight: bold; font-size: 10pt; text-transform: uppercase; padding:3px;">
+                                Holding Cage - # <?= $holdingcage["cage_id"] ?> </span>
                         </td>
                     </tr>
                     <tr>
@@ -106,7 +124,8 @@ if (isset($_GET['id'])) {
                             <span><?= $holdingcage["strain"] ?></span>
                         </td>
                         <td rowspan="4" style="width:20%; text-align:center;">
-                            <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=75x75&data=https://".$url."/hc_view.php?id=".$holdingcage["cage_id"]."&choe=UTF-8"; ?>" alt="QR Code">
+                            <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=75x75&data=https://".$url."/hc_view.php?id=".$holdingcage["cage_id"]."&choe=UTF-8"; ?>"
+                                alt="QR Code">
                         </td>
                     </tr>
                     <tr>
@@ -140,14 +159,16 @@ if (isset($_GET['id'])) {
                         </td>
                     </tr>
                 </table>
-
-                <table border="1" style="width: 5in; height: 1.5in;" id="cage<?= $index + 1 ?>B">
+                <table border="1" style="width: 5in; height: 1.5in; border-top: none;" id="cageB">
                     <tr>
                         <td style="width:40%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Mouse ID</span>
+                            <span
+                                style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">Mouse
+                                ID</span>
                         </td>
                         <td style="width:60%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Genotype</span>
+                            <span
+                                style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">Genotype</span>
                         </td>
                     </tr>
                     <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -162,10 +183,10 @@ if (isset($_GET['id'])) {
                     <?php endfor; ?>
                 </table>
             </td>
-            
+
             <?php if ($index % 2 === 1 || $index === count($holdingcages) - 1): ?>
-                </tr>
-            <?php endif; ?>
+        </tr>
+        <?php endif; ?>
 
         <?php endforeach; ?>
     </table>
