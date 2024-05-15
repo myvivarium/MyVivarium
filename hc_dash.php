@@ -159,8 +159,8 @@ require 'header.php';
                     <!-- Holding Cage Header -->
                     <div class="card-header">
                         <h4>Holding Cage Dashboard
-                            <a href="hc_addn.php" class="btn btn-primary float-end">Add New Holding Cage</a>
-                            <a href="hc_prnt_crd.php" class="btn btn-success float-end">Print Cage Card</a>
+                            <a href="hc_addn.php" class="btn btn-primary">Add New Holding Cage</a>
+                            <a href="hc_prnt_crd.php" class="btn btn-success">Print Cage Card</a>
                         </h4>
                     </div>
 
