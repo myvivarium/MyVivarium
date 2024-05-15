@@ -156,12 +156,12 @@ require 'header.php';
                 <div class="card">
 
                     <!-- Breeding Cage Header -->
-                    <div class="card-header">
-                        <h4>Breeding Cage Dashboard
-                            <a href="bc_addn.php" class="btn btn-primary float-end">Add New Breeding Cage</a>
-                            <a href="bc_slct_crd.php" class="btn btn-success">Print Cage Card</a>
-                        </h4>
-                        <p>Note: Litter data can be added on the view page.</p>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Breeding Cage Dashboard</h4>
+                    <div>
+                        <a href="bc_addn.php" class="btn btn-primary">Add New Breeding Cage</a>
+                        <a href="bc_slct_crd.php" class="btn btn-success">Print Cage Card</a>
+                    </div>
                     </div>
 
                     <div class="card-body">
