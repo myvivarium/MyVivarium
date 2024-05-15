@@ -59,88 +59,62 @@ if (isset($_GET['id'])) {
     <meta charset="UTF-8">
     <title>Printable 2x2 Card Table</title>
     <style>
-    @page {
-        size: letter landscape;
-        margin: 0;
-    }
+        @page {
+            size: letter landscape;
+            margin: 0;
+        }
 
-    body,
-    html {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-    }
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
 
-    span {
-        font-size: 8pt;
-        padding: 0px;
-        line-height: 1;
-        display: inline-block;
-    }
+        span {
+            font-size: 8pt;
+            padding: 0px;
+            line-height: 1;
+            display: inline-block;
+        }
 
-    table {
-        box-sizing: border-box;
-        border-collapse: collapse;
-        margin: 0;
-        padding: 0;
-        border-spacing: 0;
-    }
+        table {
+            box-sizing: border-box;
+            border-collapse: collapse;
+            margin: 0;
+            padding: 0;
+            border-spacing: 0;
+        }
 
-    table#cageA tr td,
-    table#cageB tr td {
-        border: 1px solid black;
-        box-sizing: border-box;
-        border-collapse: collapse;
-        margin: 0;
-        padding: 0;
-        border-spacing: 0;
-    }
+        table#cageA tr td,
+        table#cageB tr td {
+            border: 1px solid black;
+            box-sizing: border-box;
+            border-collapse: collapse;
+            margin: 0;
+            padding: 0;
+            border-spacing: 0;
+        }
 
-    table#cageB tr:first-child td {
-        border-top: none;
-    }
-
-    table#main {
-        width: 10.5in;
-        height: 8in;
-        border-collapse: collapse;
-        margin: 0.5in;
-        border: 1px dashed #D3D3D3;
-    }
-
-    table#main td {
-        width: 5.25in;
-        height: 4in;
-        border: 1px dashed #D3D3D3;
-        vertical-align: top;
-    }
-
-    table#cageA {
-        width: 100%;
-        height: 50%;
-    }
-
-    table#cageB {
-        width: 100%;
-        height: 50%;
-        border-top: none;
-    }
+        table#cageB tr:first-child td {
+            border-top: none;
+        }
     </style>
 </head>
 
 <body>
-    <table id="main">
+    <table style="width: 10in; height: 6in; border-collapse: collapse; margin: 1.25in 0.50in 1.25in 0.50in; border: 1px dashed #D3D3D3;">
         <?php foreach ($breedingcages as $index => $breedingcage): ?>
 
         <?php if ($index % 2 === 0): ?>
-        <tr>
+        <tr style="height: 3in; border: 1px dashed #D3D3D3; vertical-align:top;">
             <?php endif; ?>
 
-            <td>
+            <td style="width: 5in; border: 1px dashed #D3D3D3;">
                 <!--Cage <?= $index + 1 ?>-->
-                <table id="cageA">
+                <table border="1" style="width: 5in; height: 1.5in;" id="cageA">
                     <tr>
                         <td colspan="3" style="width: 100%; text-align:center;">
                             <span style="font-weight: bold; font-size: 10pt; text-transform: uppercase; padding:3px;">
@@ -191,7 +165,7 @@ if (isset($_GET['id'])) {
                         </td>
                     </tr>
                 </table>
-                <table id="cageB">
+                <table border="1" style="width: 5in; height: 1.5in; border-top: none;" id="cageB">
                     <tr>
                         <td style="width:25%;">
                             <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">DOM</span>
