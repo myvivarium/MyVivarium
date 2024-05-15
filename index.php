@@ -14,7 +14,18 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
 }
 
+// Check if the user is already logged in
 if (isset($_SESSION['name'])) {
+    // After login
+    if (isset($_GET['redirect'])) {
+        $url = urldecode($_GET['redirect']);
+        header("Location: $url");
+        exit;
+    } else {
+        // Redirect to default page
+        header("Location: home.php");
+        exit;
+    }
     header("Location: home.php");
     exit;
 }
