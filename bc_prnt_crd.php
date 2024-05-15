@@ -100,7 +100,7 @@ if (isset($_GET['id'])) {
 </head>
 
 <body>
-    <table style="width: 10in; height: 6in; border-collapse: collapse; margin: 1.25in 0.50in 1.25in 0.50in; border: 1px dashed #D3D3D3;">
+    <table style="width: 10in; height: 6in; border-collapse: collapse; margin: 1.0in 0.50in 1.25in 0.50in; border: 1px dashed #D3D3D3;">
         <?php foreach ($breedingcages as $index => $breedingcage): ?>
 
         <?php if ($index % 2 === 0): ?>
