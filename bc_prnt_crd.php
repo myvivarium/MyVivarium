@@ -28,8 +28,8 @@ if (isset($_GET['id'])) {
         if (mysqli_num_rows($result) === 1) {
             $breedingcage = mysqli_fetch_assoc($result);
 
-            // Fetch the associated litter records for this breeding cage
-            $query1 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id'";
+            // Fetch the latest 5 associated litter records for this breeding cage
+            $query1 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id' ORDER BY `dom` DESC LIMIT 5";
             $result1 = mysqli_query($con, $query1);
             $litters = [];
             while ($litter = mysqli_fetch_assoc($result1)) {
