@@ -159,6 +159,7 @@ require 'header.php';
                     <div class="card-header">
                         <h4>Breeding Cage Dashboard
                             <a href="bc_addn.php" class="btn btn-primary float-end">Add New Breeding Cage</a>
+                            <a href="bc_slct_crd.php" class="btn btn-success">Print Cage Card</a>
                         </h4>
                         <p>Note: Litter data can be added on the view page.</p>
                     </div>
