@@ -106,6 +106,7 @@ require 'header.php';
             <form>
                 <div class="mb-3">
                     <label for="cageIds" class="form-label">Select Cage IDs (up to 4):</label>
+                    <br>
                     <select id="cageIds" name="id[]" class="form-select" multiple size="10">
                         <?php foreach ($cageIds as $cageId) : ?>
                             <option value="<?= htmlspecialchars($cageId) ?>"><?= htmlspecialchars($cageId) ?></option>
