@@ -56,8 +56,12 @@ require 'header.php';
             width: 80%;
         }
 
-        .btn-print {
+        .btn-container {
             margin-top: 20px;
+        }
+
+        .btn-container button {
+            margin-right: 10px;
         }
     </style>
 
@@ -75,12 +79,12 @@ require 'header.php';
             return true;
         }
 
-        function handleSubmit(event) {
+        function handleSubmit(event, url) {
             event.preventDefault();
             if (validateSelection()) {
                 var selectedIds = document.getElementById("cageIds").selectedOptions;
                 var ids = Array.from(selectedIds).map(option => option.value);
-                var queryString = "hc_prnt_crd.php?id=" + ids.join(",");
+                var queryString = url + "?id=" + ids.join(",");
                 window.location.href = queryString;
             }
         }
@@ -99,7 +103,7 @@ require 'header.php';
     <div class="container mt-4">
         <div class="form-wrapper">
             <h4>Select Holding Cages for Printing</h4>
-            <form onsubmit="handleSubmit(event);">
+            <form>
                 <div class="mb-3">
                     <label for="cageIds" class="form-label">Select Cage IDs (up to 4):</label>
                     <select id="cageIds" name="id[]" class="form-select" multiple size="10">
@@ -108,7 +112,10 @@ require 'header.php';
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary btn-print">Print Cage Card</button>
+                <div class="btn-container">
+                    <button type="submit" class="btn btn-primary btn-print" onclick="handleSubmit(event, 'hc_prnt_crd.php')">Print Cage Card</button>
+                    <!--<button type="submit" class="btn btn-secondary btn-view" onclick="handleSubmit(event, 'hc_prnt_crd.php')">View Cage Card</button>-->
+                </div>
             </form>
         </div>
     </div>
