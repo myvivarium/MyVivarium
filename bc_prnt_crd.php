@@ -62,6 +62,7 @@ if (isset($_GET['id'])) {
         @page {
             size: letter landscape;
             margin: 0;
+            padding: 0;
         }
 
         body,
