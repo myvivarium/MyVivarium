@@ -67,14 +67,13 @@ if (isset($_GET['id'])) {
 
         /* print styles */
         @media print {
-
             body {
                 margin: 0;
                 color: #000;
-                background-color: #fff;
             }
 
         }
+
         body,
         html {
             margin: 0;
@@ -83,7 +82,7 @@ if (isset($_GET['id'])) {
             height: 100%;
             box-sizing: border-box;
             display: grid;
-        place-items: center;
+            place-items: center;
         }
 
         span {

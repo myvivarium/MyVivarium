@@ -47,58 +47,66 @@ if (isset($_GET['id'])) {
     <meta charset="UTF-8">
     <title>Printable 2x2 Card Table</title>
     <style>
-    body,
-    html {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-    }
+        @page {
+            size: letter landscape;
+            margin: 0;
+            padding: 0;
+        }
 
-    span {
-        font-size: 8pt;
-        padding: 0px;
-        line-height: 1;
-        display: inline-block;
-    }
+        /* print styles */
+        @media print {
+            body {
+                margin: 0;
+                color: #000;
+            }
 
-    table {
-        box-sizing: border-box;
-        border-collapse: collapse;
-        margin: 0;
-        padding: 0;
-        border-spacing: 0;
-    }
+        }
 
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            display: grid;
+            place-items: center;
+        }
 
-    table#cageA tr td {
-        border: 1px solid black;
-        box-sizing: border-box;
-        border-collapse: collapse;
-        margin: 0;
-        padding: 0;
-        border-spacing: 0;
-    }
+        span {
+            font-size: 8pt;
+            padding: 0px;
+            line-height: 1;
+            display: inline-block;
+        }
 
-    table#cageB tr td {
-        border: 1px solid black;
-        box-sizing: border-box;
-        border-collapse: collapse;
-        margin: 0;
-        padding: 0;
-        border-spacing: 0;
-    }
+        table {
+            box-sizing: border-box;
+            border-collapse: collapse;
+            margin: 0;
+            padding: 0;
+            border-spacing: 0;
+        }
 
-    table#cageB tr:first-child td {
-        border-top: none;
-    }
+        table#cageA tr td,
+        table#cageB tr td {
+            border: 1px solid black;
+            box-sizing: border-box;
+            border-collapse: collapse;
+            margin: 0;
+            padding: 0;
+            border-spacing: 0;
+        }
+
+        table#cageB tr:first-child td {
+            border-top: none;
+        }
     </style>
 </head>
 
 <body>
     <table
-        style="width: 10in; height: 6in; border-collapse: collapse; margin: 1.25in 0.50in; border: 1px dashed #D3D3D3;">
+        style="width: 10in; height: 6in; border-collapse: collapse; border: 1px dashed #D3D3D3;">
         <?php foreach ($holdingcages as $index => $holdingcage): ?>
 
         <?php if ($index % 2 === 0): ?>
