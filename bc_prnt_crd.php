@@ -75,7 +75,6 @@ if (isset($_GET['id'])) {
             }
 
         }
-
         body,
         html {
             margin: 0;
@@ -83,7 +82,10 @@ if (isset($_GET['id'])) {
             width: 100%;
             height: 100%;
             box-sizing: border-box;
+            display: grid;
+        place-items: center;
         }
+
         span {
             font-size: 8pt;
             padding: 0px;
@@ -116,7 +118,7 @@ if (isset($_GET['id'])) {
 </head>
 
 <body>
-    <table style="width: 10in; height: 6in; border-collapse: collapse; margin: 1in 0.50in 1in 0.50in; border: 1px dashed #D3D3D3;">
+    <table style="width: 10in; height: 6in; border-collapse: collapse; margin: 1.1in 0.50in; border: 1px dashed #D3D3D3;">
         <?php foreach ($breedingcages as $index => $breedingcage): ?>
 
         <?php if ($index % 2 === 0): ?>
