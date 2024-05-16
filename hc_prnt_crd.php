@@ -170,13 +170,10 @@ if (isset($_GET['id'])) {
                 <table border="1" style="width: 5in; height: 1.5in; border-top: none;" id="cageB">
                     <tr>
                         <td style="width:40%;">
-                            <span
-                                style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Mouse
-                                ID</span>
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Mouse ID</span>
                         </td>
                         <td style="width:60%;">
-                            <span
-                                style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Genotype</span>
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Genotype</span>
                         </td>
                     </tr>
                     <?php for ($i = 1; $i <= 5; $i++): ?>
