@@ -180,22 +180,22 @@ if (isset($_GET['id'])) {
                 <table border="1" style="width: 5in; height: 1.5in; border-top: none;" id="cageB">
                     <tr>
                         <td style="width:25%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">DOM</span>
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">DOM</span>
                         </td>
                         <td style="width:25%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">Litter DOB</span>
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Litter DOB</span>
                         </td>
                         <td style="width:12.5%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">Pups Alive</span>
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Alive</span>
                         </td>
                         <td style="width:12.5%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">Pups Dead</span>
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Dead</span>
                         </td>
                         <td style="width:12.5%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">Pups Male</span>
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Male</span>
                         </td>
                         <td style="width:12.5%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">Pups Female</span>
+                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Female</span>
                         </td>
                     </tr>
                     <?php for ($i = 0; $i < 5; $i++): ?>

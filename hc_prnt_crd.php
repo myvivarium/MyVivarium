@@ -171,12 +171,12 @@ if (isset($_GET['id'])) {
                     <tr>
                         <td style="width:40%;">
                             <span
-                                style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">Mouse
+                                style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Mouse
                                 ID</span>
                         </td>
                         <td style="width:60%;">
                             <span
-                                style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none;">Genotype</span>
+                                style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Genotype</span>
                         </td>
                     </tr>
                     <?php for ($i = 1; $i <= 5; $i++): ?>
