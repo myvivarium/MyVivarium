@@ -65,6 +65,17 @@ if (isset($_GET['id'])) {
             padding: 0;
         }
 
+        /* print styles */
+        @media print {
+
+            body {
+                margin: 0;
+                color: #000;
+                background-color: #fff;
+            }
+
+        }
+
         body,
         html {
             margin: 0;
@@ -73,7 +84,6 @@ if (isset($_GET['id'])) {
             height: 100%;
             box-sizing: border-box;
         }
-
         span {
             font-size: 8pt;
             padding: 0px;
