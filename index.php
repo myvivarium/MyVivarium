@@ -226,7 +226,7 @@ mysqli_close($con);
         <!-- New Row for Unique Features -->
         <div class="row mt-4">
             <div style="margin:50px 0px 50px 0px;" class="col-md-12">
-                <h2 class="text-center">Welcome to <?php echo htmlspecialchars($labName); ?></h2>
+                <h2 class="text-center">Welcome to the <?php echo htmlspecialchars($labName); ?></h2>
                 <p class="text-center italic">Elevate Your Research with IoT-Enhanced Colony Management</p>
 
                 <!-- Feature Box 1 -->
