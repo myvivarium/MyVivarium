@@ -163,6 +163,7 @@ mysqli_close($con);
         /* Ensure the header, image, and h1 have the correct styles */
         header {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             background-color: #343a40;
@@ -173,6 +174,7 @@ mysqli_close($con);
         }
 
         .logo-container {
+            background-color: #ffffff;
             /* Light background color for logo container */
             padding: 0;
             /* No padding inside the logo container */
@@ -181,7 +183,7 @@ mysqli_close($con);
         }
 
         header img.header-logo {
-            width: 250px;
+            width: 50px;
             /* Adjust size as needed */
             height: auto;
             display: block;
@@ -194,21 +196,37 @@ mysqli_close($con);
             margin-left: 15px;
             /* Maintain space between the logo and h1 text */
             margin-bottom: 0;
-            font-size: 2.5rem;
+            font-size: 1.5rem;
             /* Adjust font size as needed */
+            white-space: nowrap;
+            /* Prevents wrapping of text */
+        }
+
+        @media (max-width: 576px) {
+            header h1 {
+                font-size: 1.2rem;
+                /* Adjust font size for smaller screens */
+                margin-left: 10px;
+                /* Adjust margin for smaller screens */
+            }
+
+            header img.header-logo {
+                width: 40px;
+                /* Adjust logo size for smaller screens */
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Header with Lab Name -->
-    <header class="bg-dark text-white text-center py-3 d-flex justify-content-center align-items-center">
+    <header class="bg-dark text-white text-center py-3 d-flex flex-wrap justify-content-center align-items-center">
         <div class="logo-container d-flex justify-content-center align-items-center">
             <img src="images/logo.webp" alt="Logo" class="header-logo">
         </div>
         <h1 class="ml-3 mb-0"><?php echo htmlspecialchars($labName); ?></h1>
     </header>
+
 
 
 
