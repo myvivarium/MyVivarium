@@ -159,15 +159,39 @@ mysqli_close($con);
             text-align: right;
             margin-left: 100px;
         }
+
+        /* Ensure the header, image, and h1 have the correct styles */
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #343a40; /* or use the Bootstrap class bg-dark */
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+header img.header-logo {
+    width: 50px; /* Adjust size as needed */
+    height: auto;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem; /* Adjust font size as needed */
+}
+
     </style>
 </head>
 
 <body>
 
     <!-- Header with Lab Name -->
-    <header class="bg-dark text-white text-center py-3">
-        <h1><?php echo htmlspecialchars($labName); ?></h1>
-    </header>
+    <header class="bg-dark text-white text-center py-3 d-flex justify-content-center align-items-center">
+    <img src="images/big-logo-text-to-path.svg" alt="Logo" class="header-logo">
+    <h1 class="ml-3 mb-0"><?php echo htmlspecialchars($labName); ?></h1>
+</header>
+
 
     <!-- Main Content -->
     <div class="container mt-4">
