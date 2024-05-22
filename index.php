@@ -105,6 +105,9 @@ mysqli_close($con);
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
     <!-- Custom CSS -->
     <style>
         .carousel img {
@@ -166,38 +169,30 @@ mysqli_close($con);
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            background-color: #343a40;
-            /* Dark background color for the header */
+            background-color: #343a40; /* Dark background color for the header */
             color: white;
             padding: 1rem;
             text-align: center;
         }
 
         .logo-container {
-            padding: 0;
-            /* No padding inside the logo container */
-            margin: 0;
-            /* No margin around the logo container */
+            padding: 0; /* No padding inside the logo container */
+            margin: 0; /* No margin around the logo container */
         }
 
         header img.header-logo {
-            width: 350px;
-            /* Adjust size as needed */
+            width: 350px; /* Adjust size as needed */
             height: auto;
-            display: block;
-            /* Removes any extra space below the image */
-            margin: 0;
-            /* No margin around the image */
+            display: block; /* Removes any extra space below the image */
+            margin: 0; /* No margin around the image */
         }
 
         header h1 {
-            margin-left: 15px;
-            /* Maintain space between the logo and h1 text */
+            margin-left: 15px; /* Maintain space between the logo and h1 text */
             margin-bottom: 0;
-            font-size: 2.5rem;
-            /* Adjust font size as needed */
-            white-space: nowrap;
-            /* Prevents wrapping of text */
+            font-size: 2.5rem; /* Adjust font size as needed */
+            white-space: nowrap; /* Prevents wrapping of text */
+            font-family: 'Poppins', sans-serif; /* Apply Google Font Poppins */
         }
 
         
