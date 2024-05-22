@@ -174,8 +174,6 @@ mysqli_close($con);
         }
 
         .logo-container {
-            background-color: #ffffff;
-            /* Light background color for logo container */
             padding: 0;
             /* No padding inside the logo container */
             margin: 0;
