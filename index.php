@@ -181,7 +181,7 @@ mysqli_close($con);
         }
 
         header img.header-logo {
-            width: 350px; /* Adjust size as needed */
+            width: 300px; /* Adjust size as needed */
             height: auto;
             display: block; /* Removes any extra space below the image */
             margin: 0; /* No margin around the image */
@@ -190,9 +190,11 @@ mysqli_close($con);
         header h1 {
             margin-left: 15px; /* Maintain space between the logo and h1 text */
             margin-bottom: 0;
-            font-size: 2.5rem; /* Adjust font size as needed */
+            margin-top: 12px;
+            font-size: 3.5rem; /* Adjust font size as needed */
             white-space: nowrap; /* Prevents wrapping of text */
             font-family: 'Poppins', sans-serif; /* Apply Google Font Poppins */
+            font-weight: 800;
         }
 
         
