@@ -1,5 +1,4 @@
 <?php
-session_start();
 require 'dbcon.php';
 
 // Query to fetch the lab name
