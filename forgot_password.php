@@ -152,53 +152,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             border-radius: 5px;
         }
 
-        header {
+                /* Ensure the header, image, and h1 have the correct styles */
+                header {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            background-color: #343a40;
-            /* Dark background color for the header */
+            background-color: #343a40; /* Dark background color for the header */
             color: white;
             padding: 1rem;
             text-align: center;
         }
 
         .logo-container {
-            /* Light background color for logo container */
-            padding: 0;
-            /* No padding inside the logo container */
-            margin: 0;
-            /* No margin around the logo container */
+            padding: 0; /* No padding inside the logo container */
+            margin: 0; /* No margin around the logo container */
         }
 
         header img.header-logo {
-            width: 250px;
-            /* Adjust size as needed */
+            width: 300px; /* Adjust size as needed */
             height: auto;
-            display: block;
-            /* Removes any extra space below the image */
-            margin: 0;
-            /* No margin around the image */
+            display: block; /* Removes any extra space below the image */
+            margin: 0; /* No margin around the image */
         }
 
         header h1 {
-            margin-left: 15px;
-            /* Maintain space between the logo and h1 text */
+            margin-left: 15px; /* Maintain space between the logo and h1 text */
             margin-bottom: 0;
-            font-size: 2.5rem;
-            /* Adjust font size as needed */
+            margin-top: 12px;
+            font-size: 3.5rem; /* Adjust font size as needed */
+            white-space: nowrap; /* Prevents wrapping of text */
+            font-family: 'Poppins', sans-serif; /* Apply Google Font Poppins */
+            font-weight: 800;
+        }
+
+        @media (max-width: 576px) {
+            header h1 {
+                font-size: 2.2rem; /* Adjust font size for smaller screens */
+                margin-left: 10px; /* Adjust margin for smaller screens */
+            }
+
+            header img.header-logo {
+                width: 150px; /* Adjust logo size for smaller screens */
+            }
         }
     </style>
 </head>
 
 <body>
     <!-- Header with Lab Name -->
-    <header class="bg-dark text-white text-center py-3 d-flex justify-content-center align-items-center">
+    <header class="bg-dark text-white text-center py-3 d-flex flex-wrap justify-content-center align-items-center">
         <div class="logo-container d-flex justify-content-center align-items-center">
-            <img src="images/logo.webp" alt="Logo" class="header-logo">
+            <img src="images/logo1.webp" alt="Logo" class="header-logo">
         </div>
         <h1 class="ml-3 mb-0"><?php echo htmlspecialchars($labName); ?></h1>
     </header>
+
     <br>
     <br>
     <div class="container">
