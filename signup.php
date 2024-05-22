@@ -97,12 +97,53 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             color: #888;
             font-size: 12px;
         }
+
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #343a40;
+            /* Dark background color for the header */
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .logo-container {
+            /* Light background color for logo container */
+            padding: 0;
+            /* No padding inside the logo container */
+            margin: 0;
+            /* No margin around the logo container */
+        }
+
+        header img.header-logo {
+            width: 250px;
+            /* Adjust size as needed */
+            height: auto;
+            display: block;
+            /* Removes any extra space below the image */
+            margin: 0;
+            /* No margin around the image */
+        }
+
+        header h1 {
+            margin-left: 15px;
+            /* Maintain space between the logo and h1 text */
+            margin-bottom: 0;
+            font-size: 2.5rem;
+            /* Adjust font size as needed */
+        }
     </style>
 </head>
 
 <body>
-    <header class="bg-dark text-white text-center py-3">
-        <h1><?php echo htmlspecialchars($labName); ?></h1>
+    <!-- Header with Lab Name -->
+    <header class="bg-dark text-white text-center py-3 d-flex justify-content-center align-items-center">
+        <div class="logo-container d-flex justify-content-center align-items-center">
+            <img src="images/logo.webp" alt="Logo" class="header-logo">
+        </div>
+        <h1 class="ml-3 mb-0"><?php echo htmlspecialchars($labName); ?></h1>
     </header>
     <br>
     <div class="container">

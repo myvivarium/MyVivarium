@@ -183,7 +183,7 @@ mysqli_close($con);
         }
 
         header img.header-logo {
-            width: 50px;
+            width: 250px;
             /* Adjust size as needed */
             height: auto;
             display: block;
