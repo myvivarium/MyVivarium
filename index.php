@@ -166,8 +166,10 @@ mysqli_close($con);
 
     <!-- Header with Lab Name -->
     <header class="bg-dark text-white text-center py-3">
+        <img src="images/big-logo-text-to-path-transparent.svg" alt="Logo" style="width: 50px; height: auto;"> <!-- Adjust the size as needed -->
         <h1><?php echo htmlspecialchars($labName); ?></h1>
     </header>
+
 
     <!-- Main Content -->
     <div class="container mt-4">
@@ -199,9 +201,9 @@ mysqli_close($con);
                     <h3>Login</h3>
                     <!-- Display error message if set -->
                     <?php if (isset($error_message)) { ?>
-                    <div class="alert alert-danger">
-                        <?php echo $error_message; ?>
-                    </div>
+                        <div class="alert alert-danger">
+                            <?php echo $error_message; ?>
+                        </div>
                     <?php } ?>
                     <form method="POST" action="">
                         <div class="form-group">
