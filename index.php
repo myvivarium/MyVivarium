@@ -161,26 +161,36 @@ mysqli_close($con);
         }
 
         /* Ensure the header, image, and h1 have the correct styles */
-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #343a40; /* or use the Bootstrap class bg-dark */
-    color: white;
-    padding: 1rem;
-    text-align: center;
-}
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #343a40;
+            /* Dark background color */
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
 
-header img.header-logo {
-    width: 50px; /* Adjust size as needed */
-    height: auto;
-}
+        .logo-container {
+            background-color: #ffffff;
+            /* Light background color for logo */
+            padding: 5px;
+            border-radius: 5px;
+            /* Optional: adds rounded corners */
+        }
 
-header h1 {
-    margin: 0;
-    font-size: 1.5rem; /* Adjust font size as needed */
-}
+        header img.header-logo {
+            width: 50px;
+            /* Adjust size as needed */
+            height: auto;
+        }
 
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            /* Adjust font size as needed */
+        }
     </style>
 </head>
 
@@ -188,9 +198,12 @@ header h1 {
 
     <!-- Header with Lab Name -->
     <header class="bg-dark text-white text-center py-3 d-flex justify-content-center align-items-center">
-    <img src="images/big-logo-text-to-path.svg" alt="Logo" class="header-logo">
-    <h1 class="ml-3 mb-0"><?php echo htmlspecialchars($labName); ?></h1>
-</header>
+        <div class="logo-container d-flex justify-content-center align-items-center">
+            <img src="images/big-logo-text-to-path-transparent.svg" alt="Logo" class="header-logo">
+        </div>
+        <h1 class="ml-3 mb-0"><?php echo htmlspecialchars($labName); ?></h1>
+    </header>
+
 
 
     <!-- Main Content -->
@@ -223,9 +236,9 @@ header h1 {
                     <h3>Login</h3>
                     <!-- Display error message if set -->
                     <?php if (isset($error_message)) { ?>
-                    <div class="alert alert-danger">
-                        <?php echo $error_message; ?>
-                    </div>
+                        <div class="alert alert-danger">
+                            <?php echo $error_message; ?>
+                        </div>
                     <?php } ?>
                     <form method="POST" action="">
                         <div class="form-group">
