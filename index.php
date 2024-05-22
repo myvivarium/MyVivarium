@@ -194,7 +194,7 @@ mysqli_close($con);
             margin-left: 15px;
             /* Maintain space between the logo and h1 text */
             margin-bottom: 0;
-            font-size: 1.5rem;
+            font-size: 2.5rem;
             /* Adjust font size as needed */
             white-space: nowrap;
             /* Prevents wrapping of text */
