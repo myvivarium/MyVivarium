@@ -222,9 +222,6 @@ mysqli_close($con);
     </header>
 
 
-
-
-
     <!-- Main Content -->
     <div class="container mt-4">
         <div style="margin: 50px 0px 0px 50px;" class="row">

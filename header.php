@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require 'dbcon.php';
 
 // Query to fetch the lab name
@@ -10,7 +10,6 @@ $labName = "My Vivarium"; // A default value in case the query fails or returns 
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -19,16 +18,16 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($labName); ?></title>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-        crossorigin="anonymous"></script>
 
     <style>
         /* General Styles */
@@ -44,12 +43,44 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             text-align: center;
             width: 100%;
             box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
         }
 
-        .header-footer h2,
-        .header-footer p {
+        .header-footer .logo-container {
+            padding: 0;
             margin: 0;
+        }
+
+        .header-footer img.header-logo {
+            width: 300px;
+            height: auto;
+            display: block;
+            margin: 0;
+        }
+
+        .header-footer h2 {
+            margin-left: 15px;
+            margin-bottom: 0;
+            margin-top: 12px;
+            font-size: 3.5rem;
+            white-space: nowrap;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
             color: #fff;
+        }
+
+        @media (max-width: 576px) {
+            .header-footer h2 {
+                font-size: 2.2rem;
+                margin-left: 10px;
+            }
+
+            .header-footer img.header-logo {
+                width: 150px;
+            }
         }
 
         /* Navigation Menu Styling */
@@ -75,34 +106,39 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 <body>
     <!-- Header Section -->
     <div class="header-footer">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h2><?php echo htmlspecialchars($labName); ?></h2>
-                </div>
-                <div class="col-md-4 text-end">
-                    <!-- Navigation Menu -->
-                    <nav class="nav">
-                        <a href="home.php" class="btn btn-primary">Home</a>
-                        <!-- Dropdown for Dashboard -->
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                Dashboards
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
-                                <li><a class="dropdown-item" href="hc_dash.php">Holding Cage</a></li>
-                                <li><a class="dropdown-item" href="bc_dash.php">Breeding Cage</a></li>
-                            </ul>
-                        </div>
-                        <?php
-                        if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                            echo '<a href="admin.php" class="btn btn-primary">Admin</a>';
-                        }
-                        ?>
-                        <a href="logout.php" class="btn btn-secondary">Logout</a>
-                    </nav>
-                </div>
+        <div class="logo-container">
+            <img src="images/logo1.webp" alt="Logo" class="header-logo">
+        </div>
+        <h2><?php echo htmlspecialchars($labName); ?></h2>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><?php echo htmlspecialchars($labName); ?></h2>
+            </div>
+            <div class="col-md-4 text-end">
+                <!-- Navigation Menu -->
+                <nav class="nav">
+                    <a href="home.php" class="btn btn-primary">Home</a>
+                    <!-- Dropdown for Dashboard -->
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Dashboards
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
+                            <li><a class="dropdown-item" href="hc_dash.php">Holding Cage</a></li>
+                            <li><a class="dropdown-item" href="bc_dash.php">Breeding Cage</a></li>
+                        </ul>
+                    </div>
+                    <?php
+                    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+                        echo '<a href="admin.php" class="btn btn-primary">Admin</a>';
+                    }
+                    ?>
+                    <a href="logout.php" class="btn btn-secondary">Logout</a>
+                </nav>
             </div>
         </div>
     </div>
