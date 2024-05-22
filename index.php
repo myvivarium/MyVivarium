@@ -120,51 +120,44 @@ mysqli_close($con);
             box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .feature-box {
+        feature-box {
             transition: transform .2s, box-shadow .2s;
             border-radius: 10px;
             padding: 30px;
             background-color: white;
             box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            margin: 50px 0px;
+            margin: 50px 0px 50px 0px;
         }
 
         .feature-box h3 {
             margin-top: 0;
             color: #007bff;
+            /* Matching Bootstrap's primary color for consistency */
         }
 
         .feature-box p {
             margin-bottom: 0;
         }
 
-        /* Header Styling */
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Header and Footer Styling */
+        .header-footer {
             background-color: #343a40;
-            color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin: 20px 0;
+            padding: 20px 0;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .header-container img {
-            width: 50px;
-            height: auto;
-        }
-
-        .header-container h1 {
+        .header-footer h2,
+        .header-footer p {
             margin: 0;
-            font-size: 1.5rem;
+            color: #333;
         }
 
         .forgot-password-link {
             text-align: right;
-            display: block;
-            margin-top: 10px;
+            margin-left: 100px;
         }
     </style>
 </head>
@@ -172,16 +165,13 @@ mysqli_close($con);
 <body>
 
     <!-- Header with Lab Name -->
-    <div class="container mt-4">
-        <div class="header-container">
-            <img src="images/big-logo-text-to-path.svg" alt="Logo">
-            <h1><?php echo htmlspecialchars($labName); ?></h1>
-        </div>
-    </div>
+    <header class="bg-dark text-white text-center py-3">
+        <h1><?php echo htmlspecialchars($labName); ?></h1>
+    </header>
 
     <!-- Main Content -->
     <div class="container mt-4">
-        <div class="row">
+        <div style="margin: 50px 0px 0px 50px;" class="row">
             <!-- Slideshow Column -->
             <div class="col-md-6">
                 <div id="labCarousel" class="carousel slide" data-ride="carousel">
@@ -209,9 +199,9 @@ mysqli_close($con);
                     <h3>Login</h3>
                     <!-- Display error message if set -->
                     <?php if (isset($error_message)) { ?>
-                        <div class="alert alert-danger">
-                            <?php echo $error_message; ?>
-                        </div>
+                    <div class="alert alert-danger">
+                        <?php echo $error_message; ?>
+                    </div>
                     <?php } ?>
                     <form method="POST" action="">
                         <div class="form-group">
@@ -230,33 +220,35 @@ mysqli_close($con);
                     </form>
                 </div>
             </div>
+
         </div>
 
         <!-- New Row for Unique Features -->
         <div class="row mt-4">
-            <div class="col-md-12">
+            <div style="margin:50px 0px 50px 0px;" class="col-md-12">
                 <h2 class="text-center">Welcome to the <?php echo htmlspecialchars($labName); ?></h2>
                 <p class="text-center italic">Elevate Your Research with IoT-Enhanced Colony Management</p>
 
                 <!-- Feature Box 1 -->
-                <div class="col-md-6 mb-6 mx-auto feature-box text-center">
+                <div style="margin:50px 0px 50px 0px;" class="col-md-6 mb-6 mx-auto feature-box text-center">
                     <h3>Real-Time Environmental Monitoring</h3>
                     <p>Gain unparalleled insights into the conditions of your vivarium. Our IoT sensors continuously track temperature and humidity levels, ensuring a stable and controlled environment for your research animals.</p>
                 </div>
 
                 <!-- Feature Box 2 -->
-                <div class="col-md-6 mb-6 mx-auto feature-box text-center">
+                <div style="margin:50px 0px 50px 0px;" class="col-md-6 mb-6 mx-auto feature-box text-center">
                     <h3>Effortless Cage and Mouse Tracking</h3>
                     <p>Seamlessly monitor every cage and mouse in your facility. No more manual record-keeping or confusion.</p>
                 </div>
 
                 <!-- Feature Box 3 -->
-                <div class="col-md-6 mb-6 mx-auto feature-box text-center">
+                <div style="margin:50px 0px 50px 0px;" class="col-md-6 mb-6 mx-auto feature-box text-center">
                     <h3>Security and Compliance</h3>
                     <p>Rest easy knowing your data is secure and compliant with industry regulations. We prioritize data integrity and confidentiality.</p>
                 </div>
             </div>
         </div>
+
     </div>
 
     <?php include 'footer.php'; ?>
