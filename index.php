@@ -200,19 +200,7 @@ mysqli_close($con);
             /* Prevents wrapping of text */
         }
 
-        @media (max-width: 576px) {
-            header h1 {
-                font-size: 2.2rem;
-                /* Adjust font size for smaller screens */
-                margin-left: 10px;
-                /* Adjust margin for smaller screens */
-            }
-
-            header img.header-logo {
-                width: 80px;
-                /* Adjust logo size for smaller screens */
-            }
-        }
+        
     </style>
 </head>
 
