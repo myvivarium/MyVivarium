@@ -109,14 +109,9 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             <img src="images/logo1.webp" alt="Logo" class="header-logo">
         </div>
         <h2><?php echo htmlspecialchars($labName); ?></h2>
-    </div>
 
-    <div class="container mt-4">
         <div class="row align-items-center">
-            <div class="col-md-8">
-                <h2><?php echo htmlspecialchars($labName); ?></h2>
-            </div>
-            <div class="col-md-4 text-end">
+
                 <!-- Navigation Menu -->
                 <nav class="nav">
                     <a href="home.php" class="btn btn-primary">Home</a>
@@ -138,7 +133,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                     ?>
                     <a href="logout.php" class="btn btn-secondary">Logout</a>
                 </nav>
-            </div>
+
         </div>
     </div>
 </body>
