@@ -197,6 +197,17 @@ mysqli_close($con);
             font-weight: 800;
         }
 
+        @media (max-width: 576px) {
+            header h1 {
+                font-size: 2.2rem; /* Adjust font size for smaller screens */
+                margin-left: 10px; /* Adjust margin for smaller screens */
+            }
+
+            header img.header-logo {
+                width: 150px; /* Adjust logo size for smaller screens */
+            }
+        }
+
         
     </style>
 </head>
