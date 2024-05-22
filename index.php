@@ -174,7 +174,7 @@ mysqli_close($con);
     <!-- Header with Lab Name -->
     <div class="container mt-4">
         <div class="header-container">
-            <img src="images/big-logo-text-to-path-transparent.svg" alt="Logo">
+            <img src="images/big-logo-text-to-path.svg" alt="Logo">
             <h1><?php echo htmlspecialchars($labName); ?></h1>
         </div>
     </div>
