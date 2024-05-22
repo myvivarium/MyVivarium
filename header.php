@@ -42,10 +42,6 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             text-align: center;
             width: 100%;
             box-sizing: border-box;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
         }
 
         .header-footer .logo-container {
@@ -54,17 +50,15 @@ if ($row = mysqli_fetch_assoc($labResult)) {
         }
 
         .header-footer img.header-logo {
-            width: 300px;
+            width: 150px;
             height: auto;
             display: block;
-            margin: 0;
+            margin: 0 auto;
         }
 
         .header-footer h2 {
-            margin-left: 15px;
-            margin-bottom: 0;
-            margin-top: 12px;
-            font-size: 3.5rem;
+            margin: 0;
+            font-size: 2.5rem;
             white-space: nowrap;
             font-family: 'Poppins', sans-serif;
             font-weight: 800;
@@ -73,31 +67,27 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 
         @media (max-width: 576px) {
             .header-footer h2 {
-                font-size: 2.2rem;
-                margin-left: 10px;
+                font-size: 1.8rem;
             }
 
             .header-footer img.header-logo {
-                width: 150px;
+                width: 100px;
             }
         }
 
         /* Navigation Menu Styling */
-        .nav {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
+        .nav-container {
+            background-color: #343a40;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .nav .btn {
+            margin: 0 5px;
         }
 
         .dropdown-menu {
             min-width: auto;
-        }
-
-        /* Center Main Content */
-        .main-content {
-            justify-content: center;
-            align-items: center;
         }
     </style>
 </head>
@@ -109,32 +99,30 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             <img src="images/logo1.webp" alt="Logo" class="header-logo">
         </div>
         <h2><?php echo htmlspecialchars($labName); ?></h2>
+    </div>
 
-        <div class="row align-items-center">
-
-                <!-- Navigation Menu -->
-                <nav class="nav">
-                    <a href="home.php" class="btn btn-primary">Home</a>
-                    <!-- Dropdown for Dashboard -->
-                    <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            Dashboards
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
-                            <li><a class="dropdown-item" href="hc_dash.php">Holding Cage</a></li>
-                            <li><a class="dropdown-item" href="bc_dash.php">Breeding Cage</a></li>
-                        </ul>
-                    </div>
-                    <?php
-                    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                        echo '<a href="admin.php" class="btn btn-primary">Admin</a>';
-                    }
-                    ?>
-                    <a href="logout.php" class="btn btn-secondary">Logout</a>
-                </nav>
-
-        </div>
+    <!-- Navigation Menu Section -->
+    <div class="nav-container">
+        <nav class="nav justify-content-center">
+            <a href="home.php" class="btn btn-primary">Home</a>
+            <!-- Dropdown for Dashboard -->
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Dashboards
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
+                    <li><a class="dropdown-item" href="hc_dash.php">Holding Cage</a></li>
+                    <li><a class="dropdown-item" href="bc_dash.php">Breeding Cage</a></li>
+                </ul>
+            </div>
+            <?php
+            if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+                echo '<a href="admin.php" class="btn btn-primary">Admin</a>';
+            }
+            ?>
+            <a href="logout.php" class="btn btn-secondary">Logout</a>
+        </nav>
     </div>
 </body>
 
