@@ -85,7 +85,7 @@ require 'header.php';
                 var selectedIds = document.getElementById("cageIds").selectedOptions;
                 var ids = Array.from(selectedIds).map(option => option.value);
                 var queryString = url + "?id=" + ids.join(",");
-                window.location.href = queryString;
+                window.open(queryString, '_blank'); // Open in a new tab
             }
         }
 
