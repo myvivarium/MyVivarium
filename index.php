@@ -143,21 +143,6 @@ mysqli_close($con);
             margin-bottom: 0;
         }
 
-        /* Header and Footer Styling */
-        .header-footer {
-            background-color: #343a40;
-            padding: 20px 0;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .header-footer h2,
-        .header-footer p {
-            margin: 0;
-            color: #333;
-        }
-
         .forgot-password-link {
             text-align: right;
             margin-left: 100px;
