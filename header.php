@@ -105,7 +105,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     <!-- Header Section -->
     <div class="header-footer">
         <div class="logo-container">
-            <img src="images/logo1.webp" alt="Logo" class="header-logo">
+            <img src="images/logo1.jpg" alt="Logo" class="header-logo">
         </div>
         <h2><?php echo htmlspecialchars($labName); ?></h2>
     </div>

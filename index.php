@@ -201,7 +201,7 @@ mysqli_close($con);
 
     <header class="bg-dark text-white text-center py-3 d-flex flex-wrap justify-content-center align-items-center">
         <div class="logo-container d-flex justify-content-center align-items-center">
-            <img src="images/logo1.webp" alt="Logo" class="header-logo">
+            <img src="images/logo1.jpg" alt="Logo" class="header-logo">
         </div>
         <h1 class="ml-3 mb-0"><?php echo htmlspecialchars($labName); ?></h1>
     </header>
