@@ -8,7 +8,7 @@ if (!isset($_SESSION['name'])) {
     exit;
 }
 
-$currentUserId = $_SESSION['user_id']; // Assuming you have user_id in session
+$currentUserId = $_SESSION['username']; // Assuming you have user_id in session
 
 // Retrieve user's sticky notes
 if (isset($_GET['id'])) {
