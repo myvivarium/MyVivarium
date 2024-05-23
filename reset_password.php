@@ -175,7 +175,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             /* Prevents wrapping of text */
             font-family: 'Poppins', sans-serif;
             /* Apply Google Font Poppins */
-            font-weight: 800;
+            font-weight: 700;
         }
 
         @media (max-width: 576px) {
