@@ -64,6 +64,8 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | <?php echo htmlspecialchars($labName); ?></title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
         .container {
             max-width: 600px;
