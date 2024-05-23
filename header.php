@@ -19,20 +19,20 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($labName); ?></title>
 
-        <!-- Standard favicon -->
-        <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
-    
+    <!-- Standard favicon -->
+    <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
+
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    
+
     <!-- Favicon for different sizes -->
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-    
+
     <!-- Android Chrome Icons -->
     <link rel="icon" sizes="192x192" href="/icons/android-chrome-192x192.png">
     <link rel="icon" sizes="512x512" href="/icons/android-chrome-512x512.png">
-    
+
     <!-- Web App Manifest -->
     <link rel="manifest" href="/icons/site.webmanifest">
 
@@ -43,10 +43,8 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <!-- Bootstrap JS for Dropdown -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Scripts -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-        crossorigin="anonymous"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
     <style>
         /* General Styles */
@@ -61,7 +59,8 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            background-color: #343a40; /* Dark background color for the header */
+            background-color: #343a40;
+            /* Dark background color for the header */
             color: white;
             padding: 1rem;
             text-align: center;
@@ -74,19 +73,26 @@ if ($row = mysqli_fetch_assoc($labResult)) {
         }
 
         .header-footer img.header-logo {
-            width: 300px; /* Adjust size as needed */
+            width: 300px;
+            /* Adjust size as needed */
             height: auto;
-            display: block; /* Removes any extra space below the image */
-            margin: 0; /* No margin around the image */
+            display: block;
+            /* Removes any extra space below the image */
+            margin: 0;
+            /* No margin around the image */
         }
 
         .header-footer h2 {
-            margin-left: 15px; /* Maintain space between the logo and h1 text */
+            margin-left: 15px;
+            /* Maintain space between the logo and h1 text */
             margin-bottom: 0;
             margin-top: 12px;
-            font-size: 3.5rem; /* Adjust font size as needed */
-            white-space: nowrap; /* Prevents wrapping of text */
-            font-family: 'Poppins', sans-serif; /* Apply Google Font Poppins */
+            font-size: 3.5rem;
+            /* Adjust font size as needed */
+            white-space: nowrap;
+            /* Prevents wrapping of text */
+            font-family: 'Poppins', sans-serif;
+            /* Apply Google Font Poppins */
             font-weight: 500;
         }
 
@@ -122,7 +128,9 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     <!-- Header Section -->
     <div class="header-footer">
         <div class="logo-container">
-            <img src="images/logo1.jpg" alt="Logo" class="header-logo">
+            <a href="home.php">
+                <img src="images/logo1.jpg" alt="Logo" class="header-logo">
+            </a>
         </div>
         <h2><?php echo htmlspecialchars($labName); ?></h2>
     </div>
@@ -133,8 +141,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             <a href="home.php" class="btn btn-primary">Home</a>
             <!-- Dropdown for Dashboard -->
             <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton"
-                    data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                     Dashboards
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
