@@ -73,6 +73,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password | <?php echo htmlspecialchars($labName); ?></title>
+
+        <!-- Standard favicon -->
+        <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    
+    <!-- Favicon for different sizes -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    
+    <!-- Android Chrome Icons -->
+    <link rel="icon" sizes="192x192" href="/icons/android-chrome-192x192.png">
+    <link rel="icon" sizes="512x512" href="/icons/android-chrome-512x512.png">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/icons/site.webmanifest">
+
+
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
