@@ -159,7 +159,7 @@ require 'header.php';
                     <div class="card-header d-flex justify-content-between align-items-center">
                     <h4>Breeding Cage Dashboard</h4>
                     <div>
-                        <a href="bc_addn.php" class="btn btn-primary">Add New Breeding Cage</a>
+                        <a href="bc_addn.php" class="btn btn-primary">Add New Cage</a>
                         <a href="bc_slct_crd.php" class="btn btn-success">Print Cage Card</a>
                     </div>
                     </div>
@@ -168,7 +168,7 @@ require 'header.php';
                         <!-- Breeding Cage Search Box -->
                         <form method="GET" action="">
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="Enter cage ID" name="search" value="<?= htmlspecialchars($searchQuery) ?>">
+                                <input type="text" class="form-control" placeholder="Enter Cage ID" name="search" value="<?= htmlspecialchars($searchQuery) ?>">
                                 <button class="btn btn-primary" type="submit">Search</button>
                             </div>
                         </form>
