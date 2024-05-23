@@ -2,13 +2,13 @@
 // Include your database connection file
 require 'dbcon.php';
 
-// session_start();
-
 // Check if the user is logged in
 if (!isset($_SESSION['name'])) {
     header("Location: index.php"); // Redirect to admin login page if not logged in
     exit;
 }
+
+$currentUserId = $_SESSION['user_id']; // Assuming you have user_id in session
 
 // Retrieve user's sticky notes
 if (isset($_GET['id'])) {
@@ -140,8 +140,6 @@ $result = $stmt->get_result();
 
 <body>
     <div class="container" style="max-width: 800px; margin: 50px auto;">
-
-
         <div class="popup" id="addNotePopup">
             <span class="close-btn" onclick="togglePopup()">X</span>
             <form id="addNoteForm" method="post" action="nt_add.php">
@@ -161,8 +159,10 @@ $result = $stmt->get_result();
         <div class="overlay" id="overlay" onclick="togglePopup()"></div>
 
         <?php while ($row = $result->fetch_assoc()): ?>
-            <div class="sticky-note">
-                <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
+            <div class="sticky-note" id="note-<?= $row['id']; ?>">
+                <?php if ($currentUserId == $row['user_id']): ?>
+                    <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
+                <?php endif; ?>
                 <span class="userid">
                     <?php echo $row['user_id']; ?>
                 </span>
@@ -233,8 +233,6 @@ $result = $stmt->get_result();
 </body>
 
 </html>
-
-
 
 <?php
 // Close the database connection
