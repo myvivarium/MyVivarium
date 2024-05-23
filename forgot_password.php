@@ -215,6 +215,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             header img.header-logo {
                 width: 150px; /* Adjust logo size for smaller screens */
             }
+
+            .container {
+            max-width: 350px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
         }
     </style>
 </head>

@@ -128,13 +128,13 @@ mysqli_close($con);
     <!-- Custom CSS -->
     <style>
         .carousel img {
-            height: 300px;
+            height: 320px;
             object-fit: cover;
             width: 100%;
         }
 
         .login-form {
-            padding: 20px;
+            padding: 10px;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
@@ -161,8 +161,8 @@ mysqli_close($con);
         }
 
         .forgot-password-link {
-            text-align: right;
-            margin-left: 100px;
+            text-align: left;
+            margin-top: 50px;
         }
 
         /* Ensure the header, image, and h1 have the correct styles */
@@ -226,7 +226,7 @@ mysqli_close($con);
 
     <!-- Main Content -->
     <div class="container mt-4">
-        <div style="margin: 50px 0px 0px 50px;" class="row">
+        <div class="row">
             <!-- Slideshow Column -->
             <div class="col-md-6">
                 <div id="labCarousel" class="carousel slide" data-ride="carousel">
@@ -270,6 +270,8 @@ mysqli_close($con);
                         <button type="submit" class="btn btn-primary" name="login">Login</button>
                         <!-- Signup Link -->
                         <a href="signup.php" class="btn btn-secondary">Sign Up</a>
+                        <br>
+                        <br>
                         <!-- Forgot Password Link -->
                         <a href="forgot_password.php" class="forgot-password-link">Forgot Password?</a>
                     </form>
