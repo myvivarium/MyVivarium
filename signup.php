@@ -129,7 +129,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             font-size: 3.5rem; /* Adjust font size as needed */
             white-space: nowrap; /* Prevents wrapping of text */
             font-family: 'Poppins', sans-serif; /* Apply Google Font Poppins */
-            font-weight: 550;
+            font-weight: 500;
         }
 
         @media (max-width: 576px) {
