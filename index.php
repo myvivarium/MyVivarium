@@ -102,8 +102,7 @@ mysqli_close($con);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($labName); ?></title>
 
-    <!-- Standard favicon -->
-    <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
+
     
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
