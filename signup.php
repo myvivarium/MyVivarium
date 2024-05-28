@@ -83,7 +83,8 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
     <style>
         .container {
             max-width: 600px;
-            margin: 0 auto;
+            margin-top: 200px;
+            margin-bottom: 200px;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -179,6 +180,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
     <br>
     <div class="container">
         <h2>Sign Up</h2>
+        <br>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <!-- Honeypot field for spam detection -->
             <div style="display:none;">
@@ -214,6 +216,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
                 <label for="password">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
+            <br>
             <button type="submit" class="btn btn-primary" name="signup">Sign Up</button>
             <br>
             <a href="index.php" class="btn btn-secondary">Go Back</a>
