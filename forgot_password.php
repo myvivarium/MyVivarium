@@ -2,29 +2,25 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'dbcon.php';
+require 'dbcon.php';  // Include database connection file
+require 'vendor/autoload.php';  // Include PHPMailer autoload file
+require 'email_credentials.php';  // Include email credentials
 
-require 'vendor/autoload.php'; // Include PHPMailer autoload file
-
-require 'email_credentials.php';
-
-// Query to fetch the lab name
-$labQuery = "SELECT lab_name,url FROM data LIMIT 1";
+// Query to fetch the lab name and URL
+$labQuery = "SELECT lab_name, url FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
-$labName = "My Vivarium"; // A default value in case the query fails or returns no result
+$labName = "My Vivarium"; // Default value if the query fails or returns no result
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
     $url = $row['url'];
 }
 
+// Handle form submission for password reset
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
-
-
-
     $email = $_POST['email'];
 
-    // Check if the email exists in your database
+    // Check if the email exists in the database
     $query = "SELECT * FROM users WHERE username = ?";
     $stmt = $con->prepare($query);
     $stmt->bind_param("s", $email);
@@ -34,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     if ($result->num_rows == 1) {
         // Email exists, generate and save a reset token
         $resetToken = bin2hex(random_bytes(32));
-        $expirationTimeUnix = time() + 3600; // Example Unix timestamp
+        $expirationTimeUnix = time() + 3600; // 1 hour expiration time
         $expirationTime = date('Y-m-d H:i:s', $expirationTimeUnix);
 
         $updateQuery = "UPDATE users SET reset_token = ?, reset_token_expiration = ?, login_attempts = 0, account_locked = NULL WHERE username = ?";
@@ -43,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         $updateStmt->execute();
 
         // Send the password reset email
-        $resetLink = "https://".$url."/reset_password.php?token=$resetToken";
+        $resetLink = "https://" . $url . "/reset_password.php?token=$resetToken";
 
         $to = $email;
         $subject = 'Password Reset';
@@ -91,33 +87,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password | <?php echo htmlspecialchars($labName); ?></title>
 
-        <!-- Standard favicon -->
-        <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
-    
-    <!-- Apple Touch Icon -->
+    <!-- Favicon and icons for different devices -->
+    <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    
-    <!-- Favicon for different sizes -->
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-    
-    <!-- Android Chrome Icons -->
     <link rel="icon" sizes="192x192" href="/icons/android-chrome-192x192.png">
     <link rel="icon" sizes="512x512" href="/icons/android-chrome-512x512.png">
-    
-    <!-- Web App Manifest -->
     <link rel="manifest" href="/icons/site.webmanifest">
 
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-        /* Add your CSS styles here */
         .container {
             max-width: 600px;
-            margin: 0 auto;
+            margin-top: 300px;
+            margin-bottom: 300px;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -132,8 +120,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             display: block;
             width: 100%;
             padding: 10px;
-            background-color: #007bff;
-            color: #fff;
             border: none;
             border-radius: 3px;
             cursor: pointer;
@@ -143,7 +129,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             background-color: #0056b3;
         }
 
-        /* Header and Footer Styling */
         .header-footer {
             background-color: #343a40;
             padding: 20px 0;
@@ -158,72 +143,67 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             color: #333;
         }
 
-        /* Center-align the result message */
         .result-message {
             text-align: center;
             margin-top: 15px;
             padding: 10px;
             background-color: #dff0d8;
-            /* Green background color */
             border: 1px solid #3c763d;
-            /* Green border color */
             color: #3c763d;
-            /* Green text color */
             border-radius: 5px;
         }
 
-                /* Ensure the header, image, and h1 have the correct styles */
-                header {
+        header {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            background-color: #343a40; /* Dark background color for the header */
+            background-color: #343a40;
             color: white;
             padding: 1rem;
             text-align: center;
         }
 
         .logo-container {
-            padding: 0; /* No padding inside the logo container */
-            margin: 0; /* No margin around the logo container */
+            padding: 0;
+            margin: 0;
         }
 
         header img.header-logo {
-            width: 300px; /* Adjust size as needed */
+            width: 300px;
             height: auto;
-            display: block; /* Removes any extra space below the image */
-            margin: 0; /* No margin around the image */
+            display: block;
+            margin: 0;
         }
 
         header h1 {
-            margin-left: 15px; /* Maintain space between the logo and h1 text */
+            margin-left: 15px;
             margin-bottom: 0;
             margin-top: 12px;
-            font-size: 3.5rem; /* Adjust font size as needed */
-            white-space: nowrap; /* Prevents wrapping of text */
-            font-family: 'Poppins', sans-serif; /* Apply Google Font Poppins */
+            font-size: 3.5rem;
+            white-space: nowrap;
+            font-family: 'Poppins', sans-serif;
             font-weight: 500;
         }
 
         @media (max-width: 576px) {
             header h1 {
-                font-size: 2.2rem; /* Adjust font size for smaller screens */
-                margin-left: 10px; /* Adjust margin for smaller screens */
+                font-size: 2.2rem;
+                margin-left: 10px;
             }
 
             header img.header-logo {
-                width: 150px; /* Adjust logo size for smaller screens */
+                width: 150px;
             }
 
             .container {
-            max-width: 350px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
+                max-width: 350px;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                background-color: #f9f9f9;
+            }
         }
     </style>
 </head>
