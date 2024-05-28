@@ -202,9 +202,16 @@ $result = $stmt->get_result();
                 type: 'POST',
                 url: 'nt_add.php',
                 data: formData,
-                success: function () {
+                dataType: 'json',
+                success: function (response) {
                     togglePopup(); // Close the popup after successful submission
-                    location.reload(); // Reload the page to display the new note
+                    var messageDiv = $('#message');
+                    if (response.success) {
+                        messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
+                        location.reload(); // Reload the page to display the new note
+                    } else {
+                        messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
+                    }
                 },
                 error: function (error) {
                     console.log('Error:', error);
@@ -220,13 +227,14 @@ $result = $stmt->get_result();
                 data: {
                     note_id: noteId
                 },
+                dataType: 'json',
                 success: function (response) {
-                    var res = JSON.parse(response);
-                    if (res.success) {
+                    var messageDiv = $('#message');
+                    if (response.success) {
                         $('#note-' + noteId).remove(); // Remove the note from the DOM
                         location.reload(); // Reload the page to refresh the notes
                     } else {
-                        alert(res.message);
+                        messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
                     }
                 },
                 error: function (error) {

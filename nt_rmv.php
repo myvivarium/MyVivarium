@@ -19,7 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_id'])) {
 
     // Check if the statement was prepared successfully
     if ($stmt === false) {
-        die('Prepare failed: ' . htmlspecialchars($con->error));
+        echo json_encode(['success' => false, 'message' => 'Prepare failed: ' . htmlspecialchars($con->error)]);
+        exit;
     }
 
     // Bind the note ID and user ID to the prepared statement
@@ -30,14 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_id'])) {
         $_SESSION['message'] = 'Note deleted successfully.';
         echo json_encode(['success' => true, 'message' => 'Note deleted successfully.']);
     } else {
-        $_SESSION['message'] = 'Failed to delete note: ' . htmlspecialchars($stmt->error);
         echo json_encode(['success' => false, 'message' => 'Failed to delete note: ' . htmlspecialchars($stmt->error)]);
     }
 
     // Close the statement
     $stmt->close();
 } else {
-    $_SESSION['message'] = 'Invalid request.';
     echo json_encode(['success' => false, 'message' => 'Invalid request.']);
 }
 

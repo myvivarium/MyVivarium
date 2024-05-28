@@ -12,6 +12,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Handle form submission
+$response = ['success' => false, 'message' => 'Invalid request.'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_text'])) {
     $note_text = $_POST['note_text'];
     $user_id = $_SESSION['username']; // Assuming 'username' is the user's identifier
@@ -21,7 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_text'])) {
     $sql = "INSERT INTO nt_data (user_id, note_text, cage_id) VALUES (?, ?, ?)";
     $stmt = $con->prepare($sql);
     if ($stmt === false) {
-        die('Prepare failed: ' . htmlspecialchars($con->error));
+        $response['message'] = 'Prepare failed: ' . htmlspecialchars($con->error);
+        echo json_encode($response);
+        exit;
     }
 
     // Bind parameters
@@ -29,17 +32,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_text'])) {
 
     // Execute the statement
     if ($stmt->execute()) {
-        echo 'Note added successfully.';
+        $response['success'] = true;
+        $response['message'] = 'Note added successfully.';
     } else {
-        echo 'Execute failed: ' . htmlspecialchars($stmt->error);
+        $response['message'] = 'Execute failed: ' . htmlspecialchars($stmt->error);
     }
 
     // Close the statement
     $stmt->close();
-} else {
-    echo 'Invalid request.';
 }
 
 // Close the database connection
 $con->close();
+
+// Return the response as JSON
+echo json_encode($response);
 ?>
