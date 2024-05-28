@@ -197,6 +197,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     <br>
     <div class="container">
         <h2>Reset Password</h2>
+        <br>
         <form method="POST" action="">
             <!-- Hidden field for the token -->
             <input type="hidden" id="token" name="token" value="<?= htmlspecialchars($_GET['token']); ?>">
