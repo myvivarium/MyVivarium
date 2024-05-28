@@ -234,7 +234,7 @@ $result = $stmt->get_result();
                     // Delay before reloading the page
                     setTimeout(function () {
                         location.reload(); // Reload the page to display the new note
-                    }, 2000); // 2-second delay
+                    }, 1000); // 1-second delay
                 },
                 error: function (error) {
                     console.log('Error:', error);
@@ -259,7 +259,7 @@ $result = $stmt->get_result();
                         // Delay before reloading the page
                         setTimeout(function () {
                             location.reload(); // Reload the page to refresh the notes
-                        }, 2000); // 2-second delay
+                        }, 1000); // 1-second delay
                     } else {
                         messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
                     }
