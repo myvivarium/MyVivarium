@@ -12,6 +12,14 @@ if (file_exists(__DIR__ . '/.env')) {
     die('.env file not found. Please create the file and add your database credentials.');
 }
 
+/*
+.env file format:
+DB_HOST=localhost
+DB_USERNAME=username
+DB_PASSWORD=password
+DB_DATABASE=database
+*/
+
 // Database connection credentials from environment variables
 $servername = $_ENV['DB_HOST'] ?? 'localhost';
 $username = $_ENV['DB_USERNAME'] ?? 'root';
