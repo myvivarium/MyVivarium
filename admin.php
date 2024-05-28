@@ -50,17 +50,14 @@ mysqli_close($con);
     <!-- Meta tags and Bootstrap CSS -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <title>Admin | <?php echo htmlspecialchars($labName); ?></title>
-
     <!-- Custom styles -->
     <style>
         body {
             margin: 0;
             padding: 0;
         }
+
         .main-content {
             justify-content: center;
             align-items: center;
@@ -91,15 +88,15 @@ mysqli_close($con);
                                 <!-- Loop through each user and display their data -->
                                 <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                                     <tr>
-                                        <td><?= $row['name']; ?></td>
-                                        <td><?= $row['position']; ?></td>
-                                        <td><?= $row['username']; ?></td>
-                                        <td><?= $row['role']; ?></td>
-                                        <td><?= $row['status']; ?></td>
+                                        <td><?= htmlspecialchars($row['name']); ?></td>
+                                        <td><?= htmlspecialchars($row['position']); ?></td>
+                                        <td><?= htmlspecialchars($row['username']); ?></td>
+                                        <td><?= htmlspecialchars($row['role']); ?></td>
+                                        <td><?= htmlspecialchars($row['status']); ?></td>
                                         <td>
                                             <!-- Form for user status update -->
                                             <form action="admin.php" method="post">
-                                                <input type="hidden" name="username" value="<?= $row['username']; ?>">
+                                                <input type="hidden" name="username" value="<?= htmlspecialchars($row['username']); ?>">
                                                 <button type="submit" class="btn btn-success btn-sm" name="action" value="approve">Approve</button>
                                                 <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending">Pending</button>
                                                 <button type="submit" class="btn btn-danger btn-sm" name="action" value="delete">Delete</button>
