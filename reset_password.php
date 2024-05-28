@@ -90,7 +90,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     <style>
         .container {
             max-width: 600px;
-            margin: 0 auto;
+            margin-top: 300px;
+            margin-bottom: 300px;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -105,8 +106,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             display: block;
             width: 100%;
             padding: 10px;
-            background-color: #007bff;
-            color: #fff;
             border: none;
             border-radius: 3px;
             cursor: pointer;
@@ -223,6 +222,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             echo "<p class='result-message'>$resultMessage</p>";
         } ?>
         <br>
+
         <a href="index.php" class="btn btn-secondary">Go Back</a>
     </div>
 
