@@ -3,8 +3,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 require 'dbcon.php';  // Include database connection file
+require 'config.php';  // Include configuration file
 require 'vendor/autoload.php';  // Include PHPMailer autoload file
-require 'email_credentials.php';  // Include email credentials
 
 // Query to fetch the lab name and URL
 $labQuery = "SELECT lab_name, url FROM data LIMIT 1";
@@ -44,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         $to = $email;
         $subject = 'Password Reset';
         $message = "To reset your password, click the following link:\n$resetLink";
-        $headers = 'From: myvivarium.online@gmail.com';
 
         $mail = new PHPMailer(true);
         try {
