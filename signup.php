@@ -194,6 +194,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             <div class="form-group">
                 <label for="position">Position</label>
                 <select class="form-control" id="position" name="position">
+                    <option value="" disabled selected>Select Position</option>
                     <option value="Principal Investigator">Principal Investigator</option>
                     <option value="Research Scientist">Research Scientist</option>
                     <option value="Postdoctoral Researcher">Postdoctoral Researcher</option>
