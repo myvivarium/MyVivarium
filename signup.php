@@ -5,16 +5,19 @@ require 'dbcon.php'; // Include your database connection file
 // Query to fetch the lab name
 $labQuery = "SELECT lab_name FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
-$labName = "My Vivarium"; // A default value in case the query fails or returns no result
+$labName = "My Vivarium"; // Default value if the query fails or returns no result
 
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
 }
 
+// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Check honeypot field for spam detection
     if (!empty($_POST['honeypot'])) {
         $_SESSION['resultMessage'] = "Spam detected! Please try again.";
     } else {
+        // Retrieve and sanitize user input
         $name = $_POST['name'];
         $username = $_POST['email'];
         $password = $_POST['password'];
@@ -32,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($checkEmailStmt->num_rows > 0) {
             $_SESSION['resultMessage'] = "Email address already registered. Please try logging in or use a different email.";
         } else {
+            // Hash the password and insert the new user into the database
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
             $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("ssssss", $name, $username, $position, $role, $hashedPassword, $status);
@@ -64,25 +68,17 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | <?php echo htmlspecialchars($labName); ?></title>
 
-        <!-- Standard favicon -->
-        <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
-    
-    <!-- Apple Touch Icon -->
+    <!-- Favicon and icons for different devices -->
+    <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    
-    <!-- Favicon for different sizes -->
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-    
-    <!-- Android Chrome Icons -->
     <link rel="icon" sizes="192x192" href="/icons/android-chrome-192x192.png">
     <link rel="icon" sizes="512x512" href="/icons/android-chrome-512x512.png">
-    
-    <!-- Web App Manifest -->
     <link rel="manifest" href="/icons/site.webmanifest">
 
+    <!-- Bootstrap and Google Font -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
         .container {
@@ -118,7 +114,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             font-size: 12px;
         }
 
-        /* Ensure the header, image, and h1 have the correct styles */
+        /* Header styles */
         header {
             display: flex;
             flex-wrap: wrap;
@@ -163,13 +159,13 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             }
 
             .container {
-            max-width: 350px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
+                max-width: 350px;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                background-color: #f9f9f9;
+            }
         }
     </style>
 </head>
@@ -186,6 +182,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
     <div class="container">
         <h2>Sign Up</h2>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+            <!-- Honeypot field for spam detection -->
             <div style="display:none;">
                 <label for="honeypot">Keep this field blank</label>
                 <input type="text" id="honeypot" name="honeypot">
@@ -223,13 +220,13 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             <a href="index.php" class="btn btn-secondary">Go Back</a>
         </form>
         <br>
-        
+
+        <!-- Display the result message if any -->
         <?php if (!empty($resultMessage)) {  
             echo "<div class=\"alert alert-warning\" role=\"alert\">";
             echo $resultMessage;
             echo "</div>";
         } ?>
-        
         <br>
     </div>
     <br>
