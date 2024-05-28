@@ -1,5 +1,4 @@
 <?php
-session_start();  // Start or resume a session
 require 'dbcon.php'; // Include your database connection file
 
 // Query to fetch the lab name
@@ -113,48 +112,47 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             font-size: 12px;
         }
 
-        /* Header styles */
         header {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            background-color: #343a40; /* Dark background color for the header */
+            background-color: #343a40;
             color: white;
             padding: 1rem;
             text-align: center;
         }
 
         .logo-container {
-            padding: 0; /* No padding inside the logo container */
-            margin: 0; /* No margin around the logo container */
+            padding: 0;
+            margin: 0;
         }
 
         header img.header-logo {
-            width: 300px; /* Adjust size as needed */
+            width: 300px;
             height: auto;
-            display: block; /* Removes any extra space below the image */
-            margin: 0; /* No margin around the image */
+            display: block;
+            margin: 0;
         }
 
         header h1 {
-            margin-left: 15px; /* Maintain space between the logo and h1 text */
+            margin-left: 15px;
             margin-bottom: 0;
             margin-top: 12px;
-            font-size: 3.5rem; /* Adjust font size as needed */
-            white-space: nowrap; /* Prevents wrapping of text */
-            font-family: 'Poppins', sans-serif; /* Apply Google Font Poppins */
+            font-size: 3.5rem;
+            white-space: nowrap;
+            font-family: 'Poppins', sans-serif;
             font-weight: 500;
         }
 
         @media (max-width: 576px) {
             header h1 {
-                font-size: 2.2rem; /* Adjust font size for smaller screens */
-                margin-left: 10px; /* Adjust margin for smaller screens */
+                font-size: 2.2rem;
+                margin-left: 10px;
             }
 
             header img.header-logo {
-                width: 150px; /* Adjust logo size for smaller screens */
+                width: 150px;
             }
 
             .container {
