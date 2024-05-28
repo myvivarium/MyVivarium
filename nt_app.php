@@ -227,8 +227,8 @@ $result = $stmt->get_result();
                     togglePopup(); // Close the popup after successful submission
                     var messageDiv = $('#message');
                     if (response.success) {
-                        messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
                         location.reload(); // Reload the page to display the new note
+                        messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
                     } else {
                         messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
                     }
@@ -251,9 +251,10 @@ $result = $stmt->get_result();
                 success: function (response) {
                     var messageDiv = $('#message');
                     if (response.success) {
-                        messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
                         $('#note-' + noteId).remove(); // Remove the note from the DOM
                         location.reload(); // Reload the page to refresh the notes
+                        messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
+                        
                     } else {
                         messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
                     }
