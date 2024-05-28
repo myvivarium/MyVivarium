@@ -98,8 +98,6 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             display: block;
             width: 100%;
             padding: 10px;
-            background-color: #007bff;
-            color: #fff;
             border: none;
             border-radius: 3px;
             cursor: pointer;
