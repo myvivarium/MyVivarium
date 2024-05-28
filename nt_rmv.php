@@ -2,7 +2,6 @@
 // Include the database connection file
 include_once("dbcon.php");
 
-// Start a new session or resume the existing one
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

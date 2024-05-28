@@ -158,6 +158,83 @@ $result = $stmt->get_result();
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Display the message stored in sessionStorage if any
+            if (sessionStorage.getItem('message')) {
+                var message = sessionStorage.getItem('message');
+                var messageType = sessionStorage.getItem('messageType');
+                $('#message').html('<div class="alert ' + messageType + '">' + message + '</div>');
+                sessionStorage.removeItem('message');
+                sessionStorage.removeItem('messageType');
+            }
+        });
+
+        function togglePopup() {
+            var popup = document.getElementById("addNotePopup");
+            var overlay = document.getElementById("overlay");
+
+            if (popup.style.display === "block") {
+                popup.style.display = "none";
+                overlay.style.display = "none";
+            } else {
+                popup.style.display = "block";
+                overlay.style.display = "block";
+            }
+        }
+
+        // Submit form using AJAX
+        $('#addNoteForm').submit(function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: 'nt_add.php',
+                data: formData,
+                dataType: 'json',
+                success: function (response) {
+                    togglePopup(); // Close the popup after successful submission
+                    if (response.success) {
+                        sessionStorage.setItem('message', response.message);
+                        sessionStorage.setItem('messageType', 'alert-success');
+                    } else {
+                        sessionStorage.setItem('message', response.message);
+                        sessionStorage.setItem('messageType', 'alert-danger');
+                    }
+                    location.reload(); // Reload the page to display the new note
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        });
+
+        // Remove note using AJAX
+        function removeNote(noteId) {
+            $.ajax({
+                type: 'POST',
+                url: 'nt_rmv.php',
+                data: {
+                    note_id: noteId
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        sessionStorage.setItem('message', response.message);
+                        sessionStorage.setItem('messageType', 'alert-success');
+                    } else {
+                        sessionStorage.setItem('message', response.message);
+                        sessionStorage.setItem('messageType', 'alert-danger');
+                    }
+                    location.reload(); // Reload the page to refresh the notes
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -198,72 +275,6 @@ $result = $stmt->get_result();
             </div>
         <?php endwhile; ?>
     </div>
-
-    <script>
-        function togglePopup() {
-            var popup = document.getElementById("addNotePopup");
-            var overlay = document.getElementById("overlay");
-
-            if (popup.style.display === "block") {
-                popup.style.display = "none";
-                overlay.style.display = "none";
-            } else {
-                popup.style.display = "block";
-                overlay.style.display = "block";
-            }
-        }
-
-        // Submit form using AJAX
-        $('#addNoteForm').submit(function (e) {
-            e.preventDefault();
-            var formData = $(this).serialize();
-
-            $.ajax({
-                type: 'POST',
-                url: 'nt_add.php',
-                data: formData,
-                dataType: 'json',
-                success: function (response) {
-                    togglePopup(); // Close the popup after successful submission
-                    var messageDiv = $('#message');
-                    if (response.success) {
-                        messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
-                        location.reload(); // Reload the page to display the new note
-                    } else {
-                        messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
-                    }
-                },
-                error: function (error) {
-                    console.log('Error:', error);
-                }
-            });
-        });
-
-        // Remove note using AJAX
-        function removeNote(noteId) {
-            $.ajax({
-                type: 'POST',
-                url: 'nt_rmv.php',
-                data: {
-                    note_id: noteId
-                },
-                dataType: 'json',
-                success: function (response) {
-                    var messageDiv = $('#message');
-                    if (response.success) {
-                        messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
-                        $('#note-' + noteId).remove(); // Remove the note from the DOM
-                        location.reload(); // Reload the page to refresh the notes
-                    } else {
-                        messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
-                    }
-                },
-                error: function (error) {
-                    console.log('Error:', error);
-                }
-            });
-        }
-    </script>
 </body>
 
 </html>
