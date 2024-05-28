@@ -220,9 +220,14 @@ $result = $stmt->get_result();
                 data: {
                     note_id: noteId
                 },
-                success: function () {
-                    $('#note-' + noteId).remove(); // Remove the note from the DOM
-                    location.reload(); // Optionally, reload the page to refresh the notes
+                success: function (response) {
+                    var res = JSON.parse(response);
+                    if (res.success) {
+                        $('#note-' + noteId).remove(); // Remove the note from the DOM
+                        location.reload(); // Reload the page to refresh the notes
+                    } else {
+                        alert(res.message);
+                    }
                 },
                 error: function (error) {
                     console.log('Error:', error);

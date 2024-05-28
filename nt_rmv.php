@@ -28,20 +28,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_id'])) {
     // Execute the prepared statement
     if ($stmt->execute()) {
         $_SESSION['message'] = 'Note deleted successfully.';
+        echo json_encode(['success' => true, 'message' => 'Note deleted successfully.']);
     } else {
         $_SESSION['message'] = 'Failed to delete note: ' . htmlspecialchars($stmt->error);
+        echo json_encode(['success' => false, 'message' => 'Failed to delete note: ' . htmlspecialchars($stmt->error)]);
     }
 
     // Close the statement
     $stmt->close();
 } else {
     $_SESSION['message'] = 'Invalid request.';
+    echo json_encode(['success' => false, 'message' => 'Invalid request.']);
 }
 
 // Close the database connection
 $con->close();
-
-// Redirect back to the notes page or wherever appropriate
-header("Location: notes_page.php"); // Adjust this to the correct page
-exit();
 ?>
