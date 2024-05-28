@@ -9,7 +9,7 @@ if ($_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// Handle POST requests for user status updates
+// Handle POST requests for user status and role updates
 if (isset($_POST['username']) && isset($_POST['action'])) {
     $username = $_POST['username'];
     $action = $_POST['action'];
@@ -17,13 +17,17 @@ if (isset($_POST['username']) && isset($_POST['action'])) {
     // Initialize query variables
     $query = "";
 
-    // Determine the action to take: approve, set to pending, or delete user
+    // Determine the action to take: approve, set to pending, delete user, set role to admin or user
     if ($action === 'approve') {
         $query = "UPDATE users SET status='approved' WHERE username=?";
     } elseif ($action === 'pending') {
         $query = "UPDATE users SET status='pending' WHERE username=?";
     } elseif ($action === 'delete') {
         $query = "DELETE FROM users WHERE username=?";
+    } elseif ($action === 'admin') {
+        $query = "UPDATE users SET role='admin' WHERE username=?";
+    } elseif ($action === 'user') {
+        $query = "UPDATE users SET role='user' WHERE username=?";
     }
 
     // Execute the prepared statement if a valid action is set
@@ -50,7 +54,7 @@ mysqli_close($con);
     <!-- Meta tags and Bootstrap CSS -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin | <?php echo htmlspecialchars($labName); ?></title>
+    <title>User Management | <?php echo htmlspecialchars($labName); ?></title>
     <!-- Custom styles -->
     <style>
         body {
@@ -71,7 +75,7 @@ mysqli_close($con);
             <!-- Main content area -->
             <main class="col-md-12">
                 <div class="container mt-5">
-                    <h4 class="mb-3">Approve Users</h4>
+                    <h4 class="mb-3">User Management Dashboard</h4>
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered">
                             <thead class="table-light">
@@ -94,11 +98,22 @@ mysqli_close($con);
                                         <td><?= htmlspecialchars($row['role']); ?></td>
                                         <td><?= htmlspecialchars($row['status']); ?></td>
                                         <td>
-                                            <!-- Form for user status update -->
+                                            <!-- Form for user status and role update -->
                                             <form action="admin.php" method="post">
                                                 <input type="hidden" name="username" value="<?= htmlspecialchars($row['username']); ?>">
-                                                <button type="submit" class="btn btn-success btn-sm" name="action" value="approve">Approve</button>
-                                                <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending">Pending</button>
+
+                                                <?php if ($row['status'] === 'pending') { ?>
+                                                    <button type="submit" class="btn btn-success btn-sm" name="action" value="approve">Approve</button>
+                                                <?php } elseif ($row['status'] === 'approved') { ?>
+                                                    <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending">Pending</button>
+                                                <?php } ?>
+
+                                                <?php if ($row['role'] === 'user') { ?>
+                                                    <button type="submit" class="btn btn-warning btn-sm" name="action" value="admin">Make Admin</button>
+                                                <?php } elseif ($row['role'] === 'admin') { ?>
+                                                    <button type="submit" class="btn btn-info btn-sm" name="action" value="user">Make User</button>
+                                                <?php } ?>
+
                                                 <button type="submit" class="btn btn-danger btn-sm" name="action" value="delete">Delete</button>
                                             </form>
                                         </td>
