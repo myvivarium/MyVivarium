@@ -76,6 +76,7 @@ mysqli_close($con);
             <main class="col-md-12">
                 <div class="container mt-5">
                     <h4 class="mb-3">User Management Dashboard</h4>
+                    <br>
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered">
                             <thead class="table-light">
@@ -85,7 +86,7 @@ mysqli_close($con);
                                     <th>Username/Email</th>
                                     <th>Role</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    <th>Action - Change role & Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -105,7 +106,7 @@ mysqli_close($con);
                                                 <?php if ($row['status'] === 'pending') { ?>
                                                     <button type="submit" class="btn btn-success btn-sm" name="action" value="approve">Approve</button>
                                                 <?php } elseif ($row['status'] === 'approved') { ?>
-                                                    <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending">Pending</button>
+                                                    <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending">Deactivate</button>
                                                 <?php } ?>
 
                                                 <?php if ($row['role'] === 'user') { ?>
@@ -122,6 +123,7 @@ mysqli_close($con);
                             </tbody>
                         </table>
                     </div>
+                    <br>
                 </div>
             </main>
         </div>
