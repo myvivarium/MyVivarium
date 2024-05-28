@@ -106,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             max-width: 600px;
             margin-top: 300px;
             margin-bottom: 300px;
-            padding: 20px;
+            padding: 50px;
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
@@ -221,6 +221,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     <br>
     <div class="container">
         <h2>Forgot Password</h2>
+        <br>
         <form method="POST" action="">
             <div class="form-group">
                 <label for="email">Email Address</label>
