@@ -8,7 +8,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
-    die('You must be logged in to add a note.');
+    echo json_encode(['success' => false, 'message' => 'You must be logged in to add a note.']);
+    exit;
 }
 
 // Handle form submission

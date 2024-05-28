@@ -137,17 +137,37 @@ $result = $stmt->get_result();
         #addNoteForm button:hover {
             background-color: #45a049;
         }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+
+        .alert-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 
 <body>
     <div class="container" style="max-width: 800px; margin: 50px auto;">
+        <div id="message"></div> <!-- Added this div for displaying messages -->
         <button class="add-note-btn" onclick="togglePopup()">Add Sticky Note</button>
 
         <div class="popup" id="addNotePopup">
             <span class="close-btn" onclick="togglePopup()">X</span>
-            <form id="addNoteForm" method="post" action="nt_add.php">
+            <form id="addNoteForm" method="post">
                 <?php if (isset($_GET['id'])): ?>
                     <label for="cage_id">For Cage ID:
                         <?= htmlspecialchars($_GET['id']); ?>
@@ -231,6 +251,7 @@ $result = $stmt->get_result();
                 success: function (response) {
                     var messageDiv = $('#message');
                     if (response.success) {
+                        messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
                         $('#note-' + noteId).remove(); // Remove the note from the DOM
                         location.reload(); // Reload the page to refresh the notes
                     } else {

@@ -7,39 +7,46 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Check if the user is logged in
+if (!isset($_SESSION['username'])) {
+    echo json_encode(['success' => false, 'message' => 'You must be logged in to delete a note.']);
+    exit;
+}
+
 // Check if the request is a POST and the 'note_id' field is set
+$response = ['success' => false, 'message' => 'Invalid request.'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_id'])) {
     // Retrieve the note ID from the POST data
     $note_id = $_POST['note_id'];
+    $user_id = $_SESSION['username']; // Assuming 'username' is the user's identifier
 
-    // SQL statement to delete the sticky note from the database
+    // Prepare the SQL statement
     $sql = "DELETE FROM nt_data WHERE id = ? AND user_id = ?";
-    // Prepare the SQL statement for execution
     $stmt = $con->prepare($sql);
-
-    // Check if the statement was prepared successfully
     if ($stmt === false) {
-        echo json_encode(['success' => false, 'message' => 'Prepare failed: ' . htmlspecialchars($con->error)]);
+        $response['message'] = 'Prepare failed: ' . htmlspecialchars($con->error);
+        echo json_encode($response);
         exit;
     }
 
-    // Bind the note ID and user ID to the prepared statement
-    $stmt->bind_param("is", $note_id, $_SESSION['username']);
+    // Bind parameters
+    $stmt->bind_param("is", $note_id, $user_id);
 
-    // Execute the prepared statement
+    // Execute the statement
     if ($stmt->execute()) {
-        $_SESSION['message'] = 'Note deleted successfully.';
-        echo json_encode(['success' => true, 'message' => 'Note deleted successfully.']);
+        $response['success'] = true;
+        $response['message'] = 'Note deleted successfully.';
     } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to delete note: ' . htmlspecialchars($stmt->error)]);
+        $response['message'] = 'Execute failed: ' . htmlspecialchars($stmt->error);
     }
 
     // Close the statement
     $stmt->close();
-} else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request.']);
 }
 
 // Close the database connection
 $con->close();
+
+// Return the response as JSON
+echo json_encode($response);
 ?>
