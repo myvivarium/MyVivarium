@@ -184,7 +184,7 @@ $result = $stmt->get_result();
         }
 
         // Submit form using AJAX
-        $('#addNoteForm').submit(function (e) {
+        $('#addNoteForm').submit(function(e) {
             e.preventDefault();
             var formData = $(this).serialize();
 
@@ -193,7 +193,8 @@ $result = $stmt->get_result();
                 url: 'nt_add.php',
                 data: formData,
                 dataType: 'json',
-                success: function (response) {
+                success: function(response) {
+                    console.log(response); // Debug response
                     togglePopup(); // Close the popup after successful submission
                     if (response.success) {
                         sessionStorage.setItem('message', response.message);
@@ -204,7 +205,7 @@ $result = $stmt->get_result();
                     }
                     location.reload(); // Reload the page to display the new note
                 },
-                error: function (error) {
+                error: function(error) {
                     console.log('Error:', error);
                 }
             });
@@ -219,7 +220,8 @@ $result = $stmt->get_result();
                     note_id: noteId
                 },
                 dataType: 'json',
-                success: function (response) {
+                success: function(response) {
+                    console.log(response); // Debug response
                     if (response.success) {
                         sessionStorage.setItem('message', response.message);
                         sessionStorage.setItem('messageType', 'alert-success');
@@ -230,7 +232,7 @@ $result = $stmt->get_result();
                     }
                     location.reload(); // Reload the page to refresh the notes
                 },
-                error: function (error) {
+                error: function(error) {
                     console.log('Error:', error);
                 }
             });
