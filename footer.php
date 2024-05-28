@@ -9,9 +9,12 @@
         width: 100%;
         box-sizing: border-box;
     }
+    .footer-text {
+        color: white;
+        margin: 0;
+    }
 </style>
+
 <div class="header-footer">
-    <p style="color:white">&copy;
-        <?php echo date("Y"); ?> <?php echo htmlspecialchars($labName); ?>. All rights reserved.
-    </p>
+    <p class="footer-text">&copy; <?php echo date("Y"); ?> <?php echo htmlspecialchars($labName); ?>. All rights reserved.</p>
 </div>
