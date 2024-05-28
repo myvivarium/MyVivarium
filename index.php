@@ -256,7 +256,7 @@ mysqli_close($con);
                             <input type="password" class="form-control" id="password" name="password" required>
                         </div>
                         <button type="submit" class="btn btn-primary" name="login">Login</button>
-                        <a href="signup.php" class="btn btn-secondary">Sign Up</a>
+                        <a href="register.php" class="btn btn-secondary">Register</a>
                         <br><br>
                         <a href="forgot_password.php" class="forgot-password-link">Forgot Password?</a>
                     </form>

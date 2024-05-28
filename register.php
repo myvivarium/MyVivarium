@@ -65,7 +65,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up | <?php echo htmlspecialchars($labName); ?></title>
+    <title>Register | <?php echo htmlspecialchars($labName); ?></title>
 
     <!-- Favicon and icons for different devices -->
     <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
@@ -177,7 +177,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
     </header>
     <br>
     <div class="container">
-        <h2>Sign Up</h2>
+        <h2>User Registration</h2>
         <br>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <!-- Honeypot field for spam detection -->
@@ -215,7 +215,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
             <br>
-            <button type="submit" class="btn btn-primary" name="signup">Sign Up</button>
+            <button type="submit" class="btn btn-primary" name="signup">Register</button>
             <br>
             <a href="index.php" class="btn btn-secondary">Go Back</a>
         </form>
