@@ -156,112 +156,13 @@ $result = $stmt->get_result();
             background-color: #f2dede;
             border-color: #ebccd1;
         }
-
-        /* Popup message styles */
-        .popup-message {
-            display: none;
-            position: fixed;
-            top: 20%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            z-index: 1001;
-        }
-
-        .popup-message.alert-success {
-            border-color: #d6e9c6;
-            background-color: #dff0d8;
-        }
-
-        .popup-message.alert-danger {
-            border-color: #ebccd1;
-            background-color: #f2dede;
-        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        function showPopupMessage(message, type) {
-            var popupMessage = $('<div class="popup-message ' + type + '">' + message + '</div>');
-            $('body').append(popupMessage);
-            popupMessage.fadeIn();
-
-            setTimeout(function () {
-                popupMessage.fadeOut(function () {
-                    $(this).remove();
-                });
-            }, 5000); // Auto close after 5 seconds
-        }
-
-        function togglePopup() {
-            var popup = document.getElementById("addNotePopup");
-            var overlay = document.getElementById("overlay");
-
-            if (popup.style.display === "block") {
-                popup.style.display = "none";
-                overlay.style.display = "none";
-            } else {
-                popup.style.display = "block";
-                overlay.style.display = "block";
-            }
-        }
-
-        // Submit form using AJAX
-        $('#addNoteForm').submit(function (e) {
-            e.preventDefault();
-            var formData = $(this).serialize();
-
-            $.ajax({
-                type: 'POST',
-                url: 'nt_add.php',
-                data: formData,
-                dataType: 'json',
-                success: function (response) {
-                    togglePopup(); // Close the popup after successful submission
-                    if (response.success) {
-                        showPopupMessage(response.message, 'alert-success');
-                        location.reload(); // Reload the page to display the new note
-                    } else {
-                        showPopupMessage(response.message, 'alert-danger');
-                    }
-                },
-                error: function (error) {
-                    console.log('Error:', error);
-                }
-            });
-        });
-
-        // Remove note using AJAX
-        function removeNote(noteId) {
-            $.ajax({
-                type: 'POST',
-                url: 'nt_rmv.php',
-                data: {
-                    note_id: noteId
-                },
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success) {
-                        showPopupMessage(response.message, 'alert-success');
-                        $('#note-' + noteId).remove(); // Remove the note from the DOM
-                        location.reload(); // Reload the page to refresh the notes
-                    } else {
-                        showPopupMessage(response.message, 'alert-danger');
-                    }
-                },
-                error: function (error) {
-                    console.log('Error:', error);
-                }
-            });
-        }
-    </script>
 </head>
 
 <body>
     <div class="container" style="max-width: 800px; margin: 50px auto;">
+        <div id="message"></div> <!-- Added this div for displaying messages -->
         <button class="add-note-btn" onclick="togglePopup()">Add Sticky Note</button>
 
         <div class="popup" id="addNotePopup">
@@ -297,6 +198,72 @@ $result = $stmt->get_result();
             </div>
         <?php endwhile; ?>
     </div>
+
+    <script>
+        function togglePopup() {
+            var popup = document.getElementById("addNotePopup");
+            var overlay = document.getElementById("overlay");
+
+            if (popup.style.display === "block") {
+                popup.style.display = "none";
+                overlay.style.display = "none";
+            } else {
+                popup.style.display = "block";
+                overlay.style.display = "block";
+            }
+        }
+
+        // Submit form using AJAX
+        $('#addNoteForm').submit(function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: 'nt_add.php',
+                data: formData,
+                dataType: 'json',
+                success: function (response) {
+                    togglePopup(); // Close the popup after successful submission
+                    var messageDiv = $('#message');
+                    if (response.success) {
+                        messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
+                        location.reload(); // Reload the page to display the new note
+                    } else {
+                        messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
+                    }
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        });
+
+        // Remove note using AJAX
+        function removeNote(noteId) {
+            $.ajax({
+                type: 'POST',
+                url: 'nt_rmv.php',
+                data: {
+                    note_id: noteId
+                },
+                dataType: 'json',
+                success: function (response) {
+                    var messageDiv = $('#message');
+                    if (response.success) {
+                        messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
+                        $('#note-' + noteId).remove(); // Remove the note from the DOM
+                        location.reload(); // Reload the page to refresh the notes
+                    } else {
+                        messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
+                    }
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
