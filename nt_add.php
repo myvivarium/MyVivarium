@@ -2,7 +2,9 @@
 // Include your database connection file
 include_once("dbcon.php");
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); // Start or resume the session
+}
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {

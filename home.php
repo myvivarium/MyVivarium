@@ -205,7 +205,6 @@ require 'header.php';
 
             <div style="margin-top: 50px;">
                 <h2><?php echo htmlspecialchars($labName); ?> - Lab Sticky Notes</h2>
-                <button class="add-note-btn" onclick="togglePopup()">Add Note</button>
                 <?php include 'nt_app.php'; ?>
             </div>
         </div>
