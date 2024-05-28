@@ -138,7 +138,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             </div>
             <?php
             if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                echo '<a href="admin.php" class="btn btn-primary">Admin</a>';
+                echo '<a href="admin.php" class="btn btn-primary">Settings</a>';
             }
             ?>
             <a href="logout.php" class="btn btn-secondary">Logout</a>
