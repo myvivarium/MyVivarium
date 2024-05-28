@@ -1,11 +1,11 @@
 <?php
 require 'dbcon.php';
 
-// Query to fetch the lab name
+// Query to fetch the lab name from the database
 $labQuery = "SELECT lab_name FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
-$labName = "My Vivarium"; // A default value in case the query fails or returns no result
+$labName = "My Vivarium"; // Default value if the query fails or returns no result
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
 }
@@ -19,48 +19,40 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($labName); ?></title>
 
-    <!-- Standard favicon -->
+    <!-- Favicon and icons for different devices -->
     <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
-
-    <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-
-    <!-- Favicon for different sizes -->
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-
-    <!-- Android Chrome Icons -->
     <link rel="icon" sizes="192x192" href="/icons/android-chrome-192x192.png">
     <link rel="icon" sizes="512x512" href="/icons/android-chrome-512x512.png">
-
-    <!-- Web App Manifest -->
     <link rel="manifest" href="/icons/site.webmanifest">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
     <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap JS for Dropdown -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Scripts -->
+
+    <!-- Bootstrap JS for interactive components -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
     <style>
-        /* General Styles */
         body {
             margin: 0;
             padding: 0;
+            font-family: 'Poppins', sans-serif;
         }
 
-        /* Header and Footer Styling */
         .header-footer {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             background-color: #343a40;
-            /* Dark background color for the header */
             color: white;
             padding: 1rem;
             text-align: center;
@@ -74,25 +66,18 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 
         .header-footer img.header-logo {
             width: 300px;
-            /* Adjust size as needed */
             height: auto;
             display: block;
-            /* Removes any extra space below the image */
             margin: 0;
-            /* No margin around the image */
         }
 
         .header-footer h2 {
             margin-left: 15px;
-            /* Maintain space between the logo and h1 text */
             margin-bottom: 0;
             margin-top: 12px;
             font-size: 3.5rem;
-            /* Adjust font size as needed */
             white-space: nowrap;
-            /* Prevents wrapping of text */
             font-family: 'Poppins', sans-serif;
-            /* Apply Google Font Poppins */
             font-weight: 500;
         }
 
@@ -106,7 +91,6 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             }
         }
 
-        /* Navigation Menu Styling */
         .nav-container {
             background-color: #343a40;
             padding: 0px 0px 20px 0px;
