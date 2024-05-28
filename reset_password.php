@@ -1,5 +1,4 @@
 <?php
-session_start(); // Start a new session
 require 'dbcon.php'; // Include the database connection file
 
 // Query to fetch the lab name
@@ -74,31 +73,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password | <?php echo htmlspecialchars($labName); ?></title>
 
-        <!-- Standard favicon -->
-        <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
-    
-    <!-- Apple Touch Icon -->
+    <!-- Favicon and icons for different devices -->
+    <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    
-    <!-- Favicon for different sizes -->
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-    
-    <!-- Android Chrome Icons -->
     <link rel="icon" sizes="192x192" href="/icons/android-chrome-192x192.png">
     <link rel="icon" sizes="512x512" href="/icons/android-chrome-512x512.png">
-    
-    <!-- Web App Manifest -->
     <link rel="manifest" href="/icons/site.webmanifest">
-
 
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-        /* CSS styles for layout and appearance */
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -127,7 +116,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             background-color: #0056b3;
         }
 
-        /* Header and Footer Styling */
         .header-footer {
             background-color: #343a40;
             padding: 20px 0;
@@ -142,28 +130,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             color: #333;
         }
 
-        /* Center-align the result message */
         .result-message {
             text-align: center;
             margin-top: 15px;
             padding: 10px;
             background-color: #dff0d8;
-            /* Green background color */
             border: 1px solid #3c763d;
-            /* Green border color */
             color: #3c763d;
-            /* Green text color */
             border-radius: 5px;
         }
 
-        /* Ensure the header, image, and h1 have the correct styles */
         header {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             background-color: #343a40;
-            /* Dark background color for the header */
             color: white;
             padding: 1rem;
             text-align: center;
@@ -171,46 +153,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 
         .logo-container {
             padding: 0;
-            /* No padding inside the logo container */
             margin: 0;
-            /* No margin around the logo container */
         }
 
         header img.header-logo {
             width: 300px;
-            /* Adjust size as needed */
             height: auto;
             display: block;
-            /* Removes any extra space below the image */
             margin: 0;
-            /* No margin around the image */
         }
 
         header h1 {
             margin-left: 15px;
-            /* Maintain space between the logo and h1 text */
             margin-bottom: 0;
             margin-top: 12px;
             font-size: 3.5rem;
-            /* Adjust font size as needed */
             white-space: nowrap;
-            /* Prevents wrapping of text */
             font-family: 'Poppins', sans-serif;
-            /* Apply Google Font Poppins */
             font-weight: 500;
         }
 
         @media (max-width: 576px) {
             header h1 {
                 font-size: 2.2rem;
-                /* Adjust font size for smaller screens */
                 margin-left: 10px;
-                /* Adjust margin for smaller screens */
             }
 
             header img.header-logo {
                 width: 150px;
-                /* Adjust logo size for smaller screens */
             }
         }
     </style>
