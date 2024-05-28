@@ -223,6 +223,7 @@ $result = $stmt->get_result();
                     if (response.success) {
                         sessionStorage.setItem('message', response.message);
                         sessionStorage.setItem('messageType', 'alert-success');
+                        $('#note-' + noteId).remove(); // Remove the note from the DOM
                     } else {
                         sessionStorage.setItem('message', response.message);
                         sessionStorage.setItem('messageType', 'alert-danger');
