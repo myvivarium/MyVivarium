@@ -228,10 +228,13 @@ $result = $stmt->get_result();
                     var messageDiv = $('#message');
                     if (response.success) {
                         messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
-                        location.reload(); // Reload the page to display the new note
                     } else {
                         messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
                     }
+                    // Delay before reloading the page
+                    setTimeout(function () {
+                        location.reload(); // Reload the page to display the new note
+                    }, 2000); // 2-second delay
                 },
                 error: function (error) {
                     console.log('Error:', error);
@@ -253,7 +256,10 @@ $result = $stmt->get_result();
                     if (response.success) {
                         messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
                         $('#note-' + noteId).remove(); // Remove the note from the DOM
-                        location.reload(); // Reload the page to refresh the notes
+                        // Delay before reloading the page
+                        setTimeout(function () {
+                            location.reload(); // Reload the page to refresh the notes
+                        }, 2000); // 2-second delay
                     } else {
                         messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
                     }
