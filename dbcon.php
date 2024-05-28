@@ -2,14 +2,21 @@
 // Load environment variables from a .env file
 require 'vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+use Dotenv\Dotenv;
+
+// Check if the .env file exists
+if (file_exists(__DIR__ . '/.env')) {
+    $dotenv = Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+} else {
+    die('.env file not found. Please create the file and add your database credentials.');
+}
 
 // Database connection credentials from environment variables
-$servername = $_ENV['DB_HOST'];
-$username = $_ENV['DB_USERNAME'];
-$password = $_ENV['DB_PASSWORD'];
-$dbname = $_ENV['DB_DATABASE'];
+$servername = $_ENV['DB_HOST'] ?? 'localhost';
+$username = $_ENV['DB_USERNAME'] ?? 'root';
+$password = $_ENV['DB_PASSWORD'] ?? '';
+$dbname = $_ENV['DB_DATABASE'] ?? 'database';
 
 // Create a new connection to the database using the object-oriented style
 $con = new mysqli($servername, $username, $password, $dbname);
