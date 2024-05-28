@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 session_start();
 require 'dbcon.php';
 
+// Fetch the lab name
 $labQuery = "SELECT lab_name FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
@@ -16,20 +17,18 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 
 // Check if the user is already logged in
 if (isset($_SESSION['name'])) {
-    // After login
+    // Redirect to the specified URL or default to home.php
     if (isset($_GET['redirect'])) {
         $url = urldecode($_GET['redirect']);
         header("Location: $url");
         exit;
     } else {
-        // Redirect to default page
         header("Location: home.php");
         exit;
     }
-    header("Location: home.php");
-    exit;
 }
 
+// Handle login form submission
 if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -41,43 +40,43 @@ if (isset($_POST['login'])) {
     $result = mysqli_stmt_get_result($statement);
 
     if ($row = mysqli_fetch_assoc($result)) {
-        // Check if the account is locked and the current time is less than the unlock time
+        // Check if the account is locked
         if (!is_null($row['account_locked']) && new DateTime() < new DateTime($row['account_locked'])) {
-            $error_message = "Account is temporarily locked. Please try again later after 10 mins.";
+            $error_message = "Account is temporarily locked. Please try again later.";
         } else {
-            // Proceed with password verification
+            // Verify password
             if (password_verify($password, $row['password'])) {
+                // Set session variables
                 $_SESSION['name'] = $row['name'];
                 $_SESSION['username'] = $row['username'];
                 $_SESSION['role'] = $row['role'];
                 $_SESSION['position'] = $row['position'];
-                // Reset login attempts and unlock the account if needed
+                
+                // Reset login attempts and unlock the account
                 $reset_attempts = "UPDATE users SET login_attempts = 0, account_locked = NULL WHERE username=?";
                 $reset_stmt = mysqli_prepare($con, $reset_attempts);
                 mysqli_stmt_bind_param($reset_stmt, "s", $username);
                 mysqli_stmt_execute($reset_stmt);
+
+                // Redirect to the specified URL or default to home.php
                 if (isset($_GET['redirect'])) {
                     $url = urldecode($_GET['redirect']);
                     header("Location: $url");
                     exit;
                 } else {
-                    // Redirect to default page
                     header("Location: home.php");
                     exit;
                 }
-                exit;
             } else {
-                // Increment failed login attempts
+                // Handle failed login attempts
                 $new_attempts = $row['login_attempts'] + 1;
                 if ($new_attempts >= 3) {
-                    // Lock the account for 1 hour after 3 failed attempts
                     $lock_time = "UPDATE users SET account_locked = DATE_ADD(NOW(), INTERVAL 10 MINUTE), login_attempts = 3 WHERE username=?";
                     $lock_stmt = mysqli_prepare($con, $lock_time);
                     mysqli_stmt_bind_param($lock_stmt, "s", $username);
                     mysqli_stmt_execute($lock_stmt);
                     $error_message = "Account is temporarily locked for 10 mins due to too many failed login attempts.";
                 } else {
-                    // Update the number of failed attempts in the database
                     $update_attempts = "UPDATE users SET login_attempts = ? WHERE username=?";
                     $update_stmt = mysqli_prepare($con, $update_attempts);
                     mysqli_stmt_bind_param($update_stmt, "is", $new_attempts, $username);
@@ -102,21 +101,13 @@ mysqli_close($con);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($labName); ?></title>
 
-    <!-- Standard favicon -->
+    <!-- Favicon and Icons -->
     <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
-    
-    <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    
-    <!-- Favicon for different sizes -->
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-    
-    <!-- Android Chrome Icons -->
     <link rel="icon" sizes="192x192" href="/icons/android-chrome-192x192.png">
     <link rel="icon" sizes="512x512" href="/icons/android-chrome-512x512.png">
-    
-    <!-- Web App Manifest -->
     <link rel="manifest" href="/icons/site.webmanifest">
 
     <!-- Bootstrap CSS -->
@@ -124,6 +115,10 @@ mysqli_close($con);
 
     <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap and jQuery JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <!-- Custom CSS -->
     <style>
@@ -140,20 +135,19 @@ mysqli_close($con);
             box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
         }
 
-        feature-box {
+        .feature-box {
             transition: transform .2s, box-shadow .2s;
             border-radius: 10px;
             padding: 30px;
             background-color: white;
             box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            margin: 50px 0px 50px 0px;
+            margin: 50px 0;
         }
 
         .feature-box h3 {
             margin-top: 0;
             color: #007bff;
-            /* Matching Bootstrap's primary color for consistency */
         }
 
         .feature-box p {
@@ -165,52 +159,49 @@ mysqli_close($con);
             margin-top: 50px;
         }
 
-        /* Ensure the header, image, and h1 have the correct styles */
         header {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            background-color: #343a40; /* Dark background color for the header */
+            background-color: #343a40;
             color: white;
             padding: 1rem;
             text-align: center;
         }
 
         .logo-container {
-            padding: 0; /* No padding inside the logo container */
-            margin: 0; /* No margin around the logo container */
+            padding: 0;
+            margin: 0;
         }
 
         header img.header-logo {
-            width: 300px; /* Adjust size as needed */
+            width: 300px;
             height: auto;
-            display: block; /* Removes any extra space below the image */
-            margin: 0; /* No margin around the image */
+            display: block;
+            margin: 0;
         }
 
         header h1 {
-            margin-left: 15px; /* Maintain space between the logo and h1 text */
+            margin-left: 15px;
             margin-bottom: 0;
             margin-top: 12px;
-            font-size: 3.5rem; /* Adjust font size as needed */
-            white-space: nowrap; /* Prevents wrapping of text */
-            font-family: 'Poppins', sans-serif; /* Apply Google Font Poppins */
+            font-size: 3.5rem;
+            white-space: nowrap;
+            font-family: 'Poppins', sans-serif;
             font-weight: 500;
         }
 
         @media (max-width: 576px) {
             header h1 {
-                font-size: 2.2rem; /* Adjust font size for smaller screens */
-                margin-left: 10px; /* Adjust margin for smaller screens */
+                font-size: 2.2rem;
+                margin-left: 10px;
             }
 
             header img.header-logo {
-                width: 150px; /* Adjust logo size for smaller screens */
+                width: 150px;
             }
         }
-
-        
     </style>
 </head>
 
@@ -223,14 +214,12 @@ mysqli_close($con);
         <h1 class="ml-3 mb-0"><?php echo htmlspecialchars($labName); ?></h1>
     </header>
 
-
     <!-- Main Content -->
     <div class="container mt-4">
         <div class="row">
             <!-- Slideshow Column -->
             <div class="col-md-6">
                 <div id="labCarousel" class="carousel slide" data-ride="carousel">
-                    <!-- Slideshow Images -->
                     <div class="carousel-inner">
                         <div class="carousel-item active"> <img class="d-block w-100" src="images/DSC_0536.JPG" alt="Image 1"> </div>
                         <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0537.JPG" alt="Image 2"> </div>
@@ -243,7 +232,7 @@ mysqli_close($con);
                         <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0607.JPG" alt="Image 13"> </div>
                         <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0623.JPG" alt="Image 14"> </div>
                         <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0658.JPG" alt="Image 15"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0665.JPG" alt="Image 516"> </div>
+                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0665.JPG" alt="Image 16"> </div>
                     </div>
                 </div>
             </div>
@@ -252,7 +241,6 @@ mysqli_close($con);
             <div class="col-md-6">
                 <div class="login-form">
                     <h3>Login</h3>
-                    <!-- Display error message if set -->
                     <?php if (isset($error_message)) { ?>
                         <div class="alert alert-danger">
                             <?php echo $error_message; ?>
@@ -268,51 +256,43 @@ mysqli_close($con);
                             <input type="password" class="form-control" id="password" name="password" required>
                         </div>
                         <button type="submit" class="btn btn-primary" name="login">Login</button>
-                        <!-- Signup Link -->
                         <a href="signup.php" class="btn btn-secondary">Sign Up</a>
-                        <br>
-                        <br>
-                        <!-- Forgot Password Link -->
+                        <br><br>
                         <a href="forgot_password.php" class="forgot-password-link">Forgot Password?</a>
                     </form>
                 </div>
             </div>
-
         </div>
 
         <!-- New Row for Unique Features -->
         <div class="row mt-4">
-            <div style="margin:50px 0px 50px 0px;" class="col-md-12">
+            <div class="col-md-12">
                 <h2 class="text-center">Welcome to the <?php echo htmlspecialchars($labName); ?></h2>
                 <p class="text-center italic">Elevate Your Research with IoT-Enhanced Colony Management</p>
 
                 <!-- Feature Box 1 -->
-                <div style="margin:50px 0px 50px 0px;" class="col-md-6 mb-6 mx-auto feature-box text-center">
+                <div class="col-md-6 mb-6 mx-auto feature-box text-center">
                     <h3>Real-Time Environmental Monitoring</h3>
                     <p>Gain unparalleled insights into the conditions of your vivarium. Our IoT sensors continuously track temperature and humidity levels, ensuring a stable and controlled environment for your research animals.</p>
                 </div>
 
                 <!-- Feature Box 2 -->
-                <div style="margin:50px 0px 50px 0px;" class="col-md-6 mb-6 mx-auto feature-box text-center">
+                <div class="col-md-6 mb-6 mx-auto feature-box text-center">
                     <h3>Effortless Cage and Mouse Tracking</h3>
                     <p>Seamlessly monitor every cage and mouse in your facility. No more manual record-keeping or confusion.</p>
                 </div>
 
                 <!-- Feature Box 3 -->
-                <div style="margin:50px 0px 50px 0px;" class="col-md-6 mb-6 mx-auto feature-box text-center">
+                <div class="col-md-6 mb-6 mx-auto feature-box text-center">
                     <h3>Security and Compliance</h3>
                     <p>Rest easy knowing your data is secure and compliant with industry regulations. We prioritize data integrity and confidentiality.</p>
                 </div>
             </div>
         </div>
-
     </div>
 
     <?php include 'footer.php'; ?>
 
-    <!-- Bootstrap and jQuery JS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>
