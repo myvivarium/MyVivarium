@@ -1,23 +1,27 @@
 <?php
+session_start();
+
 // Include your database connection file
 require 'dbcon.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['name'])) {
-    header("Location: index.php"); // Redirect to admin login page if not logged in
+    header("Location: index.php"); // Redirect to login page if not logged in
     exit;
 }
 
-$currentUserId = $_SESSION['username']; // Assuming you have user_id in session
+$currentUserId = $_SESSION['username']; // Assuming 'username' is the user's identifier
 
 // Retrieve user's sticky notes
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $sql = "SELECT * FROM nt_data WHERE `cage_id` = '$id' ORDER BY created_at DESC";
+    $sql = "SELECT * FROM nt_data WHERE cage_id = ? ORDER BY created_at DESC";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("s", $id);
 } else {
     $sql = "SELECT * FROM nt_data WHERE cage_id IS NULL ORDER BY created_at DESC";
+    $stmt = $con->prepare($sql);
 }
-$stmt = $con->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -110,9 +114,7 @@ $result = $stmt->get_result();
             border: 1px solid #ddd;
             border-radius: 4px;
             padding: 8px;
-            transition: height 0.3s;
             overflow-y: hidden;
-            /* Hide vertical scrollbar initially */
         }
 
         #note_text {
@@ -128,7 +130,6 @@ $result = $stmt->get_result();
             padding: 10px;
             border: none;
             cursor: pointer;
-            transition: background-color 0.3s;
         }
 
         #addNoteForm button:hover {
@@ -140,18 +141,18 @@ $result = $stmt->get_result();
 
 <body>
     <div class="container" style="max-width: 800px; margin: 50px auto;">
+        <button class="add-note-btn" onclick="togglePopup()">Add Sticky Note</button>
+
         <div class="popup" id="addNotePopup">
             <span class="close-btn" onclick="togglePopup()">X</span>
             <form id="addNoteForm" method="post" action="nt_add.php">
                 <?php if (isset($_GET['id'])): ?>
                     <label for="cage_id">For Cage ID:
-                        <?= $_GET['id']; ?>
+                        <?= htmlspecialchars($_GET['id']); ?>
                     </label>
-                    <input type="hidden" id="cage_id" name="cage_id" value="<?= $_GET['id']; ?>"
-                        style="display: inline-block; vertical-align: middle;">
+                    <input type="hidden" id="cage_id" name="cage_id" value="<?= htmlspecialchars($_GET['id']); ?>">
                 <?php endif; ?>
-                <textarea id="note_text" name="note_text" placeholder="Type your sticky note here..."
-                    required></textarea>
+                <textarea id="note_text" name="note_text" placeholder="Type your sticky note here..." required></textarea>
                 <button type="submit" name="add_note">Add Note</button>
             </form>
         </div>
@@ -164,17 +165,16 @@ $result = $stmt->get_result();
                     <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
                 <?php endif; ?>
                 <span class="userid">
-                    <?php echo $row['user_id']; ?>
+                    <?php echo htmlspecialchars($row['user_id']); ?>
                 </span>
                 <p>
-                    <?php echo nl2br($row['note_text']); ?>
+                    <?php echo nl2br(htmlspecialchars($row['note_text'])); ?>
                 </p>
                 <span class="timestamp">
-                    <?php echo $row['created_at']; ?>
+                    <?php echo htmlspecialchars($row['created_at']); ?>
                 </span>
             </div>
         <?php endwhile; ?>
-
     </div>
 
     <script>
@@ -202,8 +202,7 @@ $result = $stmt->get_result();
                 data: formData,
                 success: function () {
                     togglePopup(); // Close the popup after successful submission
-                    // Optionally, you can reload the notes here
-                    location.reload();
+                    location.reload(); // Reload the page to display the new note
                 },
                 error: function (error) {
                     console.log('Error:', error);
@@ -221,8 +220,7 @@ $result = $stmt->get_result();
                 },
                 success: function () {
                     $('#note-' + noteId).remove(); // Remove the note from the DOM
-                    // Optionally, you can reload the notes here
-                    location.reload();
+                    location.reload(); // Optionally, reload the page to refresh the notes
                 },
                 error: function (error) {
                     console.log('Error:', error);
