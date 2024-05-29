@@ -37,7 +37,7 @@ require 'header.php';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>IOT Sensors | <?php echo htmlspecialchars($labName); ?></title>
-    
+
     <!-- Inline CSS for styling -->
     <style>
         body {
@@ -88,28 +88,32 @@ require 'header.php';
 
     <div class="container">
         <!-- Section for Room 1 IOT Sensors -->
-        <div style="margin-top: 50px;">
-            <h2><?php echo htmlspecialchars($labName); ?> - IOT Sensors</h2>
-        </div>
+        <?php if (!empty($r1_temp) || !empty($r1_humi) || !empty($r1_illu) || !empty($r1_pres)) : ?>
+            <div style="margin-top: 50px;">
+                <h2><?php echo htmlspecialchars($labName); ?> - IOT Sensors</h2>
+            </div>
 
-        <div class="iframe-container">
-            <iframe class="iframe-top-left" src="<?php echo htmlspecialchars($r1_temp); ?>" width="450" height="300" frameborder="0"></iframe>
-            <iframe class="iframe-top-right" src="<?php echo htmlspecialchars($r1_humi); ?>" width="450" height="300" frameborder="0"></iframe>
-            <iframe class="iframe-bottom-left" src="<?php echo htmlspecialchars($r1_illu); ?>" width="450" height="300" frameborder="0"></iframe>
-            <iframe class="iframe-bottom-right" src="<?php echo htmlspecialchars($r1_pres); ?>" width="450" height="300" frameborder="0"></iframe>
-        </div>
+            <div class="iframe-container">
+                <iframe class="iframe-top-left" src="<?php echo htmlspecialchars($r1_temp); ?>" width="450" height="300" frameborder="0"></iframe>
+                <iframe class="iframe-top-right" src="<?php echo htmlspecialchars($r1_humi); ?>" width="450" height="300" frameborder="0"></iframe>
+                <iframe class="iframe-bottom-left" src="<?php echo htmlspecialchars($r1_illu); ?>" width="450" height="300" frameborder="0"></iframe>
+                <iframe class="iframe-bottom-right" src="<?php echo htmlspecialchars($r1_pres); ?>" width="450" height="300" frameborder="0"></iframe>
+            </div>
+        <?php endif; ?>
 
         <!-- Section for Room 2 IOT Sensors -->
-        <div style="margin-top: 50px;">
-            <h2><?php echo htmlspecialchars($labName); ?> - Room 2 IOT Sensors</h2>
-        </div>
+        <?php if (!empty($r2_temp) || !empty($r2_humi) || !empty($r2_illu) || !empty($r2_pres)) : ?>
+            <div style="margin-top: 50px;">
+                <h2><?php echo htmlspecialchars($labName); ?> - Room 2 IOT Sensors</h2>
+            </div>
 
-        <div class="iframe-container">
-            <iframe class="iframe-top-left" src="<?php echo htmlspecialchars($r2_temp); ?>" width="450" height="300" frameborder="0"></iframe>
-            <iframe class="iframe-top-right" src="<?php echo htmlspecialchars($r2_humi); ?>" width="450" height="300" frameborder="0"></iframe>
-            <iframe class="iframe-bottom-left" src="<?php echo htmlspecialchars($r2_illu); ?>" width="450" height="300" frameborder="0"></iframe>
-            <iframe class="iframe-bottom-right" src="<?php echo htmlspecialchars($r2_pres); ?>" width="450" height="300" frameborder="0"></iframe>
-        </div>
+            <div class="iframe-container">
+                <iframe class="iframe-top-left" src="<?php echo htmlspecialchars($r2_temp); ?>" width="450" height="300" frameborder="0"></iframe>
+                <iframe class="iframe-top-right" src="<?php echo htmlspecialchars($r2_humi); ?>" width="450" height="300" frameborder="0"></iframe>
+                <iframe class="iframe-bottom-left" src="<?php echo htmlspecialchars($r2_illu); ?>" width="450" height="300" frameborder="0"></iframe>
+                <iframe class="iframe-bottom-right" src="<?php echo htmlspecialchars($r2_pres); ?>" width="450" height="300" frameborder="0"></iframe>
+            </div>
+        <?php endif; ?>
     </div>
 
     <!-- Include footer -->
