@@ -60,17 +60,31 @@ $result = $stmt->get_result();
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .sticky-note::before {
+            content: '';
+            width: 40px;
+            height: 40px;
+            background: url('path/to/pin-image.png') no-repeat center center;
+            background-size: contain;
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .timestamp, .userid {
+            display: block;
+            font-size: 12px;
         }
 
         .timestamp {
-            display: block;
-            font-size: 12px;
             color: #888;
         }
 
         .userid {
-            display: block;
-            font-size: 12px;
             color: blue;
         }
 
