@@ -56,7 +56,7 @@ $result = $stmt->get_result();
             margin-bottom: 15px; /* This can be reduced or removed if using gap in Flexbox */
             border-radius: 15px;
             position: relative;
-            width: 200px; /* Adjust the width as needed */
+            width: 300px; /* Adjust the width as needed */
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
