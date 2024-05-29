@@ -44,7 +44,9 @@ if (isset($_GET['id'])) {
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+
     <title>Printable 2x2 Card Table</title>
     <style>
         @page {
