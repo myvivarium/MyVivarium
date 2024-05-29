@@ -4,7 +4,7 @@ require 'dbcon.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['name'])) {
-    header("Location: index.php"); // Redirect to admin login page if not logged in
+    header("Location: index.php"); // Redirect to login page if not logged in
     exit;
 }
 
@@ -17,6 +17,7 @@ $matingCountResult = $con->query("SELECT COUNT(*) AS count FROM bc_basic");
 $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
 
+// Include the header
 require 'header.php';
 ?>
 
@@ -45,16 +46,20 @@ require 'header.php';
 <body>
 
     <div class="container">
+        <!-- Display session messages if any -->
         <?php include('message.php'); ?>
+        
         <div class="row align-items-center">
-
+            <!-- Welcome message with user information -->
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h2>Welcome, <?php echo $_SESSION['name']; ?> <span>, [<?php echo $_SESSION['position']; ?>]</span></h2>
             </div>
 
+            <!-- Display stats for Holding Cage and Breeding Cage -->
             <div class="card">
                 <div class="card-body">
                     <div class="row mt-4">
+                        <!-- Holding Cage Stats -->
                         <div class="col-md-6">
                             <div class="card text-center">
                                 <div class="card-header bg-primary text-white">
@@ -66,6 +71,7 @@ require 'header.php';
                                 </div>
                             </div>
                         </div>
+                        <!-- Breeding Cage Stats -->
                         <div class="col-md-6">
                             <div class="card text-center">
                                 <div class="card-header bg-primary text-white">
@@ -81,6 +87,7 @@ require 'header.php';
                 </div>
             </div>
 
+            <!-- Display sticky notes section -->
             <div style="margin-top: 50px;">
                 <h2><?php echo htmlspecialchars($labName); ?> - Lab Sticky Notes</h2>
                 <?php include 'nt_app.php'; ?>
@@ -88,6 +95,7 @@ require 'header.php';
         </div>
     </div>
 
+    <!-- Include the footer -->
     <?php include 'footer.php'; ?>
 
 </body>
