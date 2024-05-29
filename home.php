@@ -48,7 +48,7 @@ require 'header.php';
     <div class="container">
         <!-- Display session messages if any -->
         <?php include('message.php'); ?>
-        
+        <br>
         <div class="row align-items-center">
             <!-- Welcome message with user information -->
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">

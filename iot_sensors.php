@@ -2,15 +2,18 @@
 session_start();
 require 'dbcon.php';
 
-// Check if the user is logged in as admin
+// Check if the user is logged in
 if (!isset($_SESSION['name'])) {
-    header("Location: index.php"); // Redirect to admin login page if not logged in
+    header("Location: index.php"); // Redirect to login page if not logged in
     exit;
 }
 
-// Query to fetch the iot sensors link
+// Query to fetch the IoT sensor links
 $dataQuery = "SELECT * FROM data LIMIT 1";
 $dataResult = mysqli_query($con, $dataQuery);
+
+// Initialize sensor variables
+$r1_temp = $r1_humi = $r1_illu = $r1_pres = $r2_temp = $r2_humi = $r2_illu = $r2_pres = "";
 
 if ($datarow = mysqli_fetch_assoc($dataResult)) {
     $r1_temp = $datarow['r1_temp'];
@@ -33,9 +36,9 @@ require 'header.php';
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>IOT Sensors | <?php echo htmlspecialchars($labName); ?></title>
-
+    
+    <!-- Inline CSS for styling -->
     <style>
         body {
             margin: 0;
@@ -84,45 +87,32 @@ require 'header.php';
 <body>
 
     <div class="container">
+        <!-- Section for Room 1 IOT Sensors -->
         <div style="margin-top: 50px;">
             <h2><?php echo htmlspecialchars($labName); ?> - IOT Sensors</h2>
         </div>
 
-        <!-- Your embedded iframe -->
         <div class="iframe-container">
-            <!-- Top Left Iframe -->
-            <iframe class="iframe-top-left" src="<?php echo $r1_temp; ?>" width="450" height="300" frameborder="0"></iframe>
-
-            <!-- Top Right Iframe -->
-            <iframe class="iframe-top-right" src="<?php echo $r1_humi; ?>" width="450" height="300" frameborder="0"></iframe>
-
-            <!-- Bottom Left Iframe -->
-            <iframe class="iframe-bottom-left" src="<?php echo $r1_illu; ?>" width="450" height="300" frameborder="0"></iframe>
-
-            <!-- Bottom Right Iframe -->
-            <iframe class="iframe-bottom-right" src="<?php echo $r1_pres; ?>" width="450" height="300" frameborder="0"></iframe>
+            <iframe class="iframe-top-left" src="<?php echo htmlspecialchars($r1_temp); ?>" width="450" height="300" frameborder="0"></iframe>
+            <iframe class="iframe-top-right" src="<?php echo htmlspecialchars($r1_humi); ?>" width="450" height="300" frameborder="0"></iframe>
+            <iframe class="iframe-bottom-left" src="<?php echo htmlspecialchars($r1_illu); ?>" width="450" height="300" frameborder="0"></iframe>
+            <iframe class="iframe-bottom-right" src="<?php echo htmlspecialchars($r1_pres); ?>" width="450" height="300" frameborder="0"></iframe>
         </div>
 
+        <!-- Section for Room 2 IOT Sensors -->
         <div style="margin-top: 50px;">
             <h2><?php echo htmlspecialchars($labName); ?> - Room 2 IOT Sensors</h2>
         </div>
 
-        <!-- Embedded iframe container for Room 2 -->
         <div class="iframe-container">
-            <!-- Top Left Iframe for Room 2 Temperature -->
-            <iframe class="iframe-top-left" src="<?php echo $r2_temp; ?>" width="450" height="300" frameborder="0"></iframe>
-
-            <!-- Top Right Iframe for Room 2 Humidity -->
-            <iframe class="iframe-top-right" src="<?php echo $r2_humi; ?>" width="450" height="300" frameborder="0"></iframe>
-
-            <!-- Bottom Left Iframe for Room 2 Illuminance -->
-            <iframe class="iframe-bottom-left" src="<?php echo $r2_illu; ?>" width="450" height="300" frameborder="0"></iframe>
-
-            <!-- Bottom Right Iframe for Room 2 Pressure -->
-            <iframe class="iframe-bottom-right" src="<?php echo $r2_pres; ?>" width="450" height="300" frameborder="0"></iframe>
+            <iframe class="iframe-top-left" src="<?php echo htmlspecialchars($r2_temp); ?>" width="450" height="300" frameborder="0"></iframe>
+            <iframe class="iframe-top-right" src="<?php echo htmlspecialchars($r2_humi); ?>" width="450" height="300" frameborder="0"></iframe>
+            <iframe class="iframe-bottom-left" src="<?php echo htmlspecialchars($r2_illu); ?>" width="450" height="300" frameborder="0"></iframe>
+            <iframe class="iframe-bottom-right" src="<?php echo htmlspecialchars($r2_pres); ?>" width="450" height="300" frameborder="0"></iframe>
         </div>
     </div>
 
+    <!-- Include footer -->
     <?php include 'footer.php'; ?>
 
 </body>
