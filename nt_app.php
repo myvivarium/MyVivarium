@@ -17,11 +17,11 @@ $currentUserId = $_SESSION['username']; // Assuming 'username' is the user's ide
 // Retrieve user's sticky notes along with user names
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $sql = "SELECT nt_data.*, users.name AS user_name FROM nt_data LEFT JOIN users ON nt_data.user_id = users.username WHERE nt_data.cage_id = ? ORDER BY nt_data.created_at DESC";
+    $sql = "SELECT nt_data.*, COALESCE(users.name, nt_data.user_id) AS user_name FROM nt_data LEFT JOIN users ON nt_data.user_id = users.username WHERE nt_data.cage_id = ? ORDER BY nt_data.created_at DESC";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("s", $id);
 } else {
-    $sql = "SELECT nt_data.*, users.name AS user_name FROM nt_data LEFT JOIN users ON nt_data.user_id = users.username WHERE nt_data.cage_id IS NULL ORDER BY nt_data.created_at DESC";
+    $sql = "SELECT nt_data.*, COALESCE(users.name, nt_data.user_id) AS user_name FROM nt_data LEFT JOIN users ON nt_data.user_id = users.username WHERE nt_data.cage_id IS NULL ORDER BY nt_data.created_at DESC";
     $stmt = $con->prepare($sql);
 }
 $stmt->execute();
