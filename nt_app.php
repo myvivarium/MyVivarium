@@ -14,14 +14,14 @@ if (!isset($_SESSION['name'])) {
 
 $currentUserId = $_SESSION['username']; // Assuming 'username' is the user's identifier
 
-// Retrieve user's sticky notes
+// Retrieve user's sticky notes along with user names
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $sql = "SELECT * FROM nt_data WHERE cage_id = ? ORDER BY created_at DESC";
+    $sql = "SELECT nt_data.*, users.name AS user_name FROM nt_data LEFT JOIN users ON nt_data.user_id = users.username WHERE nt_data.cage_id = ? ORDER BY nt_data.created_at DESC";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("s", $id);
 } else {
-    $sql = "SELECT * FROM nt_data WHERE cage_id IS NULL ORDER BY created_at DESC";
+    $sql = "SELECT nt_data.*, users.name AS user_name FROM nt_data LEFT JOIN users ON nt_data.user_id = users.username WHERE nt_data.cage_id IS NULL ORDER BY nt_data.created_at DESC";
     $stmt = $con->prepare($sql);
 }
 $stmt->execute();
@@ -208,7 +208,7 @@ $result = $stmt->get_result();
                         <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
                     <?php endif; ?>
                     <span class="userid">
-                        <?php echo htmlspecialchars($row['user_id']); ?>
+                        <?php echo htmlspecialchars($row['user_name']); ?>
                     </span>
                     <p>
                         <?php echo nl2br(htmlspecialchars($row['note_text'])); ?>
@@ -309,4 +309,3 @@ $result = $stmt->get_result();
 $stmt->close();
 $con->close();
 ?>
-
