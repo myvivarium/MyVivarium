@@ -41,22 +41,21 @@ $result = $stmt->get_result();
             background-color: #f4f4f4;
         }
 
-
         .sticky-notes-container {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
-            justify-content: flex-start; /* Adjust alignment as needed */
+            justify-content: flex-start;
         }
 
         .sticky-note {
             background-color: #fff8b3;
             border: 1px solid #e6d381;
             padding: 15px;
-            margin-bottom: 15px; /* This can be reduced or removed if using gap in Flexbox */
+            margin-bottom: 15px;
             border-radius: 15px;
             position: relative;
-            width: 300px; /* Adjust the width as needed */
+            width: 200px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -169,50 +168,58 @@ $result = $stmt->get_result();
             background-color: #f2dede;
             border-color: #ebccd1;
         }
+
+        .char-count {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+            text-align: right;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 
 <body>
-    <div class="container" style="margin: 50px 0px;">
-            <div id="message"></div> <!-- Added this div for displaying messages -->
-            <button class="add-note-btn" onclick="togglePopup()">Add Sticky Note</button>
+    <div class="container" style="max-width: 800px; margin: 50px auto;">
+        <div id="message"></div> <!-- Added this div for displaying messages -->
+        <button class="add-note-btn" onclick="togglePopup()">Add Sticky Note</button>
 
-            <div class="popup" id="addNotePopup">
-                <span class="close-btn" onclick="togglePopup()">X</span>
-                <form id="addNoteForm" method="post">
-                    <?php if (isset($_GET['id'])): ?>
-                        <label for="cage_id">For Cage ID:
-                            <?= htmlspecialchars($_GET['id']); ?>
-                        </label>
-                        <input type="hidden" id="cage_id" name="cage_id" value="<?= htmlspecialchars($_GET['id']); ?>">
-                    <?php endif; ?>
-                    <textarea id="note_text" name="note_text" placeholder="Type your sticky note here..." required></textarea>
-                    <button type="submit" name="add_note">Add Note</button>
-                </form>
-            </div>
-
-            <div class="overlay" id="overlay" onclick="togglePopup()"></div>
-
-            <div class="sticky-notes-container"> <!-- Add this wrapper -->
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <div class="sticky-note" id="note-<?= $row['id']; ?>">
-                        <?php if ($currentUserId == $row['user_id']): ?>
-                            <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
-                        <?php endif; ?>
-                        <span class="userid">
-                            <?php echo htmlspecialchars($row['user_id']); ?>
-                        </span>
-                        <p>
-                            <?php echo nl2br(htmlspecialchars($row['note_text'])); ?>
-                        </p>
-                        <span class="timestamp">
-                            <?php echo htmlspecialchars($row['created_at']); ?>
-                        </span>
-                    </div>
-                <?php endwhile; ?>
-            </div>
+        <div class="popup" id="addNotePopup">
+            <span class="close-btn" onclick="togglePopup()">X</span>
+            <form id="addNoteForm" method="post">
+                <?php if (isset($_GET['id'])): ?>
+                    <label for="cage_id">For Cage ID:
+                        <?= htmlspecialchars($_GET['id']); ?>
+                    </label>
+                    <input type="hidden" id="cage_id" name="cage_id" value="<?= htmlspecialchars($_GET['id']); ?>">
+                <?php endif; ?>
+                <textarea id="note_text" name="note_text" placeholder="Type your sticky note here..." maxlength="250" required></textarea>
+                <div class="char-count" id="charCount">250 characters remaining</div>
+                <button type="submit" name="add_note">Add Note</button>
+            </form>
         </div>
+
+        <div class="overlay" id="overlay" onclick="togglePopup()"></div>
+
+        <div class="sticky-notes-container">
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <div class="sticky-note" id="note-<?= $row['id']; ?>">
+                    <?php if ($currentUserId == $row['user_id']): ?>
+                        <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
+                    <?php endif; ?>
+                    <span class="userid">
+                        <?php echo htmlspecialchars($row['user_id']); ?>
+                    </span>
+                    <p>
+                        <?php echo nl2br(htmlspecialchars($row['note_text'])); ?>
+                    </p>
+                    <span class="timestamp">
+                        <?php echo htmlspecialchars($row['created_at']); ?>
+                    </span>
+                </div>
+            <?php endwhile; ?>
+        </div>
+    </div>
 
     <script>
         function togglePopup() {
@@ -284,6 +291,14 @@ $result = $stmt->get_result();
                 }
             });
         }
+
+        // Update character count
+        $('#note_text').on('input', function () {
+            var maxLength = 250;
+            var currentLength = $(this).val().length;
+            var remaining = maxLength - currentLength;
+            $('#charCount').text(remaining + ' characters remaining');
+        });
     </script>
 </body>
 
@@ -294,3 +309,4 @@ $result = $stmt->get_result();
 $stmt->close();
 $con->close();
 ?>
+
