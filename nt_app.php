@@ -41,13 +41,26 @@ $result = $stmt->get_result();
             background-color: #f4f4f4;
         }
 
+
+        .sticky-notes-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: flex-start; /* Adjust alignment as needed */
+        }
+
         .sticky-note {
             background-color: #fff8b3;
             border: 1px solid #e6d381;
             padding: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 15px; /* This can be reduced or removed if using gap in Flexbox */
             border-radius: 15px;
             position: relative;
+            width: 200px; /* Adjust the width as needed */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .timestamp {
@@ -162,42 +175,44 @@ $result = $stmt->get_result();
 
 <body>
     <div class="container" style="max-width: 800px; margin: 50px auto;">
-        <div id="message"></div> <!-- Added this div for displaying messages -->
-        <button class="add-note-btn" onclick="togglePopup()">Add Sticky Note</button>
+            <div id="message"></div> <!-- Added this div for displaying messages -->
+            <button class="add-note-btn" onclick="togglePopup()">Add Sticky Note</button>
 
-        <div class="popup" id="addNotePopup">
-            <span class="close-btn" onclick="togglePopup()">X</span>
-            <form id="addNoteForm" method="post">
-                <?php if (isset($_GET['id'])): ?>
-                    <label for="cage_id">For Cage ID:
-                        <?= htmlspecialchars($_GET['id']); ?>
-                    </label>
-                    <input type="hidden" id="cage_id" name="cage_id" value="<?= htmlspecialchars($_GET['id']); ?>">
-                <?php endif; ?>
-                <textarea id="note_text" name="note_text" placeholder="Type your sticky note here..." required></textarea>
-                <button type="submit" name="add_note">Add Note</button>
-            </form>
-        </div>
-
-        <div class="overlay" id="overlay" onclick="togglePopup()"></div>
-
-        <?php while ($row = $result->fetch_assoc()): ?>
-            <div class="sticky-note" id="note-<?= $row['id']; ?>">
-                <?php if ($currentUserId == $row['user_id']): ?>
-                    <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
-                <?php endif; ?>
-                <span class="userid">
-                    <?php echo htmlspecialchars($row['user_id']); ?>
-                </span>
-                <p>
-                    <?php echo nl2br(htmlspecialchars($row['note_text'])); ?>
-                </p>
-                <span class="timestamp">
-                    <?php echo htmlspecialchars($row['created_at']); ?>
-                </span>
+            <div class="popup" id="addNotePopup">
+                <span class="close-btn" onclick="togglePopup()">X</span>
+                <form id="addNoteForm" method="post">
+                    <?php if (isset($_GET['id'])): ?>
+                        <label for="cage_id">For Cage ID:
+                            <?= htmlspecialchars($_GET['id']); ?>
+                        </label>
+                        <input type="hidden" id="cage_id" name="cage_id" value="<?= htmlspecialchars($_GET['id']); ?>">
+                    <?php endif; ?>
+                    <textarea id="note_text" name="note_text" placeholder="Type your sticky note here..." required></textarea>
+                    <button type="submit" name="add_note">Add Note</button>
+                </form>
             </div>
-        <?php endwhile; ?>
-    </div>
+
+            <div class="overlay" id="overlay" onclick="togglePopup()"></div>
+
+            <div class="sticky-notes-container"> <!-- Add this wrapper -->
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <div class="sticky-note" id="note-<?= $row['id']; ?>">
+                        <?php if ($currentUserId == $row['user_id']): ?>
+                            <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
+                        <?php endif; ?>
+                        <span class="userid">
+                            <?php echo htmlspecialchars($row['user_id']); ?>
+                        </span>
+                        <p>
+                            <?php echo nl2br(htmlspecialchars($row['note_text'])); ?>
+                        </p>
+                        <span class="timestamp">
+                            <?php echo htmlspecialchars($row['created_at']); ?>
+                        </span>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        </div>
 
     <script>
         function togglePopup() {
