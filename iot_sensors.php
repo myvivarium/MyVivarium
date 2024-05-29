@@ -37,20 +37,17 @@ require 'header.php';
     <title>IOT Sensors | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
-        /* General Styles */
         body {
             margin: 0;
             padding: 0;
         }
 
-        /* Container for iframes */
         .iframe-container {
             position: relative;
             width: 100%;
             height: 800px;
         }
 
-        /* Individual iframe positions */
         .iframe-top-left,
         .iframe-top-right,
         .iframe-bottom-left,
@@ -59,6 +56,7 @@ require 'header.php';
             width: 50%;
             height: 50%;
             border: none;
+            margin: 50px 0px;
         }
 
         .iframe-top-left {
