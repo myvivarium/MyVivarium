@@ -204,7 +204,7 @@ $result = $stmt->get_result();
         <div class="sticky-notes-container">
             <?php while ($row = $result->fetch_assoc()): ?>
                 <div class="sticky-note" id="note-<?= $row['id']; ?>">
-                    <?php if ($currentUserId == $row['user_id']): ?>
+                    <?php if ($currentUserId == $row['user_id'] || (isset($_SESSION['role']) && $_SESSION['role'] === 'admin')): ?>
                         <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
                     <?php endif; ?>
                     <span class="userid">
