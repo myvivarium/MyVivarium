@@ -1,7 +1,7 @@
 <?php
 require 'dbcon.php';
 
-// Query to fetch the lab name from the database
+// Query to fetch the lab name
 $labQuery = "SELECT lab_name FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
@@ -17,6 +17,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($labName); ?></title>
 
     <!-- Favicon and icons for different devices -->
     <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
@@ -127,6 +128,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                 <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
                     <li><a class="dropdown-item" href="hc_dash.php">Holding Cage</a></li>
                     <li><a class="dropdown-item" href="bc_dash.php">Breeding Cage</a></li>
+                    <li><a class="dropdown-item" href="iot_sensors.php">IOT Sensors</a></li>
                 </ul>
             </div>
             <?php
@@ -137,10 +139,6 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             <a href="logout.php" class="btn btn-secondary">Logout</a>
         </nav>
     </div>
-
-    <!-- Bootstrap and jQuery JS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 
 </html>
