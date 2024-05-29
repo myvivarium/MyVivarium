@@ -55,7 +55,7 @@ $result = $stmt->get_result();
             margin-bottom: 15px;
             border-radius: 15px;
             position: relative;
-            width: 200px;
+            width: 300px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -180,7 +180,7 @@ $result = $stmt->get_result();
 </head>
 
 <body>
-    <div class="container" style="max-width: 800px; margin: 50px auto;">
+    <div class="container" style="margin: 50px 0px;">
         <div id="message"></div> <!-- Added this div for displaying messages -->
         <button class="add-note-btn" onclick="togglePopup()">Add Sticky Note</button>
 
