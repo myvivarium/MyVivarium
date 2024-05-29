@@ -51,7 +51,7 @@ $result = $stmt->get_result();
         .sticky-note {
             background-color: #fff8b3;
             border: 1px solid #e6d381;
-            padding: 15px;
+            padding: 20px 15px;
             margin-bottom: 15px;
             border-radius: 15px;
             position: relative;
@@ -70,8 +70,8 @@ $result = $stmt->get_result();
             background: url('images/pin-image.webp') no-repeat center center;
             background-size: contain;
             position: absolute;
-            top: -20px;
-            left: 10px;
+            top: -10px;
+            left: 2px;
         }
 
         .timestamp, .userid {
