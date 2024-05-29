@@ -67,7 +67,7 @@ $result = $stmt->get_result();
             content: '';
             width: 30px;
             height: 30px;
-            background: url('images/pin-image.png') no-repeat center center;
+            background: url('images/pin-image.webp') no-repeat center center;
             background-size: contain;
             position: absolute;
             top: -20px;
