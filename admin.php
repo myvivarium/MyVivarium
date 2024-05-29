@@ -55,6 +55,7 @@ mysqli_close($con);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>User Management | <?php echo htmlspecialchars($labName); ?></title>
+    
     <!-- Custom styles -->
     <style>
         body {
