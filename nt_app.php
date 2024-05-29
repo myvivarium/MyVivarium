@@ -65,14 +65,13 @@ $result = $stmt->get_result();
 
         .sticky-note::before {
             content: '';
-            width: 40px;
-            height: 40px;
-            background: url('images/pin-image.webp') no-repeat center center;
+            width: 30px;
+            height: 30px;
+            background: url('images/pin-image.png') no-repeat center center;
             background-size: contain;
             position: absolute;
             top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 10px;
         }
 
         .timestamp, .userid {
