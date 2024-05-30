@@ -8,7 +8,7 @@ if (!isset($_SESSION['name'])) {
     exit;
 }
 
-// Query to retrieve options where role is 'PI'
+// Query to retrieve options where role is 'Principal Investigator'
 $query = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result = $con->query($query);
 
@@ -25,21 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sex = $_POST['sex'];
     $parent_cg = $_POST['parent_cg'];
     $remarks = $_POST['remarks'];
-    $mouse_id_1 = $_POST['mouse_id_1'];
-    $genotype_1 = $_POST['genotype_1'];
-    $notes_1 = $_POST['notes_1'];
-    $mouse_id_2 = $_POST['mouse_id_2'];
-    $genotype_2 = $_POST['genotype_2'];
-    $notes_2 = $_POST['notes_2'];
-    $mouse_id_3 = $_POST['mouse_id_3'];
-    $genotype_3 = $_POST['genotype_3'];
-    $notes_3 = $_POST['notes_3'];
-    $mouse_id_4 = $_POST['mouse_id_4'];
-    $genotype_4 = $_POST['genotype_4'];
-    $notes_4 = $_POST['notes_4'];
-    $mouse_id_5 = $_POST['mouse_id_5'];
-    $genotype_5 = $_POST['genotype_5'];
-    $notes_5 = $_POST['notes_5'];
+    $mouse_data = [];
+
+    for ($i = 1; $i <= 5; $i++) {
+        $mouse_data[] = [
+            'mouse_id' => $_POST["mouse_id_$i"] ?? null,
+            'genotype' => $_POST["genotype_$i"] ?? null,
+            'notes' => $_POST["notes_$i"] ?? null
+        ];
+    }
 
     // Check if the cage_id already exists
     $check_query = "SELECT * FROM hc_basic WHERE cage_id = '$cage_id'";
@@ -50,12 +44,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['message'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
     } else {
         // Prepare the SQL statement with placeholders
-        $query1 = "INSERT INTO hc_basic (`cage_id`, `pi_name`, `strain`, `iacuc`, `user`, `qty`, `dob`, `sex`, `parent_cg`, `remarks`, `mouse_id_1`, `genotype_1`, `notes_1`, `mouse_id_2`, `genotype_2`, `notes_2`, `mouse_id_3`, `genotype_3`, `notes_3`, `mouse_id_4`, `genotype_4`, `notes_4`, `mouse_id_5`, `genotype_5`, `notes_5`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $query1 = "INSERT INTO hc_basic 
+        (`cage_id`, `pi_name`, `strain`, `iacuc`, `user`, `qty`, `dob`, `sex`, `parent_cg`, `remarks`, 
+        `mouse_id_1`, `genotype_1`, `notes_1`, `mouse_id_2`, `genotype_2`, `notes_2`, `mouse_id_3`, 
+        `genotype_3`, `notes_3`, `mouse_id_4`, `genotype_4`, `notes_4`, `mouse_id_5`, `genotype_5`, `notes_5`) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $con->prepare($query1);
 
         // Bind parameters
-        $stmt->bind_param("sssssisssssssssssssssssss", $cage_id, $pi_name, $strain, $iacuc, $user, $qty, $dob, $sex, $parent_cg, $remarks, $mouse_id_1, $genotype_1, $notes_1, $mouse_id_2, $genotype_2, $notes_2, $mouse_id_3, $genotype_3, $notes_3, $mouse_id_4, $genotype_4, $notes_4, $mouse_id_5, $genotype_5, $notes_5);
+        $stmt->bind_param(
+            "sssssisssssssssssssssssss",
+            $cage_id, $pi_name, $strain, $iacuc, $user, $qty, $dob, $sex, $parent_cg, $remarks,
+            $mouse_data[0]['mouse_id'], $mouse_data[0]['genotype'], $mouse_data[0]['notes'],
+            $mouse_data[1]['mouse_id'], $mouse_data[1]['genotype'], $mouse_data[1]['notes'],
+            $mouse_data[2]['mouse_id'], $mouse_data[2]['genotype'], $mouse_data[2]['notes'],
+            $mouse_data[3]['mouse_id'], $mouse_data[3]['genotype'], $mouse_data[3]['notes'],
+            $mouse_data[4]['mouse_id'], $mouse_data[4]['genotype'], $mouse_data[4]['notes']
+        );
 
         // Execute the statement
         $result1 = $stmt->execute();
@@ -64,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result1) {
             $_SESSION['message'] = "New holding cage added successfully.";
         } else {
-            $_SESSION['message'] = "Failed to add new holding cage: ";
+            $_SESSION['message'] = "Failed to add new holding cage.";
         }
 
         // Close the prepared statement
@@ -83,21 +89,24 @@ require 'header.php';
 <html lang="en">
 
 <head>
-
     <script>
         function goBack() {
             window.history.back();
-            //window.location.href = 'specific_php_file.php';
+        }
+
+        function showMouseFields() {
+            var qty = document.getElementById('qty').value;
+            for (var i = 1; i <= 5; i++) {
+                document.getElementById('mouse_fields_' + i).style.display = i <= qty ? 'block' : 'none';
+            }
         }
     </script>
 
     <title>Add New Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
-
 </head>
 
 <body>
-
-    <div class="container mt-4">
+    <div class="container mt-4" style="max-width: 600px;">
         <h4>Add New Holding Cage</h4>
 
         <?php include('message.php'); ?>
@@ -139,7 +148,7 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="qty" class="form-label">Qty</label>
-                <select class="form-control" id="qty" name="qty" required>
+                <select class="form-control" id="qty" name="qty" required onchange="showMouseFields()">
                     <option value="" disabled selected>Select Number</option>
                     <?php
                     // Generate options dynamically
@@ -174,94 +183,30 @@ require 'header.php';
                 <input type="text" class="form-control" id="remarks" name="remarks">
             </div>
 
-            <h4>Mouse #1</h4>
-            <div class="mb-3">
-                <label for="mouse_id_1" class="form-label">Mouse ID</label>
-                <input type="text" class="form-control" id="mouse_id_1" name="mouse_id_1">
-            </div>
+            <?php for ($i = 1; $i <= 5; $i++): ?>
+                <div id="mouse_fields_<?php echo $i; ?>" style="display: none;">
+                    <h4>Mouse #<?php echo $i; ?></h4>
+                    <div class="mb-3">
+                        <label for="mouse_id_<?php echo $i; ?>" class="form-label">Mouse ID</label>
+                        <input type="text" class="form-control" id="mouse_id_<?php echo $i; ?>" name="mouse_id_<?php echo $i; ?>">
+                    </div>
 
-            <div class="mb-3">
-                <label for="genotype_1" class="form-label">Genotype</label>
-                <input type="text" class="form-control" id="genotype_1" name="genotype_1">
-            </div>
+                    <div class="mb-3">
+                        <label for="genotype_<?php echo $i; ?>" class="form-label">Genotype</label>
+                        <input type="text" class="form-control" id="genotype_<?php echo $i; ?>" name="genotype_<?php echo $i; ?>">
+                    </div>
 
-            <div class="mb-3">
-                <label for="notes_1" class="form-label">Maintenance Notes</label>
-                <input type="text" class="form-control" id="notes_1" name="notes_1">
-            </div>
-
-            <h4>Mouse #2</h4>
-            <div class="mb-3">
-                <label for="mouse_id_2" class="form-label">Mouse ID</label>
-                <input type="text" class="form-control" id="mouse_id_2" name="mouse_id_2">
-            </div>
-
-            <div class="mb-3">
-                <label for="genotype_2" class="form-label">Genotype</label>
-                <input type="text" class="form-control" id="genotype_2" name="genotype_2">
-            </div>
-
-            <div class="mb-3">
-                <label for="notes_2" class="form-label">Maintenance Notes</label>
-                <input type="text" class="form-control" id="notes_2" name="notes_2">
-            </div>
-
-            <h4>Mouse #3</h4>
-            <div class="mb-3">
-                <label for="mouse_id_3" class="form-label">Mouse ID</label>
-                <input type="text" class="form-control" id="mouse_id_3" name="mouse_id_3">
-            </div>
-
-            <div class="mb-3">
-                <label for="genotype_3" class="form-label">Genotype</label>
-                <input type="text" class="form-control" id="genotype_3" name="genotype_3">
-            </div>
-
-            <div class="mb-3">
-                <label for="notes_3" class="form-label">Maintenance Notes</label>
-                <input type="text" class="form-control" id="notes_3" name="notes_3">
-            </div>
-
-            <h4>Mouse #4</h4>
-            <div class="mb-3">
-                <label for="mouse_id_4" class="form-label">Mouse ID</label>
-                <input type="text" class="form-control" id="mouse_id_4" name="mouse_id_4">
-            </div>
-
-            <div class="mb-3">
-                <label for="genotype_4" class="form-label">Genotype</label>
-                <input type="text" class="form-control" id="genotype_4" name="genotype_4">
-            </div>
-
-            <div class="mb-3">
-                <label for="notes_4" class="form-label">Maintenance Notes</label>
-                <input type="text" class="form-control" id="notes_4" name="notes_4">
-            </div>
-
-            <h4>Mouse #5</h4>
-            <div class="mb-3">
-                <label for="mouse_id_5" class="form-label">Mouse ID</label>
-                <input type="text" class="form-control" id="mouse_id_5" name="mouse_id_5">
-            </div>
-
-            <div class="mb-3">
-                <label for="genotype_5" class="form-label">Genotype</label>
-                <input type="text" class="form-control" id="genotype_5" name="genotype_5">
-            </div>
-
-            <div class="mb-3">
-                <label for="notes_5" class="form-label">Maintenance Notes</label>
-                <input type="text" class="form-control" id="notes_5" name="notes_5">
-            </div>
+                    <div class="mb-3">
+                        <label for="notes_<?php echo $i; ?>" class="form-label">Maintenance Notes</label>
+                        <input type="text" class="form-control" id="notes_<?php echo $i; ?>" name="notes_<?php echo $i; ?>">
+                    </div>
+                </div>
+            <?php endfor; ?>
 
             <button type="submit" class="btn btn-primary">Add Cage</button>
-            <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
+            <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
         </form>
-
-        <div style="text-align: center;">
-            <a href="hc_dash.php" class="btn btn-secondary">Dashboard</a>
-        </div>
     </div>
 
     <br>
