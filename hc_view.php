@@ -44,6 +44,7 @@ require 'header.php';
 <head>
     <title>View Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
     <style>
+        
         body {
             background: none !important;
             background-color: transparent !important;
@@ -102,12 +103,7 @@ require 'header.php';
             background-color: #e9ecef;
             border-radius: 8px;
         }
-
-        .card-header a {;
-            text-align: right;
-        }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
@@ -115,10 +111,7 @@ require 'header.php';
         <div class="card">
             <div class="card-header">
                 <h4>View Holding Cage <?= htmlspecialchars($holdingcage['cage_id']); ?></h4>
-                <a href="hc_edit.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-secondary btn-sm btn-icon"><i class="fas fa-edit" data-toggle="tooltip" data-placement="top" title="Edit Cage"></i></a>';
-
             </div>
-
             <br>
             <div class="table-wrapper">
                 <table class="table table-bordered">
