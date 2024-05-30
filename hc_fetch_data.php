@@ -36,12 +36,12 @@ while ($row = mysqli_fetch_assoc($result)) {
     while ($holdingcage = mysqli_fetch_assoc($cageResult)) {
         $tableRows .= '<tr>';
         if ($firstRow) {
-            $tableRows .= '<td rowspan="' . $numRows . '">' . htmlspecialchars($holdingcage['cage_id']) . '</td>';
+            $tableRows .= '<td style="width: 50%;">' . htmlspecialchars($holdingcage['cage_id']) . '</td>';
             $firstRow = false;
         }
-        $tableRows .= '<td>
-                        <a href="hc_view.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i></a>
-                        <a href="hc_edit.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i></a>';
+        $tableRows .= '<td style="width: 50%; white-space: nowrap;">
+                        <a href="hc_view.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-primary btn-sm mr-2"><i class="fas fa-eye"></i></a>
+                        <a href="hc_edit.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-secondary btn-sm mr-2"><i class="fas fa-edit"></i></a>';
         if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
             $tableRows .= '<a href="#" onclick="confirmDeletion(\'' . htmlspecialchars($holdingcage['cage_id']) . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
         }

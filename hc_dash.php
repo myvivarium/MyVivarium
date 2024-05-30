@@ -125,6 +125,10 @@ require 'header.php';
                 width: 100%;
             }
         }
+
+        .btn-sm {
+            margin-right: 5px;
+        }
     </style>
 </head>
 
@@ -153,8 +157,8 @@ require 'header.php';
                             <table class="table table-bordered" id="mouseTable">
                                 <thead>
                                     <tr>
-                                        <th>Cage ID</th>
-                                        <th>Action</th>
+                                        <th style="width: 50%;">Cage ID</th>
+                                        <th style="width: 50%;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tableBody">
