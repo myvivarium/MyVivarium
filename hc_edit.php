@@ -167,6 +167,18 @@ require 'header.php';
         function goBack() {
             window.history.back();
         }
+
+        function showMouseFields() {
+            var qty = document.getElementById('qty').value;
+            for (var i = 1; i <= 5; i++) {
+                document.getElementById('mouse_fields_' + i).style.display = i <= qty ? 'block' : 'none';
+            }
+        }
+
+        function adjustTextareaHeight(element) {
+            element.style.height = "auto";
+            element.style.height = (element.scrollHeight) + "px";
+        }
     </script>
 
     <title>Edit Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
@@ -225,7 +237,7 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="qty" class="form-label">Qty</label>
-                                <select class="form-control" id="qty" name="qty" required>
+                                <select class="form-control" id="qty" name="qty" required onchange="showMouseFields()">
                                     <option value="<?= htmlspecialchars($holdingcage['qty']); ?>" selected>
                                         <?= htmlspecialchars($holdingcage['qty']); ?>
                                     </option>
@@ -268,7 +280,7 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="remarks" class="form-label">Remarks</label>
-                                <input type="text" class="form-control" id="remarks" name="remarks" value="<?= htmlspecialchars($holdingcage['remarks']); ?>">
+                                <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($holdingcage['remarks']); ?></textarea>
                             </div>
 
                             <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -286,10 +298,13 @@ require 'header.php';
 
                                     <div class="mb-3">
                                         <label for="notes_<?php echo $i; ?>" class="form-label">Maintenance Notes</label>
-                                        <input type="text" class="form-control" id="notes_<?php echo $i; ?>" name="notes_<?php echo $i; ?>" value="<?= htmlspecialchars($holdingcage["notes_$i"]); ?>">
+                                        <textarea class="form-control" id="notes_<?php echo $i; ?>" name="notes_<?php echo $i; ?>" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($holdingcage["notes_$i"]); ?></textarea>
                                     </div>
                                 </div>
                             <?php endfor; ?>
+
+                            <!-- Separator -->
+                            <hr class="mt-4 mb-4">
 
                             <!-- Display Files Section -->
                             <div class="card mt-4">
