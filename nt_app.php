@@ -203,7 +203,7 @@ $result = $stmt->get_result();
     <div class="container" style="margin: 50px 0px;">
         <div id="message"></div> <!-- Added this div for displaying messages -->
         <button class="add-note-btn" onclick="togglePopup('addNotePopup')">Add Sticky Note</button>
-
+        <br>
         <div class="popup" id="addNotePopup">
             <span class="close-btn" onclick="togglePopup('addNotePopup')">X</span>
             <form id="addNoteForm" method="post">
