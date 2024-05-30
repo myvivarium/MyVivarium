@@ -102,13 +102,18 @@ require 'header.php';
                 document.getElementById('mouse_fields_' + i).style.display = i <= qty ? 'block' : 'none';
             }
         }
+
+        function adjustTextareaHeight(element) {
+            element.style.height = "auto";
+            element.style.height = (element.scrollHeight) + "px";
+        }
     </script>
 
     <title>Add New Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 </head>
 
 <body>
-    <div class="container mt-4" style="max-width: 600px; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
+    <div class="container mt-4" style="max-width: 800px; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
         <h4>Add New Holding Cage</h4>
 
         <?php include('message.php'); ?>
@@ -183,6 +188,7 @@ require 'header.php';
             <div class="mb-3">
                 <label for="remarks" class="form-label">Remarks</label>
                 <input type="text" class="form-control" id="remarks" name="remarks">
+                <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"></textarea>
             </div>
 
             <?php for ($i = 1; $i <= 5; $i++): ?>
