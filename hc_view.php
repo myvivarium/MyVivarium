@@ -44,6 +44,12 @@ require 'header.php';
 <head>
     <title>View Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
     <style>
+        
+        body {
+            background: none !important;
+            background-color: transparent !important;
+        }
+
         .content-container {
             max-width: 800px;
             background-color: #f8f9fa;
