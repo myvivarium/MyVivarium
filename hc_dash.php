@@ -21,8 +21,15 @@ require 'header.php';
 
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap for tooltips -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
     <script>
+        // Initialize tooltips
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(); 
+        });
+
         // Confirm deletion function
         function confirmDeletion(id) {
             var confirmDelete = confirm("Are you sure you want to delete this cage - '" + id + "'?");
@@ -102,6 +109,11 @@ require 'header.php';
 
         .action-icons a {
             margin-right: 10px;
+            display: inline-block;
+        }
+
+        .action-icons a:last-child {
+            margin-right: 0;
         }
 
         @media (max-width: 768px) {
@@ -124,9 +136,13 @@ require 'header.php';
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4>Holding Cage Dashboard</h4>
-                        <div>
-                            <a href="hc_addn.php" class="btn btn-primary">Add New Cage</a>
-                            <a href="hc_slct_crd.php" class="btn btn-success">Print Cage Card</a>
+                        <div class="action-icons">
+                            <a href="hc_addn.php" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Cage">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                            <a href="hc_slct_crd.php" class="btn btn-success btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage Card">
+                                <i class="fas fa-print"></i>
+                            </a>
                         </div>
                     </div>
 
@@ -162,8 +178,12 @@ require 'header.php';
             </div>
         </div>
     </div>
-    <br>
     <?php include 'footer.php'; ?>
+    
+    <!-- Bootstrap and jQuery for tooltips -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 
 </html>
