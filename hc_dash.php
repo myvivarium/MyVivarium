@@ -67,6 +67,7 @@ require 'header.php';
 
         .table-wrapper {
             margin-bottom: 50px;
+            overflow-x: auto;
         }
 
         .table-wrapper table {
@@ -114,6 +115,10 @@ require 'header.php';
             background-color: #FF4500;
         }
 
+        .btn-sm {
+            margin-right: 5px;
+        }
+
         @media (max-width: 768px) {
             .table-wrapper table, .table-wrapper th, .table-wrapper td {
                 display: block;
@@ -124,10 +129,33 @@ require 'header.php';
                 box-sizing: border-box;
                 width: 100%;
             }
-        }
 
-        .btn-sm {
-            margin-right: 5px;
+            .table-wrapper th {
+                display: none; /* Hide table headers on small screens */
+            }
+
+            .table-wrapper td {
+                display: block;
+                text-align: right;
+                position: relative;
+                padding-left: 50%;
+                border: none; /* Remove borders on small screens */
+                border-bottom: 1px solid #ddd; /* Add only bottom border for better visibility */
+            }
+
+            .table-wrapper td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: 45%;
+                padding-right: 10px;
+                text-align: left;
+                font-weight: bold;
+            }
+
+            .table-wrapper td:last-child {
+                border-bottom: 0; /* Remove bottom border for the last cell */
+            }
         }
     </style>
 </head>
@@ -173,12 +201,6 @@ require 'header.php';
                                 <!-- Pagination links will be inserted here by JavaScript -->
                             </ul>
                         </nav>
-
-                        <?php if (isset($_GET['search'])) : ?>
-                            <div style="text-align: center;">
-                                <a href="hc_dash.php" class="btn btn-secondary">Go Back To Holding Cage Dashboard</a>
-                            </div>
-                        <?php endif; ?>
                     </div>
                 </div>
             </div>
