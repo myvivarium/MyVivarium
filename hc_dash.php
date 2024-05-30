@@ -18,7 +18,10 @@ require 'header.php';
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <script>
         // Confirm deletion function
         function confirmDeletion(id) {
@@ -26,30 +29,6 @@ require 'header.php';
             if (confirmDelete) {
                 window.location.href = "hc_drop.php?id=" + id + "&confirm=true";
             }
-        }
-
-        // Show QR code popup function
-        function showQrCodePopup(cageId) {
-            var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
-            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://myvivarium.online/hc_view.php?id=' + cageId;
-            var htmlContent = `
-            <html>
-            <head>
-                <title>QR Code for Cage ${cageId}</title>
-                <style>
-                    body { font-family: Arial, sans-serif; text-align: center; padding-top: 40px; }
-                    h1 { color: #333; }
-                    img { margin-top: 20px; }
-                </style>
-            </head>
-            <body>
-                <h1>QR Code for Cage ${cageId}</h1>
-                <img src="${qrUrl}" alt="QR Code for Cage ${cageId}" />
-            </body>
-            </html>
-            `;
-            popup.document.write(htmlContent);
-            popup.document.close();
         }
 
         // Fetch data function
@@ -175,7 +154,6 @@ require 'header.php';
                                 <thead>
                                     <tr>
                                         <th>Cage ID</th>
-                                        <th>Remarks</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
