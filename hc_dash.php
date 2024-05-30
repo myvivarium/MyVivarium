@@ -82,37 +82,6 @@ require 'header.php';
             text-align: left;
         }
 
-        .btn-sm {
-            margin-right: 5px;
-        }
-
-        .btn-primary, .btn-secondary, .btn-danger {
-            padding: 10px 20px;
-            border-radius: 20px;
-            transition: background-color 0.2s, transform 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-
-        .btn-secondary:hover {
-            background-color: #FF4500;
-            transform: scale(1.05);
-        }
-
-        .btn-danger:hover {
-            background-color: #dc3545;
-            transform: scale(1.05);
-        }
-
-        .btn-primary:active,
-        .btn-secondary:active,
-        .btn-danger:active {
-            transform: scale(0.95);
-        }
-
         @media (max-width: 768px) {
             .table-wrapper th, .table-wrapper td {
                 padding: 12px 8px;
