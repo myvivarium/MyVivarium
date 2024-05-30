@@ -82,27 +82,22 @@ require 'header.php';
             text-align: left;
         }
 
-        .action-icons a {
-            margin-right: 10px;
-            display: inline-block;
+        .btn-sm {
+            margin-right: 5px;
         }
 
-        .action-icons a:last-child {
-            margin-right: 0;
-        }
-        
         .btn-icon {
             width: 30px;
             height: 30px;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            padding: 0;
         }
 
         .btn-icon i {
             font-size: 16px;
-            align-items: center;
-            justify-content: center;
+            margin: 0;
         }
 
         @media (max-width: 768px) {
