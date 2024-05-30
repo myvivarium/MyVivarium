@@ -90,7 +90,7 @@ require 'header.php';
         .action-icons a:last-child {
             margin-right: 0;
         }
-
+        
         .btn-icon {
             width: 30px;
             height: 30px;
@@ -98,10 +98,11 @@ require 'header.php';
             align-items: center;
             justify-content: center;
         }
-
+        
         .btn-icon i {
             font-size: 16px;
         }
+
 
         @media (max-width: 768px) {
             .table-wrapper th, .table-wrapper td {
