@@ -83,7 +83,6 @@ require 'header.php';
         }
 
         .action-icons a {
-            margin-right: 10px;
             display: inline-block;
         }
 
