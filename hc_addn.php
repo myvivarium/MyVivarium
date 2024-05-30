@@ -35,11 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     }
 
-    // Check if the cage_id already exists
-    $check_query = "SELECT * FROM hc_basic WHERE cage_id = '$cage_id'";
-    $check_result = mysqli_query($con, $check_query);
+    // Check if the cage_id already exists in hc_basic or bc_basic
+    $check_query_hc = "SELECT * FROM hc_basic WHERE cage_id = '$cage_id'";
+    $check_query_bc = "SELECT * FROM bc_basic WHERE cage_id = '$cage_id'";
+    $check_result_hc = mysqli_query($con, $check_query_hc);
+    $check_result_bc = mysqli_query($con, $check_query_bc);
 
-    if (mysqli_num_rows($check_result) > 0) {
+    if (mysqli_num_rows($check_result_hc) > 0 || mysqli_num_rows($check_result_bc) > 0) {
         // Cage_id already exists, throw an error
         $_SESSION['message'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
     } else {
@@ -106,7 +108,7 @@ require 'header.php';
 </head>
 
 <body>
-    <div class="container mt-4" style="max-width: 600px;">
+    <div class="container mt-4" style="max-width: 600px; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
         <h4>Add New Holding Cage</h4>
 
         <?php include('message.php'); ?>
