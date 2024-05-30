@@ -102,11 +102,6 @@ require 'header.php';
 
         .action-icons a {
             margin-right: 10px;
-            display: inline-block;
-        }
-
-        .action-icons a:last-child {
-            margin-right: 0;
         }
 
         @media (max-width: 768px) {
