@@ -82,6 +82,22 @@ require 'header.php';
             text-align: left;
         }
 
+        .btn-sm {
+            margin-right: 5px;
+        }
+
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon i {
+            font-size: 16px;
+        }
+
         @media (max-width: 768px) {
             .table-wrapper th, .table-wrapper td {
                 padding: 12px 8px;
