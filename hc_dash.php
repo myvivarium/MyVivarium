@@ -8,29 +8,6 @@ if (!isset($_SESSION['name'])) {
     exit;
 }
 
-// Pagination variables
-$limit = 10; // Number of entries to show in a page.
-$page = isset($_GET['page']) ? $_GET['page'] : 1;
-$offset = ($page - 1) * $limit;
-
-// Handle the search filter
-$searchQuery = '';
-if (isset($_GET['search'])) {
-    $searchQuery = urldecode($_GET['search']); // Decode the search parameter
-}
-
-// Fetch the distinct cage IDs with pagination
-$query = "SELECT DISTINCT `cage_id` FROM hc_basic";
-if (!empty($searchQuery)) {
-    $query .= " WHERE `cage_id` LIKE '%$searchQuery%'";
-}
-$totalResult = mysqli_query($con, $query);
-$totalRecords = mysqli_num_rows($totalResult);
-$totalPages = ceil($totalRecords / $limit);
-
-$query .= " LIMIT $limit OFFSET $offset";
-$result = mysqli_query($con, $query);
-
 require 'header.php';
 ?>
 
@@ -41,7 +18,7 @@ require 'header.php';
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    
     <script>
         // Confirm deletion function
         function confirmDeletion(id) {
@@ -75,18 +52,29 @@ require 'header.php';
             popup.document.close();
         }
 
-        // AJAX search function
-        function searchCages() {
-            var searchQuery = document.getElementById('searchInput').value;
+        // Fetch data function
+        function fetchData(page = 1, search = '') {
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', 'hc_dash.php?search=' + encodeURIComponent(searchQuery), true);
+            xhr.open('GET', 'hc_fetch_data.php?page=' + page + '&search=' + encodeURIComponent(search), true);
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    document.getElementById('tableContainer').innerHTML = xhr.responseText;
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById('tableBody').innerHTML = response.tableRows;
+                    document.getElementById('paginationLinks').innerHTML = response.paginationLinks;
                 }
             };
             xhr.send();
         }
+
+        // Search function
+        function searchCages() {
+            var searchQuery = document.getElementById('searchInput').value;
+            fetchData(1, searchQuery);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchData();
+        });
     </script>
 
     <title>Dashboard Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
@@ -191,49 +179,16 @@ require 'header.php';
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <?php
-                                    while ($row = mysqli_fetch_assoc($result)) {
-                                        $cageID = $row['cage_id'];
-                                        $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$cageID'";
-                                        $cageResult = mysqli_query($con, $query);
-                                        $numRows = mysqli_num_rows($cageResult);
-                                        $firstRow = true;
-                                        while ($holdingcage = mysqli_fetch_assoc($cageResult)) {
-                                    ?>
-                                            <tr>
-                                                <?php if ($firstRow) : ?>
-                                                    <td rowspan="<?= $numRows; ?>">
-                                                        <?= htmlspecialchars($holdingcage['cage_id']); ?>
-                                                    </td>
-                                                    <?php $firstRow = false; ?>
-                                                <?php endif; ?>
-                                                <td><?= htmlspecialchars($holdingcage['remarks']); ?></td>
-                                                <td>
-                                                    <a href="hc_view.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-primary">View</a>
-                                                    <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($holdingcage['cage_id']); ?>')" class="btn btn-success">QR</a>
-                                                    <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
-                                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
-                                                        <a href="#" onclick="confirmDeletion('<?= htmlspecialchars($holdingcage['cage_id']); ?>')" class="btn btn-danger">Delete</a>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
-                                    <?php
-                                        }
-                                    }
-                                    ?>
+                                <tbody id="tableBody">
+                                    <!-- Table rows will be inserted here by JavaScript -->
                                 </tbody>
                             </table>
                         </div>
 
                         <!-- Pagination -->
                         <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-center">
-                                <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-                                    <li class="page-item <?= ($i == $page) ? 'active' : ''; ?>">
-                                        <a class="page-link" href="?page=<?= $i; ?>"><?= $i; ?></a>
-                                    </li>
-                                <?php endfor; ?>
+                            <ul class="pagination justify-content-center" id="paginationLinks">
+                                <!-- Pagination links will be inserted here by JavaScript -->
                             </ul>
                         </nav>
 
