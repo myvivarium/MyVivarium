@@ -2,7 +2,7 @@
 session_start();
 require 'dbcon.php';
 
-// Check if the user is not logged in, redirect them to index.php
+// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['name'])) {
     $currentUrl = urlencode($_SERVER['REQUEST_URI']);
     header("Location: index.php?redirect=$currentUrl");
@@ -13,13 +13,15 @@ if (!isset($_SESSION['name'])) {
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Fetch the holdingcage record with the specified ID
+    // Fetch the holding cage record with the specified ID
     $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
     $result = mysqli_query($con, $query);
 
+    // Fetch files related to the cage ID
     $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
     $files = $con->query($query2);
 
+    // Check if the record exists
     if (mysqli_num_rows($result) === 1) {
         $holdingcage = mysqli_fetch_assoc($result);
     } else {
@@ -40,18 +42,15 @@ require 'header.php';
 <html lang="en">
 
 <head>
-
     <title>View Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
-
     <style>
         .table-wrapper {
-            padding: 10px 10px 10px 10px;
+            padding: 10px;
         }
 
         .table-wrapper table {
             width: 100%;
-            border: 1px solid #000000;
-            /* Outer border color */
+            border: 1px solid #000;
             border-collapse: separate;
             border-spacing: 0;
         }
@@ -59,202 +58,90 @@ require 'header.php';
         .table-wrapper th,
         .table-wrapper td {
             border: 1px solid gray;
-            /* Inner border color */
             padding: 8px;
             text-align: left;
         }
 
         span {
             font-size: 12pt;
-            padding: 0px;
             line-height: 1;
             display: inline-block;
         }
     </style>
-
 </head>
 
 <body>
-
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>View Holding Cage
-                            <?= $holdingcage['cage_id']; ?>
-                        </h4>
+                        <h4>View Holding Cage <?= htmlspecialchars($holdingcage['cage_id']); ?></h4>
                     </div>
                     <br>
                     <div class="table-wrapper">
-                        <table class="table table-bordered" id="mouseTable">
+                        <table class="table table-bordered">
                             <tr>
-                                <th><span>Cage #: </span></th>
-                                <td><span>
-                                        <?= $holdingcage['cage_id']; ?>
-                                    </span></td>
+                                <th>Cage #:</th>
+                                <td><?= htmlspecialchars($holdingcage['cage_id']); ?></td>
                             </tr>
                             <tr>
-                                <th><span>PI Name</span></th>
-                                <td><span>
-                                        <?= $holdingcage['pi_name']; ?>
-                                    </span></td>
+                                <th>PI Name</th>
+                                <td><?= htmlspecialchars($holdingcage['pi_name']); ?></td>
                             </tr>
                             <tr>
-                                <th><span>Strain</span></th>
-                                <td><span>
-                                        <?= $holdingcage['strain']; ?>
-                                    </span></td>
+                                <th>Strain</th>
+                                <td><?= htmlspecialchars($holdingcage['strain']); ?></td>
                             </tr>
                             <tr>
-                                <th><span>IACUC</span></th>
-                                <td><span>
-                                        <?= $holdingcage['iacuc']; ?>
-                                    </span></td>
+                                <th>IACUC</th>
+                                <td><?= htmlspecialchars($holdingcage['iacuc']); ?></td>
                             </tr>
                             <tr>
-                                <th><span>User</span></th>
-                                <td><span>
-                                        <?= $holdingcage['user']; ?>
-                                    </span></td>
+                                <th>User</th>
+                                <td><?= htmlspecialchars($holdingcage['user']); ?></td>
                             </tr>
                             <tr>
-                                <th><span>Qty</span></th>
-                                <td><span>
-                                        <?= $holdingcage['qty']; ?>
-                                    </span></td>
+                                <th>Qty</th>
+                                <td><?= htmlspecialchars($holdingcage['qty']); ?></td>
                             </tr>
                             <tr>
-                                <th><span>DOB</span></th>
-                                <td><span>
-                                        <?= $holdingcage['dob']; ?>
-                                    </span></td>
+                                <th>DOB</th>
+                                <td><?= htmlspecialchars($holdingcage['dob']); ?></td>
                             </tr>
                             <tr>
-                                <th><span>Sex</span></th>
-                                <td><span>
-                                        <?= $holdingcage['sex']; ?>
-                                    </span></td>
+                                <th>Sex</th>
+                                <td><?= htmlspecialchars($holdingcage['sex']); ?></td>
                             </tr>
                             <tr>
-                                <th><span>Parent Cage</span></th>
-                                <td><span>
-                                        <?= $holdingcage['parent_cg']; ?>
-                                    </span></td>
+                                <th>Parent Cage</th>
+                                <td><?= htmlspecialchars($holdingcage['parent_cg']); ?></td>
                             </tr>
                             <tr>
-                                <th><span>Remarks</span></th>
-                                <td><span>
-                                        <?= $holdingcage['remarks']; ?>
-                                    </span></td>
+                                <th>Remarks</th>
+                                <td><?= htmlspecialchars($holdingcage['remarks']); ?></td>
                             </tr>
                         </table>
 
-                        <h4>Mouse #1</h4>
-
-                        <table class="table table-bordered" id="mouseTable">
-                            <tr>
-                                <th><span>Mouse ID</span></th>
-                                <th><span>Genotype</span></th>
-                                <th><span>Notes</span></th>
-                            </tr>
-                            <tr>
-                                <td><span>
-                                        <?= $holdingcage['mouse_id_1']; ?>
-                                    </span></td>
-                                <td><span>
-                                        <?= $holdingcage['genotype_1']; ?>
-                                    </span></td>
-                                <td><span>
-                                        <?= $holdingcage['notes_1']; ?>
-                                    </span></td>
-                            </tr>
-                        </table>
-
-                        <h4>Mouse #2</h4>
-
-                        <table class="table table-bordered" id="mouseTable">
-                            <tr>
-                                <th><span>Mouse ID</span></th>
-                                <th><span>Genotype</span></th>
-                                <th><span>Notes</span></th>
-                            </tr>
-                            <tr>
-                                <td><span>
-                                        <?= $holdingcage['mouse_id_2']; ?>
-                                    </span></td>
-                                <td><span>
-                                        <?= $holdingcage['genotype_2']; ?>
-                                    </span></td>
-                                <td><span>
-                                        <?= $holdingcage['notes_2']; ?>
-                                    </span></td>
-                            </tr>
-                        </table>
-
-                        <h4>Mouse #3</h4>
-
-                        <table class="table table-bordered" id="mouseTable">
-                            <tr>
-                                <th><span>Mouse ID</span></th>
-                                <th><span>Genotype</span></th>
-                                <th><span>Notes</span></th>
-                            </tr>
-                            <tr>
-                                <td><span>
-                                        <?= $holdingcage['mouse_id_3']; ?>
-                                    </span></td>
-                                <td><span>
-                                        <?= $holdingcage['genotype_3']; ?>
-                                    </span></td>
-                                <td><span>
-                                        <?= $holdingcage['notes_3']; ?>
-                                    </span></td>
-                            </tr>
-                        </table>
-
-                        <h4>Mouse #4</h4>
-
-                        <table class="table table-bordered" id="mouseTable">
-                            <tr>
-                                <th><span>Mouse ID</span></th>
-                                <th><span>Genotype</span></th>
-                                <th><span>Notes</span></th>
-                            </tr>
-                            <tr>
-                                <td><span>
-                                        <?= $holdingcage['mouse_id_4']; ?>
-                                    </span></td>
-                                <td><span>
-                                        <?= $holdingcage['genotype_4']; ?>
-                                    </span></td>
-                                <td><span>
-                                        <?= $holdingcage['notes_4']; ?>
-                                    </span></td>
-                            </tr>
-                        </table>
-
-                        <h4>Mouse #5</h4>
-
-                        <table class="table table-bordered" id="mouseTable">
-                            <tr>
-                                <th><span>Mouse ID</span></th>
-                                <th><span>Genotype</span></th>
-                                <th><span>Notes</span></th>
-                            </tr>
-                            <tr>
-                                <td><span>
-                                        <?= $holdingcage['mouse_id_5']; ?>
-                                    </span></td>
-                                <td><span>
-                                        <?= $holdingcage['genotype_5']; ?>
-                                    </span></td>
-                                <td><span>
-                                        <?= $holdingcage['notes_5']; ?>
-                                    </span></td>
-                            </tr>
-                        </table>
+                        <?php for ($i = 1; $i <= $holdingcage['qty']; $i++): ?>
+                            <h4>Mouse #<?= $i; ?></h4>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Mouse ID</th>
+                                    <th>Genotype</th>
+                                    <th>Notes</th>
+                                </tr>
+                                <tr>
+                                    <td><?= htmlspecialchars($holdingcage["mouse_id_$i"]); ?></td>
+                                    <td><?= htmlspecialchars($holdingcage["genotype_$i"]); ?></td>
+                                    <td><?= htmlspecialchars($holdingcage["notes_$i"]); ?></td>
+                                </tr>
+                            </table>
+                        <?php endfor; ?>
                     </div>
+
+                    <!-- Separator -->
+                    <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
 
                     <!-- Display Files Section -->
                     <div class="card mt-4">
@@ -272,7 +159,6 @@ require 'header.php';
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Assuming $files is fetched from the database
                                         while ($file = $files->fetch_assoc()) {
                                             $file_path = htmlspecialchars($file['file_path']);
                                             $file_name = htmlspecialchars($file['file_name']);
@@ -294,11 +180,13 @@ require 'header.php';
             </div>
         </div>
 
+        <!-- Navigation Buttons -->
         <div style="text-align: center;">
             <a href="hc_dash.php" class="btn btn-secondary">Go Back</a>
             <button class="btn btn-secondary" onclick="togglePopup()">Add Note</button>
         </div>
 
+        <!-- Note App Include -->
         <?php include 'nt_app.php'; ?>
     </div>
 
