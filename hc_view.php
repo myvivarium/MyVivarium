@@ -44,7 +44,6 @@ require 'header.php';
 <head>
     <title>View Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
     <style>
-        
         body {
             background: none !important;
             background-color: transparent !important;
@@ -103,7 +102,19 @@ require 'header.php';
             background-color: #e9ecef;
             border-radius: 8px;
         }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
@@ -111,6 +122,17 @@ require 'header.php';
         <div class="card">
             <div class="card-header">
                 <h4>View Holding Cage <?= htmlspecialchars($holdingcage['cage_id']); ?></h4>
+                <div class="action-buttons">
+                    <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="hc_delete.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-danger btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Cage" onclick="return confirm('Are you sure you want to delete this cage?');">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                    <button class="btn btn-primary btn-sm btn-icon" onclick="window.print()" data-toggle="tooltip" data-placement="top" title="Print Cage">
+                        <i class="fas fa-print"></i>
+                    </button>
+                </div>
             </div>
             <br>
             <div class="table-wrapper">
