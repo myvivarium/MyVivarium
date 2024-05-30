@@ -43,6 +43,39 @@ require 'header.php';
 
 <head>
     <title>View Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
+
+    <script>
+        function showQrCodePopup(cageId) {
+            // Create the popup window
+            var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
+
+            // URL to generate the QR code image
+            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://myvivarium.online/bc_view.php?id=' + cageId;
+
+            // HTML content for the popup, including a dynamic title and the QR code image
+            var htmlContent = `
+            <html>
+            <head>
+                <title>QR Code for Cage ${cageId}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; text-align: center; padding-top: 40px; }
+                    h1 { color: #333; }
+                    img { margin-top: 20px; }
+                </style>
+            </head>
+            <body>
+                <h1>QR Code for Cage ${cageId}</h1>
+                <img src="${qrUrl}" alt="QR Code for Cage ${cageId}" />
+            </body>
+            </html>
+        `;
+
+            // Write the HTML content to the popup document
+            popup.document.write(htmlContent);
+            popup.document.close(); // Close the document for further writing
+        }
+    </script>
+
     <style>
         body {
             background: none !important;
@@ -126,11 +159,12 @@ require 'header.php';
                     <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage">
                         <i class="fas fa-edit"></i>
                     </a>
-                    <a href="hc_delete.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-danger btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Cage" onclick="return confirm('Are you sure you want to delete this cage?');">
-                        <i class="fas fa-trash"></i>
+                    <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($breedingcage['cage_id']); ?>')" class="btn btn-success">
+                        <i class="fas fa-qrcode"></i>
                     </a>
-                    <button class="btn btn-primary btn-sm btn-icon" onclick="window.print()" data-toggle="tooltip" data-placement="top" title="Print Cage">
+                    <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage">
                         <i class="fas fa-print"></i>
+                    </a>                        <i class="fas fa-print"></i>
                     </button>
                 </div>
             </div>
