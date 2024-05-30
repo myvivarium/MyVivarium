@@ -100,6 +100,15 @@ require 'header.php';
             margin: 0;
         }
 
+        .action-icons a {
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .action-icons a:last-child {
+            margin-right: 0;
+        }
+
         @media (max-width: 768px) {
             .table-wrapper th, .table-wrapper td {
                 padding: 12px 8px;
