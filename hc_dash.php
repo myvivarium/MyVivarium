@@ -8,53 +8,53 @@ if (!isset($_SESSION['name'])) {
     exit;
 }
 
-// Fetch the distinct cage IDs from the database
-$query = "SELECT DISTINCT `cage_id` FROM hc_basic";
-$result = mysqli_query($con, $query);
+// Pagination variables
+$limit = 10; // Number of entries to show in a page.
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
 
 // Handle the search filter
 $searchQuery = '';
 if (isset($_GET['search'])) {
     $searchQuery = urldecode($_GET['search']); // Decode the search parameter
-    $query = "SELECT * FROM hc_basic";
-    if (!empty($searchQuery)) {
-        $query .= " WHERE `cage_id` LIKE '%$searchQuery%'";
-    }
-    $result = mysqli_query($con, $query);
 }
+
+// Fetch the distinct cage IDs with pagination
+$query = "SELECT DISTINCT `cage_id` FROM hc_basic";
+if (!empty($searchQuery)) {
+    $query .= " WHERE `cage_id` LIKE '%$searchQuery%'";
+}
+$totalResult = mysqli_query($con, $query);
+$totalRecords = mysqli_num_rows($totalResult);
+$totalPages = ceil($totalRecords / $limit);
+
+$query .= " LIMIT $limit OFFSET $offset";
+$result = mysqli_query($con, $query);
 
 require 'header.php';
 ?>
 
-<!-- Start of the HTML -->
 <!doctype html>
 <html lang="en">
 
 <head>
-
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script>
+        // Confirm deletion function
         function confirmDeletion(id) {
             var confirmDelete = confirm("Are you sure you want to delete this cage - '" + id + "'?");
             if (confirmDelete) {
-                // If confirmed, redirect to the PHP script with the ID and a confirm flag
                 window.location.href = "hc_drop.php?id=" + id + "&confirm=true";
             }
         }
-    </script>
 
-    <script>
+        // Show QR code popup function
         function showQrCodePopup(cageId) {
-            // Create the popup window
             var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
-
-            // URL to generate the QR code image
             var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://myvivarium.online/hc_view.php?id=' + cageId;
-
-            // HTML content for the popup, including a dynamic title and the QR code image
             var htmlContent = `
             <html>
             <head>
@@ -70,25 +70,34 @@ require 'header.php';
                 <img src="${qrUrl}" alt="QR Code for Cage ${cageId}" />
             </body>
             </html>
-        `;
-
-            // Write the HTML content to the popup document
+            `;
             popup.document.write(htmlContent);
-            popup.document.close(); // Close the document for further writing
+            popup.document.close();
+        }
+
+        // AJAX search function
+        function searchCages() {
+            var searchQuery = document.getElementById('searchInput').value;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'hc_dash.php?search=' + encodeURIComponent(searchQuery), true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    document.getElementById('tableContainer').innerHTML = xhr.responseText;
+                }
+            };
+            xhr.send();
         }
     </script>
-
 
     <title>Dashboard Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
-        /* General Styles */
         body {
             margin: 0;
             padding: 0;
+            font-family: Arial, sans-serif;
         }
 
-        /* Table Wrapper Styling */
         .table-wrapper {
             margin-bottom: 50px;
         }
@@ -101,12 +110,10 @@ require 'header.php';
         .table-wrapper th,
         .table-wrapper td {
             border: 1px solid #ddd;
-            /* Lighter border for a more modern look */
             padding: 8px;
             text-align: left;
         }
 
-        /* Button Styling */
         .btn-back,
         .btn-logout {
             padding: 10px 20px;
@@ -139,42 +146,50 @@ require 'header.php';
         .btn-secondary:hover {
             background-color: #FF4500;
         }
+
+        @media (max-width: 768px) {
+            .table-wrapper table, .table-wrapper th, .table-wrapper td {
+                display: block;
+                width: 100%;
+            }
+
+            .table-wrapper th, .table-wrapper td {
+                box-sizing: border-box;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
 <body>
-
     <div class="container mt-4">
         <?php include('message.php'); ?>
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-
-                    <!-- Holding Cage Header -->
                     <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Holding Cage Dashboard</h4>
-                    <div>
-                        <a href="hc_addn.php" class="btn btn-primary">Add New Cage</a>
-                        <a href="hc_slct_crd.php" class="btn btn-success">Print Cage Card</a>
+                        <h4>Holding Cage Dashboard</h4>
+                        <div>
+                            <a href="hc_addn.php" class="btn btn-primary">Add New Cage</a>
+                            <a href="hc_slct_crd.php" class="btn btn-success">Print Cage Card</a>
+                        </div>
                     </div>
-                    </div>
-
 
                     <div class="card-body">
                         <!-- Holding Cage Search Box -->
-                        <form method="GET" action="">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="Enter Cage ID" name="search" value="<?= htmlspecialchars($searchQuery) ?>">
-                                <button class="btn btn-primary" type="submit">Search</button>
-                            </div>
-                        </form>
+                        <div class="input-group mb-3">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Enter Cage ID" onkeyup="searchCages()">
+                            <button class="btn btn-primary" type="button" onclick="searchCages()">Search</button>
+                        </div>
 
-                        <div class="table-wrapper">
+                        <div class="table-wrapper" id="tableContainer">
                             <table class="table table-bordered" id="mouseTable">
                                 <thead>
-                                    <th>Cage ID</th>
-                                    <th>Remarks</th>
-                                    <th>Action</th>
+                                    <tr>
+                                        <th>Cage ID</th>
+                                        <th>Remarks</th>
+                                        <th>Action</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                     <?php
@@ -182,22 +197,24 @@ require 'header.php';
                                         $cageID = $row['cage_id'];
                                         $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$cageID'";
                                         $cageResult = mysqli_query($con, $query);
+                                        $numRows = mysqli_num_rows($cageResult);
+                                        $firstRow = true;
                                         while ($holdingcage = mysqli_fetch_assoc($cageResult)) {
                                     ?>
                                             <tr>
-                                                <td rowspan="<?= mysqli_num_rows($cageResult); ?>">
-                                                    <?= $holdingcage['cage_id']; ?>
-                                                </td>
-                                                <td>
-                                                    <?= $holdingcage['remarks']; ?>
-                                                </td>
+                                                <?php if ($firstRow) : ?>
+                                                    <td rowspan="<?= $numRows; ?>">
+                                                        <?= htmlspecialchars($holdingcage['cage_id']); ?>
+                                                    </td>
+                                                    <?php $firstRow = false; ?>
+                                                <?php endif; ?>
+                                                <td><?= htmlspecialchars($holdingcage['remarks']); ?></td>
                                                 <td>
                                                     <a href="hc_view.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-primary">View</a>
-                                                    <!--<a href="hc_prnt.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-success">Print</a>-->
                                                     <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($holdingcage['cage_id']); ?>')" class="btn btn-success">QR</a>
                                                     <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
                                                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
-                                                        <a href="#" onclick="confirmDeletion('<?php echo $holdingcage['cage_id']; ?>')" class="btn btn-danger">Delete</a>
+                                                        <a href="#" onclick="confirmDeletion('<?= htmlspecialchars($holdingcage['cage_id']); ?>')" class="btn btn-danger">Delete</a>
                                                     <?php endif; ?>
                                                 </td>
                                             </tr>
@@ -208,6 +225,18 @@ require 'header.php';
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Pagination -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                                    <li class="page-item <?= ($i == $page) ? 'active' : ''; ?>">
+                                        <a class="page-link" href="?page=<?= $i; ?>"><?= $i; ?></a>
+                                    </li>
+                                <?php endfor; ?>
+                            </ul>
+                        </nav>
+
                         <?php if (isset($_GET['search'])) : ?>
                             <div style="text-align: center;">
                                 <a href="hc_dash.php" class="btn btn-secondary">Go Back To Holding Cage Dashboard</a>
@@ -219,14 +248,6 @@ require 'header.php';
         </div>
     </div>
     <?php include 'footer.php'; ?>
-
-    <!-- Modal HTML -->
-    <div id="qrCodeModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <img id="qrCodeImage" src="" alt="QR Code" style="width:100%; max-width:400px;">
-        </div>
-    </div>
 </body>
 
 </html>
