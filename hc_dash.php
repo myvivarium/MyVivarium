@@ -82,8 +82,13 @@ require 'header.php';
             text-align: left;
         }
 
-        .btn-sm {
-            margin-right: 5px;
+        .action-icons a {
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .action-icons a:last-child {
+            margin-right: 0;
         }
 
         .btn-icon {

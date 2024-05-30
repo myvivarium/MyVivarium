@@ -39,7 +39,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             $tableRows .= '<td style="width: 50%;">' . htmlspecialchars($holdingcage['cage_id']) . '</td>';
             $firstRow = false;
         }
-        $tableRows .= '<td style="width: 50%; white-space: nowrap;">
+        $tableRows .= '<td class="action-icons" style="width: 50%; white-space: nowrap;">
                         <a href="hc_view.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-primary btn-sm btn-icon"><i class="fas fa-eye"></i></a>
                         <a href="hc_edit.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-secondary btn-sm btn-icon"><i class="fas fa-edit"></i></a>';
         if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
