@@ -158,11 +158,11 @@ require 'header.php';
                             </ul>
                         </nav>
                     </div>
-                    <br>
                 </div>
             </div>
         </div>
     </div>
+    <br>
     <?php include 'footer.php'; ?>
 </body>
 
