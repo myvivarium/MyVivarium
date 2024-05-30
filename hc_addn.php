@@ -187,7 +187,6 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="remarks" class="form-label">Remarks</label>
-                <input type="text" class="form-control" id="remarks" name="remarks">
                 <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"></textarea>
             </div>
 
