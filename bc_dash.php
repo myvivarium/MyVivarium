@@ -8,84 +8,73 @@ if (!isset($_SESSION['name'])) {
     exit;
 }
 
-// Fetch the distinct cage IDs from the database
-$query = "SELECT DISTINCT `cage_id` FROM bc_basic";
-$result = mysqli_query($con, $query);
-
-// Handle the search filter
-$searchQuery = '';
-if (isset($_GET['search'])) {
-    $searchQuery = urldecode($_GET['search']); // Decode the search parameter
-    $query = "SELECT * FROM bc_basic";
-    if (!empty($searchQuery)) {
-        $query .= " WHERE `cage_id` LIKE '%$searchQuery%' OR `male_id` LIKE '%$searchQuery%' OR `female_id` LIKE '%$searchQuery%'";
-    }
-    $result = mysqli_query($con, $query);
-}
-
 require 'header.php';
 ?>
 
-<!-- Start of the HTML -->
 <!doctype html>
 <html lang="en">
 
 <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap for tooltips -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
     <script>
+        // Initialize tooltips
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(); 
+        });
+
+        // Confirm deletion function
         function confirmDeletion(id) {
             var confirmDelete = confirm("Are you sure you want to delete this cage - '" + id + "'?");
             if (confirmDelete) {
-                // If confirmed, redirect to the PHP script with the ID and a confirm flag
                 window.location.href = "bc_drop.php?id=" + id + "&confirm=true";
             }
         }
-    </script>
 
-    <script>
-        function showQrCodePopup(cageId) {
-            // Create the popup window
-            var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
-
-            // URL to generate the QR code image
-            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://myvivarium.online/bc_view.php?id=' + cageId;
-
-            // HTML content for the popup, including a dynamic title and the QR code image
-            var htmlContent = `
-            <html>
-            <head>
-                <title>QR Code for Cage ${cageId}</title>
-                <style>
-                    body { font-family: Arial, sans-serif; text-align: center; padding-top: 40px; }
-                    h1 { color: #333; }
-                    img { margin-top: 20px; }
-                </style>
-            </head>
-            <body>
-                <h1>QR Code for Cage ${cageId}</h1>
-                <img src="${qrUrl}" alt="QR Code for Cage ${cageId}" />
-            </body>
-            </html>
-        `;
-
-            // Write the HTML content to the popup document
-            popup.document.write(htmlContent);
-            popup.document.close(); // Close the document for further writing
+        // Fetch data function
+        function fetchData(page = 1, search = '') {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'bc_fetch_data.php?page=' + page + '&search=' + encodeURIComponent(search), true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById('tableBody').innerHTML = response.tableRows;
+                    document.getElementById('paginationLinks').innerHTML = response.paginationLinks;
+                }
+            };
+            xhr.send();
         }
+
+        // Search function
+        function searchCages() {
+            var searchQuery = document.getElementById('searchInput').value;
+            fetchData(1, searchQuery);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchData();
+        });
     </script>
 
     <title>Dashboard Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
-        /* General Styles */
         body {
             margin: 0;
             padding: 0;
+            font-family: Arial, sans-serif;
         }
 
-        /* Table Wrapper Styling */
         .table-wrapper {
             margin-bottom: 50px;
+            overflow-x: auto; /* Enable horizontal scrolling on small screens */
         }
 
         .table-wrapper table {
@@ -96,127 +85,104 @@ require 'header.php';
         .table-wrapper th,
         .table-wrapper td {
             border: 1px solid #ddd;
-            /* Lighter border for a more modern look */
             padding: 8px;
             text-align: left;
         }
 
-        /* Button Styling */
-        .btn-back,
-        .btn-logout {
-            padding: 10px 20px;
-            border-radius: 30px;
-            transition: background-color 0.2s, transform 0.2s;
+        .btn-sm {
+            margin-right: 5px;
         }
 
-        .btn-back {
-            background-color: #007BFF;
-            color: white;
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
         }
 
-        .btn-back:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
+        .btn-icon i {
+            font-size: 16px;
+            margin: 0;
         }
 
-        .btn-back:active,
-        .btn-secondary:active {
-            transform: scale(0.95);
+        .action-icons a {
+            margin-right: 10px;
         }
 
-        .btn-back.fixed {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
+        .action-icons a:last-child {
+            margin-right: 0;
         }
 
-        .btn-secondary:hover {
-            background-color: #FF4500;
+        @media (max-width: 768px) {
+            .table-wrapper th, .table-wrapper td {
+                padding: 12px 8px;
+            }
+
+            .table-wrapper th, .table-wrapper td {
+                text-align: center;
+            }
         }
     </style>
 </head>
 
 <body>
-
     <div class="container mt-4">
         <?php include('message.php'); ?>
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-
-                    <!-- Breeding Cage Header -->
                     <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Breeding Cage Dashboard</h4>
-                    <div>
-                        <a href="bc_addn.php" class="btn btn-primary">Add New Cage</a>
-                        <a href="bc_slct_crd.php" class="btn btn-success">Print Cage Card</a>
-                    </div>
+                        <h4>Breeding Cage Dashboard</h4>
+                        <div class="action-icons">
+                            <a href="bc_addn.php" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Cage">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                            <a href="bc_slct_crd.php" class="btn btn-success btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage Card">
+                                <i class="fas fa-print"></i>
+                            </a>
+                        </div>
                     </div>
 
                     <div class="card-body">
                         <!-- Breeding Cage Search Box -->
-                        <form method="GET" action="">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="Enter Cage ID" name="search" value="<?= htmlspecialchars($searchQuery) ?>">
-                                <button class="btn btn-primary" type="submit">Search</button>
-                            </div>
-                        </form>
+                        <div class="input-group mb-3">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Enter Cage ID" onkeyup="searchCages()">
+                            <button class="btn btn-primary" type="button" onclick="searchCages()">Search</button>
+                        </div>
 
-                        <div class="table-wrapper">
+                        <div class="table-wrapper" id="tableContainer">
                             <table class="table table-bordered" id="mouseTable">
                                 <thead>
-                                    <th>Cage ID</th>
-                                    <th>Male ID</th>
-                                    <th>Female ID</th>
-                                    <th>Action</th>
+                                    <tr>
+                                        <th style="width: 50%;">Cage ID</th>
+                                        <th style="width: 50%;">Action</th>
+                                    </tr>
                                 </thead>
-                                <tbody>
-                                    <?php
-                                    while ($row = mysqli_fetch_assoc($result)) {
-                                        $cageID = $row['cage_id'];
-                                        $query = "SELECT * FROM bc_basic WHERE `cage_id` = '$cageID'";
-                                        $cageResult = mysqli_query($con, $query);
-                                        while ($breedingcage = mysqli_fetch_assoc($cageResult)) {
-                                    ?>
-                                            <tr>
-                                                <td rowspan="<?= mysqli_num_rows($cageResult); ?>">
-                                                    <?= $breedingcage['cage_id']; ?>
-                                                </td>
-                                                <td>
-                                                    <?= $breedingcage['male_id']; ?>
-                                                </td>
-                                                <td>
-                                                    <?= $breedingcage['female_id']; ?>
-                                                </td>
-                                                <td>
-                                                    <a href="bc_view.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-primary">View</a>
-                                                    <!--<a href="bc_prnt.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-success">Print</a>-->
-                                                    <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($breedingcage['cage_id']); ?>')" class="btn btn-success">QR</a>
-                                                    <a href="bc_edit.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-secondary">Edit</a>
-                                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
-                                                        <a hhref="#" onclick="confirmDeletion('<?php echo $breedingcage['cage_id']; ?>')" class="btn btn-danger">Delete</a>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
-                                    <?php
-                                        }
-                                    }
-                                    ?>
+                                <tbody id="tableBody">
+                                    <!-- Table rows will be inserted here by JavaScript -->
                                 </tbody>
                             </table>
                         </div>
-                        <?php if (isset($_GET['search'])) : ?>
-                            <div style="text-align: center;">
-                                <a href="bc_dash.php" class="btn btn-secondary">Go Back To Breeding Cage Dashboard</a>
-                            </div>
-                        <?php endif; ?>
+
+                        <!-- Pagination -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center" id="paginationLinks">
+                                <!-- Pagination links will be inserted here by JavaScript -->
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <?php include 'footer.php'; ?>
+    
+    <!-- Bootstrap and jQuery for tooltips -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 
 </html>
