@@ -67,7 +67,7 @@ require 'header.php';
 
         .table-wrapper {
             margin-bottom: 50px;
-            overflow-x: auto;
+            overflow-x: auto; /* Enable horizontal scrolling on small screens */
         }
 
         .table-wrapper table {
@@ -120,41 +120,12 @@ require 'header.php';
         }
 
         @media (max-width: 768px) {
-            .table-wrapper table, .table-wrapper th, .table-wrapper td {
-                display: block;
-                width: 100%;
+            .table-wrapper th, .table-wrapper td {
+                padding: 12px 8px;
             }
 
             .table-wrapper th, .table-wrapper td {
-                box-sizing: border-box;
-                width: 100%;
-            }
-
-            .table-wrapper th {
-                display: none; /* Hide table headers on small screens */
-            }
-
-            .table-wrapper td {
-                display: block;
-                text-align: right;
-                position: relative;
-                padding-left: 50%;
-                border: none; /* Remove borders on small screens */
-                border-bottom: 1px solid #ddd; /* Add only bottom border for better visibility */
-            }
-
-            .table-wrapper td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 10px;
-                width: 45%;
-                padding-right: 10px;
-                text-align: left;
-                font-weight: bold;
-            }
-
-            .table-wrapper td:last-child {
-                border-bottom: 0; /* Remove bottom border for the last cell */
+                text-align: center;
             }
         }
     </style>
