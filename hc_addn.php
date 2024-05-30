@@ -206,7 +206,8 @@ require 'header.php';
 
                     <div class="mb-3">
                         <label for="notes_<?php echo $i; ?>" class="form-label">Maintenance Notes</label>
-                        <input type="text" class="form-control" id="notes_<?php echo $i; ?>" name="notes_<?php echo $i; ?>">
+                        <textarea class="form-control" id="notes_<?php echo $i; ?>" name="notes_<?php echo $i; ?>" oninput="adjustTextareaHeight(this)"></textarea>
+
                     </div>
                 </div>
             <?php endfor; ?>
