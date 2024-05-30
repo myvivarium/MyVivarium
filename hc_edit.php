@@ -304,7 +304,7 @@ require 'header.php';
                             <?php endfor; ?>
 
                             <!-- Separator -->
-                            <hr class="mt-4 mb-4">
+                            <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
 
                             <!-- Display Files Section -->
                             <div class="card mt-4">
