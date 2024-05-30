@@ -103,11 +103,7 @@ require 'header.php';
             border-radius: 8px;
         }
 
-        .card-header a {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-bottom: 20px;
+        .card-header a {;
             text-align: right;
         }
     </style>
