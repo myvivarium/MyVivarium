@@ -44,7 +44,7 @@ require 'header.php';
 <head>
     <title>View Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
     <style>
-        .container {
+        .content-container {
             max-width: 800px;
             background-color: #f8f9fa;
             padding: 20px;
@@ -101,7 +101,7 @@ require 'header.php';
 </head>
 
 <body>
-    <div class="container mt-4">
+    <div class="content-container mt-4">
         <div class="card">
             <div class="card-header">
                 <h4>View Holding Cage <?= htmlspecialchars($holdingcage['cage_id']); ?></h4>
