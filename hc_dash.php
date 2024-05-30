@@ -82,41 +82,33 @@ require 'header.php';
             text-align: left;
         }
 
-        .btn-back,
-        .btn-logout {
+        .btn-sm {
+            margin-right: 5px;
+        }
+
+        .btn-primary, .btn-secondary, .btn-danger {
             padding: 10px 20px;
             border-radius: 30px;
             transition: background-color 0.2s, transform 0.2s;
         }
 
-        .btn-back {
-            background-color: #007BFF;
-            color: white;
-        }
-
-        .btn-back:hover {
+        .btn-primary:hover {
             background-color: #0056b3;
             transform: scale(1.05);
-        }
-
-        .btn-back:active,
-        .btn-secondary:active {
-            transform: scale(0.95);
-        }
-
-        .btn-back.fixed {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
         }
 
         .btn-secondary:hover {
             background-color: #FF4500;
         }
 
-        .btn-sm {
-            margin-right: 5px;
+        .btn-danger:hover {
+            background-color: #dc3545;
+        }
+
+        .btn-primary:active,
+        .btn-secondary:active,
+        .btn-danger:active {
+            transform: scale(0.95);
         }
 
         @media (max-width: 768px) {
