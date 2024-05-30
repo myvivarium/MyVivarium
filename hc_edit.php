@@ -11,7 +11,6 @@ if (!isset($_SESSION['name'])) {
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-
 // Query to retrieve options where role is 'PI'
 $query1 = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result1 = $con->query($query1);
@@ -32,7 +31,6 @@ if (isset($_GET['id'])) {
 
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Retrieve form data
             // Retrieve and sanitize form data
             $cage_id = mysqli_real_escape_string($con, $_POST['cage_id']);
             $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
@@ -60,6 +58,7 @@ if (isset($_GET['id'])) {
             $genotype_5 = mysqli_real_escape_string($con, $_POST['genotype_5']);
             $notes_5 = mysqli_real_escape_string($con, $_POST['notes_5']);
 
+            // Update query for hc_basic table
             $updateQuery = "UPDATE hc_basic SET
                             `cage_id` = ?,
                             `pi_name` = ?,
@@ -91,7 +90,13 @@ if (isset($_GET['id'])) {
             $stmt = $con->prepare($updateQuery);
 
             // Bind parameters to the prepared statement
-            $stmt->bind_param("sssssissssssssssssssssssss", $cage_id, $pi_name, $strain, $iacuc, $user, $qty, $dob, $sex, $parent_cg, $remarks, $mouse_id_1, $genotype_1, $notes_1, $mouse_id_2, $genotype_2, $notes_2, $mouse_id_3, $genotype_3, $notes_3, $mouse_id_4, $genotype_4, $notes_4, $mouse_id_5, $genotype_5, $notes_5, $id);
+            $stmt->bind_param(
+                "sssssissssssssssssssssssss",
+                $cage_id, $pi_name, $strain, $iacuc, $user, $qty, $dob, $sex, $parent_cg, $remarks,
+                $mouse_id_1, $genotype_1, $notes_1, $mouse_id_2, $genotype_2, $notes_2,
+                $mouse_id_3, $genotype_3, $notes_3, $mouse_id_4, $genotype_4, $notes_4,
+                $mouse_id_5, $genotype_5, $notes_5, $id
+            );
 
             // Execute the statement
             $result = $stmt->execute();
@@ -106,18 +111,19 @@ if (isset($_GET['id'])) {
             // Close the prepared statement
             $stmt->close();
 
+            // Handle file upload
             if (isset($_FILES['fileUpload'])) {
-                $targetDirectory = "uploads/$cage_id/"; // Modify the target directory
-            
+                $targetDirectory = "uploads/$cage_id/";
+
                 // Create the cage_id specific sub-directory if it doesn't exist
                 if (!file_exists($targetDirectory)) {
                     mkdir($targetDirectory, 0777, true); // true for recursive create (if needed)
                 }
-            
+
                 $originalFileName = basename($_FILES['fileUpload']['name']);
                 $targetFilePath = $targetDirectory . $originalFileName;
                 $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-            
+
                 // Check if file already exists
                 if (!file_exists($targetFilePath)) {
                     if (move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetFilePath)) {
@@ -125,18 +131,17 @@ if (isset($_GET['id'])) {
                         $insert = $con->prepare("INSERT INTO files (file_name, file_path, cage_id) VALUES (?, ?, ?)");
                         $insert->bind_param("sss", $originalFileName, $targetFilePath, $cage_id);
                         if ($insert->execute()) {
-                            $_SESSION['message'] = "File uploaded successfully.";
+                            $_SESSION['message'] .= " File uploaded successfully.";
                         } else {
-                            $_SESSION['message'] = "File upload failed, please try again.";
+                            $_SESSION['message'] .= " File upload failed, please try again.";
                         }
                     } else {
-                        $_SESSION['message'] = "Sorry, there was an error uploading your file.";
+                        $_SESSION['message'] .= " Sorry, there was an error uploading your file.";
                     }
                 } else {
-                    $_SESSION['message'] = "Sorry, file already exists.";
+                    $_SESSION['message'] .= " Sorry, file already exists.";
                 }
             }
-            
 
             header("Location: hc_dash.php");
             exit();
@@ -158,21 +163,17 @@ require 'header.php';
 <html lang="en">
 
 <head>
-
     <script>
         function goBack() {
             window.history.back();
-            //window.location.href = 'specific_php_file.php';
         }
     </script>
 
     <title>Edit Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
-
 </head>
 
 <body>
-
-    <div class="container mt-4">
+    <div class="container mt-4" style="max-width: 800px; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
 
         <?php include('message.php'); ?>
 
@@ -188,7 +189,7 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="cage_id" class="form-label">Cage ID</label>
-                                <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= $holdingcage['cage_id']; ?>" required>
+                                <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= htmlspecialchars($holdingcage['cage_id']); ?>" required>
                             </div>
 
                             <div class="mb-3">
@@ -209,24 +210,24 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="strain" class="form-label">Strain</label>
-                                <input type="text" class="form-control" id="strain" name="strain" value="<?= $holdingcage['strain']; ?>" required>
+                                <input type="text" class="form-control" id="strain" name="strain" value="<?= htmlspecialchars($holdingcage['strain']); ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="iacuc" class="form-label">IACUC</label>
-                                <input type="text" class="form-control" id="iacuc" name="iacuc" value="<?= $holdingcage['iacuc']; ?>">
+                                <input type="text" class="form-control" id="iacuc" name="iacuc" value="<?= htmlspecialchars($holdingcage['iacuc']); ?>">
                             </div>
 
                             <div class="mb-3">
                                 <label for="user" class="form-label">User</label>
-                                <input type="text" class="form-control" id="user" name="user" value="<?= $holdingcage['user']; ?>" required>
+                                <input type="text" class="form-control" id="user" name="user" value="<?= htmlspecialchars($holdingcage['user']); ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="qty" class="form-label">Qty</label>
                                 <select class="form-control" id="qty" name="qty" required>
-                                    <option value="<?= $holdingcage['qty']; ?>" selected>
-                                        <?= $holdingcage['qty']; ?>
+                                    <option value="<?= htmlspecialchars($holdingcage['qty']); ?>" selected>
+                                        <?= htmlspecialchars($holdingcage['qty']); ?>
                                     </option>
                                     <?php
                                     for ($i = 1; $i <= 5; $i++) {
@@ -240,7 +241,7 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="dob" class="form-label">DOB</label>
-                                <input type="date" class="form-control" id="dob" name="dob" value="<?= $holdingcage['dob']; ?>" required>
+                                <input type="date" class="form-control" id="dob" name="dob" value="<?= htmlspecialchars($holdingcage['dob']); ?>" required>
                             </div>
 
                             <div class="mb-3">
@@ -262,97 +263,33 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="parent_cg" class="form-label">Parent Cage</label>
-                                <input type="text" class="form-control" id="parent_cg" name="parent_cg" value="<?= $holdingcage['parent_cg']; ?>" required>
+                                <input type="text" class="form-control" id="parent_cg" name="parent_cg" value="<?= htmlspecialchars($holdingcage['parent_cg']); ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="remarks" class="form-label">Remarks</label>
-                                <input type="text" class="form-control" id="remarks" name="remarks" value="<?= $holdingcage['remarks']; ?>">
+                                <input type="text" class="form-control" id="remarks" name="remarks" value="<?= htmlspecialchars($holdingcage['remarks']); ?>">
                             </div>
 
-                            <h4>Mouse #1</h4>
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <div id="mouse_fields_<?php echo $i; ?>" style="display: <?= $i <= $holdingcage['qty'] ? 'block' : 'none'; ?>;">
+                                    <h4>Mouse #<?php echo $i; ?></h4>
+                                    <div class="mb-3">
+                                        <label for="mouse_id_<?php echo $i; ?>" class="form-label">Mouse ID</label>
+                                        <input type="text" class="form-control" id="mouse_id_<?php echo $i; ?>" name="mouse_id_<?php echo $i; ?>" value="<?= htmlspecialchars($holdingcage["mouse_id_$i"]); ?>">
+                                    </div>
 
-                            <div class="mb-3">
-                                <label for="mouse_id_1" class="form-label">Mouse ID</label>
-                                <input type="text" class="form-control" id="mouse_id_1" name="mouse_id_1" value="<?= $holdingcage['mouse_id_1']; ?>">
-                            </div>
+                                    <div class="mb-3">
+                                        <label for="genotype_<?php echo $i; ?>" class="form-label">Genotype</label>
+                                        <input type="text" class="form-control" id="genotype_<?php echo $i; ?>" name="genotype_<?php echo $i; ?>" value="<?= htmlspecialchars($holdingcage["genotype_$i"]); ?>">
+                                    </div>
 
-                            <div class="mb-3">
-                                <label for="genotype_1" class="form-label">Genotype</label>
-                                <input type="text" class="form-control" id="genotype_1" name="genotype_1" value="<?= $holdingcage['genotype_1']; ?>">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="notes_1" class="form-label">Maintenance Notes</label>
-                                <input type="text" class="form-control" id="notes_1" name="notes_1" value="<?= $holdingcage['notes_1']; ?>">
-                            </div>
-
-                            <h4>Mouse #2</h4>
-
-                            <div class="mb-3">
-                                <label for="mouse_id_2" class="form-label">Mouse ID</label>
-                                <input type="text" class="form-control" id="mouse_id_2" name="mouse_id_2" value="<?= $holdingcage['mouse_id_2']; ?>">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="genotype_2" class="form-label">Genotype</label>
-                                <input type="text" class="form-control" id="genotype_2" name="genotype_2" value="<?= $holdingcage['genotype_2']; ?>">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="notes_2" class="form-label">Maintenance Notes</label>
-                                <input type="text" class="form-control" id="notes_2" name="notes_2" value="<?= $holdingcage['notes_2']; ?>">
-                            </div>
-
-                            <h4>Mouse #3</h4>
-                            <div class="mb-3">
-                                <label for="mouse_id_3" class="form-label">Mouse ID</label>
-                                <input type="text" class="form-control" id="mouse_id_3" name="mouse_id_3" value="<?= $holdingcage['mouse_id_3']; ?>">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="genotype_2" class="form-label">Genotype</label>
-                                <input type="text" class="form-control" id="genotype_3" name="genotype_3" value="<?= $holdingcage['genotype_3']; ?>">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="notes_3" class="form-label">Maintenance Notes</label>
-                                <input type="text" class="form-control" id="notes_3" name="notes_3" value="<?= $holdingcage['notes_3']; ?>">
-                            </div>
-
-                            <h4>Mouse #4</h4>
-
-                            <div class="mb-3">
-                                <label for="mouse_id_4" class="form-label">Mouse ID</label>
-                                <input type="text" class="form-control" id="mouse_id_4" name="mouse_id_4" value="<?= $holdingcage['mouse_id_4']; ?>">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="genotype_4" class="form-label">Genotype</label>
-                                <input type="text" class="form-control" id="genotype_4" name="genotype_4" value="<?= $holdingcage['genotype_4']; ?>">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="notes_4" class="form-label">Maintenance Notes</label>
-                                <input type="text" class="form-control" id="notes_4" name="notes_4" value="<?= $holdingcage['notes_4']; ?>">
-                            </div>
-
-                            <h4>Mouse #5</h4>
-
-                            <div class="mb-3">
-                                <label for="mouse_id_5" class="form-label">Mouse ID</label>
-                                <input type="text" class="form-control" id="mouse_id_5" name="mouse_id_5" value="<?= $holdingcage['mouse_id_5']; ?>">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="genotype_5" class="form-label">Genotype</label>
-                                <input type="text" class="form-control" id="genotype_5" name="genotype_5" value="<?= $holdingcage['genotype_5']; ?>">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="notes_5" class="form-label">Maintenance Notes</label>
-                                <input type="text" class="form-control" id="notes_5" name="notes_5" value="<?= $holdingcage['notes_5']; ?>">
-                            </div>
+                                    <div class="mb-3">
+                                        <label for="notes_<?php echo $i; ?>" class="form-label">Maintenance Notes</label>
+                                        <input type="text" class="form-control" id="notes_<?php echo $i; ?>" name="notes_<?php echo $i; ?>" value="<?= htmlspecialchars($holdingcage["notes_$i"]); ?>">
+                                    </div>
+                                </div>
+                            <?php endfor; ?>
 
                             <!-- Display Files Section -->
                             <div class="card mt-4">
@@ -370,7 +307,6 @@ require 'header.php';
                                             </thead>
                                             <tbody>
                                                 <?php
-                                                // Assuming $files is fetched from the database
                                                 while ($file = $files->fetch_assoc()) {
                                                     $file_path = htmlspecialchars($file['file_path']);
                                                     $file_name = htmlspecialchars($file['file_name']);
@@ -379,10 +315,9 @@ require 'header.php';
                                                     echo "<tr>";
                                                     echo "<td>$file_name</td>";
                                                     echo "<td>
-                                                    <a href='$file_path' download='$file_name' class='btn btn-sm btn-outline-primary'> <i class='fas fa-cloud-download-alt fa-sm'></i></a>
-                                                    <a href='delete_file.php?url=hc_edit&id=$file_id' class='btn-sm' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'> <i class='fas fa-trash fa-sm' style='color:red'></i></a>
+                                                    <a href='$file_path' download='$file_name' class='btn btn-sm btn-outline-primary'><i class='fas fa-cloud-download-alt fa-sm'></i></a>
+                                                    <a href='delete_file.php?url=hc_edit&id=$file_id' class='btn-sm' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'><i class='fas fa-trash fa-sm' style='color:red'></i></a>
                                                     </td>";
-
                                                     echo "</tr>";
                                                 }
                                                 ?>
@@ -404,9 +339,9 @@ require 'header.php';
                                 </div>
                             </div>
 
-                            <br>                    
+                            <br>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
-                            <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
+                            <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
                         </form>
                     </div>
