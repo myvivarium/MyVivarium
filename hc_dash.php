@@ -101,6 +101,8 @@ require 'header.php';
 
         .btn-icon i {
             font-size: 16px;
+            align-items: center;
+            justify-content: center;
         }
 
         @media (max-width: 768px) {
