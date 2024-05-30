@@ -3,7 +3,7 @@ session_start();
 require 'dbcon.php';
 
 // Pagination variables
-$limit = 10; // Number of entries to show in a page.
+$limit = 15; // Number of entries to show in a page.
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
