@@ -87,21 +87,24 @@ require 'header.php';
         }
 
         .btn-primary, .btn-secondary, .btn-danger {
-            padding: 10px 10px;
+            padding: 10px 20px;
             border-radius: 20px;
             transition: background-color 0.2s, transform 0.2s;
         }
 
         .btn-primary:hover {
             background-color: #0056b3;
+            transform: scale(1.05);
         }
 
         .btn-secondary:hover {
             background-color: #FF4500;
+            transform: scale(1.05);
         }
 
         .btn-danger:hover {
             background-color: #dc3545;
+            transform: scale(1.05);
         }
 
         .btn-primary:active,
