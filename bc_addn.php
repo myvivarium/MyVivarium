@@ -8,7 +8,7 @@ if (!isset($_SESSION['name'])) {
     exit;
 }
 
-// Query to retrieve options where role is 'PI'
+// Query to retrieve options where role is 'Principal Investigator'
 $query = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result = $con->query($query);
 
@@ -49,11 +49,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Execute the statement and check if it was successful
         if ($insert_query->execute()) {
             $_SESSION['message'] = "New breeding cage added successfully.";
+
+            // Handle litter data insertion
+            if (isset($_POST['dom'])) {
+                $dom = $_POST['dom'];
+                $litter_dob = $_POST['litter_dob'];
+                $pups_alive = $_POST['pups_alive'];
+                $pups_dead = $_POST['pups_dead'];
+                $pups_male = $_POST['pups_male'];
+                $pups_female = $_POST['pups_female'];
+                $litter_remarks = $_POST['remarks'];
+
+                // Loop through each litter entry and insert into the database
+                for ($i = 0; $i < count($dom); $i++) {
+                    $insert_litter_query = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+                    // Bind parameters for each litter entry
+                    $insert_litter_query->bind_param("ssssssss", $cage_id, $dom[$i], $litter_dob[$i], $pups_alive[$i], $pups_dead[$i], $pups_male[$i], $pups_female[$i], $litter_remarks[$i]);
+
+                    // Execute the statement and check if it was successful
+                    if ($insert_litter_query->execute()) {
+                        $_SESSION['message'] .= " Litter data added successfully.";
+                    } else {
+                        $_SESSION['message'] .= " Failed to add litter data: " . $insert_litter_query->error;
+                    }
+
+                    // Close the prepared statement for litter data
+                    $insert_litter_query->close();
+                }
+            }
         } else {
             $_SESSION['message'] = "Failed to add new breeding cage.";
         }
 
-        // Close the prepared statement
+        // Close the prepared statement for cage data
         $insert_query->close();
     }
 
@@ -177,8 +206,6 @@ require 'header.php';
                     .catch(error => console.error('Error:', error));
             });
         }
-
-
 
         // Function to remove a litter entry dynamically
         function removeLitter(element) {
