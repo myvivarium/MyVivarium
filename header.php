@@ -118,6 +118,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     <div class="nav-container">
         <nav class="nav justify-content-center">
             <a href="home.php" class="btn btn-primary">Home</a>
+            
             <!-- Dropdown for Dashboard -->
             <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -129,20 +130,20 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                     <li><a class="dropdown-item" href="iot_sensors.php">IOT Sensors</a></li>
                 </ul>
             </div>
+            
             <!-- Dropdown for Settings -->
             <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="settingsMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                     Settings
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
+                <ul class="dropdown-menu" aria-labelledby="settingsMenuButton">
                     <li><a class="dropdown-item" href="user_profile.php">User Profile</a></li>
                     <?php
                     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                        echo '<li><a href="admin.php" class="dropdown-item">Manage Users</a></li>';
+                        echo '<li><a class="dropdown-item" href="admin.php">Manage Users</a></li>';
                     }
                     ?>
                 </ul>
-
             </div>
 
             <a href="logout.php" class="btn btn-secondary">Logout</a>

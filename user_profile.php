@@ -58,7 +58,7 @@ require 'header.php';
     <title>User Profile</title>
     <style>
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin-top: 50px;
             margin-bottom: 50px;
             padding: 20px;
