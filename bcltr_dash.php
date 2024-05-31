@@ -31,10 +31,6 @@ if (isset($_GET['id'])) {
 
         .container {
             max-width: 800px;
-            background-color: lightgrey;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
         }
 
         .table-wrapper {
