@@ -71,7 +71,7 @@ require 'header.php';
             margin-bottom: 15px;
         }
 
-        .btn {
+        .btn1 {
             display: block;
             width: 100%;
             padding: 10px;
@@ -80,7 +80,7 @@ require 'header.php';
             cursor: pointer;
         }
 
-        .btn:hover {
+        .btn1:hover {
             background-color: #0056b3;
         }
     </style>
@@ -115,7 +115,7 @@ require 'header.php';
                 <label for="username">Email Address</label>
                 <input type="email" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
             </div>
-            <button type="submit" class="btn btn-primary" name="update_profile">Update Profile</button>
+            <button type="submit" class="btn1 btn-primary" name="update_profile">Update Profile</button>
         </form>
         <br>
         <h2>Request Password Change</h2>
@@ -124,7 +124,7 @@ require 'header.php';
                 <label for="reset_email">Email Address</label>
                 <input type="email" class="form-control" id="reset_email" name="email" value="<?php echo htmlspecialchars($user['username']); ?>" required>
             </div>
-            <button type="submit" class="btn btn-warning" name="reset">Request Password Change</button>
+            <button type="submit" class="btn1 btn-warning" name="reset">Request Password Change</button>
         </form>
     </div>
     <?php include 'footer.php'; ?>
