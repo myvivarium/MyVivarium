@@ -137,7 +137,7 @@ require 'header.php';
 
 <body">
 
-    <div class="container mt-4" style="max-width: 800px; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
+    <div class="container mt-4" style="max-width: 800px; background-color: #f8f9fa; border-radius: 8px;">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -266,7 +266,7 @@ require 'header.php';
                             <?php include 'bcltr_dash.php'; ?>
 
                             <br>
-                            
+
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                             <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
