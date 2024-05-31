@@ -25,6 +25,8 @@ require 'header.php';
 <html lang="en">
 
 <head>
+    <title>Select Breeding Cages for Printing</title>
+
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
@@ -33,17 +35,19 @@ require 'header.php';
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <title>Select Breeding Cages for Printing</title>
-
     <style>
         body {
             margin: 0;
             padding: 0;
         }
 
-        .form-wrapper {
+        .container {
+            max-width: 800px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
             margin: 50px auto;
-            width: 80%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .btn-container {
@@ -56,6 +60,7 @@ require 'header.php';
     </style>
 
     <script>
+        // Validate the selection of cage IDs
         function validateSelection() {
             var selectedIds = document.getElementById("cageIds").selectedOptions;
             if (selectedIds.length > 4) {
@@ -69,6 +74,7 @@ require 'header.php';
             return true;
         }
 
+        // Handle form submission to open a new tab with the selected cage IDs
         function handleSubmit(event, url) {
             event.preventDefault();
             if (validateSelection()) {
@@ -79,11 +85,12 @@ require 'header.php';
             }
         }
 
+        // Initialize Select2 for the cage IDs dropdown
         $(document).ready(function() {
             $('#cageIds').select2({
                 placeholder: "Select Cage IDs",
                 allowClear: true,
-                width: '80%'
+                width: '100%'
             });
         });
     </script>
@@ -91,24 +98,22 @@ require 'header.php';
 
 <body>
     <div class="container mt-4">
-        <div class="form-wrapper">
-            <h4>Select Breeding Cages for Printing</h4>
-            <form>
-                <div class="mb-3">
-                    <label for="cageIds" class="form-label">Select Cage IDs (up to 4):</label>
-                    <br>
-                    <select id="cageIds" name="id[]" class="form-select" multiple size="10">
-                        <?php foreach ($cageIds as $cageId) : ?>
-                            <option value="<?= htmlspecialchars($cageId) ?>"><?= htmlspecialchars($cageId) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="btn-container">
-                    <button type="submit" class="btn btn-primary btn-print" onclick="handleSubmit(event, 'bc_prnt_crd.php')">Print Cage Card</button>
-                    <!--<button type="submit" class="btn btn-secondary btn-view" onclick="handleSubmit(event, 'hc_prnt_crd.php')">View Cage Card</button>-->
-                </div>
-            </form>
-        </div>
+        <h4>Select Breeding Cages for Printing</h4>
+        <form>
+            <div class="mb-3">
+                <label for="cageIds" class="form-label">Select Cage IDs (up to 4):</label>
+                <br>
+                <select id="cageIds" name="id[]" class="form-select" multiple size="10">
+                    <?php foreach ($cageIds as $cageId) : ?>
+                        <option value="<?= htmlspecialchars($cageId) ?>"><?= htmlspecialchars($cageId) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="btn-container">
+                <button type="submit" class="btn btn-primary btn-print" onclick="handleSubmit(event, 'bc_prnt_crd.php')">Print Cage Card</button>
+                <!--<button type="submit" class="btn btn-secondary btn-view" onclick="handleSubmit(event, 'hc_prnt_crd.php')">View Cage Card</button>-->
+            </div>
+        </form>
     </div>
     <?php include 'footer.php'; ?>
 </body>
