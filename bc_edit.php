@@ -105,7 +105,6 @@ if (isset($_GET['id'])) {
                 $_SESSION['message'] = "File upload error: " . $_FILES['fileUpload']['error'];
             }
 
-            echo json_encode($_POST);
             // Handle litter data
             $dom = $_POST['dom'];
             $litter_dob = $_POST['litter_dob'];
@@ -153,10 +152,7 @@ if (isset($_GET['id'])) {
                 }
             }
 
-
-
-
-            //header("Location: bc_dash.php");
+            header("Location: bc_dash.php");
             exit();
         }
     } else {
