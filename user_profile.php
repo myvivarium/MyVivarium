@@ -44,6 +44,7 @@ require 'header.php';
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,9 +60,11 @@ require 'header.php';
             border-radius: 5px;
             background-color: #f9f9f9;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         .btn {
             display: block;
             width: 100%;
@@ -70,40 +73,39 @@ require 'header.php';
             border-radius: 3px;
             cursor: pointer;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
+
 <body>
-<div class="container">
-    <h2>User Profile</h2>
-    <form method="POST" action="">
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" class="form-control" id="username" value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
-        </div>
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
-        </div>
-        <div class="form-group">
-            <label for="full_name">Full Name</label>
-            <input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>" required>
-        </div>
-        <button type="submit" class="btn btn-primary" name="update_profile">Update Profile</button>
-    </form>
-    <br>
-    <h2>Request Password Change</h2>
-    <form method="POST" action="forgot_password.php">
-        <div class="form-group">
-            <label for="reset_email">Email Address</label>
-            <input type="email" class="form-control" id="reset_email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
-        </div>
-        <button type="submit" class="btn btn-warning" name="reset">Request Password Change</button>
-    </form>
-</div>
-<?php include 'footer.php'; ?>
+    <div class="container">
+        <h2>User Profile</h2>
+        <form method="POST" action="">
+            <div class="form-group">
+                <label for="full_name">Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['username']); ?>" required>
+            </div>
+            <button type="submit" class="btn btn-primary" name="update_profile">Update Profile</button>
+        </form>
+        <br>
+        <h2>Request Password Change</h2>
+        <form method="POST" action="forgot_password.php">
+            <div class="form-group">
+                <label for="reset_email">Email Address</label>
+                <input type="email" class="form-control" id="reset_email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+            </div>
+            <button type="submit" class="btn btn-warning" name="reset">Request Password Change</button>
+        </form>
+    </div>
+    <?php include 'footer.php'; ?>
 </body>
+
 </html>
 <?php mysqli_close($con); ?>
