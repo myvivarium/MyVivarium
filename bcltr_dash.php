@@ -65,41 +65,6 @@ if (isset($_GET['id'])) {
             background-color: #f2f2f2;
         }
 
-        .table-fixed th:nth-child(1),
-        .table-fixed td:nth-child(1) {
-            width: 20%;
-        }
-
-        .table-fixed th:nth-child(2),
-        .table-fixed td:nth-child(2) {
-            width: 20%;
-        }
-
-        .table-fixed th:nth-child(3),
-        .table-fixed td:nth-child(3) {
-            width: 10%;
-        }
-
-        .table-fixed th:nth-child(4),
-        .table-fixed td:nth-child(4) {
-            width: 10%;
-        }
-
-        .table-fixed th:nth-child(5),
-        .table-fixed td:nth-child(5) {
-            width: 10%;
-        }
-
-        .table-fixed th:nth-child(6),
-        .table-fixed td:nth-child(6) {
-            width: 10%;
-        }
-
-        .table-fixed th:nth-child(7),
-        .table-fixed td:nth-child(7) {
-            width: 20%;
-        }
-
         .btn-back,
         .btn-logout {
             padding: 10px 20px;
@@ -151,31 +116,40 @@ if (isset($_GET['id'])) {
                     </div>
 
                     <div class="card-body">
-
-                        <?php
-                        while ($litter = mysqli_fetch_assoc($result)) {
-                            ?>
+                        <?php while ($litter = mysqli_fetch_assoc($result)) { ?>
                             <div class="table-wrapper">
-                                <table class="table table-bordered table-fixed" id="mouseTable">
-                                    <thead>
-                                        <tr>
-                                            <th>DOM</th>
-                                            <th>Litter DOB</th>
-                                            <th>Pups Alive</th>
-                                            <th>Pups Dead</th>
-                                            <th>Pups Male</th>
-                                            <th>Pups Female</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
+                                <table class="table table-bordered">
                                     <tbody>
                                         <tr>
+                                            <th>DOM</th>
                                             <td><?= htmlspecialchars($litter['dom'] ?? '') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Litter DOB</th>
                                             <td><?= htmlspecialchars($litter['litter_dob'] ?? '') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Pups Alive</th>
                                             <td><?= htmlspecialchars($litter['pups_alive'] ?? '') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Pups Dead</th>
                                             <td><?= htmlspecialchars($litter['pups_dead'] ?? '') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Pups Male</th>
                                             <td><?= htmlspecialchars($litter['pups_male'] ?? '') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Pups Female</th>
                                             <td><?= htmlspecialchars($litter['pups_female'] ?? '') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Remarks</th>
+                                            <td><?= htmlspecialchars($litter['remarks'] ?? '') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Action</th>
                                             <td>
                                                 <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-secondary">
                                                     <i class="fa fa-edit"></i>
@@ -187,24 +161,8 @@ if (isset($_GET['id'])) {
                                         </tr>
                                     </tbody>
                                 </table>
-
-                                <table class="table table-bordered mt-2">
-                                    <thead>
-                                        <tr>
-                                            <th>Remarks</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><?= htmlspecialchars($litter['remarks'] ?? '') ?></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
                             </div>
-                            <?php
-                        }
-                        ?>
-
+                        <?php } ?>
                     </div>
                 </div>
             </div>
