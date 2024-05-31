@@ -135,17 +135,17 @@ if (isset($_GET['id'])) {
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><?= htmlspecialchars($litter['dom']); ?></td>
-                                            <td><?= htmlspecialchars($litter['litter_dob']); ?></td>
-                                            <td><?= htmlspecialchars($litter['pups_alive']); ?></td>
-                                            <td><?= htmlspecialchars($litter['pups_dead']); ?></td>
-                                            <td><?= htmlspecialchars($litter['pups_male']); ?></td>
-                                            <td><?= htmlspecialchars($litter['pups_female']); ?></td>
+                                            <td><?= htmlspecialchars($litter['dom'] ?? '') ?></td>
+                                            <td><?= htmlspecialchars($litter['litter_dob'] ?? '') ?></td>
+                                            <td><?= htmlspecialchars($litter['pups_alive'] ?? '') ?></td>
+                                            <td><?= htmlspecialchars($litter['pups_dead'] ?? '') ?></td>
+                                            <td><?= htmlspecialchars($litter['pups_male'] ?? '') ?></td>
+                                            <td><?= htmlspecialchars($litter['pups_female'] ?? '') ?></td>
                                             <td>
-                                                <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-secondary">
+                                                <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-secondary">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
-                                                <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">
+                                                <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">
                                                     <i class="fa fa-trash"></i>
                                                 </a>
                                             </td>
@@ -161,7 +161,7 @@ if (isset($_GET['id'])) {
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><?= htmlspecialchars($litter['remarks']); ?></td>
+                                            <td><?= htmlspecialchars($litter['remarks'] ?? '') ?></td>
                                         </tr>
                                     </tbody>
                                 </table>
