@@ -65,10 +65,6 @@ if (isset($_GET['id'])) {
             margin: 0;
         }
 
-        .action-icons a {
-            margin-right: 10px;
-        }
-
         @media (max-width: 768px) {
             .table-wrapper th,
             .table-wrapper td {
