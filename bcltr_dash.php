@@ -98,7 +98,7 @@ if (isset($_GET['id'])) {
     <div class="container mt-4">
         <div class="card">
             <!-- Breeding Cage Header -->
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h4>Litter Details for the Cage <?= htmlspecialchars($id) ?>
                     <div class="action-icons">
                         <a href="bc_addn.php" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Cage">
