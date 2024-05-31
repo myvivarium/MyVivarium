@@ -75,16 +75,16 @@ if (isset($_GET['id'])) {
             // Handle file upload
             if (isset($_FILES['fileUpload'])) {
                 $targetDirectory = "uploads/$cage_id/"; // Modify the target directory
-            
+
                 // Create the cage_id specific sub-directory if it doesn't exist
                 if (!file_exists($targetDirectory)) {
                     mkdir($targetDirectory, 0777, true); // true for recursive create (if needed)
                 }
-            
+
                 $originalFileName = basename($_FILES['fileUpload']['name']);
                 $targetFilePath = $targetDirectory . $originalFileName;
                 $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-            
+
                 // Check if file already exists
                 if (!file_exists($targetFilePath)) {
                     if (move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetFilePath)) {
@@ -142,7 +142,8 @@ require 'header.php';
         body {
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa; /* Light grey background */
+            background-color: #f8f9fa;
+            /* Light grey background */
         }
 
         .container {
@@ -193,7 +194,18 @@ require 'header.php';
             margin: 0;
         }
 
+        .fixed-width th,
+        .fixed-width td {
+            width: 30%;
+        }
+
+        .fixed-width th:nth-child(2),
+        .fixed-width td:nth-child(2) {
+            width: 70%;
+        }
+
         @media (max-width: 768px) {
+
             .table-wrapper th,
             .table-wrapper td {
                 padding: 12px 8px;
@@ -205,6 +217,7 @@ require 'header.php';
             }
         }
     </style>
+
 </head>
 
 <body>
@@ -332,16 +345,16 @@ require 'header.php';
                             <div class="card mt-4">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
-                                            <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
-                                                <i class="fas fa-plus"></i>
-                                            </a>
+                                        <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
+                                            <i class="fas fa-plus"></i>
+                                        </a>
                                     </h4>
                                 </div>
 
                                 <div class="card-body">
                                     <?php while ($litter = mysqli_fetch_assoc($litters)) : ?>
                                         <div class="table-wrapper">
-                                            <table class="table table-bordered">
+                                            <table class="table table-bordered fixed-width">
                                                 <tbody>
                                                     <tr>
                                                         <th>DOM</th>
@@ -371,22 +384,23 @@ require 'header.php';
                                                         <th>Remarks</th>
                                                         <td><?= htmlspecialchars($litter['remarks'] ?? ''); ?></td>
                                                     </tr>
-                                                        <tr>
-                                                            <th>Action</th>
-                                                            <td>
-                                                                <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-secondary btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Litter Data">
-                                                                    <i class="fa fa-edit"></i>
-                                                                </a>
-                                                                <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-danger btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Litter Data" onclick="return confirm('Are you sure you want to delete this record?');">
-                                                                    <i class="fa fa-trash"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
+                                                    <tr>
+                                                        <th>Action</th>
+                                                        <td>
+                                                            <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-secondary btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Litter Data">
+                                                                <i class="fa fa-edit"></i>
+                                                            </a>
+                                                            <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-danger btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Litter Data" onclick="return confirm('Are you sure you want to delete this record?');">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                     <?php endwhile; ?>
                                 </div>
+
                             </div>
 
                             <br>
