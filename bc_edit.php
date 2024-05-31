@@ -116,6 +116,7 @@ if (isset($_GET['id'])) {
             $litter_id = isset($_POST['litter_id']) ? $_POST['litter_id'] : [];
             $delete_litter_ids = isset($_POST['delete_litter_ids']) ? $_POST['delete_litter_ids'] : [];
 
+
             // Process litter data
             if (count($dom) > 0) {
                 for ($i = 0; $i < count($dom); $i++) {
@@ -233,12 +234,12 @@ require 'header.php';
             const litterIdInput = litterEntry.querySelector('[name="litter_id[]"]');
 
             if (litterIdInput && litterIdInput.value) {
-                const deleteLitterIdsInput = document.querySelector('[name="delete_litter_ids"]');
-                if (deleteLitterIdsInput.value === "") {
-                    deleteLitterIdsInput.value = litterIdInput.value;
-                } else {
-                    deleteLitterIdsInput.value += "," + litterIdInput.value;
-                }
+                const deleteLitterIdsInput = document.querySelector('[name="delete_litter_ids[]"]');
+                const newInput = document.createElement('input');
+                newInput.type = 'hidden';
+                newInput.name = 'delete_litter_ids[]';
+                newInput.value = litterIdInput.value;
+                document.querySelector('form').appendChild(newInput);
             }
 
             litterEntry.remove();
@@ -493,7 +494,7 @@ require 'header.php';
                                                 <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks']); ?></textarea>
                                             </div>
 
-                                            <input type="hidden" name="delete_litter_ids" value="">
+                                            <input type="hidden" name="delete_litter_ids[]" value="">
 
                                             <input type="hidden" name="litter_id[]" value="<?= htmlspecialchars($litter['id']); ?>">
                                             <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
