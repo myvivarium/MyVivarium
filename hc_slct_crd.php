@@ -39,12 +39,11 @@ require 'header.php';
         body {
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
         }
 
         .container {
             max-width: 800px;
-            background-color: #fff;
+            background-color: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
             margin: 50px auto;
