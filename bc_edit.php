@@ -1,4 +1,3 @@
-<?php
 session_start();
 require 'dbcon.php';
 
@@ -105,7 +104,7 @@ if (isset($_GET['id'])) {
                 $_SESSION['message'] = "File upload error: " . $_FILES['fileUpload']['error'];
             }
 
-            // Initialize arrays
+            // Handle litter data
             $dom = isset($_POST['dom']) ? $_POST['dom'] : [];
             $litter_dob = isset($_POST['litter_dob']) ? $_POST['litter_dob'] : [];
             $pups_alive = isset($_POST['pups_alive']) ? $_POST['pups_alive'] : [];
@@ -192,38 +191,37 @@ require 'header.php';
             litterDiv.className = 'litter-entry';
 
             litterDiv.innerHTML = `
-        <hr>
-        <div class="mb-3">
-            <label for="dom[]" class="form-label">DOM</label>
-            <input type="date" class="form-control" name="dom[]" required>
-        </div>
-        <div class="mb-3">
-            <label for="litter_dob[]" class="form-label">Litter DOB</label>
-            <input type="date" class="form-control" name="litter_dob[]">
-        </div>
-        <div class="mb-3">
-            <label for="pups_alive[]" class="form-label">Pups Alive</label>
-            <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
-        </div>
-        <div class="mb-3">
-            <label for="pups_dead[]" class="form-label">Pups Dead</label>
-            <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
-        </div>
-        <div class="mb-3">
-            <label for="pups_male[]" class="form-label">Pups Male</label>
-            <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
-        </div>
-        <div class="mb-3">
-            <label for="pups_female[]" class="form-label">Pups Female</label>
-            <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
-        </div>
-        <div class="mb-3">
-            <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
-            <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
-        </div>
-        <input type="hidden" name="litter_id[]" value="">
-        <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
-    `;
+                <hr>
+                <div class="mb-3">
+                    <label for="dom[]" class="form-label">DOM</label>
+                    <input type="date" class="form-control" name="dom[]" required>
+                </div>
+                <div class="mb-3">
+                    <label for="litter_dob[]" class="form-label">Litter DOB</label>
+                    <input type="date" class="form-control" name="litter_dob[]">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_alive[]" class="form-label">Pups Alive</label>
+                    <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_dead[]" class="form-label">Pups Dead</label>
+                    <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_male[]" class="form-label">Pups Male</label>
+                    <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_female[]" class="form-label">Pups Female</label>
+                    <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
+                    <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
+                </div>
+                <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
+            `;
 
             document.getElementById('litterEntries').appendChild(litterDiv);
         }
@@ -460,6 +458,7 @@ require 'header.php';
                                     <?php while ($litter = mysqli_fetch_assoc($litters)) : ?>
                                         <div class="litter-entry">
                                             <hr>
+                                            <input type="hidden" name="litter_id[]" value="<?= htmlspecialchars($litter['id']); ?>">
                                             <div class="mb-3">
                                                 <label for="dom[]" class="form-label">DOM</label>
                                                 <input type="date" class="form-control" name="dom[]" value="<?= htmlspecialchars($litter['dom']); ?>" required>
@@ -488,13 +487,10 @@ require 'header.php';
                                                 <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
                                                 <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks']); ?></textarea>
                                             </div>
-
-                                            <input type="hidden" id="delete_litter_ids" name="delete_litter_ids[]" value="">
-
-                                            <input type="hidden" name="litter_id[]" value="<?= htmlspecialchars($litter['id']); ?>">
                                             <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
                                         </div>
                                     <?php endwhile; ?>
+                                    <input type="hidden" id="delete_litter_ids" name="delete_litter_ids[]" value="">
                                 </div>
                             </div>
 
