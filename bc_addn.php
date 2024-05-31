@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $check_result_hc = $check_query_hc->get_result();
 
     if ($check_result_bc->num_rows > 0 || $check_result_hc->num_rows > 0) {
-        $_SESSION['error'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
+        $_SESSION['message'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
     } else {
         // Prepare the insert query with placeholders
         $insert_query = $con->prepare("INSERT INTO bc_basic (`cage_id`, `pi_name`, `cross`, `iacuc`, `user`, `male_id`, `female_id`, `male_dob`, `female_dob`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($insert_query->execute()) {
             $_SESSION['message'] = "New breeding cage added successfully.";
         } else {
-            $_SESSION['error'] = "Failed to add new breeding cage.";
+            $_SESSION['message'] = "Failed to add new breeding cage.";
         }
 
         // Close the prepared statement
