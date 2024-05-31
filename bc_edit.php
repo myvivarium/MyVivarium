@@ -233,8 +233,12 @@ require 'header.php';
             const litterIdInput = litterEntry.querySelector('[name="litter_id[]"]');
 
             if (litterIdInput && litterIdInput.value) {
-                const deleteLitterIdsInput = document.getElementById('delete_litter_ids');
-                deleteLitterIdsInput.value += litterIdInput.value + ',';
+                const deleteLitterIdsInput = document.querySelector('[name="delete_litter_ids"]');
+                if (deleteLitterIdsInput.value === "") {
+                    deleteLitterIdsInput.value = litterIdInput.value;
+                } else {
+                    deleteLitterIdsInput.value += "," + litterIdInput.value;
+                }
             }
 
             litterEntry.remove();
@@ -489,7 +493,7 @@ require 'header.php';
                                                 <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks']); ?></textarea>
                                             </div>
 
-                                            <input type="hidden" id="delete_litter_ids" name="delete_litter_ids[]" value="">
+                                            <input type="hidden" name="delete_litter_ids" value="">
 
                                             <input type="hidden" name="litter_id[]" value="<?= htmlspecialchars($litter['id']); ?>">
                                             <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
