@@ -165,52 +165,6 @@ require 'header.php';
         function removeLitter(element) {
             element.parentElement.remove();
         }
-
-        function submitLitterData() {
-            const litterEntries = document.querySelectorAll('.litter-entry');
-            const cage_id = document.getElementById('cage_id').value;
-
-            litterEntries.forEach(entry => {
-                const dom = entry.querySelector('[name="dom[]"]').value;
-                const litter_dob = entry.querySelector('[name="litter_dob[]"]').value;
-                const pups_alive = entry.querySelector('[name="pups_alive[]"]').value;
-                const pups_dead = entry.querySelector('[name="pups_dead[]"]').value;
-                const pups_male = entry.querySelector('[name="pups_male[]"]').value;
-                const pups_female = entry.querySelector('[name="pups_female[]"]').value;
-                const remarks = entry.querySelector('[name="remarks[]"]').value;
-
-                // Prepare data for AJAX request
-                const formData = new FormData();
-                formData.append('cage_id', cage_id);
-                formData.append('dom', dom);
-                formData.append('litter_dob', litter_dob);
-                formData.append('pups_alive', pups_alive);
-                formData.append('pups_dead', pups_dead);
-                formData.append('pups_male', pups_male);
-                formData.append('pups_female', pups_female);
-                formData.append('remarks', remarks);
-
-                // Send AJAX request
-                fetch('bc_add_litter.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            console.log(data.message);
-                        } else {
-                            console.error(data.message);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
-        }
-
-        // Function to remove a litter entry dynamically
-        function removeLitter(element) {
-            element.parentElement.remove();
-        }
     </script>
 </head>
 
@@ -285,38 +239,7 @@ require 'header.php';
             <div class="mt-4">
                 <h5>Litter Data</h5>
                 <div id="litterEntries">
-                    <!-- Initial litter entry -->
-                    <div class="litter-entry">
-                        <div class="mb-3">
-                            <label for="dom[]" class="form-label">DOM</label>
-                            <input type="date" class="form-control" name="dom[]" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="litter_dob[]" class="form-label">Litter DOB</label>
-                            <input type="date" class="form-control" name="litter_dob[]">
-                        </div>
-                        <div class="mb-3">
-                            <label for="pups_alive[]" class="form-label">Pups Alive</label>
-                            <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
-                        </div>
-                        <div class="mb-3">
-                            <label for="pups_dead[]" class="form-label">Pups Dead</label>
-                            <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
-                        </div>
-                        <div class="mb-3">
-                            <label for="pups_male[]" class="form-label">Pups Male</label>
-                            <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
-                        </div>
-                        <div class="mb-3">
-                            <label for="pups_female[]" class="form-label">Pups Female</label>
-                            <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
-                        </div>
-                        <div class="mb-3">
-                            <label for="remarks[]" class="form-label">Remarks</label>
-                            <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"></textarea>
-                        </div>
-                        <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
-                    </div>
+                    <!-- Litter entries will be added here dynamically -->
                 </div>
                 <button type="button" class="btn btn-success mt-3" onclick="addLitter()">Add Litter Entry</button>
             </div>
