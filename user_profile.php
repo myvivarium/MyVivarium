@@ -1,6 +1,11 @@
 <?php
 session_start();
 require 'dbcon.php';
+require 'config.php';
+require 'vendor/autoload.php'; // Include PHPMailer autoload file
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
@@ -46,6 +51,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
     $stmt->close();
 }
 
+// Handle form submission for password reset
+$resultMessage = '';
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
+    $email = $_POST['email'];
+
+    // Check if the email exists in the database
+    $query = "SELECT * FROM users WHERE username = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows == 1) {
+        // Email exists, generate and save a reset token
+        $resetToken = bin2hex(random_bytes(32));
+        $expirationTimeUnix = time() + 3600; // 1 hour expiration time
+        $expirationTime = date('Y-m-d H:i:s', $expirationTimeUnix);
+
+        $updateQuery = "UPDATE users SET reset_token = ?, reset_token_expiration = ?, login_attempts = 0, account_locked = NULL WHERE username = ?";
+        $updateStmt = $con->prepare($updateQuery);
+        $updateStmt->bind_param("sss", $resetToken, $expirationTime, $email);
+        $updateStmt->execute();
+
+        // Send the password reset email
+        $resetLink = "https://" . $url . "/reset_password.php?token=$resetToken";
+
+        $to = $email;
+        $subject = 'Password Reset';
+        $message = "To reset your password, click the following link:\n$resetLink";
+
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host = SMTP_HOST;
+            $mail->Port = SMTP_PORT;
+            $mail->SMTPAuth = true;
+            $mail->Username = SMTP_USERNAME;
+            $mail->Password = SMTP_PASSWORD;
+            $mail->SMTPSecure = SMTP_ENCRYPTION;
+
+            $mail->setFrom(SENDER_EMAIL, SENDER_NAME);
+            $mail->addAddress($to);
+            $mail->isHTML(false);
+            $mail->Subject = $subject;
+            $mail->Body = $message;
+
+            $mail->send();
+            $resultMessage = "Password reset instructions have been sent to your email address.";
+        } catch (Exception $e) {
+            $resultMessage = "Email could not be sent. Error: " . $mail->ErrorInfo;
+        }
+    } else {
+        $resultMessage = "Email address not found in our records. Please try again.";
+    }
+
+    $stmt->close();
+    if (isset($updateStmt)) {
+        $updateStmt->close();
+    }
+}
 require 'header.php';
 ?>
 
@@ -83,6 +148,16 @@ require 'header.php';
         .btn1:hover {
             background-color: #0056b3;
         }
+
+        .result-message {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #dff0d8;
+            border: 1px solid #3c763d;
+            color: #3c763d;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
@@ -118,14 +193,16 @@ require 'header.php';
             <button type="submit" class="btn1 btn-primary" name="update_profile">Update Profile</button>
         </form>
         <br>
+        
         <h2>Request Password Change</h2>
-        <form method="POST" action="forgot_password.php">
+        <form method="POST" action="">
             <div class="form-group">
-                <label for="reset_email">Email Address</label>
-                <input type="email" class="form-control" id="reset_email" name="email" value="<?php echo htmlspecialchars($user['username']); ?>" required>
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['username']); ?>" required>
             </div>
             <button type="submit" class="btn1 btn-warning" name="reset">Request Password Change</button>
         </form>
+        <?php if ($resultMessage) { echo "<p class='result-message'>$resultMessage</p>"; } ?>
     </div>
     <?php include 'footer.php'; ?>
 </body>
