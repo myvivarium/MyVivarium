@@ -34,6 +34,8 @@ $viewMode = isset($_GET['view']) && $_GET['view'] === 'yes';
 
         .container {
             max-width: 800px;
+            padding: 0 auto;
+            margin: 0 auto;
         }
 
         .table-wrapper {
