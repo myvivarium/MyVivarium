@@ -106,6 +106,8 @@ require 'header.php';
             border: 1px solid gray;
             padding: 8px;
             text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .table-wrapper th:nth-child(1),
@@ -121,6 +123,12 @@ require 'header.php';
         .table-wrapper th:nth-child(3),
         .table-wrapper td:nth-child(3) {
             width: 50%;
+        }
+
+        .remarks-column {
+            max-width: 400px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         span {
@@ -238,7 +246,7 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>Remarks</th>
-                        <td><?= htmlspecialchars($breedingcage['remarks']); ?></td>
+                        <td class="remarks-column"><?= htmlspecialchars($breedingcage['remarks']); ?></td>
                     </tr>
                 </table>
 
