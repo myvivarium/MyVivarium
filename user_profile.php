@@ -198,7 +198,7 @@ require 'header.php';
         <form method="POST" action="">
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['username']); ?>" required>
+                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
             </div>
             <button type="submit" class="btn1 btn-warning" name="reset">Request Password Change</button>
         </form>
