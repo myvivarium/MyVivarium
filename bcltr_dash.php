@@ -30,6 +30,11 @@ if (isset($_GET['id'])) {
             padding: 0;
         }
 
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
         .table-wrapper {
             margin-bottom: 50px;
             overflow-x: auto;
@@ -90,65 +95,69 @@ if (isset($_GET['id'])) {
 </head>
 
 <body>
-    <!-- Breeding Cage Header -->
-    <div class="card-header">
-        <h4>Litter Details for the Cage <?= htmlspecialchars($id) ?>
-            <div class="action-icons">
-                <a href="bc_addn.php" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Cage">
-                    <i class="fas fa-plus"></i>
-                </a>
+    <div class="container mt-4">
+        <div class="card">
+            <!-- Breeding Cage Header -->
+            <div class="card-header">
+                <h4>Litter Details for the Cage <?= htmlspecialchars($id) ?>
+                    <div class="action-icons">
+                        <a href="bc_addn.php" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Cage">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    </div>
+                </h4>
             </div>
-        </h4>
-    </div>
 
-    <div class="card-body">
-        <?php while ($litter = mysqli_fetch_assoc($result)) { ?>
-            <div class="table-wrapper">
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <th>DOM</th>
-                            <td><?= htmlspecialchars($litter['dom'] ?? '') ?></td>
-                        </tr>
-                        <tr>
-                            <th>Litter DOB</th>
-                            <td><?= htmlspecialchars($litter['litter_dob'] ?? '') ?></td>
-                        </tr>
-                        <tr>
-                            <th>Pups Alive</th>
-                            <td><?= htmlspecialchars($litter['pups_alive'] ?? '') ?></td>
-                        </tr>
-                        <tr>
-                            <th>Pups Dead</th>
-                            <td><?= htmlspecialchars($litter['pups_dead'] ?? '') ?></td>
-                        </tr>
-                        <tr>
-                            <th>Pups Male</th>
-                            <td><?= htmlspecialchars($litter['pups_male'] ?? '') ?></td>
-                        </tr>
-                        <tr>
-                            <th>Pups Female</th>
-                            <td><?= htmlspecialchars($litter['pups_female'] ?? '') ?></td>
-                        </tr>
-                        <tr>
-                            <th>Remarks</th>
-                            <td><?= htmlspecialchars($litter['remarks'] ?? '') ?></td>
-                        </tr>
-                        <tr>
-                            <th>Action</th>
-                            <td>
-                                <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-secondary">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                                <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">
-                                    <i class="fa fa-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <?php while ($litter = mysqli_fetch_assoc($result)) { ?>
+                    <div class="table-wrapper">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>DOM</th>
+                                    <td><?= htmlspecialchars($litter['dom'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Litter DOB</th>
+                                    <td><?= htmlspecialchars($litter['litter_dob'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Pups Alive</th>
+                                    <td><?= htmlspecialchars($litter['pups_alive'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Pups Dead</th>
+                                    <td><?= htmlspecialchars($litter['pups_dead'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Pups Male</th>
+                                    <td><?= htmlspecialchars($litter['pups_male'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Pups Female</th>
+                                    <td><?= htmlspecialchars($litter['pups_female'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Remarks</th>
+                                    <td><?= htmlspecialchars($litter['remarks'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Action</th>
+                                    <td>
+                                        <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-secondary">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php } ?>
             </div>
-        <?php } ?>
+        </div>
     </div>
 
 </body>
