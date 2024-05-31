@@ -2,13 +2,13 @@
 session_start();
 require 'dbcon.php';
 
-// Check if the user is not logged in, redirect them to index.php
+// Redirect to index.php if the user is not logged in
 if (!isset($_SESSION['name'])) {
     header("Location: index.php");
     exit;
 }
 
-// Query to retrieve options where role is 'PI'
+// Query to retrieve options where role is 'Principal Investigator'
 $query1 = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result1 = $con->query($query1);
 
@@ -20,6 +20,7 @@ if (isset($_GET['id'])) {
     $query = "SELECT * FROM bc_basic WHERE `cage_id` = '$id'";
     $result = mysqli_query($con, $query);
 
+    // Fetch files associated with the specified cage ID
     $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
     $files = $con->query($query2);
 
@@ -28,7 +29,6 @@ if (isset($_GET['id'])) {
 
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Retrieve form data
             // Retrieve and sanitize form data
             $cage_id = mysqli_real_escape_string($con, $_POST['cage_id']);
             $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
@@ -68,6 +68,7 @@ if (isset($_GET['id'])) {
             // Close the prepared statement
             $updateQuery->close();
 
+            // Handle file upload
             if (isset($_FILES['fileUpload'])) {
                 $targetDirectory = "uploads/$cage_id/"; // Modify the target directory
             
@@ -123,18 +124,20 @@ require 'header.php';
     <script>
         function goBack() {
             window.history.back();
-            //window.location.href = 'specific_php_file.php';
+        }
+
+        function adjustTextareaHeight(element) {
+            element.style.height = "auto";
+            element.style.height = (element.scrollHeight) + "px";
         }
     </script>
 
     <title>Edit Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
-
 </head>
 
-<body>
+<body">
 
-    <div class="container mt-4">
-
+    <div class="container mt-4" style="max-width: 800px; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -168,43 +171,47 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="cross" class="form-label">Cross</label>
-                                <input type="text" class="form-control" id="cross" name="cross" value="<?= $breedingcage['cross']; ?>" required>
+                                <input type="text" class="form-control" id="cross" name="cross" value="<?= htmlspecialchars($breedingcage['cross']); ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="iacuc" class="form-label">IACUC</label>
-                                <input type="text" class="form-control" id="iacuc" name="iacuc" value="<?= $breedingcage['iacuc']; ?>">
+                                <input type="text" class="form-control" id="iacuc" name="iacuc" value="<?= htmlspecialchars($breedingcage['iacuc']); ?>">
                             </div>
 
                             <div class="mb-3">
                                 <label for="user" class="form-label">User</label>
-                                <input type="text" class="form-control" id="user" name="user" value="<?= $breedingcage['user']; ?>" required>
+                                <input type="text" class="form-control" id="user" name="user" value="<?= htmlspecialchars($breedingcage['user']); ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="male_id" class="form-label">Male ID</label>
-                                <input type="text" class="form-control" id="male_id" name="male_id" value="<?= $breedingcage['male_id']; ?>" required>
+                                <input type="text" class="form-control" id="male_id" name="male_id" value="<?= htmlspecialchars($breedingcage['male_id']); ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="female_id" class="form-label">Female ID</label>
-                                <input type="text" class="form-control" id="female_id" name="female_id" value="<?= $breedingcage['female_id']; ?>" required>
+                                <input type="text" class="form-control" id="female_id" name="female_id" value="<?= htmlspecialchars($breedingcage['female_id']); ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="male_dob" class="form-label">Male DOB</label>
-                                <input type="date" class="form-control" id="male_dob" name="male_dob" value="<?= $breedingcage['male_dob']; ?>" required>
+                                <input type="date" class="form-control" id="male_dob" name="male_dob" value="<?= htmlspecialchars($breedingcage['male_dob']); ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="female_dob" class="form-label">Female DOB</label>
-                                <input type="date" class="form-control" id="female_dob" name="female_dob" value="<?= $breedingcage['female_dob']; ?>" required>
+                                <input type="date" class="form-control" id="female_dob" name="female_dob" value="<?= htmlspecialchars($breedingcage['female_dob']); ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="remarks" class="form-label">Remarks</label>
-                                <input type="text" class="form-control" id="remarks" name="remarks" value="<?= $breedingcage['remarks']; ?>">
+                                <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($breedingcage['remarks']); ?></textarea>
+
                             </div>
+
+                            <!-- Separator -->
+                            <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
 
                             <!-- Display Files Section -->
                             <div class="card mt-4">
@@ -222,7 +229,6 @@ require 'header.php';
                                             </thead>
                                             <tbody>
                                                 <?php
-                                                // Assuming $files is fetched from the database
                                                 while ($file = $files->fetch_assoc()) {
                                                     $file_path = htmlspecialchars($file['file_path']);
                                                     $file_name = htmlspecialchars($file['file_name']);
@@ -234,7 +240,6 @@ require 'header.php';
                                                     <a href='$file_path' download='$file_name' class='btn btn-sm btn-outline-primary'> <i class='fas fa-cloud-download-alt fa-sm'></i></a>
                                                     <a href='delete_file.php?url=bc_edit&id=$file_id' class='btn-sm' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'> <i class='fas fa-trash fa-sm' style='color:red'></i></a>
                                                     </td>";
-
                                                     echo "</tr>";
                                                 }
                                                 ?>
