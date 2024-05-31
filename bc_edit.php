@@ -104,36 +104,29 @@ if (isset($_GET['id'])) {
                 }
             }
 
-            // Handle litter data update and addition
-            if (isset($_POST['dom'])) {
-                $dom = $_POST['dom'];
-                $litter_dob = $_POST['litter_dob'];
-                $pups_alive = $_POST['pups_alive'];
-                $pups_dead = $_POST['pups_dead'];
-                $pups_male = $_POST['pups_male'];
-                $pups_female = $_POST['pups_female'];
-                $litter_remarks = $_POST['remarks'];
+            // Handle litter data
+            $dom = $_POST['dom'];
+            $litter_dob = $_POST['litter_dob'];
+            $pups_alive = $_POST['pups_alive'];
+            $pups_dead = $_POST['pups_dead'];
+            $pups_male = $_POST['pups_male'];
+            $pups_female = $_POST['pups_female'];
+            $remarks_litter = $_POST['remarks'];
 
-                // Loop through each litter entry and update or insert into the database
-                for ($i = 0; $i < count($dom); $i++) {
-                    if (!empty($dom[$i])) {
-                        $insert_litter_query = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                            ON DUPLICATE KEY UPDATE `dom` = VALUES(`dom`), `litter_dob` = VALUES(`litter_dob`), `pups_alive` = VALUES(`pups_alive`), `pups_dead` = VALUES(`pups_dead`), `pups_male` = VALUES(`pups_male`), `pups_female` = VALUES(`pups_female`), `remarks` = VALUES(`remarks`)");
+            // Prepare and execute litter data insert query for each litter entry
+            for ($i = 0; $i < count($dom); $i++) {
+                $dom_i = mysqli_real_escape_string($con, $dom[$i]);
+                $litter_dob_i = mysqli_real_escape_string($con, $litter_dob[$i]);
+                $pups_alive_i = mysqli_real_escape_string($con, $pups_alive[$i]);
+                $pups_dead_i = mysqli_real_escape_string($con, $pups_dead[$i]);
+                $pups_male_i = mysqli_real_escape_string($con, $pups_male[$i]);
+                $pups_female_i = mysqli_real_escape_string($con, $pups_female[$i]);
+                $remarks_litter_i = mysqli_real_escape_string($con, $remarks_litter[$i]);
 
-                        // Bind parameters for each litter entry
-                        $insert_litter_query->bind_param("ssssssss", $cage_id, $dom[$i], $litter_dob[$i], $pups_alive[$i], $pups_dead[$i], $pups_male[$i], $pups_female[$i], $litter_remarks[$i]);
-
-                        // Execute the statement and check if it was successful
-                        if ($insert_litter_query->execute()) {
-                            $_SESSION['message'] .= " Litter data added/updated successfully.";
-                        } else {
-                            $_SESSION['message'] .= " Failed to add/update litter data: " . $insert_litter_query->error;
-                        }
-
-                        // Close the prepared statement for litter data
-                        $insert_litter_query->close();
-                    }
-                }
+                $insertLitterQuery = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                $insertLitterQuery->bind_param("ssssssss", $cage_id, $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i);
+                $insertLitterQuery->execute();
+                $insertLitterQuery->close();
             }
 
             header("Location: bc_dash.php");
@@ -172,84 +165,43 @@ require 'header.php';
             litterDiv.className = 'litter-entry';
 
             litterDiv.innerHTML = `
-            <hr>
-            <div class="mb-3">
-                <label for="dom[]" class="form-label">DOM</label>
-                <input type="date" class="form-control" name="dom[]" required>
-            </div>
-            <div class="mb-3">
-                <label for="litter_dob[]" class="form-label">Litter DOB</label>
-                <input type="date" class="form-control" name="litter_dob[]">
-            </div>
-            <div class="mb-3">
-                <label for="pups_alive[]" class="form-label">Pups Alive</label>
-                <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
-            </div>
-            <div class="mb-3">
-                <label for="pups_dead[]" class="form-label">Pups Dead</label>
-                <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
-            </div>
-            <div class="mb-3">
-                <label for="pups_male[]" class="form-label">Pups Male</label>
-                <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
-            </div>
-            <div class="mb-3">
-                <label for="pups_female[]" class="form-label">Pups Female</label>
-                <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
-            </div>
-            <div class="mb-3">
-                <label for="remarks[]" class="form-label">Remarks</label>
-                <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"></textarea>
-            </div>
-            <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
-        `;
+                <hr>
+                <div class="mb-3">
+                    <label for="dom[]" class="form-label">DOM</label>
+                    <input type="date" class="form-control" name="dom[]" required>
+                </div>
+                <div class="mb-3">
+                    <label for="litter_dob[]" class="form-label">Litter DOB</label>
+                    <input type="date" class="form-control" name="litter_dob[]">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_alive[]" class="form-label">Pups Alive</label>
+                    <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_dead[]" class="form-label">Pups Dead</label>
+                    <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_male[]" class="form-label">Pups Male</label>
+                    <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_female[]" class="form-label">Pups Female</label>
+                    <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="remarks[]" class="form-label">Remarks</label>
+                    <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"></textarea>
+                </div>
+                <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
+            `;
 
             document.getElementById('litterEntries').appendChild(litterDiv);
         }
 
         function removeLitter(element) {
             element.parentElement.remove();
-        }
-
-        function submitLitterData() {
-            const litterEntries = document.querySelectorAll('.litter-entry');
-            const cage_id = document.getElementById('cage_id').value;
-
-            litterEntries.forEach(entry => {
-                const dom = entry.querySelector('[name="dom[]"]').value;
-                const litter_dob = entry.querySelector('[name="litter_dob[]"]').value;
-                const pups_alive = entry.querySelector('[name="pups_alive[]"]').value;
-                const pups_dead = entry.querySelector('[name="pups_dead[]"]').value;
-                const pups_male = entry.querySelector('[name="pups_male[]"]').value;
-                const pups_female = entry.querySelector('[name="pups_female[]"]').value;
-                const remarks = entry.querySelector('[name="remarks[]"]').value;
-
-                // Prepare data for AJAX request
-                const formData = new FormData();
-                formData.append('cage_id', cage_id);
-                formData.append('dom', dom);
-                formData.append('litter_dob', litter_dob);
-                formData.append('pups_alive', pups_alive);
-                formData.append('pups_dead', pups_dead);
-                formData.append('pups_male', pups_male);
-                formData.append('pups_female', pups_female);
-                formData.append('remarks', remarks);
-
-                // Send AJAX request
-                fetch('bc_add_litter.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            console.log(data.message);
-                        } else {
-                            console.error(data.message);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
         }
     </script>
 
@@ -508,7 +460,7 @@ require 'header.php';
 
                             <br>
 
-                            <button type="submit" class="btn btn-primary" onclick="submitLitterData()">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                             <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
                         </form>
