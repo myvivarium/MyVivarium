@@ -11,8 +11,9 @@ if (!isset($_SESSION['name'])) {
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
+    // Check if the form is submitted
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Retrieve form data
+        // Retrieve and sanitize form data
         $cage_id = $id; // Assuming $id is already sanitized
         $dom = $_POST['dom'];
         $litter_dob = $_POST['litter_dob'] ?: NULL;
@@ -55,24 +56,38 @@ require 'header.php';
 <html lang="en">
 
 <head>
-
-    <script>
-        function goBack() {
-            window.history.back();
-            //window.location.href = 'specific_php_file.php';
-        }
-    </script>
-
     <title>Add New Litter Data | <?php echo htmlspecialchars($labName); ?></title>
 
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa; /* Light grey background */
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            margin-right: 10px;
+        }
+    </style>
 </head>
 
 <body>
 
     <div class="container mt-4">
-        <h4>Add New Litter Data
-            <?= $id ?>
-        </h4>
+        <h4>Add New Litter Data for Cage <?= htmlspecialchars($id) ?></h4>
 
         <?php include('message.php'); ?>
 
@@ -110,18 +125,29 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="remarks" class="form-label">Remarks</label>
-                <input type="text" class="form-control" id="remarks" name="remarks">
+                <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary">Add Data</button>
-            <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
+            <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
         </form>
-
     </div>
 
     <br>
     <?php include 'footer.php'; ?>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function adjustTextareaHeight(element) {
+            element.style.height = "auto";
+            element.style.height = (element.scrollHeight) + "px";
+        }
+    </script>
+
 </body>
 
 </html>
