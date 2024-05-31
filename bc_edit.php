@@ -112,8 +112,20 @@ if (isset($_GET['id'])) {
             $pups_male = $_POST['pups_male'];
             $pups_female = $_POST['pups_female'];
             $remarks_litter = $_POST['remarks_litter'];
+            $delete_litter_ids = $_POST['delete_litter_ids'];
 
-            // Prepare and execute litter data insert query for each litter entry
+            // Delete marked litter entries
+            if (!empty($delete_litter_ids)) {
+                $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
+                foreach ($delete_litter_ids as $delete_litter_id) {
+                    $delete_litter_id = mysqli_real_escape_string($con, $delete_litter_id);
+                    $deleteLitterQuery->bind_param("s", $delete_litter_id);
+                    $deleteLitterQuery->execute();
+                }
+                $deleteLitterQuery->close();
+            }
+
+            // Prepare and execute litter data insert/update query for each litter entry
             for ($i = 0; $i < count($dom); $i++) {
                 $dom_i = mysqli_real_escape_string($con, $dom[$i]);
                 $litter_dob_i = mysqli_real_escape_string($con, $litter_dob[$i]);
@@ -123,10 +135,18 @@ if (isset($_GET['id'])) {
                 $pups_female_i = mysqli_real_escape_string($con, $pups_female[$i]);
                 $remarks_litter_i = mysqli_real_escape_string($con, $remarks_litter[$i]);
 
-                $insertLitterQuery = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                $insertLitterQuery->bind_param("ssssssss", $cage_id, $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i);
-                $insertLitterQuery->execute();
-                $insertLitterQuery->close();
+                if (isset($_POST['litter_id'][$i])) {
+                    $litter_id_i = mysqli_real_escape_string($con, $_POST['litter_id'][$i]);
+                    $updateLitterQuery = $con->prepare("UPDATE bc_litter SET `dom` = ?, `litter_dob` = ?, `pups_alive` = ?, `pups_dead` = ?, `pups_male` = ?, `pups_female` = ?, `remarks` = ? WHERE `id` = ?");
+                    $updateLitterQuery->bind_param("ssssssss", $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i, $litter_id_i);
+                    $updateLitterQuery->execute();
+                    $updateLitterQuery->close();
+                } else {
+                    $insertLitterQuery = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                    $insertLitterQuery->bind_param("ssssssss", $cage_id, $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i);
+                    $insertLitterQuery->execute();
+                    $insertLitterQuery->close();
+                }
             }
 
             header("Location: bc_dash.php");
@@ -194,6 +214,7 @@ require 'header.php';
                     <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
                     <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
                 </div>
+                <input type="hidden" name="litter_id[]" value="">
                 <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
             `;
 
@@ -201,7 +222,13 @@ require 'header.php';
         }
 
         function removeLitter(element) {
-            element.parentElement.remove();
+            const litterEntry = element.parentElement;
+            const litterId = litterEntry.querySelector('input[name="litter_id[]"]').value;
+            if (litterId) {
+                const deleteLitterIds = document.getElementById('delete_litter_ids');
+                deleteLitterIds.value += litterId + ',';
+            }
+            litterEntry.remove();
         }
     </script>
 
@@ -452,10 +479,12 @@ require 'header.php';
                                                 <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
                                                 <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks']); ?></textarea>
                                             </div>
+                                            <input type="hidden" name="litter_id[]" value="<?= htmlspecialchars($litter['id']); ?>">
                                             <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
                                         </div>
                                     <?php endwhile; ?>
                                 </div>
+                                <input type="hidden" id="delete_litter_ids" name="delete_litter_ids[]" value="">
                             </div>
 
                             <br>
