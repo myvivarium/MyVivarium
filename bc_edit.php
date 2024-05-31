@@ -2,6 +2,21 @@
 session_start();
 require 'dbcon.php';
 
+// Regenerate session ID to prevent session fixation
+session_regenerate_id(true);
+
+// Check if the user is logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// CSRF token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+
 // Redirect to index.php if the user is not logged in
 if (!isset($_SESSION['name'])) {
     header("Location: index.php");
@@ -33,6 +48,11 @@ if (isset($_GET['id'])) {
 
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                die('CSRF token validation failed');
+            }
+
             // Retrieve and sanitize form data
             $cage_id = mysqli_real_escape_string($con, $_POST['cage_id']);
             $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
