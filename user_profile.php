@@ -145,10 +145,6 @@ require 'header.php';
             cursor: pointer;
         }
 
-        .btn1:hover {
-            background-color: #0056b3;
-        }
-
         .result-message {
             text-align: center;
             margin-top: 15px;
@@ -193,7 +189,7 @@ require 'header.php';
             <button type="submit" class="btn1 btn-primary" name="update_profile">Update Profile</button>
         </form>
         <br>
-        
+        <br>
         <h2>Request Password Change</h2>
         <form method="POST" action="">
             <div class="form-group">
