@@ -210,8 +210,6 @@ require 'header.php';
 
                             </div>
 
-                            <?php include 'bcltr_dash.php'; ?>
-
                             <!-- Separator -->
                             <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
 
@@ -270,6 +268,9 @@ require 'header.php';
 
                         </form>
                     </div>
+
+                    <?php include 'bcltr_dash.php'; ?>
+                    
                 </div>
             </div>
         </div>
