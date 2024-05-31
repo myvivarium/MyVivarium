@@ -15,7 +15,6 @@ if (isset($_GET['id'])) {
 }
 ?>
 
-<!-- Start of the HTML -->
 <!doctype html>
 <html lang="en">
 
@@ -32,13 +31,15 @@ if (isset($_GET['id'])) {
 
         .container {
             max-width: 800px;
-            margin: auto;
+            background-color: lightgrey;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
         }
 
         .table-wrapper {
             margin-bottom: 50px;
             overflow-x: auto;
-            /* Enable horizontal scrolling on small screens */
         }
 
         .table-wrapper table {
@@ -53,10 +54,6 @@ if (isset($_GET['id'])) {
             text-align: left;
         }
 
-        .btn-sm {
-            margin-right: 5px;
-        }
-
         .btn-icon {
             width: 30px;
             height: 30px;
@@ -64,6 +61,7 @@ if (isset($_GET['id'])) {
             align-items: center;
             justify-content: center;
             padding: 0;
+            margin-left: 10px;
         }
 
         .btn-icon i {
@@ -76,7 +74,6 @@ if (isset($_GET['id'])) {
         }
 
         @media (max-width: 768px) {
-
             .table-wrapper th,
             .table-wrapper td {
                 padding: 12px 8px;
@@ -95,12 +92,10 @@ if (isset($_GET['id'])) {
         <div class="card">
             <!-- Breeding Cage Header -->
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4>Litter Details for the Cage <?= htmlspecialchars($id) ?>
-                    <div class="action-icons">
-                        <a href="bc_addn.php" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Cage">
-                            <i class="fas fa-plus"></i>
-                        </a>
-                    </div>
+                <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
+                    <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
+                        <i class="fas fa-plus"></i>
+                    </a>
                 </h4>
             </div>
 
@@ -155,7 +150,6 @@ if (isset($_GET['id'])) {
             </div>
         </div>
     </div>
-
 </body>
 
 </html>
