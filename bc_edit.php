@@ -105,54 +105,17 @@ if (isset($_GET['id'])) {
                 $_SESSION['message'] = "File upload error: " . $_FILES['fileUpload']['error'];
             }
 
-            if (isset($_POST['dom'])) {
-                $dom = $_POST['dom'];
-            } else {
-                $dom = [];
-            }
-            
-            if (isset($_POST['litter_dob'])) {
-                $litter_dob = $_POST['litter_dob'];
-            } else {
-                $litter_dob = [];
-            }
-            
-            if (isset($_POST['pups_alive'])) {
-                $pups_alive = $_POST['pups_alive'];
-            } else {
-                $pups_alive = [];
-            }
-            
-            if (isset($_POST['pups_dead'])) {
-                $pups_dead = $_POST['pups_dead'];
-            } else {
-                $pups_dead = [];
-            }
-            
-            if (isset($_POST['pups_male'])) {
-                $pups_male = $_POST['pups_male'];
-            } else {
-                $pups_male = [];
-            }
-            
-            if (isset($_POST['pups_female'])) {
-                $pups_female = $_POST['pups_female'];
-            } else {
-                $pups_female = [];
-            }
-            
-            if (isset($_POST['remarks_litter'])) {
-                $remarks_litter = $_POST['remarks_litter'];
-            } else {
-                $remarks_litter = [];
-            }
-            
-            if (isset($_POST['litter_id'])) {
-                $litter_id = $_POST['litter_id'];
-            } else {
-                $litter_id = [];
-            }
-            
+            // Initialize arrays
+            $dom = isset($_POST['dom']) ? $_POST['dom'] : [];
+            $litter_dob = isset($_POST['litter_dob']) ? $_POST['litter_dob'] : [];
+            $pups_alive = isset($_POST['pups_alive']) ? $_POST['pups_alive'] : [];
+            $pups_dead = isset($_POST['pups_dead']) ? $_POST['pups_dead'] : [];
+            $pups_male = isset($_POST['pups_male']) ? $_POST['pups_male'] : [];
+            $pups_female = isset($_POST['pups_female']) ? $_POST['pups_female'] : [];
+            $remarks_litter = isset($_POST['remarks_litter']) ? $_POST['remarks_litter'] : [];
+            $litter_id = isset($_POST['litter_id']) ? $_POST['litter_id'] : [];
+            $delete_litter_ids = isset($_POST['delete_litter_ids']) ? $_POST['delete_litter_ids'] : [];
+
             // Process litter data
             if (count($dom) > 0) {
                 for ($i = 0; $i < count($dom); $i++) {
@@ -164,7 +127,7 @@ if (isset($_GET['id'])) {
                     $pups_female_i = mysqli_real_escape_string($con, $pups_female[$i]);
                     $remarks_litter_i = mysqli_real_escape_string($con, $remarks_litter[$i]);
                     $litter_id_i = mysqli_real_escape_string($con, $litter_id[$i]);
-            
+
                     if (!empty($litter_id_i)) {
                         // Update existing litter entry
                         $updateLitterQuery = $con->prepare("UPDATE bc_litter SET `dom` = ?, `litter_dob` = ?, `pups_alive` = ?, `pups_dead` = ?, `pups_male` = ?, `pups_female` = ?, `remarks` = ? WHERE `id` = ?");
@@ -180,11 +143,9 @@ if (isset($_GET['id'])) {
                     }
                 }
             }
-            
+
             // Handle deleted litter entries
-            if (isset($_POST['delete_litter_ids'])) {
-                $delete_litter_ids = $_POST['delete_litter_ids'];
-            
+            if (count($delete_litter_ids) > 0) {
                 foreach ($delete_litter_ids as $delete_litter_id) {
                     if (!empty($delete_litter_id)) {
                         $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
@@ -194,7 +155,6 @@ if (isset($_GET['id'])) {
                     }
                 }
             }
-            
 
             header("Location: bc_dash.php");
             exit();
@@ -268,10 +228,9 @@ require 'header.php';
             document.getElementById('litterEntries').appendChild(litterDiv);
         }
 
-
         function removeLitter(element) {
             const litterEntry = element.parentElement;
-            const litterIdInput = litterEntry.querySelector('input[name="litter_id[]"]');
+            const litterIdInput = litterEntry.querySelector('[name="litter_id[]"]');
 
             if (litterIdInput && litterIdInput.value) {
                 const deleteLitterIdsInput = document.getElementById('delete_litter_ids');
