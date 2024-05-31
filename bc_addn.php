@@ -81,6 +81,11 @@ require 'header.php';
         function goBack() {
             window.history.back();
         }
+
+        function adjustTextareaHeight(element) {
+            element.style.height = "auto";
+            element.style.height = (element.scrollHeight) + "px";
+        }
     </script>
 </head>
 
@@ -148,7 +153,7 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="remarks" class="form-label">Remarks</label>
-                <input type="text" class="form-control" id="remarks" name="remarks">
+                <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary">Add Cage</button>
