@@ -259,7 +259,10 @@ require 'header.php';
                     </div>
                 </div>
                 <br>
-                <?php include 'bcltr_dash.php?view=yes'; ?>
+                <?php
+                    $_GET['view'] = 'yes';
+                    include 'bcltr_dash.php';
+                ?>
             </div>
         </div>
 
