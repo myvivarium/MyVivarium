@@ -341,8 +341,15 @@ require 'header.php';
 
                             <br>
 
-                            <!-- Litter Details Section -->
-                            <div class="card mt-4">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
+
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Litter Details Section -->
+                <div class="card mt-4">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
                                         <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
@@ -402,15 +409,7 @@ require 'header.php';
                                 </div>
 
                             </div>
-
-                            <br>
-
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                            <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
-
-                        </form>
-                    </div>
-                </div>
+                            
             </div>
         </div>
     </div>
