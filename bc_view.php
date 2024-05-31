@@ -2,12 +2,20 @@
 session_start();
 require 'dbcon.php';
 
-// Check if the user is not logged in, redirect them to index.php with a redirect parameter
+// Check if the user is not logged in, redirect them to index.php
 if (!isset($_SESSION['name'])) {
     $currentUrl = urlencode($_SERVER['REQUEST_URI']);
     header("Location: index.php?redirect=$currentUrl");
     exit;
 }
+
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Query to retrieve options where role is 'PI'
+$query1 = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
+$result1 = $con->query($query1);
 
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
@@ -42,6 +50,12 @@ require 'header.php';
 <html lang="en">
 
 <head>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
     <title>View Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
@@ -102,6 +116,7 @@ require 'header.php';
                 <div class="card">
                     <div class="card-header">
                         <h4>View Breeding Cage <?= htmlspecialchars($breedingcage['cage_id']); ?></h4>
+                        <button class="btn btn-outline-primary float-end" onclick="goBack()"><i class="fas fa-arrow-left"></i> Go Back</button>
                     </div>
                     <br>
                     <div class="table-wrapper">
@@ -172,7 +187,7 @@ require 'header.php';
 
                                                 echo "<tr>";
                                                 echo "<td>$file_name</td>";
-                                                echo "<td><a href='$file_path' download='$file_name' class='btn btn-sm btn-outline-primary'> <i class='fas fa-cloud-download-alt fa-sm'></i></a></td>";
+                                                echo "<td><a href='$file_path' download='$file_name' class='btn btn-sm btn-outline-primary'><i class='fas fa-cloud-download-alt'></i></a></td>";
                                                 echo "</tr>";
                                             }
                                             ?>
