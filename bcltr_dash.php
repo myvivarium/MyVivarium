@@ -34,8 +34,8 @@ $viewMode = isset($_GET['view']) && $_GET['view'] === 'yes';
 
         .container {
             max-width: 800px;
-            padding: 0 auto;
-            margin: 0 auto;
+            padding: 0;
+            margin: 0;
         }
 
         .table-wrapper {
@@ -85,70 +85,76 @@ $viewMode = isset($_GET['view']) && $_GET['view'] === 'yes';
 </head>
 
 <body>
-    <div class="container mt-4">
-        <!-- Breeding Cage Header -->
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
-                <?php if (!$viewMode) : ?>
-                    <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
-                        <i class="fas fa-plus"></i>
-                    </a>
-                <?php endif; ?>
-            </h4>
-        </div>
+    <?php if (!$viewMode) : ?>
+        <div class="container mt-4">
+            <div class="card">
+            <?php endif; ?>
+            <!-- Breeding Cage Header -->
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
+                    <?php if (!$viewMode) : ?>
+                        <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    <?php endif; ?>
+                </h4>
+            </div>
 
-        <div class="card-body">
-            <?php while ($litter = mysqli_fetch_assoc($result)) { ?>
-                <div class="table-wrapper">
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <th>DOM</th>
-                                <td><?= htmlspecialchars($litter['dom'] ?? '') ?></td>
-                            </tr>
-                            <tr>
-                                <th>Litter DOB</th>
-                                <td><?= htmlspecialchars($litter['litter_dob'] ?? '') ?></td>
-                            </tr>
-                            <tr>
-                                <th>Pups Alive</th>
-                                <td><?= htmlspecialchars($litter['pups_alive'] ?? '') ?></td>
-                            </tr>
-                            <tr>
-                                <th>Pups Dead</th>
-                                <td><?= htmlspecialchars($litter['pups_dead'] ?? '') ?></td>
-                            </tr>
-                            <tr>
-                                <th>Pups Male</th>
-                                <td><?= htmlspecialchars($litter['pups_male'] ?? '') ?></td>
-                            </tr>
-                            <tr>
-                                <th>Pups Female</th>
-                                <td><?= htmlspecialchars($litter['pups_female'] ?? '') ?></td>
-                            </tr>
-                            <tr>
-                                <th>Remarks</th>
-                                <td><?= htmlspecialchars($litter['remarks'] ?? '') ?></td>
-                            </tr>
-                            <?php if (!$viewMode) : ?>
+            <div class="card-body">
+                <?php while ($litter = mysqli_fetch_assoc($result)) { ?>
+                    <div class="table-wrapper">
+                        <table class="table table-bordered">
+                            <tbody>
                                 <tr>
-                                    <th>Action</th>
-                                    <td>
-                                        <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-secondary btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Litter Data">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                        <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-danger btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Litter Data" onclick="return confirm('Are you sure you want to delete this record?');">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </td>
+                                    <th>DOM</th>
+                                    <td><?= htmlspecialchars($litter['dom'] ?? '') ?></td>
                                 </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php } ?>
+                                <tr>
+                                    <th>Litter DOB</th>
+                                    <td><?= htmlspecialchars($litter['litter_dob'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Pups Alive</th>
+                                    <td><?= htmlspecialchars($litter['pups_alive'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Pups Dead</th>
+                                    <td><?= htmlspecialchars($litter['pups_dead'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Pups Male</th>
+                                    <td><?= htmlspecialchars($litter['pups_male'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Pups Female</th>
+                                    <td><?= htmlspecialchars($litter['pups_female'] ?? '') ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Remarks</th>
+                                    <td><?= htmlspecialchars($litter['remarks'] ?? '') ?></td>
+                                </tr>
+                                <?php if (!$viewMode) : ?>
+                                    <tr>
+                                        <th>Action</th>
+                                        <td>
+                                            <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-secondary btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Litter Data">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-danger btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Litter Data" onclick="return confirm('Are you sure you want to delete this record?');">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php } ?>
+            </div>
+            <?php if (!$viewMode) : ?>
+            </div>
         </div>
-    </div>
+    <?php endif; ?>
 </body>
 
 </html>
