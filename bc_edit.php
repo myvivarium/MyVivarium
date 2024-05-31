@@ -105,52 +105,96 @@ if (isset($_GET['id'])) {
                 $_SESSION['message'] = "File upload error: " . $_FILES['fileUpload']['error'];
             }
 
-            // Handle litter data
-            $dom = $_POST['dom'];
-            $litter_dob = $_POST['litter_dob'];
-            $pups_alive = $_POST['pups_alive'];
-            $pups_dead = $_POST['pups_dead'];
-            $pups_male = $_POST['pups_male'];
-            $pups_female = $_POST['pups_female'];
-            $remarks_litter = $_POST['remarks_litter'];
-            $litter_id = $_POST['litter_id'];
-            $delete_litter_ids = isset($_POST['delete_litter_ids']) ? $_POST['delete_litter_ids'] : [];
-
-            // Delete marked litter entries
-            foreach ($delete_litter_ids as $delete_litter_id) {
-                if (!empty($delete_litter_id)) {
-                    $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
-                    $deleteLitterQuery->bind_param("s", $delete_litter_id);
-                    $deleteLitterQuery->execute();
-                    $deleteLitterQuery->close();
+            if (isset($_POST['dom'])) {
+                $dom = $_POST['dom'];
+            } else {
+                $dom = [];
+            }
+            
+            if (isset($_POST['litter_dob'])) {
+                $litter_dob = $_POST['litter_dob'];
+            } else {
+                $litter_dob = [];
+            }
+            
+            if (isset($_POST['pups_alive'])) {
+                $pups_alive = $_POST['pups_alive'];
+            } else {
+                $pups_alive = [];
+            }
+            
+            if (isset($_POST['pups_dead'])) {
+                $pups_dead = $_POST['pups_dead'];
+            } else {
+                $pups_dead = [];
+            }
+            
+            if (isset($_POST['pups_male'])) {
+                $pups_male = $_POST['pups_male'];
+            } else {
+                $pups_male = [];
+            }
+            
+            if (isset($_POST['pups_female'])) {
+                $pups_female = $_POST['pups_female'];
+            } else {
+                $pups_female = [];
+            }
+            
+            if (isset($_POST['remarks_litter'])) {
+                $remarks_litter = $_POST['remarks_litter'];
+            } else {
+                $remarks_litter = [];
+            }
+            
+            if (isset($_POST['litter_id'])) {
+                $litter_id = $_POST['litter_id'];
+            } else {
+                $litter_id = [];
+            }
+            
+            // Process litter data
+            if (count($dom) > 0) {
+                for ($i = 0; $i < count($dom); $i++) {
+                    $dom_i = mysqli_real_escape_string($con, $dom[$i]);
+                    $litter_dob_i = mysqli_real_escape_string($con, $litter_dob[$i]);
+                    $pups_alive_i = mysqli_real_escape_string($con, $pups_alive[$i]);
+                    $pups_dead_i = mysqli_real_escape_string($con, $pups_dead[$i]);
+                    $pups_male_i = mysqli_real_escape_string($con, $pups_male[$i]);
+                    $pups_female_i = mysqli_real_escape_string($con, $pups_female[$i]);
+                    $remarks_litter_i = mysqli_real_escape_string($con, $remarks_litter[$i]);
+                    $litter_id_i = mysqli_real_escape_string($con, $litter_id[$i]);
+            
+                    if (!empty($litter_id_i)) {
+                        // Update existing litter entry
+                        $updateLitterQuery = $con->prepare("UPDATE bc_litter SET `dom` = ?, `litter_dob` = ?, `pups_alive` = ?, `pups_dead` = ?, `pups_male` = ?, `pups_female` = ?, `remarks` = ? WHERE `id` = ?");
+                        $updateLitterQuery->bind_param("ssssssss", $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i, $litter_id_i);
+                        $updateLitterQuery->execute();
+                        $updateLitterQuery->close();
+                    } else {
+                        // Insert new litter entry
+                        $insertLitterQuery = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                        $insertLitterQuery->bind_param("ssssssss", $cage_id, $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i);
+                        $insertLitterQuery->execute();
+                        $insertLitterQuery->close();
+                    }
                 }
             }
-
-            // Prepare and execute litter data insert or update query for each litter entry
-            for ($i = 0; $i < count($dom); $i++) {
-                $dom_i = mysqli_real_escape_string($con, $dom[$i]);
-                $litter_dob_i = mysqli_real_escape_string($con, $litter_dob[$i]);
-                $pups_alive_i = mysqli_real_escape_string($con, $pups_alive[$i]);
-                $pups_dead_i = mysqli_real_escape_string($con, $pups_dead[$i]);
-                $pups_male_i = mysqli_real_escape_string($con, $pups_male[$i]);
-                $pups_female_i = mysqli_real_escape_string($con, $pups_female[$i]);
-                $remarks_litter_i = mysqli_real_escape_string($con, $remarks_litter[$i]);
-                $litter_id_i = mysqli_real_escape_string($con, $litter_id[$i]);
-
-                if (!empty($litter_id_i)) {
-                    // Update existing litter entry
-                    $updateLitterQuery = $con->prepare("UPDATE bc_litter SET `dom` = ?, `litter_dob` = ?, `pups_alive` = ?, `pups_dead` = ?, `pups_male` = ?, `pups_female` = ?, `remarks` = ? WHERE id = ?");
-                    $updateLitterQuery->bind_param("ssssssss", $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i, $litter_id_i);
-                    $updateLitterQuery->execute();
-                    $updateLitterQuery->close();
-                } else {
-                    // Insert new litter entry
-                    $insertLitterQuery = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                    $insertLitterQuery->bind_param("ssssssss", $cage_id, $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i);
-                    $insertLitterQuery->execute();
-                    $insertLitterQuery->close();
+            
+            // Handle deleted litter entries
+            if (isset($_POST['delete_litter_ids'])) {
+                $delete_litter_ids = $_POST['delete_litter_ids'];
+            
+                foreach ($delete_litter_ids as $delete_litter_id) {
+                    if (!empty($delete_litter_id)) {
+                        $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
+                        $deleteLitterQuery->bind_param("s", $delete_litter_id);
+                        $deleteLitterQuery->execute();
+                        $deleteLitterQuery->close();
+                    }
                 }
             }
+            
 
             header("Location: bc_dash.php");
             exit();
