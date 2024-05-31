@@ -65,6 +65,41 @@ if (isset($_GET['id'])) {
             background-color: #f2f2f2;
         }
 
+        .table-fixed th:nth-child(1),
+        .table-fixed td:nth-child(1) {
+            width: 20%;
+        }
+
+        .table-fixed th:nth-child(2),
+        .table-fixed td:nth-child(2) {
+            width: 20%;
+        }
+
+        .table-fixed th:nth-child(3),
+        .table-fixed td:nth-child(3) {
+            width: 10%;
+        }
+
+        .table-fixed th:nth-child(4),
+        .table-fixed td:nth-child(4) {
+            width: 10%;
+        }
+
+        .table-fixed th:nth-child(5),
+        .table-fixed td:nth-child(5) {
+            width: 10%;
+        }
+
+        .table-fixed th:nth-child(6),
+        .table-fixed td:nth-child(6) {
+            width: 10%;
+        }
+
+        .table-fixed th:nth-child(7),
+        .table-fixed td:nth-child(7) {
+            width: 20%;
+        }
+
         .btn-back,
         .btn-logout {
             padding: 10px 20px;
@@ -121,7 +156,7 @@ if (isset($_GET['id'])) {
                         while ($litter = mysqli_fetch_assoc($result)) {
                             ?>
                             <div class="table-wrapper">
-                                <table class="table table-bordered" id="mouseTable">
+                                <table class="table table-bordered table-fixed" id="mouseTable">
                                     <thead>
                                         <tr>
                                             <th>DOM</th>
