@@ -20,12 +20,12 @@ $stmt->close();
 
 // Handle form submission for profile update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
-    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    $fullName = filter_input(INPUT_POST, 'full_name', FILTER_SANITIZE_STRING);
+    $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_EMAIL);
+    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
 
-    $updateQuery = "UPDATE users SET email = ?, full_name = ? WHERE username = ?";
+    $updateQuery = "UPDATE users SET name = ? WHERE username = ?";
     $updateStmt = $con->prepare($updateQuery);
-    $updateStmt->bind_param("sss", $email, $fullName, $username);
+    $updateStmt->bind_param("sss", $username, $name);
     $updateStmt->execute();
     $updateStmt->close();
 
@@ -99,7 +99,7 @@ require 'header.php';
         <form method="POST" action="forgot_password.php">
             <div class="form-group">
                 <label for="reset_email">Email Address</label>
-                <input type="email" class="form-control" id="reset_email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                <input type="email" class="form-control" id="reset_email" name="email" value="<?php echo htmlspecialchars($user['username']); ?>" required>
             </div>
             <button type="submit" class="btn btn-warning" name="reset">Request Password Change</button>
         </form>
