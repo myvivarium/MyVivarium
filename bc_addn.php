@@ -26,13 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $female_dob = $_POST['female_dob'];
     $remarks = $_POST['remarks'];
 
-    // Check if the cage_id already exists
-    $check_query = $con->prepare("SELECT * FROM bc_basic WHERE cage_id = ?");
-    $check_query->bind_param("s", $cage_id);
-    $check_query->execute();
-    $check_result = $check_query->get_result();
+    // Check if the cage_id already exists in either bc_basic or hc_basic
+    $check_query_bc = $con->prepare("SELECT * FROM bc_basic WHERE cage_id = ?");
+    $check_query_bc->bind_param("s", $cage_id);
+    $check_query_bc->execute();
+    $check_result_bc = $check_query_bc->get_result();
 
-    if ($check_result->num_rows > 0) {
+    $check_query_hc = $con->prepare("SELECT * FROM hc_basic WHERE cage_id = ?");
+    $check_query_hc->bind_param("s", $cage_id);
+    $check_query_hc->execute();
+    $check_result_hc = $check_query_hc->get_result();
+
+    if ($check_result_bc->num_rows > 0 || $check_result_hc->num_rows > 0) {
         $_SESSION['error'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
     } else {
         // Prepare the insert query with placeholders
@@ -52,8 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $insert_query->close();
     }
 
-    // Close the check query prepared statement
-    $check_query->close();
+    // Close the check query prepared statements
+    $check_query_bc->close();
+    $check_query_hc->close();
 
     // Redirect back to the main page
     header("Location: bc_dash.php");
