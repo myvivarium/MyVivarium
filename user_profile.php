@@ -2,6 +2,7 @@
 session_start();
 require 'dbcon.php';
 require 'config.php';
+require 'header.php';
 require 'vendor/autoload.php'; // Include PHPMailer autoload file
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -115,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         $updateStmt->close();
     }
 }
-require 'header.php';
+
 ?>
 
 <!DOCTYPE html>
