@@ -34,7 +34,7 @@ if (isset($_GET['id'])) {
             $remarks = $_POST['remarks'];
 
             // Check if litter_dob is provided
-            $litter_dob_provided = !empty($_POST['litter_dob']);
+            $litter_dob_provided = !empty($litter_dob);
 
             // Prepare the update query with placeholders
             $updateQuery = $con->prepare("UPDATE bc_litter SET
@@ -62,8 +62,10 @@ if (isset($_GET['id'])) {
                 $_SESSION['error'] = 'Update failed: ' . $updateQuery->error;
             }
 
+            // Close the prepared statement
             $updateQuery->close();
 
+            // Redirect back to the main page
             header("Location: bc_view.php?id=" . rawurlencode($cage_id));
             exit();
         }
@@ -75,10 +77,9 @@ if (isset($_GET['id'])) {
     $query->close();
 } else {
     $_SESSION['message'] = 'ID parameter is missing.';
-    header("Location: bc_view.php?id=" . rawurlencode($cage_id));
+    header("Location: bc_view.php");
     exit();
 }
-
 
 require 'header.php';
 ?>
@@ -87,75 +88,94 @@ require 'header.php';
 <html lang="en">
 
 <head>
+    <title>Edit Litter Data | <?php echo htmlspecialchars($labName); ?></title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            margin-right: 10px;
+        }
+    </style>
+
     <script>
         function goBack() {
             window.history.back();
-            //window.location.href = 'specific_php_file.php';
+        }
+
+        function adjustTextareaHeight(element) {
+            element.style.height = "auto";
+            element.style.height = (element.scrollHeight) + "px";
         }
     </script>
-
-    <title>Edit Litter Data | <?php echo htmlspecialchars($labName); ?></title>
-
 </head>
 
 <body>
 
     <div class="container mt-4">
-
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
                         <h4>Edit Litter Data</h4>
                     </div>
-
                     <div class="card-body">
-                        <form method="POST" action="bcltr_edit.php?id=<?= $id; ?>">
+                        <form method="POST" action="bcltr_edit.php?id=<?= htmlspecialchars($id); ?>">
 
                             <div class="mb-3">
                                 <label for="dom" class="form-label">DOM</label>
-                                <input type="date" class="form-control" id="dom" name="dom"
-                                    value="<?= $breedingcage['dom']; ?>" required>
+                                <input type="date" class="form-control" id="dom" name="dom" value="<?= htmlspecialchars($breedingcage['dom']); ?>" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="litter_dob" class="form-label">Litter DOB</label>
-                                <input type="date" class="form-control" id="litter_dob" name="litter_dob"
-                                    value="<?= $breedingcage['litter_dob']; ?>">
+                                <input type="date" class="form-control" id="litter_dob" name="litter_dob" value="<?= htmlspecialchars($breedingcage['litter_dob']); ?>">
                             </div>
 
                             <div class="mb-3">
                                 <label for="pups_alive" class="form-label">Pups Alive</label>
-                                <input type="number" class="form-control" id="pups_alive" name="pups_alive"
-                                    value="<?= $breedingcage['pups_alive']; ?>" required min="0" step="1">
+                                <input type="number" class="form-control" id="pups_alive" name="pups_alive" value="<?= htmlspecialchars($breedingcage['pups_alive']); ?>" required min="0" step="1">
                             </div>
 
                             <div class="mb-3">
                                 <label for="pups_dead" class="form-label">Pups Dead</label>
-                                <input type="number" class="form-control" id="pups_dead" name="pups_dead"
-                                    value="<?= $breedingcage['pups_dead']; ?>" required min="0" step="1">
+                                <input type="number" class="form-control" id="pups_dead" name="pups_dead" value="<?= htmlspecialchars($breedingcage['pups_dead']); ?>" required min="0" step="1">
                             </div>
 
                             <div class="mb-3">
                                 <label for="pups_male" class="form-label">Pups Male</label>
-                                <input type="number" class="form-control" id="pups_male" name="pups_male"
-                                    value="<?= $breedingcage['pups_male']; ?>" required min="0" step="1">
+                                <input type="number" class="form-control" id="pups_male" name="pups_male" value="<?= htmlspecialchars($breedingcage['pups_male']); ?>" required min="0" step="1">
                             </div>
 
                             <div class="mb-3">
                                 <label for="pups_female" class="form-label">Pups Female</label>
-                                <input type="number" class="form-control" id="pups_female" name="pups_female"
-                                    value="<?= $breedingcage['pups_female']; ?>" required min="0" step="1">
+                                <input type="number" class="form-control" id="pups_female" name="pups_female" value="<?= htmlspecialchars($breedingcage['pups_female']); ?>" required min="0" step="1">
                             </div>
 
                             <div class="mb-3">
                                 <label for="remarks" class="form-label">Remarks</label>
-                                <input type="text" class="form-control" id="remarks" name="remarks"
-                                    value="<?= $breedingcage['remarks']; ?>">
+                                <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)" value="<?= htmlspecialchars($breedingcage['remarks']); ?>"></textarea>
+
                             </div>
 
                             <button type="submit" class="btn btn-primary">Save Changes</button>
-                            <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
+                            <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
                         </form>
                     </div>
