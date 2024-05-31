@@ -9,6 +9,10 @@ if (!isset($_SESSION['name'])) {
     exit;
 }
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -78,7 +82,6 @@ require 'header.php';
         function goBack() {
             window.history.back();
         }
-
     </script>
 
     <style>

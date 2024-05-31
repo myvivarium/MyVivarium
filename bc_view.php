@@ -13,10 +13,6 @@ if (!isset($_SESSION['name'])) {
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Query to retrieve options where role is 'PI'
-$query1 = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
-$result1 = $con->query($query1);
-
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -50,166 +46,228 @@ require 'header.php';
 <html lang="en">
 
 <head>
+
+    <title>View Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
+
     <script>
+        function showQrCodePopup(cageId) {
+            // Create the popup window
+            var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
+
+            // URL to generate the QR code image
+            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://myvivarium.online/bc_view.php?id=' + cageId;
+
+            // HTML content for the popup, including a dynamic title and the QR code image
+            var htmlContent = `
+            <html>
+            <head>
+                <title>QR Code for Cage ${cageId}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; text-align: center; padding-top: 40px; }
+                    h1 { color: #333; }
+                    img { margin-top: 20px; }
+                </style>
+            </head>
+            <body>
+                <h1>QR Code for Cage ${cageId}</h1>
+                <img src="${qrUrl}" alt="QR Code for Cage ${cageId}" />
+            </body>
+            </html>
+        `;
+
+            // Write the HTML content to the popup document
+            popup.document.write(htmlContent);
+            popup.document.close(); // Close the document for further writing
+        }
+
         function goBack() {
             window.history.back();
         }
     </script>
 
-    <title>View Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
         .container {
             max-width: 800px;
-            background-color: lightgrey;
+            background-color: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
+            margin: auto;
         }
 
         .table-wrapper {
             padding: 10px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .table-wrapper table {
             width: 100%;
-            border-collapse: collapse;
+            border: 1px solid #000;
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
         .table-wrapper th,
         .table-wrapper td {
-            border: 1px solid #ddd;
+            border: 1px solid gray;
             padding: 8px;
             text-align: left;
         }
 
-        .table-wrapper th {
-            background-color: #f2f2f2;
+        .table-wrapper th:nth-child(1),
+        .table-wrapper td:nth-child(1) {
+            width: 25%;
         }
 
-        .card {
+        .table-wrapper th:nth-child(2),
+        .table-wrapper td:nth-child(2) {
+            width: 25%;
+        }
+
+        .table-wrapper th:nth-child(3),
+        .table-wrapper td:nth-child(3) {
+            width: 50%;
+        }
+
+        span {
+            font-size: 12pt;
+            line-height: 1;
+            display: inline-block;
+        }
+
+        .note-app-container {
             margin-top: 20px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 8px;
         }
 
-        .btn {
-            margin-top: 10px;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .card-header h4 {
-            margin-bottom: 0;
-        }
-
-        .table-responsive {
-            margin-top: 20px;
+        .action-buttons {
+            display: flex;
+            gap: 10px;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
 
 <body>
 
     <div class="container mt-4">
-        <?php include('message.php'); ?>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
+        <div class="card">
+            <div class="card-header">
+                <h4>View Breeding Cage <?= htmlspecialchars($breedingcage['cage_id']); ?></h4>
+                <div class="action-buttons">
+                    <a href="javascript:void(0);" onclick="goBack()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
+                        <i class="fas fa-arrow-circle-left"></i>
+                    </a>
+                    <a href="bc_edit.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($breedingcage['cage_id']); ?>')" class="btn btn-success btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="QR Code">
+                        <i class="fas fa-qrcode"></i>
+                    </a>
+                    <a  href="javascript:void(0);" onclick="window.print()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage">
+                        <i class="fas fa-print"></i>
+                    </a>
+                    </button>
+                </div>
+            </div>
+            <br>
+            <div class="table-wrapper">
+                <table class="table table-bordered" id="mouseTable">
+                    <tr>
+                        <th>Cage #:</th>
+                        <td><?= htmlspecialchars($breedingcage['cage_id']); ?></td>
+                    </tr>
+                    <tr>
+                        <th>PI Name</th>
+                        <td><?= htmlspecialchars($breedingcage['pi_name']); ?></td>
+                    </tr>
+                    <tr>
+                        <th>Cross</th>
+                        <td><?= htmlspecialchars($breedingcage['cross']); ?></td>
+                    </tr>
+                    <tr>
+                        <th>IACUC</th>
+                        <td><?= htmlspecialchars($breedingcage['iacuc']); ?></td>
+                    </tr>
+                    <tr>
+                        <th>User</th>
+                        <td><?= htmlspecialchars($breedingcage['user']); ?></td>
+                    </tr>
+                    <tr>
+                        <th>Male ID</th>
+                        <td><?= htmlspecialchars($breedingcage['male_id']); ?></td>
+                    </tr>
+                    <tr>
+                        <th>Male DOB</th>
+                        <td><?= htmlspecialchars($breedingcage['male_dob']); ?></td>
+                    </tr>
+                    <tr>
+                        <th>Female ID</th>
+                        <td><?= htmlspecialchars($breedingcage['female_id']); ?></td>
+                    </tr>
+                    <tr>
+                        <th>Female DOB</th>
+                        <td><?= htmlspecialchars($breedingcage['female_dob']); ?></td>
+                    </tr>
+                    <tr>
+                        <th>Remarks</th>
+                        <td><?= htmlspecialchars($breedingcage['remarks']); ?></td>
+                    </tr>
+                </table>
+
+                <!-- Separator -->
+                <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
+
+                <!-- Display Files Section -->
+                <br>
+                <div class="card mt-4">
                     <div class="card-header">
-                        <h4>View Breeding Cage <?= htmlspecialchars($breedingcage['cage_id']); ?></h4>
-                        <button class="btn btn-outline-primary float-end" onclick="goBack()"><i class="fas fa-arrow-left"></i> Go Back</button>
+                        <h4>Manage Files</h4>
                     </div>
-                    <br>
-                    <div class="table-wrapper">
-                        <table class="table table-bordered" id="mouseTable">
-                            <tr>
-                                <th>Cage #:</th>
-                                <td><?= htmlspecialchars($breedingcage['cage_id']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>PI Name</th>
-                                <td><?= htmlspecialchars($breedingcage['pi_name']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Cross</th>
-                                <td><?= htmlspecialchars($breedingcage['cross']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>IACUC</th>
-                                <td><?= htmlspecialchars($breedingcage['iacuc']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>User</th>
-                                <td><?= htmlspecialchars($breedingcage['user']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Male ID</th>
-                                <td><?= htmlspecialchars($breedingcage['male_id']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Male DOB</th>
-                                <td><?= htmlspecialchars($breedingcage['male_dob']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Female ID</th>
-                                <td><?= htmlspecialchars($breedingcage['female_id']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Female DOB</th>
-                                <td><?= htmlspecialchars($breedingcage['female_dob']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Remarks</th>
-                                <td><?= htmlspecialchars($breedingcage['remarks']); ?></td>
-                            </tr>
-                        </table>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    while ($file = $files->fetch_assoc()) {
+                                        $file_path = htmlspecialchars($file['file_path']);
+                                        $file_name = htmlspecialchars($file['file_name']);
+                                        $file_id = intval($file['id']);
 
-                        <!-- Display Files Section -->
-                        <br>
-                        <div class="card mt-4">
-                            <div class="card-header">
-                                <h4>Manage Files</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>File Name</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            while ($file = $files->fetch_assoc()) {
-                                                $file_path = htmlspecialchars($file['file_path']);
-                                                $file_name = htmlspecialchars($file['file_name']);
-                                                $file_id = intval($file['id']);
-
-                                                echo "<tr>";
-                                                echo "<td>$file_name</td>";
-                                                echo "<td><a href='$file_path' download='$file_name' class='btn btn-sm btn-outline-primary'><i class='fas fa-cloud-download-alt'></i></a></td>";
-                                                echo "</tr>";
-                                            }
-                                            ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                                        echo "<tr>";
+                                        echo "<td>$file_name</td>";
+                                        echo "<td><a href='$file_path' download='$file_name' class='btn btn-sm btn-outline-primary'><i class='fas fa-cloud-download-alt'></i></a></td>";
+                                        echo "</tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
                         </div>
-                        <br>
-
-                        <?php include 'bcltr_dash.php'; ?>
                     </div>
                 </div>
+                <br>
+                <?php include 'bcltr_dash.php'; ?>
             </div>
         </div>
 
-        <div style="text-align: center;">
-            <a href="bc_dash.php" class="btn btn-secondary">Go Back</a>
-            <button class="btn btn-secondary" onclick="togglePopup()">Add Note</button>
+        <!-- Note App Highlight -->
+        <div class="note-app-container">
+            <?php include 'nt_app.php'; ?>
         </div>
-
-        <?php include 'nt_app.php'; ?>
     </div>
 
     <br>
