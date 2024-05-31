@@ -228,15 +228,14 @@ require 'header.php';
 
 
         function removeLitter(element) {
-    const litterEntry = element.parentElement;
-    const litterId = litterEntry.querySelector('input[name="litter_id[]"]').value;
-    if (litterId) {
-        const deleteLitterIds = document.getElementById('delete_litter_ids');
-        deleteLitterIds.value += litterId + ',';
-    }
-    litterEntry.remove();
-}
-
+            const litterEntry = element.parentElement;
+            const litterId = litterEntry.querySelector('input[name="litter_id[]"]').value;
+            if (litterId) {
+                const deleteLitterIds = document.getElementById('delete_litter_ids');
+                deleteLitterIds.value += litterId + ',';
+            }
+            litterEntry.remove();
+        }
     </script>
 
     <title>Edit Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
@@ -487,7 +486,7 @@ require 'header.php';
                                                 <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks']); ?></textarea>
                                             </div>
 
-                                            <input type="hidden" id="delete_litter_ids" name="delete_litter_ids" value="">
+                                            <input type="hidden" id="delete_litter_ids" name="delete_litter_ids[]" value="">
 
                                             <input type="hidden" name="litter_id[]" value="<?= htmlspecialchars($litter['id']); ?>">
                                             <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
