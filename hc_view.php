@@ -161,6 +161,9 @@ require 'header.php';
             <div class="card-header">
                 <h4>View Holding Cage <?= htmlspecialchars($holdingcage['cage_id']); ?></h4>
                 <div class="action-buttons">
+                    <a href="javascript:void(0);" onclick="goBack()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
+                        <i class="fas fa-qrcode"></i>
+                    </a>
                     <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage">
                         <i class="fas fa-edit"></i>
                     </a>
@@ -234,8 +237,6 @@ require 'header.php';
                     </table>
                 <?php endfor; ?>
             </div>
-
-            <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
             <!-- Separator -->
             <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
