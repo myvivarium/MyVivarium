@@ -116,9 +116,11 @@ if (isset($_GET['id'])) {
             $remarks_litter = $_POST['remarks_litter'];
             $litter_id = $_POST['litter_id'];
             $delete_litter_ids = isset($_POST['delete_litter_ids']) ? $_POST['delete_litter_ids'] : '';
+            echo $delete_litter_ids;
 
             // Delete marked litter entries
             $delete_litter_ids_array = is_string($delete_litter_ids) ? explode(',', rtrim($delete_litter_ids, ',')) : [];
+            echo $delete_litter_ids_array;
             foreach ($delete_litter_ids_array as $delete_litter_id) {
                 if (!empty($delete_litter_id)) {
                     $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
@@ -157,7 +159,7 @@ if (isset($_GET['id'])) {
 
 
 
-            header("Location: bc_dash.php");
+            //header("Location: bc_dash.php");
             exit();
         }
     } else {
