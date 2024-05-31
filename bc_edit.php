@@ -115,11 +115,10 @@ if (isset($_GET['id'])) {
             $pups_female = $_POST['pups_female'];
             $remarks_litter = $_POST['remarks_litter'];
             $litter_id = $_POST['litter_id'];
-            $delete_litter_ids = isset($_POST['delete_litter_ids']) ? $_POST['delete_litter_ids'] : '';
+            $delete_litter_ids = isset($_POST['delete_litter_ids']) ? $_POST['delete_litter_ids'] : [];
 
             // Delete marked litter entries
-            $delete_litter_ids_array = is_string($delete_litter_ids) ? explode(',', rtrim($delete_litter_ids, ',')) : [];
-            foreach ($delete_litter_ids_array as $delete_litter_id) {
+            foreach ($delete_litter_ids as $delete_litter_id) {
                 if (!empty($delete_litter_id)) {
                     $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
                     $deleteLitterQuery->bind_param("s", $delete_litter_id);
@@ -232,11 +231,13 @@ require 'header.php';
 
         function removeLitter(element) {
             const litterEntry = element.parentElement;
-            const litterId = litterEntry.querySelector('input[name="litter_id[]"]').value;
-            if (litterId) {
-                const deleteLitterIds = document.getElementById('delete_litter_ids');
-                deleteLitterIds.value += litterId + ',';
+            const litterIdInput = litterEntry.querySelector('input[name="litter_id[]"]');
+
+            if (litterIdInput && litterIdInput.value) {
+                const deleteLitterIdsInput = document.getElementById('delete_litter_ids');
+                deleteLitterIdsInput.value += litterIdInput.value + ',';
             }
+
             litterEntry.remove();
         }
     </script>
