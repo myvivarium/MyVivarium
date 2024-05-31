@@ -93,6 +93,10 @@ require 'header.php';
                 width: '100%'
             });
         });
+
+        function goBack() {
+            window.history.back();
+        }
     </script>
 </head>
 
@@ -111,7 +115,7 @@ require 'header.php';
             </div>
             <div class="btn-container">
                 <button type="submit" class="btn btn-primary btn-print" onclick="handleSubmit(event, 'bc_prnt_crd.php')">Print Cage Card</button>
-                <!--<button type="submit" class="btn btn-secondary btn-view" onclick="handleSubmit(event, 'hc_prnt_crd.php')">View Cage Card</button>-->
+                <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
             </div>
         </form>
     </div>
