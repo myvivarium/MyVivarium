@@ -73,8 +73,8 @@ if (isset($_GET['id'])) {
             $updateQuery->close();
 
             // Handle file upload
-            if (isset($_FILES['fileUpload'])) {
-                $targetDirectory = "uploads/$cage_id/"; // Modify the target directory
+            if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
+                $targetDirectory = "uploads/$cage_id/";
 
                 // Create the cage_id specific sub-directory if it doesn't exist
                 if (!file_exists($targetDirectory)) {
@@ -83,7 +83,6 @@ if (isset($_GET['id'])) {
 
                 $originalFileName = basename($_FILES['fileUpload']['name']);
                 $targetFilePath = $targetDirectory . $originalFileName;
-                $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
 
                 // Check if file already exists
                 if (!file_exists($targetFilePath)) {
@@ -102,7 +101,10 @@ if (isset($_GET['id'])) {
                 } else {
                     $_SESSION['message'] = "Sorry, file already exists.";
                 }
+            } else if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] != UPLOAD_ERR_NO_FILE) {
+                $_SESSION['message'] = "File upload error: " . $_FILES['fileUpload']['error'];
             }
+
 
             // Handle litter data
             $dom = $_POST['dom'];
@@ -112,20 +114,21 @@ if (isset($_GET['id'])) {
             $pups_male = $_POST['pups_male'];
             $pups_female = $_POST['pups_female'];
             $remarks_litter = $_POST['remarks_litter'];
+            $litter_id = $_POST['litter_id'];
             $delete_litter_ids = $_POST['delete_litter_ids'];
 
             // Delete marked litter entries
             if (!empty($delete_litter_ids)) {
-                $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
-                foreach ($delete_litter_ids as $delete_litter_id) {
-                    $delete_litter_id = mysqli_real_escape_string($con, $delete_litter_id);
+                $delete_litter_ids_array = explode(',', rtrim($delete_litter_ids, ','));
+                foreach ($delete_litter_ids_array as $delete_litter_id) {
+                    $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
                     $deleteLitterQuery->bind_param("s", $delete_litter_id);
                     $deleteLitterQuery->execute();
+                    $deleteLitterQuery->close();
                 }
-                $deleteLitterQuery->close();
             }
 
-            // Prepare and execute litter data insert/update query for each litter entry
+            // Prepare and execute litter data insert or update query for each litter entry
             for ($i = 0; $i < count($dom); $i++) {
                 $dom_i = mysqli_real_escape_string($con, $dom[$i]);
                 $litter_dob_i = mysqli_real_escape_string($con, $litter_dob[$i]);
@@ -134,20 +137,23 @@ if (isset($_GET['id'])) {
                 $pups_male_i = mysqli_real_escape_string($con, $pups_male[$i]);
                 $pups_female_i = mysqli_real_escape_string($con, $pups_female[$i]);
                 $remarks_litter_i = mysqli_real_escape_string($con, $remarks_litter[$i]);
+                $litter_id_i = mysqli_real_escape_string($con, $litter_id[$i]);
 
-                if (isset($_POST['litter_id'][$i])) {
-                    $litter_id_i = mysqli_real_escape_string($con, $_POST['litter_id'][$i]);
-                    $updateLitterQuery = $con->prepare("UPDATE bc_litter SET `dom` = ?, `litter_dob` = ?, `pups_alive` = ?, `pups_dead` = ?, `pups_male` = ?, `pups_female` = ?, `remarks` = ? WHERE `id` = ?");
+                if (!empty($litter_id_i)) {
+                    // Update existing litter entry
+                    $updateLitterQuery = $con->prepare("UPDATE bc_litter SET `dom` = ?, `litter_dob` = ?, `pups_alive` = ?, `pups_dead` = ?, `pups_male` = ?, `pups_female` = ?, `remarks` = ? WHERE id = ?");
                     $updateLitterQuery->bind_param("ssssssss", $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i, $litter_id_i);
                     $updateLitterQuery->execute();
                     $updateLitterQuery->close();
                 } else {
+                    // Insert new litter entry
                     $insertLitterQuery = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                     $insertLitterQuery->bind_param("ssssssss", $cage_id, $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i);
                     $insertLitterQuery->execute();
                     $insertLitterQuery->close();
                 }
             }
+
 
             header("Location: bc_dash.php");
             exit();
@@ -185,41 +191,42 @@ require 'header.php';
             litterDiv.className = 'litter-entry';
 
             litterDiv.innerHTML = `
-                <hr>
-                <div class="mb-3">
-                    <label for="dom[]" class="form-label">DOM</label>
-                    <input type="date" class="form-control" name="dom[]" required>
-                </div>
-                <div class="mb-3">
-                    <label for="litter_dob[]" class="form-label">Litter DOB</label>
-                    <input type="date" class="form-control" name="litter_dob[]">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_alive[]" class="form-label">Pups Alive</label>
-                    <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_dead[]" class="form-label">Pups Dead</label>
-                    <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_male[]" class="form-label">Pups Male</label>
-                    <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_female[]" class="form-label">Pups Female</label>
-                    <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
-                    <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
-                </div>
-                <input type="hidden" name="litter_id[]" value="">
-                <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
-            `;
+        <hr>
+        <div class="mb-3">
+            <label for="dom[]" class="form-label">DOM</label>
+            <input type="date" class="form-control" name="dom[]" required>
+        </div>
+        <div class="mb-3">
+            <label for="litter_dob[]" class="form-label">Litter DOB</label>
+            <input type="date" class="form-control" name="litter_dob[]">
+        </div>
+        <div class="mb-3">
+            <label for="pups_alive[]" class="form-label">Pups Alive</label>
+            <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
+        </div>
+        <div class="mb-3">
+            <label for="pups_dead[]" class="form-label">Pups Dead</label>
+            <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
+        </div>
+        <div class="mb-3">
+            <label for="pups_male[]" class="form-label">Pups Male</label>
+            <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
+        </div>
+        <div class="mb-3">
+            <label for="pups_female[]" class="form-label">Pups Female</label>
+            <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
+        </div>
+        <div class="mb-3">
+            <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
+            <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
+        </div>
+        <input type="hidden" name="litter_id[]" value="">
+        <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
+    `;
 
             document.getElementById('litterEntries').appendChild(litterDiv);
         }
+
 
         function removeLitter(element) {
             const litterEntry = element.parentElement;
@@ -479,6 +486,8 @@ require 'header.php';
                                                 <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
                                                 <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks']); ?></textarea>
                                             </div>
+
+                                            <input type="hidden" id="delete_litter_ids" name="delete_litter_ids" value="">
                                             <input type="hidden" name="litter_id[]" value="<?= htmlspecialchars($litter['id']); ?>">
                                             <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
                                         </div>
