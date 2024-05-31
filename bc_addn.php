@@ -67,16 +67,21 @@ require 'header.php';
 <html lang="en">
 
 <head>
-
+    <title>Add New Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
+    <style>
+        .container {
+            max-width: 800px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: auto;
+        }
+    </style>
     <script>
         function goBack() {
             window.history.back();
-            //window.location.href = 'specific_php_file.php';
         }
     </script>
-
-    <title>Add New Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
-
 </head>
 
 <body>
@@ -100,7 +105,7 @@ require 'header.php';
                     <?php
                     // Populate dropdown with options from the database
                     while ($row = $result->fetch_assoc()) {
-                        echo "<option value='" . $row['name'] . "'>" . $row['name'] . "</option>";
+                        echo "<option value='" . htmlspecialchars($row['name']) . "'>" . htmlspecialchars($row['name']) . "</option>";
                     }
                     ?>
                 </select>
@@ -147,13 +152,10 @@ require 'header.php';
             </div>
 
             <button type="submit" class="btn btn-primary">Add Cage</button>
-            <button type="button" class="btn btn-primary" onclick="goBack()">Go Back</button>
+            <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
         </form>
 
-        <div style="text-align: center;">
-            <a href="bc_dash.php" class="btn btn-secondary">Dashboard</a>
-        </div>
     </div>
 
     <br>
