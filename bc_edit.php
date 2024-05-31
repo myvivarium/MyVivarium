@@ -111,7 +111,7 @@ if (isset($_GET['id'])) {
             $pups_dead = $_POST['pups_dead'];
             $pups_male = $_POST['pups_male'];
             $pups_female = $_POST['pups_female'];
-            $remarks_litter = $_POST['remarks'];
+            $remarks_litter = $_POST['remarks_litter'];
 
             // Prepare and execute litter data insert query for each litter entry
             for ($i = 0; $i < count($dom); $i++) {
@@ -191,8 +191,8 @@ require 'header.php';
                     <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
                 </div>
                 <div class="mb-3">
-                    <label for="remarks[]" class="form-label">Remarks</label>
-                    <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"></textarea>
+                    <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
+                    <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
                 </div>
                 <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
             `;
@@ -449,8 +449,8 @@ require 'header.php';
                                                 <input type="number" class="form-control" name="pups_female[]" value="<?= htmlspecialchars($litter['pups_female']); ?>" required min="0" step="1">
                                             </div>
                                             <div class="mb-3">
-                                                <label for="remarks[]" class="form-label">Remarks</label>
-                                                <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks']); ?></textarea>
+                                                <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
+                                                <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks_litter']); ?></textarea>
                                             </div>
                                             <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
                                         </div>
