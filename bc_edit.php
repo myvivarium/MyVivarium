@@ -450,7 +450,7 @@ require 'header.php';
                                             </div>
                                             <div class="mb-3">
                                                 <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
-                                                <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks_litter']); ?></textarea>
+                                                <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks']); ?></textarea>
                                             </div>
                                             <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
                                         </div>
