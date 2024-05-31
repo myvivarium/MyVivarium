@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
 
     $updateQuery = "UPDATE users SET name = ? WHERE username = ?";
     $updateStmt = $con->prepare($updateQuery);
-    $updateStmt->bind_param("sss", $username, $name);
+    $updateStmt->bind_param("ss", $username, $name);
     $updateStmt->execute();
     $updateStmt->close();
 
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
     $stmt->close();
 }
 
-// Include header
+
 require 'header.php';
 ?>
 
@@ -49,7 +49,6 @@ require 'header.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .container {
             max-width: 600px;
