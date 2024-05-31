@@ -2,40 +2,66 @@
 session_start();
 require 'dbcon.php';
 
+// Regenerate session ID to prevent session fixation
+session_regenerate_id(true);
+
 // Check if the user is logged in and has admin role
-if ($_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     // Redirect non-admin users to the index page
     header("Location: index.php");
     exit;
 }
 
+// CSRF token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Handle POST requests for user status and role updates
-if (isset($_POST['username']) && isset($_POST['action'])) {
-    $username = $_POST['username'];
-    $action = $_POST['action'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('CSRF token validation failed');
+    }
+
+    $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+    $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING);
 
     // Initialize query variables
     $query = "";
 
     // Determine the action to take: approve, set to pending, delete user, set role to admin or user
-    if ($action === 'approve') {
-        $query = "UPDATE users SET status='approved' WHERE username=?";
-    } elseif ($action === 'pending') {
-        $query = "UPDATE users SET status='pending' WHERE username=?";
-    } elseif ($action === 'delete') {
-        $query = "DELETE FROM users WHERE username=?";
-    } elseif ($action === 'admin') {
-        $query = "UPDATE users SET role='admin' WHERE username=?";
-    } elseif ($action === 'user') {
-        $query = "UPDATE users SET role='user' WHERE username=?";
+    switch ($action) {
+        case 'approve':
+            $query = "UPDATE users SET status='approved' WHERE username=?";
+            break;
+        case 'pending':
+            $query = "UPDATE users SET status='pending' WHERE username=?";
+            break;
+        case 'delete':
+            $query = "DELETE FROM users WHERE username=?";
+            break;
+        case 'admin':
+            $query = "UPDATE users SET role='admin' WHERE username=?";
+            break;
+        case 'user':
+            $query = "UPDATE users SET role='user' WHERE username=?";
+            break;
+        default:
+            die('Invalid action');
     }
 
     // Execute the prepared statement if a valid action is set
     if (!empty($query)) {
         $statement = mysqli_prepare($con, $query);
-        mysqli_stmt_bind_param($statement, "s", $username);
-        mysqli_stmt_execute($statement);
-        mysqli_stmt_close($statement);
+        if ($statement) {
+            mysqli_stmt_bind_param($statement, "s", $username);
+            mysqli_stmt_execute($statement);
+            mysqli_stmt_close($statement);
+        } else {
+            // Log error and handle it gracefully
+            error_log("Database error: " . mysqli_error($con));
+            die('Database error');
+        }
     }
 }
 
@@ -51,18 +77,14 @@ mysqli_close($con);
 <html lang="en">
 
 <head>
-    <!-- Meta tags and Bootstrap CSS -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>User Management | <?php echo htmlspecialchars($labName); ?></title>
-    
-    <!-- Custom styles -->
     <style>
         body {
             margin: 0;
             padding: 0;
         }
-
         .main-content {
             justify-content: center;
             align-items: center;
@@ -72,65 +94,50 @@ mysqli_close($con);
 
 <body>
     <div class="container">
-        <div class="row align-items-center">
-            <!-- Main content area -->
-            <main class="col-md-12">
-                <div class="container mt-5">
-                    <h4 class="mb-3">User Management Dashboard</h4>
-                    <br>
-                    <div class="table-responsive">
-                        <table class="table table-hover table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Position</th>
-                                    <th>Username/Email</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Action - Change role & Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Loop through each user and display their data -->
-                                <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                                    <tr>
-                                        <td><?= htmlspecialchars($row['name']); ?></td>
-                                        <td><?= htmlspecialchars($row['position']); ?></td>
-                                        <td><?= htmlspecialchars($row['username']); ?></td>
-                                        <td><?= htmlspecialchars($row['role']); ?></td>
-                                        <td><?= htmlspecialchars($row['status']); ?></td>
-                                        <td>
-                                            <!-- Form for user status and role update -->
-                                            <form action="admin.php" method="post">
-                                                <input type="hidden" name="username" value="<?= htmlspecialchars($row['username']); ?>">
+        <div class="main-content">
+            <h1>User Management</h1>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Status</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['username']); ?></td>
+                            <td><?php echo htmlspecialchars($row['status']); ?></td>
+                            <td><?php echo htmlspecialchars($row['role']); ?></td>
+                            <td>
+                                <form action="admin.php" method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                                    <input type="hidden" name="username" value="<?php echo htmlspecialchars($row['username']); ?>">
 
-                                                <?php if ($row['status'] === 'pending') { ?>
-                                                    <button type="submit" class="btn btn-success btn-sm" name="action" value="approve">Approve</button>
-                                                <?php } elseif ($row['status'] === 'approved') { ?>
-                                                    <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending">Deactivate</button>
-                                                <?php } ?>
+                                    <?php if ($row['status'] === 'pending') { ?>
+                                        <button type="submit" class="btn btn-success btn-sm" name="action" value="approve">Approve</button>
+                                    <?php } elseif ($row['status'] === 'approved') { ?>
+                                        <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending">Deactivate</button>
+                                    <?php } ?>
 
-                                                <?php if ($row['role'] === 'user') { ?>
-                                                    <button type="submit" class="btn btn-warning btn-sm" name="action" value="admin">Make Admin</button>
-                                                <?php } elseif ($row['role'] === 'admin') { ?>
-                                                    <button type="submit" class="btn btn-info btn-sm" name="action" value="user">Make User</button>
-                                                <?php } ?>
+                                    <?php if ($row['role'] === 'user') { ?>
+                                        <button type="submit" class="btn btn-warning btn-sm" name="action" value="admin">Make Admin</button>
+                                    <?php } elseif ($row['role'] === 'admin') { ?>
+                                        <button type="submit" class="btn btn-info btn-sm" name="action" value="user">Make User</button>
+                                    <?php } ?>
 
-                                                <button type="submit" class="btn btn-danger btn-sm" name="action" value="delete">Delete</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <br>
-                </div>
-            </main>
+                                    <button type="submit" class="btn btn-danger btn-sm" name="action" value="delete">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Include footer -->
     <?php include 'footer.php'; ?>
 
 </body>
