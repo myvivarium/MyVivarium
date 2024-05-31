@@ -24,6 +24,10 @@ if (isset($_GET['id'])) {
     $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
     $files = $con->query($query2);
 
+    // Fetch the breedingcage litter record with the specified ID
+    $query3 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id'";
+    $litters = mysqli_query($con, $query3);
+
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
 
@@ -133,24 +137,90 @@ require 'header.php';
     </script>
 
     <title>Edit Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa; /* Light grey background */
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            margin-right: 10px;
+        }
+
+        .table-wrapper {
+            margin-bottom: 50px;
+            overflow-x: auto;
+        }
+
+        .table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-wrapper th,
+        .table-wrapper td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .btn-icon i {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .table-wrapper th,
+            .table-wrapper td {
+                padding: 12px 8px;
+            }
+
+            .table-wrapper th,
+            .table-wrapper td {
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 
-<body">
-
-    <div class="container mt-4" style="max-width: 800px; background-color: #f8f9fa; border-radius: 8px;">
+<body>
+    <div class="container mt-4">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
                         <h4>Edit Breeding Cage</h4>
                     </div>
-
                     <div class="card-body">
-                        <form method="POST" action="bc_edit.php?id=<?= $id; ?>" enctype="multipart/form-data">
+                        <form method="POST" action="bc_edit.php?id=<?= htmlspecialchars($id); ?>" enctype="multipart/form-data">
 
                             <div class="mb-3">
                                 <label for="cage_id" class="form-label">Cage ID</label>
-                                <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= $breedingcage['cage_id']; ?>" required>
+                                <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= htmlspecialchars($breedingcage['cage_id']); ?>" required>
                             </div>
 
                             <div class="mb-3">
@@ -159,13 +229,11 @@ require 'header.php';
                                     <option value="<?= htmlspecialchars($breedingcage['pi_name']); ?>" selected>
                                         <?= htmlspecialchars($breedingcage['pi_name']); ?>
                                     </option>
-                                    <?php
-                                    while ($row = $result1->fetch_assoc()) {
-                                        if ($row['name'] != $breedingcage['pi_name']) {
-                                            echo "<option value='" . htmlspecialchars($row['name']) . "'>" . htmlspecialchars($row['name']) . "</option>";
-                                        }
-                                    }
-                                    ?>
+                                    <?php while ($row = $result1->fetch_assoc()) : ?>
+                                        <?php if ($row['name'] != $breedingcage['pi_name']) : ?>
+                                            <option value="<?= htmlspecialchars($row['name']); ?>"><?= htmlspecialchars($row['name']); ?></option>
+                                        <?php endif; ?>
+                                    <?php endwhile; ?>
                                 </select>
                             </div>
 
@@ -207,7 +275,6 @@ require 'header.php';
                             <div class="mb-3">
                                 <label for="remarks" class="form-label">Remarks</label>
                                 <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($breedingcage['remarks']); ?></textarea>
-
                             </div>
 
                             <!-- Separator -->
@@ -228,21 +295,19 @@ require 'header.php';
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php
-                                                while ($file = $files->fetch_assoc()) {
-                                                    $file_path = htmlspecialchars($file['file_path']);
-                                                    $file_name = htmlspecialchars($file['file_name']);
-                                                    $file_id = intval($file['id']);
-
-                                                    echo "<tr>";
-                                                    echo "<td>$file_name</td>";
-                                                    echo "<td>
-                                                    <a href='$file_path' download='$file_name' class='btn btn-sm btn-outline-primary'> <i class='fas fa-cloud-download-alt fa-sm'></i></a>
-                                                    <a href='delete_file.php?url=bc_edit&id=$file_id' class='btn-sm' onclick='return confirm(\"Are you sure you want to delete this file?\");' aria-label='Delete $file_name'> <i class='fas fa-trash fa-sm' style='color:red'></i></a>
-                                                    </td>";
-                                                    echo "</tr>";
-                                                }
-                                                ?>
+                                                <?php while ($file = $files->fetch_assoc()) : ?>
+                                                    <tr>
+                                                        <td><?= htmlspecialchars($file['file_name']); ?></td>
+                                                        <td>
+                                                            <a href="<?= htmlspecialchars($file['file_path']); ?>" download="<?= htmlspecialchars($file['file_name']); ?>" class="btn btn-sm btn-outline-primary">
+                                                                <i class="fas fa-cloud-download-alt fa-sm"></i>
+                                                            </a>
+                                                            <a href="delete_file.php?url=bc_edit&id=<?= intval($file['id']); ?>" class="btn-sm" onclick="return confirm('Are you sure you want to delete this file?');" aria-label="Delete <?= htmlspecialchars($file['file_name']); ?>">
+                                                                <i class="fas fa-trash fa-sm" style="color:red"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                <?php endwhile; ?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -263,7 +328,66 @@ require 'header.php';
 
                             <br>
 
-                            <?php include 'bcltr_dash.php'; ?>
+                            <!-- Litter Details Section -->
+                            <div class="card mt-4">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
+                                            <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                    </h4>
+                                </div>
+
+                                <div class="card-body">
+                                    <?php while ($litter = mysqli_fetch_assoc($litters)) : ?>
+                                        <div class="table-wrapper">
+                                            <table class="table table-bordered">
+                                                <tbody>
+                                                    <tr>
+                                                        <th>DOM</th>
+                                                        <td><?= htmlspecialchars($litter['dom'] ?? ''); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Litter DOB</th>
+                                                        <td><?= htmlspecialchars($litter['litter_dob'] ?? ''); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Pups Alive</th>
+                                                        <td><?= htmlspecialchars($litter['pups_alive'] ?? ''); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Pups Dead</th>
+                                                        <td><?= htmlspecialchars($litter['pups_dead'] ?? ''); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Pups Male</th>
+                                                        <td><?= htmlspecialchars($litter['pups_male'] ?? ''); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Pups Female</th>
+                                                        <td><?= htmlspecialchars($litter['pups_female'] ?? ''); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Remarks</th>
+                                                        <td><?= htmlspecialchars($litter['remarks'] ?? ''); ?></td>
+                                                    </tr>
+                                                        <tr>
+                                                            <th>Action</th>
+                                                            <td>
+                                                                <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-secondary btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Litter Data">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                                <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-danger btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Litter Data" onclick="return confirm('Are you sure you want to delete this record?');">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    <?php endwhile; ?>
+                                </div>
+                            </div>
 
                             <br>
 
@@ -272,8 +396,6 @@ require 'header.php';
 
                         </form>
                     </div>
-
-                    
                 </div>
             </div>
         </div>
