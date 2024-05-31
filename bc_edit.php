@@ -104,6 +104,38 @@ if (isset($_GET['id'])) {
                 }
             }
 
+            // Handle litter data update and addition
+            if (isset($_POST['dom'])) {
+                $dom = $_POST['dom'];
+                $litter_dob = $_POST['litter_dob'];
+                $pups_alive = $_POST['pups_alive'];
+                $pups_dead = $_POST['pups_dead'];
+                $pups_male = $_POST['pups_male'];
+                $pups_female = $_POST['pups_female'];
+                $litter_remarks = $_POST['remarks'];
+
+                // Loop through each litter entry and update or insert into the database
+                for ($i = 0; $i < count($dom); $i++) {
+                    if (!empty($dom[$i])) {
+                        $insert_litter_query = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            ON DUPLICATE KEY UPDATE `dom` = VALUES(`dom`), `litter_dob` = VALUES(`litter_dob`), `pups_alive` = VALUES(`pups_alive`), `pups_dead` = VALUES(`pups_dead`), `pups_male` = VALUES(`pups_male`), `pups_female` = VALUES(`pups_female`), `remarks` = VALUES(`remarks`)");
+
+                        // Bind parameters for each litter entry
+                        $insert_litter_query->bind_param("ssssssss", $cage_id, $dom[$i], $litter_dob[$i], $pups_alive[$i], $pups_dead[$i], $pups_male[$i], $pups_female[$i], $litter_remarks[$i]);
+
+                        // Execute the statement and check if it was successful
+                        if ($insert_litter_query->execute()) {
+                            $_SESSION['message'] .= " Litter data added/updated successfully.";
+                        } else {
+                            $_SESSION['message'] .= " Failed to add/update litter data: " . $insert_litter_query->error;
+                        }
+
+                        // Close the prepared statement for litter data
+                        $insert_litter_query->close();
+                    }
+                }
+            }
+
             header("Location: bc_dash.php");
             exit();
         }
@@ -133,6 +165,91 @@ require 'header.php';
         function adjustTextareaHeight(element) {
             element.style.height = "auto";
             element.style.height = (element.scrollHeight) + "px";
+        }
+
+        function addLitter() {
+            const litterDiv = document.createElement('div');
+            litterDiv.className = 'litter-entry';
+
+            litterDiv.innerHTML = `
+            <hr>
+            <div class="mb-3">
+                <label for="dom[]" class="form-label">DOM</label>
+                <input type="date" class="form-control" name="dom[]" required>
+            </div>
+            <div class="mb-3">
+                <label for="litter_dob[]" class="form-label">Litter DOB</label>
+                <input type="date" class="form-control" name="litter_dob[]">
+            </div>
+            <div class="mb-3">
+                <label for="pups_alive[]" class="form-label">Pups Alive</label>
+                <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_dead[]" class="form-label">Pups Dead</label>
+                <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_male[]" class="form-label">Pups Male</label>
+                <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_female[]" class="form-label">Pups Female</label>
+                <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="remarks[]" class="form-label">Remarks</label>
+                <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"></textarea>
+            </div>
+            <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
+        `;
+
+            document.getElementById('litterEntries').appendChild(litterDiv);
+        }
+
+        function removeLitter(element) {
+            element.parentElement.remove();
+        }
+
+        function submitLitterData() {
+            const litterEntries = document.querySelectorAll('.litter-entry');
+            const cage_id = document.getElementById('cage_id').value;
+
+            litterEntries.forEach(entry => {
+                const dom = entry.querySelector('[name="dom[]"]').value;
+                const litter_dob = entry.querySelector('[name="litter_dob[]"]').value;
+                const pups_alive = entry.querySelector('[name="pups_alive[]"]').value;
+                const pups_dead = entry.querySelector('[name="pups_dead[]"]').value;
+                const pups_male = entry.querySelector('[name="pups_male[]"]').value;
+                const pups_female = entry.querySelector('[name="pups_female[]"]').value;
+                const remarks = entry.querySelector('[name="remarks[]"]').value;
+
+                // Prepare data for AJAX request
+                const formData = new FormData();
+                formData.append('cage_id', cage_id);
+                formData.append('dom', dom);
+                formData.append('litter_dob', litter_dob);
+                formData.append('pups_alive', pups_alive);
+                formData.append('pups_dead', pups_dead);
+                formData.append('pups_male', pups_male);
+                formData.append('pups_female', pups_female);
+                formData.append('remarks', remarks);
+
+                // Send AJAX request
+                fetch('bc_add_litter.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            console.log(data.message);
+                        } else {
+                            console.error(data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
         }
     </script>
 
@@ -345,67 +462,53 @@ require 'header.php';
                             <div class="card mt-4">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
-                                        <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
+                                        <button type="button" class="btn btn-primary btn-icon" onclick="addLitter()" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
                                             <i class="fas fa-plus"></i>
-                                        </a>
+                                        </button>
                                     </h4>
                                 </div>
 
-                                <div class="card-body">
+                                <div class="card-body" id="litterEntries">
                                     <?php while ($litter = mysqli_fetch_assoc($litters)) : ?>
-                                        <div class="table-wrapper">
-                                            <table class="table table-bordered fixed-width">
-                                                <tbody>
-                                                    <tr>
-                                                        <th>DOM</th>
-                                                        <td><?= htmlspecialchars($litter['dom'] ?? ''); ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Litter DOB</th>
-                                                        <td><?= htmlspecialchars($litter['litter_dob'] ?? ''); ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Pups Alive</th>
-                                                        <td><?= htmlspecialchars($litter['pups_alive'] ?? ''); ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Pups Dead</th>
-                                                        <td><?= htmlspecialchars($litter['pups_dead'] ?? ''); ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Pups Male</th>
-                                                        <td><?= htmlspecialchars($litter['pups_male'] ?? ''); ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Pups Female</th>
-                                                        <td><?= htmlspecialchars($litter['pups_female'] ?? ''); ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Remarks</th>
-                                                        <td><?= htmlspecialchars($litter['remarks'] ?? ''); ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Action</th>
-                                                        <td>
-                                                            <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-secondary btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Litter Data">
-                                                                <i class="fa fa-edit"></i>
-                                                            </a>
-                                                            <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-danger btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Litter Data" onclick="return confirm('Are you sure you want to delete this record?');">
-                                                                <i class="fa fa-trash"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                        <div class="litter-entry">
+                                            <hr>
+                                            <div class="mb-3">
+                                                <label for="dom[]" class="form-label">DOM</label>
+                                                <input type="date" class="form-control" name="dom[]" value="<?= htmlspecialchars($litter['dom']); ?>" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="litter_dob[]" class="form-label">Litter DOB</label>
+                                                <input type="date" class="form-control" name="litter_dob[]" value="<?= htmlspecialchars($litter['litter_dob']); ?>">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="pups_alive[]" class="form-label">Pups Alive</label>
+                                                <input type="number" class="form-control" name="pups_alive[]" value="<?= htmlspecialchars($litter['pups_alive']); ?>" required min="0" step="1">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="pups_dead[]" class="form-label">Pups Dead</label>
+                                                <input type="number" class="form-control" name="pups_dead[]" value="<?= htmlspecialchars($litter['pups_dead']); ?>" required min="0" step="1">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="pups_male[]" class="form-label">Pups Male</label>
+                                                <input type="number" class="form-control" name="pups_male[]" value="<?= htmlspecialchars($litter['pups_male']); ?>" required min="0" step="1">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="pups_female[]" class="form-label">Pups Female</label>
+                                                <input type="number" class="form-control" name="pups_female[]" value="<?= htmlspecialchars($litter['pups_female']); ?>" required min="0" step="1">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="remarks[]" class="form-label">Remarks</label>
+                                                <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($litter['remarks']); ?></textarea>
+                                            </div>
+                                            <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
                                         </div>
                                     <?php endwhile; ?>
                                 </div>
-
                             </div>
 
                             <br>
 
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary" onclick="submitLitterData()">Save Changes</button>
                             <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
                         </form>
