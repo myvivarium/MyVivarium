@@ -23,6 +23,8 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
 
+$updateMessage = '';
+
 // Handle form submission for profile update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
     $newUsername = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_EMAIL);
@@ -49,12 +51,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
     $stmt->close();
+
+    $updateMessage = "Profile information updated successfully. Please log out and log back in to reflect the changes everywhere.";
 }
 
 // Handle form submission for password reset
 $resultMessage = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
-    $email = $_POST['email'];
+    $email = $username;
 
     // Check if the email exists in the database
     $query = "SELECT * FROM users WHERE username = ?";
@@ -145,6 +149,10 @@ require 'header.php';
             cursor: pointer;
         }
 
+        .btn1:hover {
+            background-color: #0056b3;
+        }
+
         .result-message {
             text-align: center;
             margin-top: 15px;
@@ -153,6 +161,23 @@ require 'header.php';
             border: 1px solid #3c763d;
             color: #3c763d;
             border-radius: 5px;
+        }
+
+        .update-message {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #dff0d8;
+            border: 1px solid #3c763d;
+            color: #3c763d;
+            border-radius: 5px;
+        }
+
+        .note {
+            font-size: 0.9em;
+            color: #555;
+            text-align: center;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -188,17 +213,15 @@ require 'header.php';
             </div>
             <button type="submit" class="btn1 btn-primary" name="update_profile">Update Profile</button>
         </form>
+        <?php if ($updateMessage) { echo "<p class='update-message'>$updateMessage</p>"; } ?>
         <br>
-        <br>
+        
         <h2>Request Password Change</h2>
         <form method="POST" action="">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
-            </div>
             <button type="submit" class="btn1 btn-warning" name="reset">Request Password Change</button>
         </form>
         <?php if ($resultMessage) { echo "<p class='result-message'>$resultMessage</p>"; } ?>
+        <p class="note">In order to reflect the changes everywhere, please log out and log back in.</p>
     </div>
     <?php include 'footer.php'; ?>
 </body>
