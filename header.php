@@ -138,7 +138,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                     <li><a class="dropdown-item" href="user_profile.php">User Profile</a></li>
                     <?php
                     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                        echo '<li><a href="admin.php" class="btn btn-primary">Manage Users</a></li>';
+                        echo '<li><a href="admin.php" class="dropdown-item">Manage Users</a></li>';
                     }
                     ?>
                 </ul>
