@@ -25,6 +25,10 @@ if (isset($_GET['id'])) {
     $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
     $files = $con->query($query2);
 
+    // Fetch the breedingcage litter record with the specified ID
+    $query3 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id'";
+    $litters = mysqli_query($con, $query3);
+
     // Check if the breedingcage record exists
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
@@ -46,18 +50,12 @@ require 'header.php';
 <html lang="en">
 
 <head>
-
     <title>View Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <script>
         function showQrCodePopup(cageId) {
-            // Create the popup window
             var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
-
-            // URL to generate the QR code image
             var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://myvivarium.online/bc_view.php?id=' + cageId;
-
-            // HTML content for the popup, including a dynamic title and the QR code image
             var htmlContent = `
             <html>
             <head>
@@ -74,17 +72,14 @@ require 'header.php';
             </body>
             </html>
         `;
-
-            // Write the HTML content to the popup document
             popup.document.write(htmlContent);
-            popup.document.close(); // Close the document for further writing
+            popup.document.close();
         }
 
         function goBack() {
             window.history.back();
         }
     </script>
-
 
     <style>
         .container {
@@ -151,9 +146,34 @@ require 'header.php';
             display: flex;
             gap: 10px;
         }
+
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .btn-icon i {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .table-wrapper th,
+            .table-wrapper td {
+                padding: 12px 8px;
+            }
+
+            .table-wrapper th,
+            .table-wrapper td {
+                text-align: center;
+            }
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 </head>
 
 <body>
@@ -172,10 +192,9 @@ require 'header.php';
                     <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($breedingcage['cage_id']); ?>')" class="btn btn-success btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="QR Code">
                         <i class="fas fa-qrcode"></i>
                     </a>
-                    <a  href="javascript:void(0);" onclick="window.print()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage">
+                    <a href="javascript:void(0);" onclick="window.print()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage">
                         <i class="fas fa-print"></i>
                     </a>
-                    </button>
                 </div>
             </div>
             <br>
@@ -241,28 +260,64 @@ require 'header.php';
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php
-                                    while ($file = $files->fetch_assoc()) {
-                                        $file_path = htmlspecialchars($file['file_path']);
-                                        $file_name = htmlspecialchars($file['file_name']);
-                                        $file_id = intval($file['id']);
-
-                                        echo "<tr>";
-                                        echo "<td>$file_name</td>";
-                                        echo "<td><a href='$file_path' download='$file_name' class='btn btn-sm btn-outline-primary'><i class='fas fa-cloud-download-alt'></i></a></td>";
-                                        echo "</tr>";
-                                    }
-                                    ?>
+                                    <?php while ($file = $files->fetch_assoc()) : ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($file['file_name']); ?></td>
+                                            <td><a href="<?= htmlspecialchars($file['file_path']); ?>" download="<?= htmlspecialchars($file['file_name']); ?>" class="btn btn-sm btn-outline-primary"><i class="fas fa-cloud-download-alt"></i></a></td>
+                                        </tr>
+                                    <?php endwhile; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                <br>
-                <?php
-                    $_GET['view'] = 'yes';
-                    include 'bcltr_dash.php';
-                ?>
+
+                <!-- Litter Details Section -->
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
+                        </h4>
+                    </div>
+
+                    <div class="card-body">
+                        <?php while ($litter = mysqli_fetch_assoc($litters)) : ?>
+                            <div class="table-wrapper">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th>DOM</th>
+                                            <td><?= htmlspecialchars($litter['dom'] ?? ''); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Litter DOB</th>
+                                            <td><?= htmlspecialchars($litter['litter_dob'] ?? ''); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Pups Alive</th>
+                                            <td><?= htmlspecialchars($litter['pups_alive'] ?? ''); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Pups Dead</th>
+                                            <td><?= htmlspecialchars($litter['pups_dead'] ?? ''); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Pups Male</th>
+                                            <td><?= htmlspecialchars($litter['pups_male'] ?? ''); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Pups Female</th>
+                                            <td><?= htmlspecialchars($litter['pups_female'] ?? ''); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Remarks</th>
+                                            <td><?= htmlspecialchars($litter['remarks'] ?? ''); ?></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endwhile; ?>
+                    </div>
+                </div>
             </div>
         </div>
 
