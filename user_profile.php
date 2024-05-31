@@ -216,7 +216,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         </form>
         <?php if ($updateMessage) { echo "<p class='update-message'>$updateMessage</p>"; } ?>
         <br>
-        
+        <br>
+        <br>
         <h2>Request Password Change</h2>
         <form method="POST" action="">
             <button type="submit" class="btn1 btn-warning" name="reset">Request Password Change</button>
