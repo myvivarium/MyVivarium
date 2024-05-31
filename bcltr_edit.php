@@ -59,7 +59,7 @@ if (isset($_GET['id'])) {
             if ($updateQuery->execute()) {
                 $_SESSION['message'] = 'Litter data updated successfully.';
             } else {
-                $_SESSION['error'] = 'Update failed: ' . $updateQuery->error;
+                $_SESSION['message'] = 'Update failed: ' . $updateQuery->error;
             }
 
             // Close the prepared statement
@@ -170,6 +170,7 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="remarks" class="form-label">Remarks</label>
+                                <input type="text" class="form-control" id="remarks" name="remarks" value="<?= htmlspecialchars($breedingcage['remarks']); ?>">
                                 <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)" value="<?= htmlspecialchars($breedingcage['remarks']); ?>"></textarea>
 
                             </div>
