@@ -118,12 +118,14 @@ if (isset($_GET['id'])) {
             $delete_litter_ids = isset($_POST['delete_litter_ids']) ? $_POST['delete_litter_ids'] : '';
 
             // Delete marked litter entries
-            $delete_litter_ids_array = !empty($delete_litter_ids) ? explode(',', rtrim($delete_litter_ids, ',')) : [];
+            $delete_litter_ids_array = is_string($delete_litter_ids) ? explode(',', rtrim($delete_litter_ids, ',')) : [];
             foreach ($delete_litter_ids_array as $delete_litter_id) {
-                $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
-                $deleteLitterQuery->bind_param("s", $delete_litter_id);
-                $deleteLitterQuery->execute();
-                $deleteLitterQuery->close();
+                if (!empty($delete_litter_id)) {
+                    $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
+                    $deleteLitterQuery->bind_param("s", $delete_litter_id);
+                    $deleteLitterQuery->execute();
+                    $deleteLitterQuery->close();
+                }
             }
 
             // Prepare and execute litter data insert or update query for each litter entry
@@ -151,6 +153,7 @@ if (isset($_GET['id'])) {
                     $insertLitterQuery->close();
                 }
             }
+
 
 
 
