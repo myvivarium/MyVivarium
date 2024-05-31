@@ -73,7 +73,7 @@ if (isset($_GET['id'])) {
 
             // Handle file upload
             if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
-                $targetDirectory = "uploads/$cage_id/";
+                $targetDirectory = "uploads/$cage_id/"; // Modify the target directory
 
                 // Create the cage_id specific sub-directory if it doesn't exist
                 if (!file_exists($targetDirectory)) {
@@ -100,8 +100,6 @@ if (isset($_GET['id'])) {
                 } else {
                     $_SESSION['message'] = "Sorry, file already exists.";
                 }
-            } else if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] != UPLOAD_ERR_NO_FILE) {
-                $_SESSION['message'] = "File upload error: " . $_FILES['fileUpload']['error'];
             }
 
             // Handle litter data
