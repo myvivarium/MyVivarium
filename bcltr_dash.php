@@ -70,7 +70,6 @@ $viewMode = isset($_GET['view']) && $_GET['view'] === 'yes';
         }
 
         @media (max-width: 768px) {
-
             .table-wrapper th,
             .table-wrapper td {
                 padding: 12px 8px;
@@ -85,10 +84,8 @@ $viewMode = isset($_GET['view']) && $_GET['view'] === 'yes';
 </head>
 
 <body>
-    <?php if (!$viewMode) : ?>
-        <div class="container mt-4">
-            <div class="card">
-            <?php endif; ?>
+    <div class="container mt-4">
+        <div class="card">
             <!-- Breeding Cage Header -->
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
@@ -151,10 +148,8 @@ $viewMode = isset($_GET['view']) && $_GET['view'] === 'yes';
                     </div>
                 <?php } ?>
             </div>
-            <?php if (!$viewMode) : ?>
-            </div>
         </div>
-    <?php endif; ?>
+    </div>
 </body>
 
 </html>
