@@ -263,13 +263,16 @@ require 'header.php';
 
                             <br>
 
+                            <?php include 'bcltr_dash.php'; ?>
+
+                            <br>
+                            
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                             <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
                         </form>
                     </div>
 
-                    <?php include 'bcltr_dash.php'; ?>
                     
                 </div>
             </div>
