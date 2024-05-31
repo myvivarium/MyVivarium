@@ -1,19 +1,18 @@
 <?php
 require 'dbcon.php';
 
+// Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the breedingcage litter record with the specified ID
     $query = "SELECT * FROM bc_litter WHERE `cage_id` = '$id'";
     $result = mysqli_query($con, $query);
-
 } else {
     $_SESSION['message'] = 'ID parameter is missing.';
     header("Location: bc_dash.php");
     exit();
 }
-
 ?>
 
 <!-- Start of the HTML -->
@@ -21,8 +20,8 @@ if (isset($_GET['id'])) {
 <html lang="en">
 
 <head>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"></script>
+    <!-- Include Bootstrap and Font Awesome for Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -30,6 +29,15 @@ if (isset($_GET['id'])) {
         body {
             margin: 0;
             padding: 0;
+        }
+
+        /* Main Container Styling */
+        .container {
+            max-width: 800px;
+            background-color: lightgrey;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
         }
 
         /* Table Wrapper Styling */
@@ -40,17 +48,23 @@ if (isset($_GET['id'])) {
         .table-wrapper table {
             width: 100%;
             border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .table-wrapper th,
         .table-wrapper td {
             border: 1px solid #ddd;
-            /* Lighter border for a more modern look */
             padding: 8px;
             text-align: left;
         }
 
-        /* Button Styling */
+        .table-wrapper th {
+            background-color: #f2f2f2;
+        }
+
         .btn-back,
         .btn-logout {
             padding: 10px 20px;
@@ -88,7 +102,7 @@ if (isset($_GET['id'])) {
 
 <body>
 
-    <div class="container mt-4">
+    <div class="container">
         <?php include('message.php'); ?>
         <div class="row">
             <div class="col-md-12">
@@ -96,74 +110,65 @@ if (isset($_GET['id'])) {
 
                     <!-- Breeding Cage Header -->
                     <div class="card-header">
-                        <h4>Litter Details for the Cage
-                            <?= $id ?>
-                            <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary float-end">Add
-                                New Litter Data</a>
+                        <h4>Litter Details for the Cage <?= htmlspecialchars($id) ?>
+                            <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary float-end">Add New Litter Data</a>
                         </h4>
                     </div>
 
                     <div class="card-body">
 
-                        <div class="table-wrapper">
-                            <table class="table table-bordered" id="mouseTable">
-                                <thead>
-                                    <th>DOM</th>
-                                    <th>Litter DOB</th>
-                                    <th>Pups Alive</th>
-                                    <th>Pups Dead</th>
-                                    <th>Pups Male</th>
-                                    <th>Pups Female</th>
-                                    <th>Remarks</th>
-                                    <th>Action</th>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    while ($litter = mysqli_fetch_assoc($result)) {
-                                        ?>
+                        <?php
+                        while ($litter = mysqli_fetch_assoc($result)) {
+                            ?>
+                            <div class="table-wrapper">
+                                <table class="table table-bordered" id="mouseTable">
+                                    <thead>
                                         <tr>
+                                            <th>DOM</th>
+                                            <th>Litter DOB</th>
+                                            <th>Pups Alive</th>
+                                            <th>Pups Dead</th>
+                                            <th>Pups Male</th>
+                                            <th>Pups Female</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><?= htmlspecialchars($litter['dom']); ?></td>
+                                            <td><?= htmlspecialchars($litter['litter_dob']); ?></td>
+                                            <td><?= htmlspecialchars($litter['pups_alive']); ?></td>
+                                            <td><?= htmlspecialchars($litter['pups_dead']); ?></td>
+                                            <td><?= htmlspecialchars($litter['pups_male']); ?></td>
+                                            <td><?= htmlspecialchars($litter['pups_female']); ?></td>
                                             <td>
-                                                <?= $litter['dom']; ?>
-                                            </td>
-                                            <td>
-                                                <?= $litter['litter_dob']; ?>
-                                            </td>
-                                            <td>
-                                                <?= $litter['pups_alive']; ?>
-                                            </td>
-                                            <td>
-                                                <?= $litter['pups_dead']; ?>
-                                            </td>
-                                            <td>
-                                                <?= $litter['pups_male']; ?>
-                                            </td>
-                                            <td>
-                                                <?= $litter['pups_female']; ?>
-                                            </td>
-                                            <td>
-                                                <?= $litter['remarks']; ?>
-                                            </td>
-                                            <td>
-                                                <!-- Edit Button -->
-                                                <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']); ?>"
-                                                    class="btn btn-secondary">
+                                                <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-secondary">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
-
-                                                <!-- Delete Button -->
-                                                <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']); ?>"
-                                                    class="btn btn-danger">
+                                                <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']); ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">
                                                     <i class="fa fa-trash"></i>
                                                 </a>
                                             </td>
-
                                         </tr>
-                                        <?php
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-bordered mt-2">
+                                    <thead>
+                                        <tr>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><?= htmlspecialchars($litter['remarks']); ?></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <?php
+                        }
+                        ?>
 
                     </div>
                 </div>
