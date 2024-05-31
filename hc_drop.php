@@ -7,27 +7,53 @@ if (isset($_GET['id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'true')
     // Sanitize the ID parameter to prevent SQL injection
     $id = mysqli_real_escape_string($con, $_GET['id']);
 
-    // Prepare the SQL delete query
-    $deleteQuery = "DELETE FROM hc_basic WHERE `cage_id` = ?";
-    if ($stmt = mysqli_prepare($con, $deleteQuery)) {
-        // Bind the sanitized ID to the prepared statement
-        mysqli_stmt_bind_param($stmt, "s", $id);
-        // Execute the prepared statement
-        if (mysqli_stmt_execute($stmt)) {
-            // Set a success message in the session
-            $_SESSION['message'] = 'Cage ' . $id . ' deleted successfully.';
+    // Start a transaction
+    mysqli_begin_transaction($con);
+
+    try {
+        // Prepare the SQL delete query for hc_basic table
+        $deleteQuery = "DELETE FROM hc_basic WHERE `cage_id` = ?";
+        if ($stmt = mysqli_prepare($con, $deleteQuery)) {
+            // Bind the sanitized ID to the prepared statement
+            mysqli_stmt_bind_param($stmt, "s", $id);
+            // Execute the prepared statement
+            if (!mysqli_stmt_execute($stmt)) {
+                throw new Exception('Error executing delete statement for hc_basic table: ' . mysqli_error($con));
+            }
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
         } else {
-            // Log the error and set a user-friendly message
-            error_log('Error executing delete statement: ' . mysqli_error($con));
-            $_SESSION['message'] = 'Error executing the delete statement.';
+            throw new Exception('Error preparing delete statement for hc_basic table: ' . mysqli_error($con));
         }
-        // Close the prepared statement
-        mysqli_stmt_close($stmt);
-    } else {
+
+        // Prepare the SQL delete query for files table
+        $deleteFilesQuery = "DELETE FROM files WHERE `cage_id` = ?";
+        if ($stmt = mysqli_prepare($con, $deleteFilesQuery)) {
+            // Bind the sanitized ID to the prepared statement
+            mysqli_stmt_bind_param($stmt, "s", $id);
+            // Execute the prepared statement
+            if (!mysqli_stmt_execute($stmt)) {
+                throw new Exception('Error executing delete statement for files table: ' . mysqli_error($con));
+            }
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+        } else {
+            throw new Exception('Error preparing delete statement for files table: ' . mysqli_error($con));
+        }
+
+        // Commit the transaction
+        mysqli_commit($con);
+
+        // Set a success message in the session
+        $_SESSION['message'] = 'Cage ' . $id . ' and related files deleted successfully.';
+    } catch (Exception $e) {
+        // Roll back the transaction
+        mysqli_rollback($con);
         // Log the error and set a user-friendly message
-        error_log('Error preparing delete statement: ' . mysqli_error($con));
-        $_SESSION['message'] = 'Error preparing the delete statement.';
+        error_log($e->getMessage());
+        $_SESSION['message'] = 'Error executing the delete statements.';
     }
+
     // Redirect to the dashboard page
     header("Location: hc_dash.php");
     exit();
