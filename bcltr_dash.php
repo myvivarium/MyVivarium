@@ -75,10 +75,6 @@ if (isset($_GET['id'])) {
             margin-right: 10px;
         }
 
-        .action-icons a:last-child {
-            margin-right: 0;
-        }
-
         @media (max-width: 768px) {
 
             .table-wrapper th,
