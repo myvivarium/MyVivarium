@@ -98,49 +98,61 @@ require 'header.php';
         <form method="POST" action="">
             <div class="form-group">
                 <label for="lab_name">Lab Name</label>
-                <input type="text" class="form-control" id="lab_name" name="lab_name" value="<?php echo htmlspecialchars($labData['lab_name']); ?>" required>
+                <textarea class="form-control" id="lab_name" name="lab_name" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['lab_name']); ?></textarea>
             </div>
             <div class="form-group">
                 <label for="url">URL</label>
-                <input type="text" class="form-control" id="url" name="url" value="<?php echo htmlspecialchars($labData['url']); ?>" required>
+                <textarea class="form-control" id="url" name="url" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['url']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="r1_temp">Room 1 Temperature</label>
-                <input type="text" class="form-control" id="r1_temp" name="r1_temp" value="<?php echo htmlspecialchars($labData['r1_temp']); ?>" required>
+                <label for="r1_temp">Room 1 Temperature Sensor</label>
+                <textarea class="form-control" id="r1_temp" name="r1_temp" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['r1_temp']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="r1_humi">Room 1 Humidity</label>
-                <input type="text" class="form-control" id="r1_humi" name="r1_humi" value="<?php echo htmlspecialchars($labData['r1_humi']); ?>" required>
+                <label for="r1_humi">Room 1 Humidity Sensor</label>
+                <textarea class="form-control" id="r1_humi" name="r1_humi" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['r1_humi']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="r1_illu">Room 1 Illumination</label>
-                <input type="text" class="form-control" id="r1_illu" name="r1_illu" value="<?php echo htmlspecialchars($labData['r1_illu']); ?>" required>
+                <label for="r1_illu">Room 1 Illumination Sensor</label>
+                <textarea class="form-control" id="r1_illu" name="r1_illu" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['r1_illu']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="r1_pres">Room 1 Pressure</label>
-                <input type="text" class="form-control" id="r1_pres" name="r1_pres" value="<?php echo htmlspecialchars($labData['r1_pres']); ?>" required>
+                <label for="r1_pres">Room 1 Pressure Sensor</label>
+                <textarea class="form-control" id="r1_pres" name="r1_pres" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['r1_pres']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="r2_temp">Room 2 Temperature</label>
-                <input type="text" class="form-control" id="r2_temp" name="r2_temp" value="<?php echo htmlspecialchars($labData['r2_temp']); ?>" required>
+                <label for="r2_temp">Room 2 Temperature Sensor</label>
+                <textarea class="form-control" id="r2_temp" name="r2_temp" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['r2_temp']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="r2_humi">Room 2 Humidity</label>
-                <input type="text" class="form-control" id="r2_humi" name="r2_humi" value="<?php echo htmlspecialchars($labData['r2_humi']); ?>" required>
+                <label for="r2_humi">Room 2 Humidity Sensor</label>
+                <textarea class="form-control" id="r2_humi" name="r2_humi" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['r2_humi']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="r2_illu">Room 2 Illumination</label>
-                <input type="text" class="form-control" id="r2_illu" name="r2_illu" value="<?php echo htmlspecialchars($labData['r2_illu']); ?>" required>
+                <label for="r2_illu">Room 2 Illumination Sensor</label>
+                <textarea class="form-control" id="r2_illu" name="r2_illu" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['r2_illu']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="r2_pres">Room 2 Pressure</label>
-                <input type="text" class="form-control" id="r2_pres" name="r2_pres" value="<?php echo htmlspecialchars($labData['r2_pres']); ?>" required>
+                <label for="r2_pres">Room 2 Pressure Sensor</label>
+                <textarea class="form-control" id="r2_pres" name="r2_pres" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['r2_pres']); ?></textarea>
             </div>
             <button type="submit" class="btn1 btn-primary" name="update_lab">Update Lab Information</button>
         </form>
         <?php if ($updateMessage) { echo "<p class='update-message'>$updateMessage</p>"; } ?>
     </div>
     <?php include 'footer.php'; ?>
+
+    <script>
+        function adjustTextareaHeight(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('textarea').forEach(function(textarea) {
+                adjustTextareaHeight(textarea);
+            });
+        });
+    </script>
 </body>
 
 </html>
