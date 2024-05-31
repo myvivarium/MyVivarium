@@ -318,7 +318,7 @@ require 'header.php';
                                         </tr>
                                         <tr>
                                             <th>Remarks</th>
-                                            <td><?= htmlspecialchars($litter['remarks'] ?? ''); ?></td>
+                                            <td class="remarks-column"><?= htmlspecialchars($litter['remarks'] ?? ''); ?></td>
                                         </tr>
                                     </tbody>
                                 </table>
