@@ -13,6 +13,9 @@ if (isset($_GET['id'])) {
     header("Location: bc_dash.php");
     exit();
 }
+
+// Check if the view parameter is set to 'yes'
+$viewMode = isset($_GET['view']) && $_GET['view'] === 'yes';
 ?>
 
 <!doctype html>
@@ -84,9 +87,11 @@ if (isset($_GET['id'])) {
             <!-- Breeding Cage Header -->
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
-                    <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
-                        <i class="fas fa-plus"></i>
-                    </a>
+                    <?php if (!$viewMode) : ?>
+                        <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    <?php endif; ?>
                 </h4>
             </div>
 
@@ -123,17 +128,19 @@ if (isset($_GET['id'])) {
                                     <th>Remarks</th>
                                     <td><?= htmlspecialchars($litter['remarks'] ?? '') ?></td>
                                 </tr>
-                                <tr>
-                                    <th>Action</th>
-                                    <td>
-                                        <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-secondary btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Litter Data">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                        <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-danger btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Litter Data" onclick="return confirm('Are you sure you want to delete this record?');">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                <?php if (!$viewMode) : ?>
+                                    <tr>
+                                        <th>Action</th>
+                                        <td>
+                                            <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-secondary btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Litter Data">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-danger btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Litter Data" onclick="return confirm('Are you sure you want to delete this record?');">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
