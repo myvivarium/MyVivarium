@@ -115,17 +115,15 @@ if (isset($_GET['id'])) {
             $pups_female = $_POST['pups_female'];
             $remarks_litter = $_POST['remarks_litter'];
             $litter_id = $_POST['litter_id'];
-            $delete_litter_ids = $_POST['delete_litter_ids'];
+            $delete_litter_ids = isset($_POST['delete_litter_ids']) ? $_POST['delete_litter_ids'] : '';
 
             // Delete marked litter entries
-            if (!empty($delete_litter_ids)) {
-                $delete_litter_ids_array = explode(',', rtrim($delete_litter_ids, ','));
-                foreach ($delete_litter_ids_array as $delete_litter_id) {
-                    $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
-                    $deleteLitterQuery->bind_param("s", $delete_litter_id);
-                    $deleteLitterQuery->execute();
-                    $deleteLitterQuery->close();
-                }
+            $delete_litter_ids_array = !empty($delete_litter_ids) ? explode(',', rtrim($delete_litter_ids, ',')) : [];
+            foreach ($delete_litter_ids_array as $delete_litter_id) {
+                $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
+                $deleteLitterQuery->bind_param("s", $delete_litter_id);
+                $deleteLitterQuery->execute();
+                $deleteLitterQuery->close();
             }
 
             // Prepare and execute litter data insert or update query for each litter entry
@@ -153,6 +151,7 @@ if (isset($_GET['id'])) {
                     $insertLitterQuery->close();
                 }
             }
+
 
 
             header("Location: bc_dash.php");
@@ -229,14 +228,15 @@ require 'header.php';
 
 
         function removeLitter(element) {
-            const litterEntry = element.parentElement;
-            const litterId = litterEntry.querySelector('input[name="litter_id[]"]').value;
-            if (litterId) {
-                const deleteLitterIds = document.getElementById('delete_litter_ids');
-                deleteLitterIds.value += litterId + ',';
-            }
-            litterEntry.remove();
-        }
+    const litterEntry = element.parentElement;
+    const litterId = litterEntry.querySelector('input[name="litter_id[]"]').value;
+    if (litterId) {
+        const deleteLitterIds = document.getElementById('delete_litter_ids');
+        deleteLitterIds.value += litterId + ',';
+    }
+    litterEntry.remove();
+}
+
     </script>
 
     <title>Edit Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
@@ -488,12 +488,12 @@ require 'header.php';
                                             </div>
 
                                             <input type="hidden" id="delete_litter_ids" name="delete_litter_ids" value="">
+
                                             <input type="hidden" name="litter_id[]" value="<?= htmlspecialchars($litter['id']); ?>">
                                             <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
                                         </div>
                                     <?php endwhile; ?>
                                 </div>
-                                <input type="hidden" id="delete_litter_ids" name="delete_litter_ids[]" value="">
                             </div>
 
                             <br>
