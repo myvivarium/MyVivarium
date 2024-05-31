@@ -35,7 +35,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 
     <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    
+
     <style>
         body {
             margin: 0;
@@ -129,11 +129,21 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                     <li><a class="dropdown-item" href="iot_sensors.php">IOT Sensors</a></li>
                 </ul>
             </div>
-            <?php
-            if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                echo '<a href="admin.php" class="btn btn-primary">Settings</a>';
-            }
-            ?>
+            <!-- Dropdown for Settings -->
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    Settings
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
+                    <li><a class="dropdown-item" href="user_profile.php">User Profile</a></li>
+                </ul>
+                <?php
+                if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+                    echo '<a href="admin.php" class="btn btn-primary">Manage Users</a>';
+                }
+                ?>
+            </div>
+
             <a href="logout.php" class="btn btn-secondary">Logout</a>
         </nav>
     </div>
