@@ -25,33 +25,20 @@ if (isset($_GET['id'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     <style>
-        /* General Styles */
         body {
             margin: 0;
             padding: 0;
         }
 
-        /* Main Container Styling */
-        .container {
-            max-width: 800px;
-            background-color: lightgrey;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        /* Table Wrapper Styling */
         .table-wrapper {
             margin-bottom: 50px;
+            overflow-x: auto;
+            /* Enable horizontal scrolling on small screens */
         }
 
         .table-wrapper table {
             width: 100%;
             border-collapse: collapse;
-            background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .table-wrapper th,
@@ -61,112 +48,107 @@ if (isset($_GET['id'])) {
             text-align: left;
         }
 
-        .table-wrapper th {
-            background-color: #f2f2f2;
+        .btn-sm {
+            margin-right: 5px;
         }
 
-        .btn-back,
-        .btn-logout {
-            padding: 10px 20px;
-            border-radius: 30px;
-            transition: background-color 0.2s, transform 0.2s;
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
         }
 
-        .btn-back {
-            background-color: #007BFF;
-            color: white;
+        .btn-icon i {
+            font-size: 16px;
+            margin: 0;
         }
 
-        .btn-back:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
+        .action-icons a {
+            margin-right: 10px;
         }
 
-        .btn-back:active,
-        .btn-secondary:active {
-            transform: scale(0.95);
+        .action-icons a:last-child {
+            margin-right: 0;
         }
 
-        .btn-back.fixed {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
+        @media (max-width: 768px) {
 
-        .btn-secondary:hover {
-            background-color: #FF4500;
+            .table-wrapper th,
+            .table-wrapper td {
+                padding: 12px 8px;
+            }
+
+            .table-wrapper th,
+            .table-wrapper td {
+                text-align: center;
+            }
         }
     </style>
 </head>
 
 <body>
-
-    <div class="container">
-        <?php include('message.php'); ?>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-
-                    <!-- Breeding Cage Header -->
-                    <div class="card-header">
-                        <h4>Litter Details for the Cage <?= htmlspecialchars($id) ?>
-                            <a href="bcltr_addn.php?id=<?= rawurlencode($id) ?>" class="btn btn-primary float-end">Add New Litter Data</a>
-                        </h4>
-                    </div>
-
-                    <div class="card-body">
-                        <?php while ($litter = mysqli_fetch_assoc($result)) { ?>
-                            <div class="table-wrapper">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr>
-                                            <th>DOM</th>
-                                            <td><?= htmlspecialchars($litter['dom'] ?? '') ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Litter DOB</th>
-                                            <td><?= htmlspecialchars($litter['litter_dob'] ?? '') ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Pups Alive</th>
-                                            <td><?= htmlspecialchars($litter['pups_alive'] ?? '') ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Pups Dead</th>
-                                            <td><?= htmlspecialchars($litter['pups_dead'] ?? '') ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Pups Male</th>
-                                            <td><?= htmlspecialchars($litter['pups_male'] ?? '') ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Pups Female</th>
-                                            <td><?= htmlspecialchars($litter['pups_female'] ?? '') ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Remarks</th>
-                                            <td><?= htmlspecialchars($litter['remarks'] ?? '') ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Action</th>
-                                            <td>
-                                                <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-secondary">
-                                                    <i class="fa fa-edit"></i>
-                                                </a>
-                                                <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">
-                                                    <i class="fa fa-trash"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <?php } ?>
-                    </div>
-                </div>
+    <!-- Breeding Cage Header -->
+    <div class="card-header">
+        <h4>Litter Details for the Cage <?= htmlspecialchars($id) ?>
+            <div class="action-icons">
+                <a href="bc_addn.php" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Cage">
+                    <i class="fas fa-plus"></i>
+                </a>
             </div>
-        </div>
+        </h4>
+    </div>
+
+    <div class="card-body">
+        <?php while ($litter = mysqli_fetch_assoc($result)) { ?>
+            <div class="table-wrapper">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>DOM</th>
+                            <td><?= htmlspecialchars($litter['dom'] ?? '') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Litter DOB</th>
+                            <td><?= htmlspecialchars($litter['litter_dob'] ?? '') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Pups Alive</th>
+                            <td><?= htmlspecialchars($litter['pups_alive'] ?? '') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Pups Dead</th>
+                            <td><?= htmlspecialchars($litter['pups_dead'] ?? '') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Pups Male</th>
+                            <td><?= htmlspecialchars($litter['pups_male'] ?? '') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Pups Female</th>
+                            <td><?= htmlspecialchars($litter['pups_female'] ?? '') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Remarks</th>
+                            <td><?= htmlspecialchars($litter['remarks'] ?? '') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Action</th>
+                            <td>
+                                <a href="bcltr_edit.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-secondary">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <a href="bcltr_drop.php?id=<?= rawurlencode($litter['id']) ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        <?php } ?>
     </div>
 
 </body>
