@@ -74,6 +74,11 @@ require 'header.php';
             popup.document.write(htmlContent);
             popup.document.close(); // Close the document for further writing
         }
+
+        function goBack() {
+            window.history.back();
+        }
+
     </script>
 
     <style>
@@ -229,6 +234,8 @@ require 'header.php';
                     </table>
                 <?php endfor; ?>
             </div>
+
+            <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 
             <!-- Separator -->
             <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
