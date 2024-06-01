@@ -52,7 +52,11 @@ require 'header.php';
         <div class="row align-items-center">
             <!-- Welcome message with user information -->
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h2>Welcome, <?php echo $_SESSION['name']; ?> <span>, [<?php echo $_SESSION['position']; ?>]</span></h2>
+                <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>
+                    <span style="font-size: smaller; background-color: yellow; padding: 0 5px;">
+                        [<?php echo htmlspecialchars($_SESSION['position']); ?>]
+                    </span>
+                </h2>
             </div>
 
             <!-- Display stats for Holding Cage and Breeding Cage -->
@@ -89,7 +93,7 @@ require 'header.php';
 
             <!-- Display sticky notes section -->
             <div style="margin-top: 50px;">
-                <h2><?php echo htmlspecialchars($labName); ?> - Lab Sticky Notes</h2>
+                <h2><?php echo htmlspecialchars($labName); ?> - General Notes</h2>
                 <?php include 'nt_app.php'; ?>
             </div>
         </div>
