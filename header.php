@@ -145,6 +145,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                         echo '<li><a class="dropdown-item" href="manage_lab.php">Manage Lab</a></li>';
                     }
                     ?>
+                    <li><a class="dropdown-item" href="logout.php">User Profile</a></li>
                 </ul>
             </div>
 
