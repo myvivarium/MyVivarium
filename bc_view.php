@@ -283,7 +283,7 @@ require 'header.php';
                 <!-- Litter Details Section -->
                 <div class="card mt-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
+                        <h4 class="mb-0">Litter Details - <?= htmlspecialchars($id) ?>
                         </h4>
                     </div>
 
