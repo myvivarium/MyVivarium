@@ -90,6 +90,33 @@ mysqli_close($con);
             justify-content: center;
             align-items: center;
         }
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .action-buttons .btn {
+            flex: 1 1 auto;
+        }
+        @media (max-width: 576px) {
+            .table th, .table td {
+                display: block;
+                width: 100%;
+            }
+            .table thead {
+                display: none;
+            }
+            .table tr {
+                margin-bottom: 15px;
+            }
+            .table td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                text-transform: uppercase;
+                margin-bottom: 5px;
+                display: block;
+            }
+        }
     </style>
 </head>
 
@@ -110,27 +137,27 @@ mysqli_close($con);
                     <tbody>
                         <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($row['username']); ?></td>
-                                <td><?php echo htmlspecialchars($row['status']); ?></td>
-                                <td><?php echo htmlspecialchars($row['role']); ?></td>
-                                <td>
-                                    <form action="admin.php" method="post">
+                                <td data-label="Username"><?php echo htmlspecialchars($row['username']); ?></td>
+                                <td data-label="Status"><?php echo htmlspecialchars($row['status']); ?></td>
+                                <td data-label="Role"><?php echo htmlspecialchars($row['role']); ?></td>
+                                <td data-label="Actions">
+                                    <form action="admin.php" method="post" class="action-buttons">
                                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                         <input type="hidden" name="username" value="<?php echo htmlspecialchars($row['username']); ?>">
 
                                         <?php if ($row['status'] === 'pending') { ?>
-                                            <button type="submit" class="btn btn-success btn-sm" name="action" value="approve">Approve</button>
+                                            <button type="submit" class="btn btn-success btn-sm" name="action" value="approve"><i class="fas fa-check"></i></button>
                                         <?php } elseif ($row['status'] === 'approved') { ?>
-                                            <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending">Deactivate</button>
+                                            <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending"><i class="fas fa-ban"></i></button>
                                         <?php } ?>
 
                                         <?php if ($row['role'] === 'user') { ?>
-                                            <button type="submit" class="btn btn-warning btn-sm" name="action" value="admin">Make Admin</button>
+                                            <button type="submit" class="btn btn-warning btn-sm" name="action" value="admin"><i class="fas fa-user-shield"></i></button>
                                         <?php } elseif ($row['role'] == 'admin') { ?>
-                                            <button type="submit" class="btn btn-info btn-sm" name="action" value="user">Make User</button>
+                                            <button type="submit" class="btn btn-info btn-sm" name="action" value="user"><i class="fas fa-user"></i></button>
                                         <?php } ?>
 
-                                        <button type="submit" class="btn btn-danger btn-sm" name="action" value="delete">Delete</button>
+                                        <button type="submit" class="btn btn-danger btn-sm" name="action" value="delete"><i class="fas fa-trash"></i></button>
                                     </form>
                                 </td>
                             </tr>
