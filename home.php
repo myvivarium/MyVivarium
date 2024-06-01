@@ -53,7 +53,7 @@ require 'header.php';
             <!-- Welcome message with user information -->
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>
-                    <span style="font-size: smaller; background-color: yellow; padding: 0 5px;">
+                    <span style="font-size: smaller; color: #555; border-bottom: 2px solid #ccc; padding: 0 5px;">
                         [<?php echo htmlspecialchars($_SESSION['position']); ?>]
                     </span>
                 </h2>
