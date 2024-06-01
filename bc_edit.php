@@ -474,7 +474,7 @@ require 'header.php';
                             <!-- Litter Details Section -->
                             <div class="card mt-4">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h4 class="mb-0">Litter Details for the Cage <?= htmlspecialchars($id) ?>
+                                    <h4 class="mb-0">Litter Details - <?= htmlspecialchars($id) ?>
                                         <button type="button" class="btn btn-primary btn-icon" onclick="addLitter()" data-toggle="tooltip" data-placement="top" title="Add New Litter Data">
                                             <i class="fas fa-plus"></i>
                                         </button>
