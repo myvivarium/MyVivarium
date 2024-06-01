@@ -258,7 +258,7 @@ require 'header.php';
                     <div class="card-header">
                         <h4>Manage Files</h4>
                     </div>
-                    <div class="card-body">
+                    <div>
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
@@ -287,7 +287,7 @@ require 'header.php';
                         </h4>
                     </div>
 
-                    <div class="card-body">
+                    <div>
                         <?php while ($litter = mysqli_fetch_assoc($litters)) : ?>
                             <div class="table-wrapper">
                                 <table class="table table-bordered">
