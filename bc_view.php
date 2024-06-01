@@ -170,6 +170,7 @@ require 'header.php';
         }
 
         @media (max-width: 768px) {
+
             .table-wrapper th,
             .table-wrapper td {
                 padding: 12px 8px;
@@ -255,77 +256,80 @@ require 'header.php';
 
                 <!-- Display Files Section -->
                 <div class="card mt-4">
+
                     <div class="card-header">
                         <h4>Manage Files</h4>
                     </div>
-                    <div>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while ($file = $files->fetch_assoc()) : ?>
                                     <tr>
-                                        <th>File Name</th>
-                                        <th>Actions</th>
+                                        <td><?= htmlspecialchars($file['file_name']); ?></td>
+                                        <td><a href="<?= htmlspecialchars($file['file_path']); ?>" download="<?= htmlspecialchars($file['file_name']); ?>" class="btn btn-sm btn-outline-primary"><i class="fas fa-cloud-download-alt"></i></a></td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php while ($file = $files->fetch_assoc()) : ?>
-                                        <tr>
-                                            <td><?= htmlspecialchars($file['file_name']); ?></td>
-                                            <td><a href="<?= htmlspecialchars($file['file_path']); ?>" download="<?= htmlspecialchars($file['file_name']); ?>" class="btn btn-sm btn-outline-primary"><i class="fas fa-cloud-download-alt"></i></a></td>
-                                        </tr>
-                                    <?php endwhile; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
                     </div>
+
+
                 </div>
 
                 <!-- Litter Details Section -->
                 <div class="card mt-4">
+
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Litter Details - <?= htmlspecialchars($id) ?>
                         </h4>
                     </div>
 
-                    <div>
-                        <?php while ($litter = mysqli_fetch_assoc($litters)) : ?>
-                            <div class="table-wrapper">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr>
-                                            <th>DOM</th>
-                                            <td><?= htmlspecialchars($litter['dom'] ?? ''); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Litter DOB</th>
-                                            <td><?= htmlspecialchars($litter['litter_dob'] ?? ''); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Pups Alive</th>
-                                            <td><?= htmlspecialchars($litter['pups_alive'] ?? ''); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Pups Dead</th>
-                                            <td><?= htmlspecialchars($litter['pups_dead'] ?? ''); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Pups Male</th>
-                                            <td><?= htmlspecialchars($litter['pups_male'] ?? ''); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Pups Female</th>
-                                            <td><?= htmlspecialchars($litter['pups_female'] ?? ''); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Remarks</th>
-                                            <td class="remarks-column"><?= htmlspecialchars($litter['remarks'] ?? ''); ?></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <?php endwhile; ?>
-                    </div>
+                    <?php while ($litter = mysqli_fetch_assoc($litters)) : ?>
+                        <div class="table-wrapper">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th>DOM</th>
+                                        <td><?= htmlspecialchars($litter['dom'] ?? ''); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Litter DOB</th>
+                                        <td><?= htmlspecialchars($litter['litter_dob'] ?? ''); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Pups Alive</th>
+                                        <td><?= htmlspecialchars($litter['pups_alive'] ?? ''); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Pups Dead</th>
+                                        <td><?= htmlspecialchars($litter['pups_dead'] ?? ''); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Pups Male</th>
+                                        <td><?= htmlspecialchars($litter['pups_male'] ?? ''); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Pups Female</th>
+                                        <td><?= htmlspecialchars($litter['pups_female'] ?? ''); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Remarks</th>
+                                        <td class="remarks-column"><?= htmlspecialchars($litter['remarks'] ?? ''); ?></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endwhile; ?>
+
                 </div>
+
             </div>
         </div>
 
