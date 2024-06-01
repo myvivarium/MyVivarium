@@ -113,7 +113,7 @@ $result = $stmt->get_result();
             padding: 10px;
             border: none;
             cursor: pointer;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
         }
 
         .popup, .edit-popup {
