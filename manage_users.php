@@ -141,7 +141,7 @@ mysqli_close($con);
                                 <td data-label="Status"><?php echo htmlspecialchars($row['status']); ?></td>
                                 <td data-label="Role"><?php echo htmlspecialchars($row['role']); ?></td>
                                 <td data-label="Actions">
-                                    <form action="admin.php" method="post" class="action-buttons">
+                                    <form action="manage_users.php" method="post" class="action-buttons">
                                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                         <input type="hidden" name="username" value="<?php echo htmlspecialchars($row['username']); ?>">
 
@@ -169,8 +169,6 @@ mysqli_close($con);
     </div>
 
     <?php include 'footer.php'; ?>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 
 </html>
