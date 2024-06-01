@@ -118,8 +118,10 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     <!-- Navigation Menu Section -->
     <div class="nav-container">
         <nav class="nav justify-content-center">
-            <a href="home.php" class="btn btn-primary">Home</a>
-            
+            <a href="home.php" class="btn btn-primary">
+                <i class="fas fa-home"></i> Home
+            </a>
+
             <!-- Dropdown for Dashboard -->
             <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -131,7 +133,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                     <li><a class="dropdown-item" href="iot_sensors.php">IOT Sensors</a></li>
                 </ul>
             </div>
-            
+
             <!-- Dropdown for Settings -->
             <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" id="settingsMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -145,11 +147,9 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                         echo '<li><a class="dropdown-item" href="manage_lab.php">Manage Lab</a></li>';
                     }
                     ?>
-                    <li><a class="dropdown-item" href="logout.php">User Profile</a></li>
+                    <li><a class="dropdown-item" href="logout.php">Logout</a></li>
                 </ul>
             </div>
-
-            <a href="logout.php" class="btn btn-secondary">Logout</a>
         </nav>
     </div>
 
