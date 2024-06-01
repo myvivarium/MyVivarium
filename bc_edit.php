@@ -484,7 +484,7 @@ require 'header.php';
                                 <div class="card-body" id="litterEntries">
                                     <?php while ($litter = mysqli_fetch_assoc($litters)) : ?>
                                         <div class="litter-entry">
-                                            <hr>
+                                            <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
                                             <div class="mb-3">
                                                 <label for="dom[]" class="form-label">DOM</label>
                                                 <input type="date" class="form-control" name="dom[]" value="<?= htmlspecialchars($litter['dom']); ?>" required>
