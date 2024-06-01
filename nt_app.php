@@ -45,7 +45,7 @@ $result = $stmt->get_result();
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
-            justify-content: flex-start;
+            justify-content: center;
         }
 
         .sticky-note {
