@@ -109,6 +109,7 @@ require 'header.php';
 
         .action-icons a {
             margin-right: 10px;
+            margin-bottom: 10px;
         }
 
         .action-icons a:last-child {
