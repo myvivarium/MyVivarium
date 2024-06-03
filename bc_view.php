@@ -1,8 +1,22 @@
 <?php
+/**
+ * View Breeding Cage Details
+ *
+ * This script displays detailed information about a specific breeding cage identified by its cage ID.
+ * It retrieves data from the database, including basic information, associated files, and litter details.
+ * The script ensures that only logged-in users can access the page and provides options for editing, printing, and viewing a QR code.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
-// Check if the user is not logged in, redirect them to index.php
+// Check if the user is not logged in, redirect them to index.php with a redirect parameter
 if (!isset($_SESSION['name'])) {
     $currentUrl = urlencode($_SERVER['REQUEST_URI']);
     header("Location: index.php?redirect=$currentUrl");
@@ -17,7 +31,7 @@ ini_set('display_errors', 1);
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Fetch the breedingcage record with the specified ID
+    // Fetch the breeding cage record with the specified ID
     $query = "SELECT * FROM bc_basic WHERE `cage_id` = '$id'";
     $result = mysqli_query($con, $query);
 
@@ -25,24 +39,27 @@ if (isset($_GET['id'])) {
     $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
     $files = $con->query($query2);
 
-    // Fetch the breedingcage litter record with the specified ID
+    // Fetch the breeding cage litter records with the specified ID
     $query3 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id'";
     $litters = mysqli_query($con, $query3);
 
-    // Check if the breedingcage record exists
+    // Check if the breeding cage record exists
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
     } else {
+        // If the record does not exist, set an error message and redirect to the dashboard
         $_SESSION['message'] = 'Invalid ID.';
         header("Location: bc_dash.php");
         exit();
     }
 } else {
+    // If the ID parameter is missing, set an error message and redirect to the dashboard
     $_SESSION['message'] = 'ID parameter is missing.';
     header("Location: bc_dash.php");
     exit();
 }
 
+// Include the header file
 require 'header.php';
 ?>
 
@@ -53,6 +70,7 @@ require 'header.php';
     <title>View Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <script>
+        // Function to display a QR code popup for the cage
         function showQrCodePopup(cageId) {
             var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
             var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://myvivarium.online/bc_view.php?id=' + cageId;
@@ -76,6 +94,7 @@ require 'header.php';
             popup.document.close();
         }
 
+        // Function to navigate back to the previous page
         function goBack() {
             window.history.back();
         }
@@ -108,21 +127,6 @@ require 'header.php';
             text-align: left;
             word-wrap: break-word;
             overflow-wrap: break-word;
-        }
-
-        .table-wrapper th:nth-child(1),
-        .table-wrapper td:nth-child(1) {
-            width: 25%;
-        }
-
-        .table-wrapper th:nth-child(2),
-        .table-wrapper td:nth-child(2) {
-            width: 25%;
-        }
-
-        .table-wrapper th:nth-child(3),
-        .table-wrapper td:nth-child(3) {
-            width: 50%;
         }
 
         .remarks-column {
@@ -170,7 +174,6 @@ require 'header.php';
         }
 
         @media (max-width: 768px) {
-
             .table-wrapper th,
             .table-wrapper td {
                 padding: 12px 8px;
