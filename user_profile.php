@@ -1,8 +1,19 @@
 <?php
+
+/**
+ * User Profile Management Page
+ *
+ * This script allows logged-in users to update their profile information, including their name, position,
+ * and email address. It also provides an option to request a password change. The page fetches user details
+ * from the database, displays them in a form, and handles form submissions to update the profile or request a
+ * password reset.
+ *
+ */
+
 session_start();
-require 'dbcon.php';
-require 'config.php';
-require 'header.php';
+require 'dbcon.php'; // Database connection
+require 'config.php'; // Configuration file for email settings
+require 'header.php'; // Include the header file
 require 'vendor/autoload.php'; // Include PHPMailer autoload file
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -24,7 +35,7 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
 
-$updateMessage = '';
+$updateMessage = ''; // Initialize message for profile update
 
 // Handle form submission for profile update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
@@ -57,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
 }
 
 // Handle form submission for password reset
-$resultMessage = '';
+$resultMessage = ''; // Initialize message for password reset
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     $email = $username;
 
@@ -81,7 +92,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 
         // Send the password reset email
         $resetLink = "https://" . $url . "/reset_password.php?token=$resetToken";
-
         $to = $email;
         $subject = 'Password Reset';
         $message = "To reset your password, click the following link:\n$resetLink";
@@ -214,7 +224,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             </div>
             <button type="submit" class="btn1 btn-primary" name="update_profile">Update Profile</button>
         </form>
-        <?php if ($updateMessage) { echo "<p class='update-message'>$updateMessage</p>"; } ?>
+        <?php if ($updateMessage) {
+            echo "<p class='update-message'>$updateMessage</p>";
+        } ?>
         <br>
         <br>
         <br>
@@ -222,7 +234,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         <form method="POST" action="">
             <button type="submit" class="btn1 btn-warning" name="reset">Request Password Change</button>
         </form>
-        <?php if ($resultMessage) { echo "<p class='result-message'>$resultMessage</p>"; } ?>
+        <?php if ($resultMessage) {
+            echo "<p class='result-message'>$resultMessage</p>";
+        } ?>
         <p class="note">In order to reflect the changes everywhere, please log out and log back in.</p>
     </div>
     <?php include 'footer.php'; ?>
