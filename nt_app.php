@@ -1,9 +1,22 @@
 <?php
+
+/**
+ * Sticky Notes Page
+ * 
+ * This script retrieves and displays sticky notes for the logged-in user, allowing them to add, edit, and delete notes.
+ * It uses AJAX for form submissions and dynamically updates the page without reloading.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+
+// Start or resume the session
 if (session_status() === PHP_SESSION_NONE) {
-    session_start(); // Start or resume the session
+    session_start();
 }
 
-// Include your database connection file
+// Include the database connection file
 require 'dbcon.php';
 
 // Check if the user is logged in
@@ -74,7 +87,8 @@ $result = $stmt->get_result();
             left: 2px;
         }
 
-        .timestamp, .userid {
+        .timestamp,
+        .userid {
             display: block;
             font-size: 12px;
         }
@@ -87,7 +101,8 @@ $result = $stmt->get_result();
             color: blue;
         }
 
-        .close-btn, .edit-btn {
+        .close-btn,
+        .edit-btn {
             cursor: pointer;
             position: absolute;
             top: 5px;
@@ -103,7 +118,8 @@ $result = $stmt->get_result();
             right: 30px;
         }
 
-        .close-btn:hover, .edit-btn:hover {
+        .close-btn:hover,
+        .edit-btn:hover {
             color: #555;
         }
 
@@ -116,7 +132,8 @@ $result = $stmt->get_result();
             margin-bottom: 25px;
         }
 
-        .popup, .edit-popup {
+        .popup,
+        .edit-popup {
             display: none;
             position: fixed;
             top: 50%;
@@ -141,7 +158,8 @@ $result = $stmt->get_result();
             z-index: 999;
         }
 
-        #addNoteForm, #editNoteForm {
+        #addNoteForm,
+        #editNoteForm {
             display: flex;
             flex-direction: column;
             width: 380px;
@@ -151,14 +169,16 @@ $result = $stmt->get_result();
             overflow-y: hidden;
         }
 
-        #note_text, #edit_note_text {
+        #note_text,
+        #edit_note_text {
             height: 100px;
             margin-bottom: 10px;
             resize: none;
             background-color: #fff8b3;
         }
 
-        #addNoteForm button, #editNoteForm button {
+        #addNoteForm button,
+        #editNoteForm button {
             background-color: #4CAF50;
             color: white;
             padding: 10px;
@@ -166,7 +186,8 @@ $result = $stmt->get_result();
             cursor: pointer;
         }
 
-        #addNoteForm button:hover, #editNoteForm button:hover {
+        #addNoteForm button:hover,
+        #editNoteForm button:hover {
             background-color: #45a049;
         }
 
@@ -207,7 +228,7 @@ $result = $stmt->get_result();
         <div class="popup" id="addNotePopup">
             <span class="close-btn" onclick="togglePopup('addNotePopup')">X</span>
             <form id="addNoteForm" method="post">
-                <?php if (isset($_GET['id'])): ?>
+                <?php if (isset($_GET['id'])) : ?>
                     <label for="cage_id">For Cage ID:
                         <?= htmlspecialchars($_GET['id']); ?>
                     </label>
@@ -232,9 +253,9 @@ $result = $stmt->get_result();
         <div class="overlay" id="overlay" onclick="closeAllPopups()"></div>
 
         <div class="sticky-notes-container">
-            <?php while ($row = $result->fetch_assoc()): ?>
+            <?php while ($row = $result->fetch_assoc()) : ?>
                 <div class="sticky-note" id="note-<?= $row['id']; ?>">
-                    <?php if ($currentUserId == $row['user_id'] || (isset($_SESSION['role']) && $_SESSION['role'] === 'admin')): ?>
+                    <?php if ($currentUserId == $row['user_id'] || (isset($_SESSION['role']) && $_SESSION['role'] === 'admin')) : ?>
                         <span class="close-btn" onclick="removeNote(<?php echo $row['id']; ?>)">X</span>
                         <span class="edit-btn" onclick="editNote(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars(addslashes($row['note_text'])); ?>')">✎</span>
                     <?php endif; ?>
@@ -273,7 +294,7 @@ $result = $stmt->get_result();
         }
 
         // Submit form using AJAX
-        $('#addNoteForm').submit(function (e) {
+        $('#addNoteForm').submit(function(e) {
             e.preventDefault();
             var formData = $(this).serialize();
 
@@ -282,7 +303,7 @@ $result = $stmt->get_result();
                 url: 'nt_add.php',
                 data: formData,
                 dataType: 'json',
-                success: function (response) {
+                success: function(response) {
                     togglePopup('addNotePopup'); // Close the popup after successful submission
                     var messageDiv = $('#message');
                     if (response.success) {
@@ -291,17 +312,17 @@ $result = $stmt->get_result();
                         messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
                     }
                     // Delay before reloading the page
-                    setTimeout(function () {
+                    setTimeout(function() {
                         location.reload(); // Reload the page to display the new note
                     }, 1000); // 1-second delay
                 },
-                error: function (error) {
+                error: function(error) {
                     console.log('Error:', error);
                 }
             });
         });
 
-        $('#editNoteForm').submit(function (e) {
+        $('#editNoteForm').submit(function(e) {
             e.preventDefault();
             var formData = $(this).serialize();
 
@@ -310,7 +331,7 @@ $result = $stmt->get_result();
                 url: 'nt_edit.php',
                 data: formData,
                 dataType: 'json',
-                success: function (response) {
+                success: function(response) {
                     togglePopup('editNotePopup'); // Close the popup after successful submission
                     var messageDiv = $('#message');
                     if (response.success) {
@@ -319,11 +340,11 @@ $result = $stmt->get_result();
                         messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
                     }
                     // Delay before reloading the page
-                    setTimeout(function () {
+                    setTimeout(function() {
                         location.reload(); // Reload the page to display the updated note
                     }, 1000); // 1-second delay
                 },
-                error: function (error) {
+                error: function(error) {
                     console.log('Error:', error);
                 }
             });
@@ -338,20 +359,20 @@ $result = $stmt->get_result();
                     note_id: noteId
                 },
                 dataType: 'json',
-                success: function (response) {
+                success: function(response) {
                     var messageDiv = $('#message');
                     if (response.success) {
                         messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
                         $('#note-' + noteId).remove(); // Remove the note from the DOM
                         // Delay before reloading the page
-                        setTimeout(function () {
+                        setTimeout(function() {
                             location.reload(); // Reload the page to refresh the notes
                         }, 1000); // 1-second delay
                     } else {
                         messageDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
                     }
                 },
-                error: function (error) {
+                error: function(error) {
                     console.log('Error:', error);
                 }
             });
@@ -365,14 +386,14 @@ $result = $stmt->get_result();
         }
 
         // Update character count
-        $('#note_text').on('input', function () {
+        $('#note_text').on('input', function() {
             var maxLength = 250;
             var currentLength = $(this).val().length;
             var remaining = maxLength - currentLength;
             $('#charCount').text(remaining + ' characters remaining');
         });
 
-        $('#edit_note_text').on('input', function () {
+        $('#edit_note_text').on('input', function() {
             var maxLength = 250;
             var currentLength = $(this).val().length;
             var remaining = maxLength - currentLength;
