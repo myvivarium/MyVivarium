@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
         $role = "user";
         $status = "pending";
-        $email_verified = false;
+        $email_verified = 0; // Explicitly set to integer 0
         $email_token = bin2hex(random_bytes(16)); // Generate a random token
 
         // Check if the email already exists
@@ -102,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Hash the password and insert the new user into the database
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
             $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status, email_verified, email_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssssss", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token);
+            $stmt->bind_param("ssssssis", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token);
 
             if ($stmt->execute()) {
                 sendConfirmationEmail($username, $email_token);
