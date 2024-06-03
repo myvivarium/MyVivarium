@@ -1,9 +1,21 @@
 <?php
-// Include your database connection file
+
+/**
+ * Add Note Script
+ * 
+ * This script handles the addition of a note to the database. It checks if the user is logged in, processes the form submission,
+ * and inserts the note into the 'nt_data' table. The response is returned as JSON.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Include the database connection file
 include_once("dbcon.php");
 
+// Start or resume the session if not already started
 if (session_status() === PHP_SESSION_NONE) {
-    session_start(); // Start or resume the session
+    session_start();
 }
 
 // Check if the user is logged in
@@ -48,4 +60,3 @@ $con->close();
 
 // Return the response as JSON
 echo json_encode($response);
-?>
