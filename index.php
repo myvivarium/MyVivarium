@@ -1,15 +1,31 @@
 <?php
+
+/**
+ * Login Page
+ * 
+ * This script handles user login, displays login errors, and redirects authenticated users to their intended destination or home page. 
+ * It also displays a carousel of images and highlights the features of the web application.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
-// Fetch the lab name
+// Fetch the lab name from the database
 $labQuery = "SELECT lab_name FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
+// Default lab name if the query fails or returns no result
 $labName = "My Vivarium";
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
@@ -51,7 +67,7 @@ if (isset($_POST['login'])) {
                 $_SESSION['username'] = $row['username'];
                 $_SESSION['role'] = $row['role'];
                 $_SESSION['position'] = $row['position'];
-                
+
                 // Reset login attempts and unlock the account
                 $reset_attempts = "UPDATE users SET login_attempts = 0, account_locked = NULL WHERE username=?";
                 $reset_stmt = mysqli_prepare($con, $reset_attempts);
@@ -291,6 +307,7 @@ mysqli_close($con);
         </div>
     </div>
 
+    <!-- Include the footer -->
     <?php include 'footer.php'; ?>
 
 </body>
