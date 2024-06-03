@@ -1,19 +1,20 @@
 <?php
+/**
+ * File Deletion Script
+ *
+ * This script handles the deletion of a file from the server and the database based on the file ID passed via a GET request.
+ * It starts a session, checks if the file exists, deletes it from the server and database, and then redirects the user
+ * to a specified URL.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
 // Start a new session or resume the existing session
 session_start();
 
 // Include the database connection file
 require 'dbcon.php';
-
-/*
-    File Deletion Script
-
-    This script handles the deletion of a file from the server and the database based on the file ID passed via a GET request.
-    It also redirects the user to a specified URL after the deletion.
-
-    Author: [Your Name]
-    Date: [Date]
-*/
 
 // Check if the 'id' parameter is set in the GET request
 if (isset($_GET['id'])) {
