@@ -99,6 +99,7 @@ if (isset($_POST['login'])) {
         // Check if the email is verified
         if ($row['email_verified'] == 0) {
             $error_message = "Your email is not verified. A new verification email has been sent. Please check your email to verify your account.";
+            $email_token = bin2hex(random_bytes(16)); // Generate a random token
             sendConfirmationEmail($username, $row['email_token']);
         } else {
             // Check if the account is locked
