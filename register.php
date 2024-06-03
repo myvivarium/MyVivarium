@@ -14,6 +14,38 @@
 
 session_start();
 require 'dbcon.php'; // Include your database connection file
+require 'vendor/autoload.php'; // Include PHPMailer
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Function to send confirmation email
+function sendConfirmationEmail($to, $token) {
+    $mail = new PHPMailer(true);
+    try {
+        //Server settings
+        $mail->isSMTP();
+        $mail->Host = SMTP_HOST;
+        $mail->Port = SMTP_PORT;
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_USERNAME;
+        $mail->Password = SMTP_PASSWORD;
+        $mail->SMTPSecure = SMTP_ENCRYPTION;
+
+        //Recipients
+        $mail->setFrom(SENDER_EMAIL, SENDER_NAME);
+        $mail->addAddress($to);
+
+        // Content
+        $mail->isHTML(false);
+        $mail->Subject = 'Email Confirmation';
+        $mail->Body    = "Please click the link below to confirm your email address:\nhttp://yourdomain.com/confirm_email.php?token=$token";
+
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+    }
+}
 
 // Query to fetch the lab name
 $labQuery = "SELECT lab_name FROM data LIMIT 1";
@@ -37,6 +69,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
         $role = "user";
         $status = "pending";
+        $email_verified = false;
+        $email_token = bin2hex(random_bytes(16)); // Generate a random token
 
         // Check if the email already exists
         $checkEmailQuery = "SELECT username FROM users WHERE username = ?";
@@ -50,11 +84,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             // Hash the password and insert the new user into the database
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-            $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssss", $name, $username, $position, $role, $hashedPassword, $status);
+            $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status, email_verified, email_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssssss", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token);
 
             if ($stmt->execute()) {
-                $_SESSION['resultMessage'] = "Registration successful. After approval, you can <a href='index.php'>login</a> with your new account.";
+                sendConfirmationEmail($username, $email_token);
+                $_SESSION['resultMessage'] = "Registration successful. Please check your email to confirm your email address.";
             } else {
                 $_SESSION['resultMessage'] = "Registration failed. Please try again.";
             }
