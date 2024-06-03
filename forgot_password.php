@@ -6,11 +6,22 @@ require 'dbcon.php';  // Include database connection file
 require 'config.php';  // Include configuration file
 require 'vendor/autoload.php';  // Include PHPMailer autoload file
 
+/*
+    Password Reset Script
+
+    This script handles password reset functionality for users. It includes checking if the email exists in the database,
+    generating a password reset token, updating the token in the database, and sending a password reset email to the user.
+
+    Author: [Your Name]
+    Date: [Date]
+*/
+
 // Query to fetch the lab name and URL
 $labQuery = "SELECT lab_name, url FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
-$labName = "My Vivarium"; // Default value if the query fails or returns no result
+// Default value if the query fails or returns no result
+$labName = "My Vivarium"; 
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
     $url = $row['url'];
