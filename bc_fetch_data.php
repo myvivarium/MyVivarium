@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Breeding Cage Pagination and Search Script
  *
