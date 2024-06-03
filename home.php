@@ -1,8 +1,23 @@
 <?php
+
+/**
+ * Home Page
+ * 
+ * This script serves as the home page for the web application. It displays a welcome message to the logged-in user, 
+ * along with statistics on holding and breeding cages, and provides links to their respective dashboards. 
+ * Additionally, it includes a section for general notes.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
-// Check if the user is logged in
+// Check if the user is logged in, redirect to login page if not logged in
 if (!isset($_SESSION['name'])) {
     header("Location: index.php"); // Redirect to login page if not logged in
     exit;
@@ -17,7 +32,7 @@ $matingCountResult = $con->query("SELECT COUNT(*) AS count FROM bc_basic");
 $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
 
-// Include the header
+// Include the header file
 require 'header.php';
 ?>
 
@@ -25,17 +40,20 @@ require 'header.php';
 <html lang="en">
 
 <head>
+    <!-- Meta tags for character encoding and responsive design -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Home | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
+        /* Basic styling for body */
         body {
             margin: 0;
             padding: 0;
         }
 
+        /* Styling for main content container */
         .main-content {
             justify-content: center;
             align-items: center;
@@ -94,12 +112,12 @@ require 'header.php';
             <!-- Display sticky notes section -->
             <div style="margin-top: 50px;">
                 <h2><?php echo htmlspecialchars($labName); ?> - General Notes</h2>
-                <?php include 'nt_app.php'; ?>
+                <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
             </div>
         </div>
     </div>
 
-    <!-- Include the footer -->
+    <!-- Include the footer file -->
     <?php include 'footer.php'; ?>
 
 </body>
