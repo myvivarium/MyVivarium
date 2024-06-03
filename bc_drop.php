@@ -1,6 +1,22 @@
 <?php
+/**
+ * Breeding Cage Deletion Script
+ *
+ * This script handles the deletion of a cage and its related data from the database. It starts a session,
+ * checks if the required 'id' and 'confirm' parameters are set, sanitizes the ID parameter, and executes
+ * delete queries in a transaction to ensure data integrity. If the deletion is successful, it commits the transaction
+ * and redirects the user to the dashboard with a success message. If any errors occur, the transaction is rolled back,
+ * and an error message is set.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
-require 'dbcon.php'; // Include the database connection
+
+// Include the database connection
+require 'dbcon.php';
 
 // Check if both 'id' and 'confirm' parameters are set, and if 'confirm' is 'true'
 if (isset($_GET['id'], $_GET['confirm']) && $_GET['confirm'] == 'true') {
