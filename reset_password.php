@@ -8,12 +8,6 @@
  * the token, allows the user to enter a new password, and updates 
  * the database with the new password if the token is valid.
  * 
- * Features:
- * - Token validation for password reset.
- * - Secure password hashing.
- * - Form submission handling.
- * - Feedback messages for users.
- * 
  * Author: [Your Name]
  * Date: [Date]
  */

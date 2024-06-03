@@ -8,12 +8,6 @@
  * if the email already exists in the database, hashes the password, 
  * and stores the new user details in the database with a pending status.
  * 
- * Features:
- * - Honeypot field for spam detection.
- * - Checks if the email is already registered.
- * - Password hashing for security.
- * - Displays a success or error message after form submission.
- * 
  * Author: [Your Name]
  * Date: [Date]
  */
