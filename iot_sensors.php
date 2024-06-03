@@ -1,5 +1,19 @@
 <?php
+
+/**
+ * IOT Sensors Page
+ * 
+ * This script displays the IOT sensor data for different rooms in the lab. The data is shown using iframes 
+ * that load content from specified URLs stored in the database. The user must be logged in to access this page.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
 // Check if the user is logged in
@@ -26,6 +40,7 @@ if ($datarow = mysqli_fetch_assoc($dataResult)) {
     $r2_pres = $datarow['r2_pres'];
 }
 
+// Include the header file
 require 'header.php';
 ?>
 
@@ -43,11 +58,13 @@ require 'header.php';
 
     <!-- Inline CSS for styling -->
     <style>
+        /* Basic styling for body */
         body {
             margin: 0;
             padding: 0;
         }
 
+        /* Styling for iframe container */
         .iframe-container {
             position: relative;
             width: 100%;
@@ -55,6 +72,7 @@ require 'header.php';
             margin-top: 20px;
         }
 
+        /* Styling for iframes */
         .iframe {
             width: 100%;
             height: 300px;
@@ -110,7 +128,7 @@ require 'header.php';
         <?php endif; ?>
     </div>
 
-    <!-- Include footer -->
+    <!-- Include the footer file -->
     <?php include 'footer.php'; ?>
 </body>
 
