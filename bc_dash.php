@@ -1,5 +1,20 @@
 <?php
+/**
+ * Breeding Cage Dashboard Script
+ *
+ * This script displays a dashboard for managing breeding cages. It starts a session, checks if the user is logged in,
+ * and includes the necessary header and database connection files. The HTML part of the script includes the structure
+ * for displaying breeding cages, search functionality, and actions such as adding a new cage or printing cage cards.
+ * The script uses JavaScript for handling search, pagination, and confirmation dialogs.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
 // Check if the user is not logged in, redirect them to index.php
@@ -8,6 +23,7 @@ if (!isset($_SESSION['name'])) {
     exit;
 }
 
+// Include the header file
 require 'header.php';
 ?>
 
@@ -15,13 +31,13 @@ require 'header.php';
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
+    <!-- Required meta tags for responsive design -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Bootstrap for tooltips -->
+    <!-- Bootstrap for tooltips and responsive design -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
     <script>
@@ -58,6 +74,7 @@ require 'header.php';
             fetchData(1, searchQuery);
         }
 
+        // Fetch initial data when the document is loaded
         document.addEventListener('DOMContentLoaded', function () {
             fetchData();
         });
@@ -66,17 +83,20 @@ require 'header.php';
     <title>Dashboard Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
+        /* General styles for the page */
         body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
         }
 
+        /* Table wrapper for responsive design */
         .table-wrapper {
             margin-bottom: 50px;
             overflow-x: auto; /* Enable horizontal scrolling on small screens */
         }
 
+        /* Table styles */
         .table-wrapper table {
             width: 100%;
             border-collapse: collapse;
@@ -89,6 +109,7 @@ require 'header.php';
             text-align: left;
         }
 
+        /* Button styles */
         .btn-sm {
             margin-right: 5px;
         }
@@ -117,11 +138,9 @@ require 'header.php';
         }
 
         @media (max-width: 768px) {
+            /* Adjust padding and alignment for smaller screens */
             .table-wrapper th, .table-wrapper td {
                 padding: 12px 8px;
-            }
-
-            .table-wrapper th, .table-wrapper td {
                 text-align: center;
             }
         }
@@ -130,6 +149,7 @@ require 'header.php';
 
 <body>
     <div class="container mt-4">
+        <!-- Include message for user notifications -->
         <?php include('message.php'); ?>
         <div class="row">
             <div class="col-md-12">
@@ -137,9 +157,11 @@ require 'header.php';
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4>Breeding Cage Dashboard</h4>
                         <div class="action-icons">
+                            <!-- Add new cage button with tooltip -->
                             <a href="bc_addn.php" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Cage">
                                 <i class="fas fa-plus"></i>
                             </a>
+                            <!-- Print cage card button with tooltip -->
                             <a href="bc_slct_crd.php" class="btn btn-success btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage Card">
                                 <i class="fas fa-print"></i>
                             </a>
@@ -178,6 +200,7 @@ require 'header.php';
             </div>
         </div>
     </div>
+    <!-- Include footer -->
     <?php include 'footer.php'; ?>
     
     <!-- Bootstrap and jQuery for tooltips -->
