@@ -1,4 +1,24 @@
 <?php
+
+/**
+ * User Registration Page
+ * 
+ * This script handles user registration for the lab management system. 
+ * It collects user information, checks for spam submissions, verifies 
+ * if the email already exists in the database, hashes the password, 
+ * and stores the new user details in the database with a pending status.
+ * 
+ * Features:
+ * - Honeypot field for spam detection.
+ * - Checks if the email is already registered.
+ * - Password hashing for security.
+ * - Displays a success or error message after form submission.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+session_start();
 require 'dbcon.php'; // Include your database connection file
 
 // Query to fetch the lab name
@@ -17,10 +37,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['resultMessage'] = "Spam detected! Please try again.";
     } else {
         // Retrieve and sanitize user input
-        $name = $_POST['name'];
-        $username = $_POST['email'];
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $username = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $password = $_POST['password'];
-        $position = $_POST['position'];
+        $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
         $role = "user";
         $status = "pending";
 
@@ -191,7 +211,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             </div>
             <div class="form-group">
                 <label for="position">Position</label>
-                <select class="form-control" id="position" name="position">
+                <select class="form-control" id="position" name="position" required>
                     <option value="" disabled selected>Select Position</option>
                     <option value="Principal Investigator">Principal Investigator</option>
                     <option value="Research Scientist">Research Scientist</option>
@@ -222,7 +242,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
         <br>
 
         <!-- Display the result message if any -->
-        <?php if (!empty($resultMessage)) {  
+        <?php if (!empty($resultMessage)) {
             echo "<div class=\"alert alert-warning\" role=\"alert\">";
             echo $resultMessage;
             echo "</div>";
