@@ -129,6 +129,21 @@ require 'header.php';
             overflow-wrap: break-word;
         }
 
+        .table-wrapper th:nth-child(1),
+        .table-wrapper td:nth-child(1) {
+            width: 25%;
+        }
+
+        .table-wrapper th:nth-child(2),
+        .table-wrapper td:nth-child(2) {
+            width: 25%;
+        }
+
+        .table-wrapper th:nth-child(3),
+        .table-wrapper td:nth-child(3) {
+            width: 50%;
+        }
+
         .remarks-column {
             max-width: 400px;
             word-wrap: break-word;
