@@ -6,6 +6,9 @@
  * This script handles the submission of litter data to the database. It starts a session, checks if the user is logged in,
  * retrieves and sanitizes form data, and inserts it into the `bc_litter` table. If the data is successfully inserted,
  * it returns a success message; otherwise, it returns an error message.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
  */
 
 // Start a new session or resume the existing session
@@ -71,4 +74,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Return an error if the request method is not POST
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
 }
-?>

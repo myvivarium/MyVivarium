@@ -16,6 +16,9 @@
  * The accompanying HTML form allows users to input the cage ID, select a PI, specify mouse details, and add remarks.
  * JavaScript functions dynamically show or hide mouse detail fields based on the quantity selected and adjust the height
  * of text areas for remarks and maintenance notes.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
  */
 
  session_start();

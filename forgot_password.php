@@ -7,6 +7,9 @@
  * It verifies if the provided email exists in the database, generates a reset token,
  * saves it along with an expiration time, and sends an email with the reset link.
  * The script also fetches lab information to customize the page.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
  */
 
 use PHPMailer\PHPMailer\PHPMailer;

@@ -5,6 +5,9 @@
  * This script loads environment variables from a .env file using the Dotenv library and defines constants
  * for SMTP server settings and sender information. These constants are used for configuring the SMTP
  * server for sending emails.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
  */
 
 // Load Composer's autoload file

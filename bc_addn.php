@@ -1,5 +1,22 @@
 <?php
+
+/**
+ * Add New Breeding Cage Script
+ *
+ * This script handles the creation of new breeding cages in a laboratory management system. It starts a session,
+ * regenerates the session ID to prevent session fixation attacks, and checks if the user is logged in.
+ * It generates a CSRF token for form submissions, retrieves a list of Principal Investigators (PIs),
+ * and processes the form submission for adding a new breeding cage. The script also includes the functionality
+ * to add litter data associated with the breeding cage.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
 // Regenerate session ID to prevent session fixation
@@ -11,7 +28,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// CSRF token generation
+// Generate CSRF token if not already set
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -28,12 +45,12 @@ $result = $con->query($query);
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+    // Validate CSRF token
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die('CSRF token validation failed');
     }
 
-    // Retrieve form data
+    // Retrieve and sanitize form data
     $cage_id = $_POST['cage_id'];
     $pi_name = $_POST['pi_name'];
     $cross = $_POST['cross'];
@@ -57,19 +74,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $check_result_hc = $check_query_hc->get_result();
 
     if ($check_result_bc->num_rows > 0 || $check_result_hc->num_rows > 0) {
+        // Set an error message if cage_id already exists
         $_SESSION['message'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
     } else {
         // Prepare the insert query with placeholders
         $insert_query = $con->prepare("INSERT INTO bc_basic (`cage_id`, `pi_name`, `cross`, `iacuc`, `user`, `male_id`, `female_id`, `male_dob`, `female_dob`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        // Bind parameters
+        // Bind parameters to the query
         $insert_query->bind_param("ssssssssss", $cage_id, $pi_name, $cross, $iacuc, $user, $male_id, $female_id, $male_dob, $female_dob, $remarks);
 
         // Execute the statement and check if it was successful
         if ($insert_query->execute()) {
+            // Set a success message
             $_SESSION['message'] = "New breeding cage added successfully.";
 
-            // Handle litter data insertion
+            // Handle litter data insertion if provided
             if (isset($_POST['dom'])) {
                 $dom = $_POST['dom'];
                 $litter_dob = $_POST['litter_dob'];
@@ -88,8 +107,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // Execute the statement and check if it was successful
                     if ($insert_litter_query->execute()) {
+                        // Append success message for litter data
                         $_SESSION['message'] .= " Litter data added successfully.";
                     } else {
+                        // Append error message for litter data
                         $_SESSION['message'] .= " Failed to add litter data: " . $insert_litter_query->error;
                     }
 
@@ -98,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         } else {
+            // Set an error message if the cage insertion failed
             $_SESSION['message'] = "Failed to add new breeding cage.";
         }
 
@@ -114,6 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
+// Include the header file
 require 'header.php';
 ?>
 
@@ -132,15 +155,18 @@ require 'header.php';
         }
     </style>
     <script>
+        // Function to navigate back to the previous page
         function goBack() {
             window.history.back();
         }
 
+        // Function to adjust the height of the textarea dynamically
         function adjustTextareaHeight(element) {
             element.style.height = "auto";
             element.style.height = (element.scrollHeight) + "px";
         }
 
+        // Function to add a new litter entry dynamically
         function addLitter() {
             const litterDiv = document.createElement('div');
             litterDiv.className = 'litter-entry';
@@ -181,6 +207,7 @@ require 'header.php';
             document.getElementById('litterEntries').appendChild(litterDiv);
         }
 
+        // Function to remove a litter entry dynamically
         function removeLitter(element) {
             element.parentElement.remove();
         }
@@ -195,6 +222,9 @@ require 'header.php';
         <?php include('message.php'); ?>
 
         <form method="POST">
+
+            <!-- CSRF token field -->
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
             <div class="mb-3">
                 <label for="cage_id" class="form-label">Cage ID</label>
