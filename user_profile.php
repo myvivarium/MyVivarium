@@ -43,17 +43,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
     $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
 
+    // Check if the email address (username) has changed
+    $emailChanged = ($newUsername !== $username);
+
     // Update user details in the database
-    $updateQuery = "UPDATE users SET username = ?, name = ?, position = ? WHERE username = ?";
+    $updateQuery = "UPDATE users SET username = ?, name = ?, position = ?";
+    if ($emailChanged) {
+        $updateQuery .= ", email_verified = 0";
+    }
+    $updateQuery .= " WHERE username = ?";
     $updateStmt = $con->prepare($updateQuery);
-    $updateStmt->bind_param("ssss", $newUsername, $name, $position, $username);
+    if ($emailChanged) {
+        $updateStmt->bind_param("ssss", $newUsername, $name, $position, $username);
+    } else {
+        $updateStmt->bind_param("ssss", $newUsername, $name, $position, $username);
+    }
     $updateStmt->execute();
     $updateStmt->close();
 
     // Update the session username if it was changed
-    if ($newUsername !== $username) {
+    if ($emailChanged) {
         $_SESSION['username'] = $newUsername;
         $username = $newUsername;
+        $updateMessage = "Profile information updated successfully. Please log out and log back in to reflect the changes everywhere.";
+    } else {
+        $updateMessage = "Profile information updated successfully.";
     }
 
     // Refresh user data
@@ -63,8 +77,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
     $stmt->close();
-
-    $updateMessage = "Profile information updated successfully. Please log out and log back in to reflect the changes everywhere.";
 }
 
 // Handle form submission for password reset
