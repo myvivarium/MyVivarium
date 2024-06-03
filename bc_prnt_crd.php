@@ -1,12 +1,27 @@
 <?php
+
+/**
+ * Breeding Cage Printable Card Script
+ *
+ * This script retrieves breeding cage data along with their latest litter records,
+ * generates printable cards for each cage, and displays them in a 2x2 table format.
+ * The script also includes QR codes for quick access to detailed views of each cage.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
+// Fetch lab data (URL) for generating QR codes
 $labQuery = "SELECT * FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
-
 if ($row = mysqli_fetch_assoc($labResult)) {
-    $url = $row['url'];
+    $url = $row['url']; // Store the lab URL
 }
 
 // Check if the user is not logged in, redirect them to index.php
@@ -17,8 +32,8 @@ if (!isset($_SESSION['name'])) {
 
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
-    $ids = explode(',', $_GET['id']);
-    $breedingcages = [];
+    $ids = explode(',', $_GET['id']); // Split the IDs into an array
+    $breedingcages = []; // Initialize an array to store breeding cage data
 
     foreach ($ids as $id) {
         // Fetch the breeding cage record with the specified ID
@@ -26,26 +41,28 @@ if (isset($_GET['id'])) {
         $result = mysqli_query($con, $query);
 
         if (mysqli_num_rows($result) === 1) {
-            $breedingcage = mysqli_fetch_assoc($result);
+            $breedingcage = mysqli_fetch_assoc($result); // Fetch the breeding cage data
 
             // Fetch the latest 5 associated litter records for this breeding cage
             $query1 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id' ORDER BY `dom` DESC LIMIT 5";
             $result1 = mysqli_query($con, $query1);
             $litters = [];
             while ($litter = mysqli_fetch_assoc($result1)) {
-                $litters[] = $litter;
+                $litters[] = $litter; // Store each litter record
             }
 
             // Store the breeding cage and its litters
             $breedingcage['litters'] = $litters;
             $breedingcages[] = $breedingcage;
         } else {
+            // Set an error message and redirect if the ID is invalid
             $_SESSION['message'] = "Invalid ID: $id";
             header("Location: bc_dash.php");
             exit();
         }
     }
 } else {
+    // Set an error message and redirect if the ID parameter is missing
     $_SESSION['message'] = 'ID parameter is missing.';
     header("Location: bc_dash.php");
     exit();
@@ -71,7 +88,6 @@ if (isset($_GET['id'])) {
                 margin: 0;
                 color: #000;
             }
-
         }
 
         body,
