@@ -1,5 +1,19 @@
 <?php
+
+/**
+ * User Management Page
+ * 
+ * This script provides functionality for an admin to manage users, including approving, setting to pending, deleting users,
+ * and changing user roles. It also includes CSRF protection and session security enhancements.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
 // Regenerate session ID to prevent session fixation
@@ -9,7 +23,7 @@ session_regenerate_id(true);
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     // Redirect non-admin users to the index page
     header("Location: index.php");
-    exit;
+    exit; // Ensure no further code is executed
 }
 
 // CSRF token generation
@@ -69,6 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $query = "SELECT * FROM users";
 $result = mysqli_query($con, $query);
 
+// Include the header file
 require 'header.php';
 mysqli_close($con);
 ?>
@@ -77,38 +92,52 @@ mysqli_close($con);
 <html lang="en">
 
 <head>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>User Management | <?php echo htmlspecialchars($labName); ?></title>
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- Inline CSS for styling -->
     <style>
         body {
             margin: 0;
             padding: 0;
         }
+
         .main-content {
             justify-content: center;
             align-items: center;
         }
+
         .action-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
         }
+
         .action-buttons .btn {
             flex: 1 1 auto;
         }
+
         @media (max-width: 576px) {
-            .table th, .table td {
+
+            .table th,
+            .table td {
                 display: block;
                 width: 100%;
             }
+
             .table thead {
                 display: none;
             }
+
             .table tr {
                 margin-bottom: 15px;
             }
+
             .table td::before {
                 content: attr(data-label);
                 font-weight: bold;
@@ -168,6 +197,7 @@ mysqli_close($con);
         </div>
     </div>
 
+    <!-- Include the footer file -->
     <?php include 'footer.php'; ?>
 </body>
 
