@@ -1,20 +1,18 @@
 <?php
+
+/**
+ * This script handles the password reset functionality for users.
+ * It verifies if the provided email exists in the database, generates a reset token,
+ * saves it along with an expiration time, and sends an email with the reset link.
+ * The script also fetches lab information to customize the page.
+ */
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 require 'dbcon.php';  // Include database connection file
 require 'config.php';  // Include configuration file
 require 'vendor/autoload.php';  // Include PHPMailer autoload file
-
-/*
-    Password Reset Script
-
-    This script handles password reset functionality for users. It includes checking if the email exists in the database,
-    generating a password reset token, updating the token in the database, and sending a password reset email to the user.
-
-    Author: [Your Name]
-    Date: [Date]
-*/
 
 // Query to fetch the lab name and URL
 $labQuery = "SELECT lab_name, url FROM data LIMIT 1";
