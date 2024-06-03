@@ -98,9 +98,30 @@ if (isset($_POST['login'])) {
     if ($row = mysqli_fetch_assoc($result)) {
         // Check if the email is verified
         if ($row['email_verified'] == 0) {
+            // Check if email_token is empty
+            if (empty($row['email_token'])) {
+                // Generate a new token
+                $new_token = bin2hex(random_bytes(16));
+
+                // Update the database with the new token
+                $update_token_query = "UPDATE users SET email_token = ? WHERE username = ?";
+                $update_token_stmt = mysqli_prepare($con, $update_token_query);
+                mysqli_stmt_bind_param($update_token_stmt, "ss", $new_token, $username);
+                mysqli_stmt_execute($update_token_stmt);
+                mysqli_stmt_close($update_token_stmt);
+
+                // Use the new token for sending the confirmation email
+                $token = $new_token;
+            } else {
+                // Use the existing token
+                $token = $row['email_token'];
+            }
+
+            // Send the confirmation email
+            sendConfirmationEmail($username, $token);
+
+            // Set error message for the user
             $error_message = "Your email is not verified. A new verification email has been sent. Please check your email to verify your account.";
-            $email_token = bin2hex(random_bytes(16)); // Generate a random token
-            sendConfirmationEmail($username, $row['email_token']);
         } else {
             // Check if the account is locked
             if (!is_null($row['account_locked']) && new DateTime() < new DateTime($row['account_locked'])) {
