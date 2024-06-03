@@ -1,5 +1,25 @@
 <?php
-require 'dbcon.php'; // Include the database connection file
+
+/**
+ * Password Reset Page
+ * 
+ * This script handles the password reset functionality for users. 
+ * Users receive a token to reset their password. The script verifies 
+ * the token, allows the user to enter a new password, and updates 
+ * the database with the new password if the token is valid.
+ * 
+ * Features:
+ * - Token validation for password reset.
+ * - Secure password hashing.
+ * - Form submission handling.
+ * - Feedback messages for users.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Include the database connection file
+require 'dbcon.php';
 
 // Query to fetch the lab name
 $labQuery = "SELECT lab_name FROM data LIMIT 1";
