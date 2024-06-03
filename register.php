@@ -13,8 +13,9 @@
  */
 
 session_start();
-require 'dbcon.php'; // Include your database connection file
-require 'vendor/autoload.php'; // Include PHPMailer
+require 'dbcon.php';  // Include database connection file
+require 'config.php';  // Include configuration file
+require 'vendor/autoload.php';  // Include PHPMailer autoload file
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
