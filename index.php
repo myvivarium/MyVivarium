@@ -20,15 +20,55 @@ session_start();
 
 // Include the database connection file
 require 'dbcon.php';
+require 'config.php'; // Include configuration file for SMTP details
+require 'vendor/autoload.php'; // Include PHPMailer autoload file
 
-// Fetch the lab name from the database
-$labQuery = "SELECT lab_name FROM data LIMIT 1";
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Query to fetch the lab name and URL
+$labQuery = "SELECT * FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
-// Default lab name if the query fails or returns no result
+// Default value if the query fails or returns no result
 $labName = "My Vivarium";
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
+    $url = $row['url'];
+}
+
+// Function to send confirmation email
+function sendConfirmationEmail($to, $token)
+{
+    global $url;
+    $confirmLink = "https://" . $url . "/confirm_email.php?token=$token";
+    $subject = 'Email Confirmation';
+    $message = "Please click the link below to confirm your email address:\n$confirmLink";
+
+    $mail = new PHPMailer(true);
+    try {
+        //Server settings
+        $mail->isSMTP();
+        $mail->Host = SMTP_HOST;
+        $mail->Port = SMTP_PORT;
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_USERNAME;
+        $mail->Password = SMTP_PASSWORD;
+        $mail->SMTPSecure = SMTP_ENCRYPTION;
+
+        //Recipients
+        $mail->setFrom(SENDER_EMAIL, SENDER_NAME);
+        $mail->addAddress($to);
+
+        // Content
+        $mail->isHTML(false);
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+    }
 }
 
 // Check if the user is already logged in
@@ -49,55 +89,61 @@ if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $query = "SELECT * FROM users WHERE username=? AND status='approved'";
+    $query = "SELECT * FROM users WHERE username=?";
     $statement = mysqli_prepare($con, $query);
     mysqli_stmt_bind_param($statement, "s", $username);
     mysqli_stmt_execute($statement);
     $result = mysqli_stmt_get_result($statement);
 
     if ($row = mysqli_fetch_assoc($result)) {
-        // Check if the account is locked
-        if (!is_null($row['account_locked']) && new DateTime() < new DateTime($row['account_locked'])) {
-            $error_message = "Account is temporarily locked. Please try again later.";
+        // Check if the email is verified
+        if ($row['email_verified'] == 0) {
+            $error_message = "Your email is not verified. A new verification email has been sent. Please check your email to verify your account.";
+            sendConfirmationEmail($username, $row['email_token']);
         } else {
-            // Verify password
-            if (password_verify($password, $row['password'])) {
-                // Set session variables
-                $_SESSION['name'] = $row['name'];
-                $_SESSION['username'] = $row['username'];
-                $_SESSION['role'] = $row['role'];
-                $_SESSION['position'] = $row['position'];
-
-                // Reset login attempts and unlock the account
-                $reset_attempts = "UPDATE users SET login_attempts = 0, account_locked = NULL WHERE username=?";
-                $reset_stmt = mysqli_prepare($con, $reset_attempts);
-                mysqli_stmt_bind_param($reset_stmt, "s", $username);
-                mysqli_stmt_execute($reset_stmt);
-
-                // Redirect to the specified URL or default to home.php
-                if (isset($_GET['redirect'])) {
-                    $url = urldecode($_GET['redirect']);
-                    header("Location: $url");
-                    exit;
-                } else {
-                    header("Location: home.php");
-                    exit;
-                }
+            // Check if the account is locked
+            if (!is_null($row['account_locked']) && new DateTime() < new DateTime($row['account_locked'])) {
+                $error_message = "Account is temporarily locked. Please try again later.";
             } else {
-                // Handle failed login attempts
-                $new_attempts = $row['login_attempts'] + 1;
-                if ($new_attempts >= 3) {
-                    $lock_time = "UPDATE users SET account_locked = DATE_ADD(NOW(), INTERVAL 10 MINUTE), login_attempts = 3 WHERE username=?";
-                    $lock_stmt = mysqli_prepare($con, $lock_time);
-                    mysqli_stmt_bind_param($lock_stmt, "s", $username);
-                    mysqli_stmt_execute($lock_stmt);
-                    $error_message = "Account is temporarily locked for 10 mins due to too many failed login attempts.";
+                // Verify password
+                if (password_verify($password, $row['password'])) {
+                    // Set session variables
+                    $_SESSION['name'] = $row['name'];
+                    $_SESSION['username'] = $row['username'];
+                    $_SESSION['role'] = $row['role'];
+                    $_SESSION['position'] = $row['position'];
+
+                    // Reset login attempts and unlock the account
+                    $reset_attempts = "UPDATE users SET login_attempts = 0, account_locked = NULL WHERE username=?";
+                    $reset_stmt = mysqli_prepare($con, $reset_attempts);
+                    mysqli_stmt_bind_param($reset_stmt, "s", $username);
+                    mysqli_stmt_execute($reset_stmt);
+
+                    // Redirect to the specified URL or default to home.php
+                    if (isset($_GET['redirect'])) {
+                        $url = urldecode($_GET['redirect']);
+                        header("Location: $url");
+                        exit;
+                    } else {
+                        header("Location: home.php");
+                        exit;
+                    }
                 } else {
-                    $update_attempts = "UPDATE users SET login_attempts = ? WHERE username=?";
-                    $update_stmt = mysqli_prepare($con, $update_attempts);
-                    mysqli_stmt_bind_param($update_stmt, "is", $new_attempts, $username);
-                    mysqli_stmt_execute($update_stmt);
-                    $error_message = "Invalid password. Please try again.";
+                    // Handle failed login attempts
+                    $new_attempts = $row['login_attempts'] + 1;
+                    if ($new_attempts >= 3) {
+                        $lock_time = "UPDATE users SET account_locked = DATE_ADD(NOW(), INTERVAL 10 MINUTE), login_attempts = 3 WHERE username=?";
+                        $lock_stmt = mysqli_prepare($con, $lock_time);
+                        mysqli_stmt_bind_param($lock_stmt, "s", $username);
+                        mysqli_stmt_execute($lock_stmt);
+                        $error_message = "Account is temporarily locked for 10 mins due to too many failed login attempts.";
+                    } else {
+                        $update_attempts = "UPDATE users SET login_attempts = ? WHERE username=?";
+                        $update_stmt = mysqli_prepare($con, $update_attempts);
+                        mysqli_stmt_bind_param($update_stmt, "is", $new_attempts, $username);
+                        mysqli_stmt_execute($update_stmt);
+                        $error_message = "Invalid password. Please try again.";
+                    }
                 }
             }
         }
