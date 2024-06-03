@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Breeding Cage Deletion Script
  *
@@ -95,4 +96,3 @@ if (isset($_GET['id'], $_GET['confirm']) && $_GET['confirm'] == 'true') {
     header("Location: bc_dash.php");
     exit();
 }
-?>
