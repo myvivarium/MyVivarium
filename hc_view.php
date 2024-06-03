@@ -1,12 +1,26 @@
 <?php
+
+/**
+ * View Holding Cage
+ * 
+ * This script displays detailed information about a specific holding cage, including related files and notes. 
+ * It also provides options to view, edit, print the cage information, and generate a QR code for the cage.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
 // Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['name'])) {
     $currentUrl = urlencode($_SERVER['REQUEST_URI']);
     header("Location: index.php?redirect=$currentUrl");
-    exit;
+    exit; // Exit to ensure no further code is executed
 }
 
 // Enable error reporting for debugging
@@ -39,6 +53,7 @@ if (isset($_GET['id'])) {
     exit();
 }
 
+// Include the header file
 require 'header.php';
 ?>
 
@@ -49,6 +64,7 @@ require 'header.php';
     <title>View Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
     <script>
+        // Function to show QR code popup for the cage
         function showQrCodePopup(cageId) {
             // Create the popup window
             var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
@@ -79,6 +95,7 @@ require 'header.php';
             popup.document.close(); // Close the document for further writing
         }
 
+        // Function to go back to the previous page
         function goBack() {
             window.history.back();
         }
@@ -155,6 +172,7 @@ require 'header.php';
             gap: 10px;
         }
     </style>
+    <!-- Include FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
@@ -164,23 +182,27 @@ require 'header.php';
             <div class="card-header">
                 <h4>View Holding Cage <?= htmlspecialchars($holdingcage['cage_id']); ?></h4>
                 <div class="action-buttons">
+                    <!-- Button to go back to the previous page -->
                     <a href="javascript:void(0);" onclick="goBack()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
                         <i class="fas fa-arrow-circle-left"></i>
                     </a>
+                    <!-- Button to edit the cage -->
                     <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage">
                         <i class="fas fa-edit"></i>
                     </a>
+                    <!-- Button to show QR code for the cage -->
                     <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($holdingcage['cage_id']); ?>')" class="btn btn-success btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="QR Code">
                         <i class="fas fa-qrcode"></i>
                     </a>
-                    <a  href="javascript:void(0);" onclick="window.print()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage">
+                    <!-- Button to print the cage details -->
+                    <a href="javascript:void(0);" onclick="window.print()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage">
                         <i class="fas fa-print"></i>
                     </a>
-                    </button>
                 </div>
             </div>
             <br>
             <div class="table-wrapper">
+                <!-- Table to display holding cage details -->
                 <table class="table table-bordered">
                     <tr>
                         <th>Cage #:</th>
@@ -224,7 +246,8 @@ require 'header.php';
                     </tr>
                 </table>
 
-                <?php for ($i = 1; $i <= $holdingcage['qty']; $i++): ?>
+                <!-- Loop to display details for each mouse in the cage -->
+                <?php for ($i = 1; $i <= $holdingcage['qty']; $i++) : ?>
                     <h4>Mouse #<?= $i; ?></h4>
                     <table class="table table-bordered">
                         <tr>
@@ -260,6 +283,7 @@ require 'header.php';
                             </thead>
                             <tbody>
                                 <?php
+                                // Loop to display files related to the cage
                                 while ($file = $files->fetch_assoc()) {
                                     $file_path = htmlspecialchars($file['file_path']);
                                     $file_name = htmlspecialchars($file['file_name']);
@@ -281,12 +305,12 @@ require 'header.php';
 
         <!-- Note App Highlight -->
         <div class="note-app-container">
-            <?php include 'nt_app.php'; ?>
+            <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
         </div>
     </div>
 
     <br>
-    <?php include 'footer.php'; ?>
+    <?php include 'footer.php'; ?> <!-- Include the footer file -->
 
 </body>
 
