@@ -20,7 +20,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Function to send confirmation email
-function sendConfirmationEmail($to, $token) {
+function sendConfirmationEmail($to, $token)
+{
     $mail = new PHPMailer(true);
     try {
         //Server settings
