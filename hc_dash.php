@@ -1,13 +1,29 @@
 <?php
+
+/**
+ * Holding Cage Dashboard
+ * 
+ * This script displays the holding cage dashboard for logged-in users. It includes functionalities such as 
+ * adding new cages, printing cage cards, searching cages, and pagination. The page content is dynamically
+ * loaded using JavaScript and AJAX.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
 // Check if the user is not logged in, redirect them to index.php
 if (!isset($_SESSION['name'])) {
     header("Location: index.php");
-    exit;
+    exit; // Exit to ensure no further code is executed
 }
 
+// Include the header file
 require 'header.php';
 ?>
 
@@ -15,50 +31,51 @@ require 'header.php';
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
+    <!-- Required meta tags for character encoding and responsive design -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Bootstrap for tooltips -->
+    <!-- Bootstrap for tooltips and styling -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
     <script>
-        // Initialize tooltips
-        $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip(); 
+        // Initialize tooltips when the document is ready
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip();
         });
 
-        // Confirm deletion function
+        // Confirm deletion function with a dialog
         function confirmDeletion(id) {
             var confirmDelete = confirm("Are you sure you want to delete this cage - '" + id + "'?");
             if (confirmDelete) {
-                window.location.href = "hc_drop.php?id=" + id + "&confirm=true";
+                window.location.href = "hc_drop.php?id=" + id + "&confirm=true"; // Redirect to deletion script
             }
         }
 
-        // Fetch data function
+        // Fetch data function to load data dynamically
         function fetchData(page = 1, search = '') {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', 'hc_fetch_data.php?page=' + page + '&search=' + encodeURIComponent(search), true);
-            xhr.onload = function () {
+            xhr.onload = function() {
                 if (xhr.status === 200) {
                     var response = JSON.parse(xhr.responseText);
-                    document.getElementById('tableBody').innerHTML = response.tableRows;
-                    document.getElementById('paginationLinks').innerHTML = response.paginationLinks;
+                    document.getElementById('tableBody').innerHTML = response.tableRows; // Insert table rows
+                    document.getElementById('paginationLinks').innerHTML = response.paginationLinks; // Insert pagination links
                 }
             };
             xhr.send();
         }
 
-        // Search function
+        // Search function to initiate data fetch based on search query
         function searchCages() {
             var searchQuery = document.getElementById('searchInput').value;
             fetchData(1, searchQuery);
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        // Fetch initial data when the DOM content is loaded
+        document.addEventListener('DOMContentLoaded', function() {
             fetchData();
         });
     </script>
@@ -70,27 +87,32 @@ require 'header.php';
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
+            /* Default font family */
         }
 
         .table-wrapper {
             margin-bottom: 50px;
-            overflow-x: auto; /* Enable horizontal scrolling on small screens */
+            overflow-x: auto;
+            /* Enable horizontal scrolling on small screens */
         }
 
         .table-wrapper table {
             width: 100%;
             border-collapse: collapse;
+            /* Collapse table borders */
         }
 
         .table-wrapper th,
         .table-wrapper td {
             border: 1px solid #ddd;
+            /* Light gray border */
             padding: 8px;
             text-align: left;
         }
 
         .btn-sm {
             margin-right: 5px;
+            /* Small margin for buttons */
         }
 
         .btn-icon {
@@ -117,12 +139,16 @@ require 'header.php';
         }
 
         @media (max-width: 768px) {
-            .table-wrapper th, .table-wrapper td {
+
+            .table-wrapper th,
+            .table-wrapper td {
                 padding: 12px 8px;
             }
 
-            .table-wrapper th, .table-wrapper td {
+            .table-wrapper th,
+            .table-wrapper td {
                 text-align: center;
+                /* Center text for smaller screens */
             }
         }
     </style>
@@ -130,7 +156,7 @@ require 'header.php';
 
 <body>
     <div class="container mt-4">
-        <?php include('message.php'); ?>
+        <?php include('message.php'); ?> <!-- Include message file for displaying messages -->
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -149,7 +175,7 @@ require 'header.php';
                     <div class="card-body">
                         <!-- Holding Cage Search Box -->
                         <div class="input-group mb-3">
-                            <input type="text" id="searchInput" class="form-control" placeholder="Enter Cage ID" onkeyup="searchCages()">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Enter Cage ID" onkeyup="searchCages()"> <!-- Call search function on keyup -->
                             <button class="btn btn-primary" type="button" onclick="searchCages()">Search</button>
                         </div>
 
@@ -178,8 +204,8 @@ require 'header.php';
             </div>
         </div>
     </div>
-    <?php include 'footer.php'; ?>
-    
+    <?php include 'footer.php'; ?> <!-- Include footer file -->
+
     <!-- Bootstrap and jQuery for tooltips -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
