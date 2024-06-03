@@ -1,11 +1,24 @@
 <?php
+
+/**
+ * Header and Navigation Menu
+ * 
+ * This script generates a header and navigation menu for the web application. The header displays the lab name and logo, 
+ * and the navigation menu includes links to various dashboards and settings, with additional options for admin users.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Include the database connection file
 require 'dbcon.php';
 
 // Query to fetch the lab name from the database
 $labQuery = "SELECT * FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
-$labName = "My Vivarium"; // Default value if the query fails or returns no result
+// Default lab name if the query fails or returns no result
+$labName = "My Vivarium";
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
     $url = $row['url'];
@@ -38,11 +51,13 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Basic styling for body */
         body {
             margin: 0;
             padding: 0;
         }
 
+        /* Styling for header and footer */
         .header-footer {
             display: flex;
             flex-wrap: wrap;
@@ -77,6 +92,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             font-weight: 500;
         }
 
+        /* Responsive styling for smaller screens */
         @media (max-width: 576px) {
             .header-footer h2 {
                 font-size: 1.8rem;
@@ -87,6 +103,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             }
         }
 
+        /* Styling for navigation container */
         .nav-container {
             background-color: #343a40;
             padding: 0px 0px 20px 0px;
@@ -142,6 +159,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                 <ul class="dropdown-menu" aria-labelledby="settingsMenuButton">
                     <li><a class="dropdown-item" href="user_profile.php">User Profile</a></li>
                     <?php
+                    // Display admin options if the user is an admin
                     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
                         echo '<li><a class="dropdown-item" href="manage_users.php">Manage Users</a></li>';
                         echo '<li><a class="dropdown-item" href="manage_lab.php">Manage Lab</a></li>';
