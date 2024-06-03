@@ -49,4 +49,3 @@ if ($con->connect_error) {
     error_log('Connection Failed: ' . $con->connect_error);
     die('Connection Failed. Please try again later.');
 }
-?>

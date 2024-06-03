@@ -134,114 +134,114 @@ if (isset($_GET['id'])) {
 
 <body>
     <table style="width: 10in; height: 6in; border-collapse: collapse; border: 1px dashed #D3D3D3;">
-        <?php foreach ($breedingcages as $index => $breedingcage): ?>
+        <?php foreach ($breedingcages as $index => $breedingcage) : ?>
 
-        <?php if ($index % 2 === 0): ?>
-        <tr style="height: 3in; border: 1px dashed #D3D3D3; vertical-align:top;">
+            <?php if ($index % 2 === 0) : ?>
+                <tr style="height: 3in; border: 1px dashed #D3D3D3; vertical-align:top;">
+                <?php endif; ?>
+
+                <td style="width: 5in; border: 1px dashed #D3D3D3;">
+                    <!--Cage <?= $index + 1 ?>-->
+                    <table border="1" style="width: 5in; height: 1.5in;" id="cageA">
+                        <tr>
+                            <td colspan="3" style="width: 100%; text-align:center;">
+                                <span style="font-weight: bold; font-size: 10pt; text-transform: uppercase; padding:3px;">
+                                    Breeding Cage - # <?= $breedingcage["cage_id"] ?> </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:40%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase;">PI Name:</span>
+                                <span><?= $breedingcage["pi_name"] ?></span>
+                            </td>
+                            <td style="width:40%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Cross:</span>
+                                <span><?= $breedingcage["cross"] ?></span>
+                            </td>
+                            <td rowspan="4" style="width:20%; text-align:center;">
+                                <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=75x75&data=https://" . $url . "/bc_view.php?id=" . $breedingcage["cage_id"] . "&choe=UTF-8"; ?>" alt="QR Code">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:40%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase;">IACUC:</span>
+                                <span><?= $breedingcage["iacuc"] ?></span>
+                            </td>
+                            <td style="width:40%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase;">User:</span>
+                                <span><?= $breedingcage["user"] ?></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:40%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Male ID:</span>
+                                <span><?= $breedingcage["male_id"] ?></span>
+                            </td>
+                            <td style="width:40%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Male DOB:</span>
+                                <span><?= $breedingcage["male_dob"] ?></span>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: none;">
+                            <td style="width:40%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Female ID:</span>
+                                <span><?= $breedingcage["female_id"] ?></span>
+                            </td>
+                            <td style="width:40%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Female DOB:</span>
+                                <span><?= $breedingcage["female_dob"] ?></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <table border="1" style="width: 5in; height: 1.5in; border-top: none;" id="cageB">
+                        <tr>
+                            <td style="width:25%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">DOM</span>
+                            </td>
+                            <td style="width:25%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Litter DOB</span>
+                            </td>
+                            <td style="width:12.5%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Alive</span>
+                            </td>
+                            <td style="width:12.5%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Dead</span>
+                            </td>
+                            <td style="width:12.5%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Male</span>
+                            </td>
+                            <td style="width:12.5%;">
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Female</span>
+                            </td>
+                        </tr>
+                        <?php for ($i = 0; $i < 5; $i++) : ?>
+                            <tr>
+                                <td style="width:25%; padding:3px;">
+                                    <span><?= isset($breedingcage['litters'][$i]['dom']) ? $breedingcage['litters'][$i]['dom'] : '' ?></span>
+                                </td>
+                                <td style="width:25%; padding:3px;">
+                                    <span><?= isset($breedingcage['litters'][$i]['litter_dob']) ? $breedingcage['litters'][$i]['litter_dob'] : '' ?></span>
+                                </td>
+                                <td style="width:12.5%; padding:3px;">
+                                    <span><?= isset($breedingcage['litters'][$i]['pups_alive']) ? $breedingcage['litters'][$i]['pups_alive'] : '' ?></span>
+                                </td>
+                                <td style="width:12.5%; padding:3px;">
+                                    <span><?= isset($breedingcage['litters'][$i]['pups_dead']) ? $breedingcage['litters'][$i]['pups_dead'] : '' ?></span>
+                                </td>
+                                <td style="width:12.5%; padding:3px;">
+                                    <span><?= isset($breedingcage['litters'][$i]['pups_male']) ? $breedingcage['litters'][$i]['pups_male'] : '' ?></span>
+                                </td>
+                                <td style="width:12.5%; padding:3px;">
+                                    <span><?= isset($breedingcage['litters'][$i]['pups_female']) ? $breedingcage['litters'][$i]['pups_female'] : '' ?></span>
+                                </td>
+                            </tr>
+                        <?php endfor; ?>
+                    </table>
+                </td>
+
+                <?php if ($index % 2 === 1 || $index === count($breedingcages) - 1) : ?>
+                </tr>
             <?php endif; ?>
-
-            <td style="width: 5in; border: 1px dashed #D3D3D3;">
-                <!--Cage <?= $index + 1 ?>-->
-                <table border="1" style="width: 5in; height: 1.5in;" id="cageA">
-                    <tr>
-                        <td colspan="3" style="width: 100%; text-align:center;">
-                            <span style="font-weight: bold; font-size: 10pt; text-transform: uppercase; padding:3px;">
-                                Breeding Cage - # <?= $breedingcage["cage_id"] ?> </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:40%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">PI Name:</span>
-                            <span><?= $breedingcage["pi_name"] ?></span>
-                        </td>
-                        <td style="width:40%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Cross:</span>
-                            <span><?= $breedingcage["cross"] ?></span>
-                        </td>
-                        <td rowspan="4" style="width:20%; text-align:center;">
-                            <img src="<?php echo "https://api.qrserver.com/v1/create-qr-code/?size=75x75&data=https://".$url."/bc_view.php?id=".$breedingcage["cage_id"]."&choe=UTF-8"; ?>" alt="QR Code">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:40%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">IACUC:</span>
-                            <span><?= $breedingcage["iacuc"] ?></span>
-                        </td>
-                        <td style="width:40%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">User:</span>
-                            <span><?= $breedingcage["user"] ?></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:40%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Male ID:</span>
-                            <span><?= $breedingcage["male_id"] ?></span>
-                        </td>
-                        <td style="width:40%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Male DOB:</span>
-                            <span><?= $breedingcage["male_dob"] ?></span>
-                        </td>
-                    </tr>
-                    <tr style="border-bottom: none;">
-                        <td style="width:40%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Female ID:</span>
-                            <span><?= $breedingcage["female_id"] ?></span>
-                        </td>
-                        <td style="width:40%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Female DOB:</span>
-                            <span><?= $breedingcage["female_dob"] ?></span>
-                        </td>
-                    </tr>
-                </table>
-                <table border="1" style="width: 5in; height: 1.5in; border-top: none;" id="cageB">
-                    <tr>
-                        <td style="width:25%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">DOM</span>
-                        </td>
-                        <td style="width:25%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Litter DOB</span>
-                        </td>
-                        <td style="width:12.5%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Alive</span>
-                        </td>
-                        <td style="width:12.5%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Dead</span>
-                        </td>
-                        <td style="width:12.5%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Male</span>
-                        </td>
-                        <td style="width:12.5%;">
-                            <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Female</span>
-                        </td>
-                    </tr>
-                    <?php for ($i = 0; $i < 5; $i++): ?>
-                    <tr>
-                        <td style="width:25%; padding:3px;">
-                            <span><?= isset($breedingcage['litters'][$i]['dom']) ? $breedingcage['litters'][$i]['dom'] : '' ?></span>
-                        </td>
-                        <td style="width:25%; padding:3px;">
-                            <span><?= isset($breedingcage['litters'][$i]['litter_dob']) ? $breedingcage['litters'][$i]['litter_dob'] : '' ?></span>
-                        </td>
-                        <td style="width:12.5%; padding:3px;">
-                            <span><?= isset($breedingcage['litters'][$i]['pups_alive']) ? $breedingcage['litters'][$i]['pups_alive'] : '' ?></span>
-                        </td>
-                        <td style="width:12.5%; padding:3px;">
-                            <span><?= isset($breedingcage['litters'][$i]['pups_dead']) ? $breedingcage['litters'][$i]['pups_dead'] : '' ?></span>
-                        </td>
-                        <td style="width:12.5%; padding:3px;">
-                            <span><?= isset($breedingcage['litters'][$i]['pups_male']) ? $breedingcage['litters'][$i]['pups_male'] : '' ?></span>
-                        </td>
-                        <td style="width:12.5%; padding:3px;">
-                            <span><?= isset($breedingcage['litters'][$i]['pups_female']) ? $breedingcage['litters'][$i]['pups_female'] : '' ?></span>
-                        </td>
-                    </tr>
-                    <?php endfor; ?>
-                </table>
-            </td>
-
-            <?php if ($index % 2 === 1 || $index === count($breedingcages) - 1): ?>
-        </tr>
-        <?php endif; ?>
 
         <?php endforeach; ?>
     </table>

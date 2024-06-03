@@ -24,7 +24,7 @@ $labQuery = "SELECT lab_name, url FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
 // Default value if the query fails or returns no result
-$labName = "My Vivarium"; 
+$labName = "My Vivarium";
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
     $url = $row['url'];

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SMTP Configuration Script
  *
@@ -38,4 +39,3 @@ define('SMTP_PASSWORD', $_ENV['SMTP_PASSWORD']); // SMTP server password
 define('SMTP_ENCRYPTION', $_ENV['SMTP_ENCRYPTION']); // SMTP server encryption type (tls or ssl)
 define('SENDER_EMAIL', $_ENV['SENDER_EMAIL']); // Sender's email address
 define('SENDER_NAME', $_ENV['SENDER_NAME']); // Sender's name
-?>

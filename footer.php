@@ -8,20 +8,20 @@
 
 <style>
     /* Header and Footer Styling */
-    
+
     /* Styling for the header and footer section */
     .header-footer {
-        background-color: #343a40; /* Dark grey background color */
-        padding: 20px 0; /* Vertical padding for top and bottom */
-        text-align: center; /* Center align the text */
-        width: 100%; /* Full width */
-        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        background-color: #343a40;
+        padding: 20px 0;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* Styling for the footer text */
     .footer-text {
-        color: white; /* White text color */
-        margin: 0; /* Remove default margin */
+        color: white;
+        margin: 0;
     }
 </style>
 

@@ -43,8 +43,8 @@ require 'header.php';
 
     <script>
         // Initialize tooltips
-        $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip(); 
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip();
         });
 
         // Confirm deletion function
@@ -59,7 +59,7 @@ require 'header.php';
         function fetchData(page = 1, search = '') {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', 'bc_fetch_data.php?page=' + page + '&search=' + encodeURIComponent(search), true);
-            xhr.onload = function () {
+            xhr.onload = function() {
                 if (xhr.status === 200) {
                     var response = JSON.parse(xhr.responseText);
                     document.getElementById('tableBody').innerHTML = response.tableRows;
@@ -76,7 +76,7 @@ require 'header.php';
         }
 
         // Fetch initial data when the document is loaded
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             fetchData();
         });
     </script>
@@ -94,7 +94,7 @@ require 'header.php';
         /* Table wrapper for responsive design */
         .table-wrapper {
             margin-bottom: 50px;
-            overflow-x: auto; /* Enable horizontal scrolling on small screens */
+            overflow-x: auto;
         }
 
         /* Table styles */
@@ -139,8 +139,8 @@ require 'header.php';
         }
 
         @media (max-width: 768px) {
-            /* Adjust padding and alignment for smaller screens */
-            .table-wrapper th, .table-wrapper td {
+            .table-wrapper th,
+            .table-wrapper td {
                 padding: 12px 8px;
                 text-align: center;
             }
@@ -203,7 +203,7 @@ require 'header.php';
     </div>
     <!-- Include footer -->
     <?php include 'footer.php'; ?>
-    
+
     <!-- Bootstrap and jQuery for tooltips -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

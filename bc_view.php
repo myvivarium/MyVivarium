@@ -1,4 +1,5 @@
 <?php
+
 /**
  * View Breeding Cage Details
  *
@@ -184,6 +185,7 @@ require 'header.php';
         }
 
         @media (max-width: 768px) {
+
             .table-wrapper th,
             .table-wrapper td {
                 padding: 12px 8px;

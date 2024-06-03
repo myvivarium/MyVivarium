@@ -78,4 +78,3 @@ echo json_encode([
     'tableRows' => $tableRows,
     'paginationLinks' => $paginationLinks
 ]);
-?>
