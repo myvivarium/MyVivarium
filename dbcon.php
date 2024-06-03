@@ -1,19 +1,17 @@
 <?php
+
+/**
+ * Database Connection Script
+ *
+ * This script loads environment variables from a .env file using the Dotenv library and establishes a connection
+ * to a MySQL database using the credentials provided in the .env file. If the .env file is not found or the
+ * connection fails, appropriate error messages are logged or displayed.
+ */
+
 // Load Composer's autoload file
 require __DIR__ . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
-
-/*
-    Database Connection Script
-
-    This script loads environment variables from a .env file using the Dotenv library and establishes a connection
-    to a MySQL database using the credentials provided in the .env file. If the .env file is not found or the
-    connection fails, appropriate error messages are logged or displayed.
-
-    Author: [Your Name]
-    Date: [Date]
-*/
 
 // Check if the .env file exists in the current directory
 if (file_exists(__DIR__ . '/.env')) {

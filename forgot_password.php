@@ -1,6 +1,8 @@
 <?php
 
 /**
+ *  Forgot Password Email Script
+ *
  * This script handles the password reset functionality for users.
  * It verifies if the provided email exists in the database, generates a reset token,
  * saves it along with an expiration time, and sends an email with the reset link.

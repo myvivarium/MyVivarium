@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * Add New Holding Cage Script
+ * 
  * This PHP script handles the creation of new holding cages in a laboratory management system.
  * It starts by initializing a session and regenerating the session ID to prevent session fixation attacks.
  * It checks if the user is logged in and redirects them to the login page if not. The script generates a CSRF token
