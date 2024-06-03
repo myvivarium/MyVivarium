@@ -1,5 +1,19 @@
 <?php
+
+/**
+ * Edit Holding Cage Script
+ * 
+ * This script handles the editing of holding cage records. It includes functionalities such as fetching existing
+ * cage data, updating the cage information, handling CSRF protection, and managing file uploads and deletions.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
 // Regenerate session ID to prevent session fixation
@@ -11,7 +25,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// CSRF token generation
+// Generate a CSRF token if it doesn't exist
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -22,10 +36,11 @@ if (!isset($_SESSION['name'])) {
     exit;
 }
 
+// Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Query to retrieve options where role is 'PI'
+// Query to retrieve options where role is 'PI' (Principal Investigator)
 $query1 = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result1 = $con->query($query1);
 
@@ -33,23 +48,26 @@ $result1 = $con->query($query1);
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Fetch the holdingcage record with the specified ID
+    // Fetch the holding cage record with the specified ID
     $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
     $result = mysqli_query($con, $query);
 
+    // Fetch associated files for the holding cage
     $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
     $files = $con->query($query2);
 
+    // Check if the holding cage record exists
     if (mysqli_num_rows($result) === 1) {
         $holdingcage = mysqli_fetch_assoc($result);
 
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+            // Validate CSRF token
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 die('CSRF token validation failed');
             }
-            
+
             // Retrieve and sanitize form data
             $cage_id = mysqli_real_escape_string($con, $_POST['cage_id']);
             $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
@@ -106,18 +124,41 @@ if (isset($_GET['id'])) {
                             `notes_5` = ?
                             WHERE `cage_id` = ?";
 
+            // Prepare the update query
             $stmt = $con->prepare($updateQuery);
 
             // Bind parameters to the prepared statement
             $stmt->bind_param(
                 "sssssissssssssssssssssssss",
-                $cage_id, $pi_name, $strain, $iacuc, $user, $qty, $dob, $sex, $parent_cg, $remarks,
-                $mouse_id_1, $genotype_1, $notes_1, $mouse_id_2, $genotype_2, $notes_2,
-                $mouse_id_3, $genotype_3, $notes_3, $mouse_id_4, $genotype_4, $notes_4,
-                $mouse_id_5, $genotype_5, $notes_5, $id
+                $cage_id,
+                $pi_name,
+                $strain,
+                $iacuc,
+                $user,
+                $qty,
+                $dob,
+                $sex,
+                $parent_cg,
+                $remarks,
+                $mouse_id_1,
+                $genotype_1,
+                $notes_1,
+                $mouse_id_2,
+                $genotype_2,
+                $notes_2,
+                $mouse_id_3,
+                $genotype_3,
+                $notes_3,
+                $mouse_id_4,
+                $genotype_4,
+                $notes_4,
+                $mouse_id_5,
+                $genotype_5,
+                $notes_5,
+                $id
             );
 
-            // Execute the statement
+            // Execute the prepared statement
             $result = $stmt->execute();
 
             // Check if the update was successful
@@ -162,19 +203,24 @@ if (isset($_GET['id'])) {
                 }
             }
 
+            // Redirect to the dashboard page
             header("Location: hc_dash.php");
             exit();
         }
     } else {
+        // Set an error message if the ID is invalid
         $_SESSION['message'] = 'Invalid ID.';
         header("Location: hc_dash.php");
         exit();
     }
 } else {
+    // Set an error message if the ID parameter is missing
     $_SESSION['message'] = 'ID parameter is missing.';
     header("Location: hc_dash.php");
     exit();
 }
+
+// Include the header file
 require 'header.php';
 ?>
 
@@ -183,10 +229,12 @@ require 'header.php';
 
 <head>
     <script>
+        // Function to go back to the previous page
         function goBack() {
             window.history.back();
         }
 
+        // Function to show/hide mouse fields based on the quantity
         function showMouseFields() {
             var qty = document.getElementById('qty').value;
             for (var i = 1; i <= 5; i++) {
@@ -194,6 +242,7 @@ require 'header.php';
             }
         }
 
+        // Function to adjust the height of textareas dynamically
         function adjustTextareaHeight(element) {
             element.style.height = "auto";
             element.style.height = (element.scrollHeight) + "px";
@@ -206,7 +255,7 @@ require 'header.php';
 <body>
     <div class="container mt-4" style="max-width: 800px; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
 
-        <?php include('message.php'); ?>
+        <?php include('message.php'); ?> <!-- Include the message file -->
 
         <div class="row">
             <div class="col-md-12">
@@ -302,7 +351,8 @@ require 'header.php';
                                 <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($holdingcage['remarks']); ?></textarea>
                             </div>
 
-                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                            <!-- Loop to dynamically create fields for each mouse -->
+                            <?php for ($i = 1; $i <= 5; $i++) : ?>
                                 <div id="mouse_fields_<?php echo $i; ?>" style="display: <?= $i <= $holdingcage['qty'] ? 'block' : 'none'; ?>;">
                                     <h4>Mouse #<?php echo $i; ?></h4>
                                     <div class="mb-3">
