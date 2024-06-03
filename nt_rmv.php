@@ -1,7 +1,20 @@
 <?php
+
+/**
+ * Delete Note Script
+ * 
+ * This script handles the deletion of a note from the database.
+ * It expects a POST request with the note ID. The note can only be deleted by the user who created it.
+ * The response is returned as JSON.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
 // Include the database connection file
 include_once("dbcon.php");
 
+// Start or resume the session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -12,8 +25,10 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// Check if the request is a POST and the 'note_id' field is set
+// Initialize response array
 $response = ['success' => false, 'message' => 'Invalid request.'];
+
+// Check if the request is a POST and the 'note_id' field is set
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_id'])) {
     // Retrieve the note ID from the POST data
     $note_id = $_POST['note_id'];
@@ -48,4 +63,3 @@ $con->close();
 
 // Return the response as JSON
 echo json_encode($response);
-?>
