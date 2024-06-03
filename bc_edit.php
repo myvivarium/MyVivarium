@@ -1,5 +1,20 @@
 <?php
+
+/**
+ * Edit Breeding Cage Script
+ *
+ * This script handles the editing of a breeding cage and its related data. It starts a session, checks if the user is logged in,
+ * retrieves existing cage data, processes form submissions for updating the cage and litter information, and handles file uploads.
+ * It also ensures security by regenerating session IDs and validating CSRF tokens.
+ *
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection
 require 'dbcon.php';
 
 // Regenerate session ID to prevent session fixation
@@ -11,11 +26,10 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// CSRF token generation
+// Generate CSRF token if not already set
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
-
 
 // Redirect to index.php if the user is not logged in
 if (!isset($_SESSION['name'])) {
@@ -31,7 +45,7 @@ $result1 = $con->query($query1);
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Fetch the breedingcage record with the specified ID
+    // Fetch the breeding cage record with the specified ID
     $query = "SELECT * FROM bc_basic WHERE `cage_id` = '$id'";
     $result = mysqli_query($con, $query);
 
@@ -39,16 +53,17 @@ if (isset($_GET['id'])) {
     $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
     $files = $con->query($query2);
 
-    // Fetch the breedingcage litter record with the specified ID
+    // Fetch the breeding cage litter record with the specified ID
     $query3 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id'";
     $litters = mysqli_query($con, $query3);
 
+    // Check if the breeding cage exists
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
 
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+            // Validate CSRF token
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 die('CSRF token validation failed');
             }
@@ -125,7 +140,7 @@ if (isset($_GET['id'])) {
                 $_SESSION['message'] = "File upload error: " . $_FILES['fileUpload']['error'];
             }
 
-            // Initialize arrays
+            // Initialize arrays for litter data
             $dom = isset($_POST['dom']) ? $_POST['dom'] : [];
             $litter_dob = isset($_POST['litter_dob']) ? $_POST['litter_dob'] : [];
             $pups_alive = isset($_POST['pups_alive']) ? $_POST['pups_alive'] : [];
@@ -135,7 +150,6 @@ if (isset($_GET['id'])) {
             $remarks_litter = isset($_POST['remarks_litter']) ? $_POST['remarks_litter'] : [];
             $litter_id = isset($_POST['litter_id']) ? $_POST['litter_id'] : [];
             $delete_litter_ids = isset($_POST['delete_litter_ids']) ? $_POST['delete_litter_ids'] : [];
-
 
             // Process litter data
             if (count($dom) > 0) {
@@ -177,20 +191,24 @@ if (isset($_GET['id'])) {
                 }
             }
 
+            // Redirect to the dashboard
             header("Location: bc_dash.php");
             exit();
         }
     } else {
+        // Set an error message if the ID is invalid
         $_SESSION['message'] = 'Invalid ID.';
         header("Location: bc_dash.php");
         exit();
     }
 } else {
+    // Set an error message if the ID parameter is missing
     $_SESSION['message'] = 'ID parameter is missing.';
     header("Location: bc_dash.php");
     exit();
 }
 
+// Include the header file
 require 'header.php';
 ?>
 
@@ -199,56 +217,60 @@ require 'header.php';
 
 <head>
     <script>
+        // Function to navigate back to the previous page
         function goBack() {
             window.history.back();
         }
 
+        // Function to adjust the height of the textarea dynamically
         function adjustTextareaHeight(element) {
             element.style.height = "auto";
             element.style.height = (element.scrollHeight) + "px";
         }
 
+        // Function to add a new litter entry dynamically
         function addLitter() {
             const litterDiv = document.createElement('div');
             litterDiv.className = 'litter-entry';
 
             litterDiv.innerHTML = `
-        <hr>
-        <div class="mb-3">
-            <label for="dom[]" class="form-label">DOM</label>
-            <input type="date" class="form-control" name="dom[]" required>
-        </div>
-        <div class="mb-3">
-            <label for="litter_dob[]" class="form-label">Litter DOB</label>
-            <input type="date" class="form-control" name="litter_dob[]">
-        </div>
-        <div class="mb-3">
-            <label for="pups_alive[]" class="form-label">Pups Alive</label>
-            <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
-        </div>
-        <div class="mb-3">
-            <label for="pups_dead[]" class="form-label">Pups Dead</label>
-            <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
-        </div>
-        <div class="mb-3">
-            <label for="pups_male[]" class="form-label">Pups Male</label>
-            <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
-        </div>
-        <div class="mb-3">
-            <label for="pups_female[]" class="form-label">Pups Female</label>
-            <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
-        </div>
-        <div class="mb-3">
-            <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
-            <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
-        </div>
-        <input type="hidden" name="litter_id[]" value="">
-        <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
-    `;
+            <hr>
+            <div class="mb-3">
+                <label for="dom[]" class="form-label">DOM</label>
+                <input type="date" class="form-control" name="dom[]" required>
+            </div>
+            <div class="mb-3">
+                <label for="litter_dob[]" class="form-label">Litter DOB</label>
+                <input type="date" class="form-control" name="litter_dob[]">
+            </div>
+            <div class="mb-3">
+                <label for="pups_alive[]" class="form-label">Pups Alive</label>
+                <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_dead[]" class="form-label">Pups Dead</label>
+                <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_male[]" class="form-label">Pups Male</label>
+                <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_female[]" class="form-label">Pups Female</label>
+                <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
+                <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
+            </div>
+            <input type="hidden" name="litter_id[]" value="">
+            <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
+        `;
 
             document.getElementById('litterEntries').appendChild(litterDiv);
         }
 
+        // Function to remove a litter entry dynamically
         function removeLitter(element) {
             const litterEntry = element.parentElement;
             const litterIdInput = litterEntry.querySelector('[name="litter_id[]"]');
