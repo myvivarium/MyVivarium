@@ -19,9 +19,25 @@ require 'vendor/autoload.php'; // Include PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// Query to fetch the lab name and URL
+$labQuery = "SELECT * FROM data LIMIT 1";
+$labResult = mysqli_query($con, $labQuery);
+
+// Default value if the query fails or returns no result
+$labName = "My Vivarium";
+if ($row = mysqli_fetch_assoc($labResult)) {
+    $labName = $row['lab_name'];
+    $url = $row['url'];
+}
+
 // Function to send confirmation email
 function sendConfirmationEmail($to, $token)
 {
+    global $url;
+    $confirmLink = "https://" . $url . "/confirm_email.php?token=$token";
+    $subject = 'Email Confirmation';
+    $message = "Please click the link below to confirm your email address:\n$confirmLink";
+
     $mail = new PHPMailer(true);
     try {
         //Server settings
@@ -39,8 +55,8 @@ function sendConfirmationEmail($to, $token)
 
         // Content
         $mail->isHTML(false);
-        $mail->Subject = 'Email Confirmation';
-        $mail->Body    = "Please click the link below to confirm your email address:\nhttp://yourdomain.com/confirm_email.php?token=$token";
+        $mail->Subject = $subject;
+        $mail->Body = $message;
 
         $mail->send();
     } catch (Exception $e) {
