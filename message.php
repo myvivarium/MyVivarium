@@ -1,6 +1,17 @@
 <?php
+
+/**
+ * Display Session Message
+ * 
+ * This script checks if there's a message set in the session and displays it as a Bootstrap alert. 
+ * The message is then unset from the session after being displayed.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
 // Check if there's a message set in the session
-if (isset($_SESSION['message'])):
+if (isset($_SESSION['message'])) :
 ?>
 
     <!-- Bootstrap alert message -->
