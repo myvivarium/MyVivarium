@@ -12,7 +12,6 @@
  */
 
 require 'dbcon.php'; // Include your database connection file
-require 'config.php'; // Include your configuration file
 
 // Query to fetch the lab name and URL
 $labQuery = "SELECT * FROM data LIMIT 1";
@@ -22,7 +21,6 @@ $labResult = mysqli_query($con, $labQuery);
 $labName = "My Vivarium";
 if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
-    $url = $row['url'];
 }
 
 ?>
