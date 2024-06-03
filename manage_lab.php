@@ -1,11 +1,24 @@
 <?php
+
+/**
+ * Manage Lab Page
+ * 
+ * This script allows logged-in users to view and update lab details, including the lab name, URL, and IoT sensor links for two rooms.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
-    exit;
+    exit; // Ensure no further code is executed
 }
 
 // Fetch lab details from the database
@@ -17,6 +30,7 @@ $updateMessage = '';
 
 // Handle form submission for lab data update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_lab'])) {
+    // Sanitize and fetch form inputs
     $labName = filter_input(INPUT_POST, 'lab_name', FILTER_SANITIZE_STRING);
     $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_URL);
     $r1_temp = filter_input(INPUT_POST, 'r1_temp', FILTER_SANITIZE_STRING);
@@ -42,6 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_lab'])) {
     $updateMessage = "Lab information updated successfully.";
 }
 
+// Include the header file
 require 'header.php';
 ?>
 
@@ -49,9 +64,12 @@ require 'header.php';
 <html lang="en">
 
 <head>
+    <!-- Meta tags for character encoding and responsive design -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Manage Lab</title>
+
+    <!-- Inline CSS for styling -->
     <style>
         .container {
             max-width: 800px;
@@ -95,6 +113,7 @@ require 'header.php';
 <body>
     <div class="container">
         <h2>Manage Lab</h2>
+        <!-- Form for updating lab information -->
         <form method="POST" action="">
             <div class="form-group">
                 <label for="lab_name">Lab Name</label>
@@ -138,10 +157,15 @@ require 'header.php';
             </div>
             <button type="submit" class="btn1 btn-primary" name="update_lab">Update Lab Information</button>
         </form>
-        <?php if ($updateMessage) { echo "<p class='update-message'>$updateMessage</p>"; } ?>
+        <?php if ($updateMessage) {
+            echo "<p class='update-message'>$updateMessage</p>";
+        } ?>
     </div>
+
+    <!-- Include the footer -->
     <?php include 'footer.php'; ?>
 
+    <!-- JavaScript for adjusting textarea height dynamically -->
     <script>
         function adjustTextareaHeight(textarea) {
             textarea.style.height = 'auto';
@@ -156,4 +180,5 @@ require 'header.php';
 </body>
 
 </html>
+
 <?php mysqli_close($con); ?>
