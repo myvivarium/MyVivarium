@@ -185,6 +185,8 @@ require 'header.php';
 
         <form method="POST">
 
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+
             <div class="mb-3">
                 <label for="cage_id" class="form-label">Cage ID</label>
                 <input type="text" class="form-control" id="cage_id" name="cage_id" required>
