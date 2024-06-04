@@ -173,12 +173,20 @@ if (isset($_GET['id'])) {
 
             // Handle file upload
             if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
-                $targetDirectory = __DIR__ . "/uploads/$cage_id/";
+                $uploadsDir = __DIR__ . "/uploads/";
+                $targetDirectory = $uploadsDir . "$cage_id/";
+
+                // Create the uploads directory if it doesn't exist
+                if (!file_exists($uploadsDir)) {
+                    if (!mkdir($uploadsDir, 0777, true) && !is_dir($uploadsDir)) {
+                        $_SESSION['message'] .= " Failed to create uploads directory.";
+                    }
+                }
 
                 // Create the cage_id specific sub-directory if it doesn't exist
                 if (!file_exists($targetDirectory)) {
                     if (!mkdir($targetDirectory, 0777, true) && !is_dir($targetDirectory)) {
-                        $_SESSION['message'] .= " Failed to create directory.";
+                        $_SESSION['message'] .= " Failed to create cage_id directory.";
                     }
                 }
 
@@ -206,7 +214,6 @@ if (isset($_GET['id'])) {
             } else if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] != UPLOAD_ERR_NO_FILE) {
                 $_SESSION['message'] .= " Error uploading file: " . $_FILES['fileUpload']['error'];
             }
-
 
             // Redirect to the dashboard page
             header("Location: hc_dash.php");
