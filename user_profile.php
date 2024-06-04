@@ -7,7 +7,9 @@
  * and email address. It also provides an option to request a password change. The page fetches user details
  * from the database, displays them in a form, and handles form submissions to update the profile or request a
  * password reset.
- *
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
  */
 
 session_start();
