@@ -172,7 +172,7 @@ if (isset($_GET['id'])) {
             $stmt->close();
 
             // Handle file upload
-            if (isset($_FILES['fileUpload'])) {
+            if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
                 $targetDirectory = "uploads/$cage_id/";
 
                 // Create the cage_id specific sub-directory if it doesn't exist
@@ -201,6 +201,8 @@ if (isset($_GET['id'])) {
                 } else {
                     $_SESSION['message'] .= " Sorry, file already exists.";
                 }
+            } else if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] != UPLOAD_ERR_NO_FILE) {
+                $_SESSION['message'] .= " Error uploading file: " . $_FILES['fileUpload']['error'];
             }
 
             // Redirect to the dashboard page
