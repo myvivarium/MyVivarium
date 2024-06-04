@@ -142,7 +142,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             <!-- Dropdown for Dashboard -->
             <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    Dashboards
+                    <i class="fas fa-tachometer-alt"></i> Dashboards
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
                     <li><a class="dropdown-item" href="hc_dash.php">Holding Cage</a></li>
@@ -154,7 +154,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             <!-- Dropdown for Settings -->
             <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" id="settingsMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    Settings
+                    <i class="fas fa-cog"></i> Settings
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="settingsMenuButton">
                     <li><a class="dropdown-item" href="user_profile.php">User Profile</a></li>
