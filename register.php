@@ -8,8 +8,8 @@
  * if the email already exists in the database, hashes the password, 
  * and stores the new user details in the database with a pending status.
  * 
- * Author: [Your Name]
- * Date: [Date]
+ * Author: Robinson Vidva
+ * Date: 06-03-2024
  */
 
 session_start();
