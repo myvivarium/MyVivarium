@@ -28,5 +28,12 @@
 <!-- Footer content -->
 <div class="header-footer">
     <!-- Dynamic footer text displaying the current year and lab name, with HTML special characters escaped -->
-    <p class="footer-text">&copy; <?php echo date("Y"); ?> <?php echo htmlspecialchars($labName); ?>. All rights reserved.</p>
+    <p class="footer-text">&copy; <?php echo date("Y"); ?>
+        <?php
+        if (isset($labName)) {
+            echo htmlspecialchars($labName);
+        } else {
+            echo "My Vivarium";
+        }
+        ?>. All rights reserved.</p>
 </div>
