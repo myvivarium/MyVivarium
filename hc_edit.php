@@ -177,7 +177,9 @@ if (isset($_GET['id'])) {
 
                 // Create the cage_id specific sub-directory if it doesn't exist
                 if (!file_exists($targetDirectory)) {
-                    mkdir($targetDirectory, 0777, true); // true for recursive create (if needed)
+                    if (!mkdir($targetDirectory, 0777, true) && !is_dir($targetDirectory)) {
+                        $_SESSION['message'] .= " Failed to create directory.";
+                    }
                 }
 
                 $originalFileName = basename($_FILES['fileUpload']['name']);
@@ -193,10 +195,10 @@ if (isset($_GET['id'])) {
                         if ($insert->execute()) {
                             $_SESSION['message'] .= " File uploaded successfully.";
                         } else {
-                            $_SESSION['message'] .= " File upload failed, please try again.";
+                            $_SESSION['message'] .= " File upload failed, please try again. Error: " . $insert->error;
                         }
                     } else {
-                        $_SESSION['message'] .= " Sorry, there was an error uploading your file.";
+                        $_SESSION['message'] .= " Sorry, there was an error uploading your file. Error: " . $_FILES['fileUpload']['error'];
                     }
                 } else {
                     $_SESSION['message'] .= " Sorry, file already exists.";
@@ -204,6 +206,7 @@ if (isset($_GET['id'])) {
             } else if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] != UPLOAD_ERR_NO_FILE) {
                 $_SESSION['message'] .= " Error uploading file: " . $_FILES['fileUpload']['error'];
             }
+
 
             // Redirect to the dashboard page
             header("Location: hc_dash.php");
