@@ -267,6 +267,8 @@ require 'header.php';
                     <div class="card-body">
                         <form method="POST" action="hc_edit.php?id=<?= $id; ?>" enctype="multipart/form-data">
 
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+
                             <div class="mb-3">
                                 <label for="cage_id" class="form-label">Cage ID</label>
                                 <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= htmlspecialchars($holdingcage['cage_id']); ?>" required>
