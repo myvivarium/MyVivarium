@@ -112,27 +112,26 @@ if (isset($_GET['id'])) {
 
                 $uploadsDir = "/uploads/";
                 $targetDirectory = $uploadsDir . "$cage_id/";
-
                 // Ensure the correct permissions and ownership for the uploads directory
-                if (!file_exists($uploadsDir)) {
-                    if (!mkdir($uploadsDir, 0777, true)) {
+                if (!file_exists(__DIR__ . $uploadsDir)) {
+                    if (!mkdir(__DIR__ . $uploadsDir, 0777, true)) {
                         $_SESSION['message'] .= " Failed to create uploads directory.";
                     }
                 }
-                chown($uploadsDir, 'www-data');
-                chgrp($uploadsDir, 'www-data');
-                chmod($uploadsDir, 0755);
+                chown(__DIR__ . $uploadsDir, 'www-data');
+                chgrp(__DIR__ . $uploadsDir, 'www-data');
+                chmod(__DIR__ . $uploadsDir, 0755);
                 
                 // Create the cage_id specific sub-directory if it doesn't exist
                 $targetDirectory = $uploadsDir . "$cage_id/";
-                if (!file_exists($targetDirectory)) {
-                    if (!mkdir($targetDirectory, 0777, true)) {
+                if (!file_exists(__DIR__ . $targetDirectory)) {
+                    if (!mkdir(__DIR__ . $targetDirectory, 0777, true)) {
                         $_SESSION['message'] .= " Failed to create cage_id directory.";
                     }
                 }
-                chown($targetDirectory, 'www-data');
-                chgrp($targetDirectory, 'www-data');
-                chmod($targetDirectory, 0755);
+                chown(__DIR__ . $targetDirectory, 'www-data');
+                chgrp(__DIR__ . $targetDirectory, 'www-data');
+                chmod(__DIR__ . $targetDirectory, 0755);
                 
 
                 $originalFileName = basename($_FILES['fileUpload']['name']);
