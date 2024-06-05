@@ -191,12 +191,12 @@ mysqli_close($con);
     <title><?php echo htmlspecialchars($labName); ?></title>
 
     <!-- Favicon and Icons -->
-    <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-    <link rel="icon" sizes="192x192" href="/icons/android-chrome-192x192.png">
-    <link rel="icon" sizes="512x512" href="/icons/android-chrome-512x512.png">
+    <link rel="icon" href="icons/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="icon" sizes="192x192" href="icons/android-chrome-192x192.png">
+    <link rel="icon" sizes="512x512" href="icons/android-chrome-512x512.png">
     <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
 
     <!-- Bootstrap CSS -->
