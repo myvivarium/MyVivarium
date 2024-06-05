@@ -191,11 +191,11 @@ require 'header.php';
             </div>
             <div class="mb-3">
                 <label for="pups_male[]" class="form-label">Pups Male</label>
-                <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
+                <input type="number" class="form-control" name="pups_male[]" min="0" step="1">
             </div>
             <div class="mb-3">
                 <label for="pups_female[]" class="form-label">Pups Female</label>
-                <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
+                <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
             </div>
             <div class="mb-3">
                 <label for="remarks[]" class="form-label">Remarks</label>
