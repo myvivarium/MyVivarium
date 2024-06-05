@@ -157,6 +157,11 @@ require 'header.php';
         .required-asterisk {
             color: red;
         }
+
+        .warning-text {
+            color: red;
+            font-weight: bold;
+        }
     </style>
     <script>
         // Function to navigate back to the previous page
@@ -224,6 +229,8 @@ require 'header.php';
         <h4>Add New Breeding Cage</h4>
 
         <?php include('message.php'); ?>
+
+        <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
 
         <form method="POST">
 
