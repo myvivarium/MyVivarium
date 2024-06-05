@@ -159,8 +159,8 @@ require 'header.php';
         }
 
         .warning-text {
-            color: red;
-            font-weight: bold;
+            color: #dc3545; /* Subtle red color */
+            font-size: 14px;
         }
     </style>
     <script>
