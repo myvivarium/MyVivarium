@@ -175,18 +175,18 @@ mysqli_close($con);
                                         <input type="hidden" name="username" value="<?php echo htmlspecialchars($row['username']); ?>">
 
                                         <?php if ($row['status'] === 'pending') { ?>
-                                            <button type="submit" class="btn btn-success btn-sm" name="action" value="approve"><i class="fas fa-check"></i></button>
+                                            <button type="submit" class="btn btn-success btn-sm" name="action" value="approve" title="Approve User"><i class="fas fa-check"></i></button>
                                         <?php } elseif ($row['status'] === 'approved') { ?>
-                                            <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending"><i class="fas fa-ban"></i></button>
+                                            <button type="submit" class="btn btn-secondary btn-sm" name="action" value="pending" title="Deactivate User"><i class="fas fa-ban"></i></button>
                                         <?php } ?>
 
                                         <?php if ($row['role'] === 'user') { ?>
-                                            <button type="submit" class="btn btn-warning btn-sm" name="action" value="admin"><i class="fas fa-user-shield"></i></button>
+                                            <button type="submit" class="btn btn-warning btn-sm" name="action" value="admin" title="Make Admin"><i class="fas fa-user-shield"></i></button>
                                         <?php } elseif ($row['role'] == 'admin') { ?>
-                                            <button type="submit" class="btn btn-info btn-sm" name="action" value="user"><i class="fas fa-user"></i></button>
+                                            <button type="submit" class="btn btn-info btn-sm" name="action" value="user" title="Make User"><i class="fas fa-user"></i></button>
                                         <?php } ?>
 
-                                        <button type="submit" class="btn btn-danger btn-sm" name="action" value="delete"><i class="fas fa-trash"></i></button>
+                                        <button type="submit" class="btn btn-danger btn-sm" name="action" value="delete" title="Delete User"><i class="fas fa-trash"></i></button>
                                     </form>
                                 </td>
                             </tr>
