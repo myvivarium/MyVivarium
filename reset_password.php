@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
     <link rel="icon" sizes="192x192" href="/icons/android-chrome-192x192.png">
     <link rel="icon" sizes="512x512" href="/icons/android-chrome-512x512.png">
-    <link rel="manifest" href="/icons/site.webmanifest">
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
 
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
