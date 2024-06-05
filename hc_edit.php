@@ -187,13 +187,6 @@ if (isset($_GET['id'])) {
                 $targetFilePath = $targetDirectory . $originalFileName;
                 $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
 
-                // Allow only certain file formats
-                $allowedFileTypes = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx']; // Add allowed file types here
-                if (!in_array($fileType, $allowedFileTypes)) {
-                    $_SESSION['message'] .= " Sorry, only JPG, JPEG, PNG, PDF, DOC, and DOCX files are allowed.";
-                    exit;
-                }
-
                 // Check if file already exists
                 if (!file_exists($targetFilePath)) {
                     if (move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetFilePath)) {
