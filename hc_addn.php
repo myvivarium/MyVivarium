@@ -282,12 +282,12 @@ require 'header.php';
                 <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"></textarea>
             </div>
 
-            <?php for ($i = 0; $i <= 5; $i++) : ?>
+            <?php for ($i = 1; $i <= 5; $i++) : ?>
                 <div id="mouse_fields_<?php echo $i; ?>" style="display: none;">
                     <h4>Mouse #<?php echo $i; ?></h4>
                     <div class="mb-3">
-                        <label for="mouse_id_<?php echo $i; ?>" class="form-label">Mouse ID <span class="required-asterisk">*</span></label>
-                        <input type="text" class="form-control" id="mouse_id_<?php echo $i; ?>" name="mouse_id_<?php echo $i; ?>" required>
+                        <label for="mouse_id_<?php echo $i; ?>" class="form-label">Mouse ID</label>
+                        <input type="text" class="form-control" id="mouse_id_<?php echo $i; ?>" name="mouse_id_<?php echo $i; ?>">
                     </div>
 
                     <div class="mb-3">
