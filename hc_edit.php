@@ -240,6 +240,29 @@ require 'header.php';
 <html lang="en">
 
 <head>
+    <title>Edit Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
+    <style>
+        .container {
+            max-width: 800px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: auto;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .required-asterisk {
+            color: red;
+        }
+
+        .warning-text {
+            color: #dc3545;
+            font-size: 14px;
+        }
+    </style>
     <script>
         // Function to go back to the previous page
         function goBack() {
@@ -261,7 +284,6 @@ require 'header.php';
         }
     </script>
 
-    <title>Edit Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 </head>
 
 <body>
@@ -274,6 +296,8 @@ require 'header.php';
                 <div class="card">
                     <div class="card-header">
                         <h4>Edit Holding Cage</h4>
+                        <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
+
                     </div>
 
                     <div class="card-body">
@@ -282,12 +306,12 @@ require 'header.php';
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
                             <div class="mb-3">
-                                <label for="cage_id" class="form-label">Cage ID</label>
+                                <label for="cage_id" class="form-label">Cage ID <span class="required-asterisk">*</span></label>
                                 <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= htmlspecialchars($holdingcage['cage_id']); ?>" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="pi_name" class="form-label">PI Name</label>
+                                <label for="pi_name" class="form-label">PI Name <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="pi_name" name="pi_name" required>
                                     <option value="<?= htmlspecialchars($holdingcage['pi_name']); ?>" selected>
                                         <?= htmlspecialchars($holdingcage['pi_name']); ?>
@@ -303,7 +327,7 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="strain" class="form-label">Strain</label>
+                                <label for="strain" class="form-label">Strain <span class="required-asterisk">*</span></label>
                                 <input type="text" class="form-control" id="strain" name="strain" value="<?= htmlspecialchars($holdingcage['strain']); ?>" required>
                             </div>
 
@@ -313,18 +337,18 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="user" class="form-label">User</label>
+                                <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>
                                 <input type="text" class="form-control" id="user" name="user" value="<?= htmlspecialchars($holdingcage['user']); ?>" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="qty" class="form-label">Qty</label>
+                                <label for="qty" class="form-label">Qty <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="qty" name="qty" required onchange="showMouseFields()">
                                     <option value="<?= htmlspecialchars($holdingcage['qty']); ?>" selected>
                                         <?= htmlspecialchars($holdingcage['qty']); ?>
                                     </option>
                                     <?php
-                                    for ($i = 1; $i <= 5; $i++) {
+                                    for ($i = 0; $i <= 5; $i++) {
                                         if ($i != $holdingcage['qty']) {
                                             echo "<option value=\"$i\">$i</option>";
                                         }
@@ -334,12 +358,12 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="dob" class="form-label">DOB</label>
+                                <label for="dob" class="form-label">DOB <span class="required-asterisk">*</span></label>
                                 <input type="date" class="form-control" id="dob" name="dob" value="<?= htmlspecialchars($holdingcage['dob']); ?>" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="sex" class="form-label">Sex</label>
+                                <label for="sex" class="form-label">Sex <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="sex" name="sex" required>
                                     <option value="<?= htmlspecialchars($holdingcage['sex']); ?>" selected>
                                         <?= htmlspecialchars($holdingcage['sex']); ?>
@@ -356,7 +380,7 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="parent_cg" class="form-label">Parent Cage</label>
+                                <label for="parent_cg" class="form-label">Parent Cage <span class="required-asterisk">*</span></label>
                                 <input type="text" class="form-control" id="parent_cg" name="parent_cg" value="<?= htmlspecialchars($holdingcage['parent_cg']); ?>" required>
                             </div>
 
@@ -370,8 +394,8 @@ require 'header.php';
                                 <div id="mouse_fields_<?php echo $i; ?>" style="display: <?= $i <= $holdingcage['qty'] ? 'block' : 'none'; ?>;">
                                     <h4>Mouse #<?php echo $i; ?></h4>
                                     <div class="mb-3">
-                                        <label for="mouse_id_<?php echo $i; ?>" class="form-label">Mouse ID</label>
-                                        <input type="text" class="form-control" id="mouse_id_<?php echo $i; ?>" name="mouse_id_<?php echo $i; ?>" value="<?= htmlspecialchars($holdingcage["mouse_id_$i"]); ?>">
+                                        <label for="mouse_id_<?php echo $i; ?>" class="form-label">Mouse ID <span class="required-asterisk">*</span></label>
+                                        <input type="text" class="form-control" id="mouse_id_<?php echo $i; ?>" name="mouse_id_<?php echo $i; ?>" value="<?= htmlspecialchars($holdingcage["mouse_id_$i"]); ?>" required>
                                     </div>
 
                                     <div class="mb-3">

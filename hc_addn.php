@@ -153,6 +153,30 @@ require 'header.php';
 <html lang="en">
 
 <head>
+    <title>Add New Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
+
+    <style>
+        .container {
+            max-width: 800px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: auto;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .required-asterisk {
+            color: red;
+        }
+
+        .warning-text {
+            color: #dc3545;
+            font-size: 14px;
+        }
+    </style>
     <script>
         // Function to go back to the previous page
         function goBack() {
@@ -174,7 +198,6 @@ require 'header.php';
         }
     </script>
 
-    <title>Add New Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 </head>
 
 <body>
@@ -183,17 +206,19 @@ require 'header.php';
 
         <?php include('message.php'); ?>
 
+        <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
+
         <form method="POST">
 
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
             <div class="mb-3">
-                <label for="cage_id" class="form-label">Cage ID</label>
+                <label for="cage_id" class="form-label">Cage ID <span class="required-asterisk">*</span></label>
                 <input type="text" class="form-control" id="cage_id" name="cage_id" required>
             </div>
 
             <div class="mb-3">
-                <label for="pi_name" class="form-label">PI Name</label>
+                <label for="pi_name" class="form-label">PI Name <span class="required-asterisk">*</span></label>
                 <select class="form-control" id="pi_name" name="pi_name" required>
                     <option value="" disabled selected>Select PI</option>
                     <?php
@@ -206,7 +231,7 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="strain" class="form-label">Strain</label>
+                <label for="strain" class="form-label">Strain <span class="required-asterisk">*</span></label>
                 <input type="text" class="form-control" id="strain" name="strain" required>
             </div>
 
@@ -216,17 +241,17 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="user" class="form-label">User</label>
+                <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>
                 <input type="text" class="form-control" id="user" name="user" required>
             </div>
 
             <div class="mb-3">
-                <label for="qty" class="form-label">Qty</label>
+                <label for="qty" class="form-label">Qty <span class="required-asterisk">*</span></label>
                 <select class="form-control" id="qty" name="qty" required onchange="showMouseFields()">
                     <option value="" disabled selected>Select Number</option>
                     <?php
                     // Generate options dynamically
-                    for ($i = 1; $i <= 5; $i++) {
+                    for ($i = 0; $i <= 5; $i++) {
                         echo "<option value=\"$i\">$i</option>";
                     }
                     ?>
@@ -234,12 +259,12 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="dob" class="form-label">DOB</label>
+                <label for="dob" class="form-label">DOB <span class="required-asterisk">*</span></label>
                 <input type="date" class="form-control" id="dob" name="dob" required>
             </div>
 
             <div class="mb-3">
-                <label for="sex" class="form-label">Sex</label>
+                <label for="sex" class="form-label">Sex <span class="required-asterisk">*</span></label>
                 <select class="form-control" id="sex" name="sex" required>
                     <option value="" disabled selected>Select Sex</option>
                     <option value="Male">Male</option>
@@ -248,7 +273,7 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="parent_cg" class="form-label">Parent Cage</label>
+                <label for="parent_cg" class="form-label">Parent Cage <span class="required-asterisk">*</span></label>
                 <input type="text" class="form-control" id="parent_cg" name="parent_cg" required>
             </div>
 
@@ -261,8 +286,8 @@ require 'header.php';
                 <div id="mouse_fields_<?php echo $i; ?>" style="display: none;">
                     <h4>Mouse #<?php echo $i; ?></h4>
                     <div class="mb-3">
-                        <label for="mouse_id_<?php echo $i; ?>" class="form-label">Mouse ID</label>
-                        <input type="text" class="form-control" id="mouse_id_<?php echo $i; ?>" name="mouse_id_<?php echo $i; ?>">
+                        <label for="mouse_id_<?php echo $i; ?>" class="form-label">Mouse ID <span class="required-asterisk">*</span></label>
+                        <input type="text" class="form-control" id="mouse_id_<?php echo $i; ?>" name="mouse_id_<?php echo $i; ?>" required>
                     </div>
 
                     <div class="mb-3">

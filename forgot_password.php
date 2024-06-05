@@ -199,6 +199,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             font-weight: 500;
         }
 
+        .form-label {
+            font-weight: bold;
+        }
+
+        .required-asterisk {
+            color: red;
+        }
+
+        .warning-text {
+            color: #dc3545;
+            /* Subtle red color */
+            font-size: 14px;
+        }
+
         @media (max-width: 576px) {
             header h1 {
                 font-size: 2.2rem;
@@ -235,9 +249,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     <div class="container">
         <h2>Forgot Password</h2>
         <br>
+        <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
+        <br>
         <form method="POST" action="">
             <div class="form-group">
-                <label for="email">Email Address</label>
+                <label for="email">Email Address <span class="required-asterisk">*</span></label>
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
             <button type="submit" class="btn btn-primary" name="reset">Reset Password</button>
