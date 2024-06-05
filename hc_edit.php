@@ -172,36 +172,21 @@ if (isset($_GET['id'])) {
             $stmt->close();
 
             // Handle file upload
-            if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
+            if (isset($_FILES['fileUpload'])) {
+                $targetDirectory = "uploads/$cage_id/"; // Modify the target directory
+            
+                $targetDirectory = "uploads/$cage_id/";
 
-                $uploadsDir = "/uploads/";
-                $targetDirectory = $uploadsDir . "$cage_id/";
-
-                // Ensure the correct permissions and ownership for the uploads directory
-                if (!file_exists($uploadsDir)) {
-                    if (!mkdir($uploadsDir, 0777, true)) {
-                        $_SESSION['message'] .= " Failed to create uploads directory.";
-                    }
-                }
-                chown($uploadsDir, 'www-data');
-                chgrp($uploadsDir, 'www-data');
-                chmod($uploadsDir, 0755);
-                
                 // Create the cage_id specific sub-directory if it doesn't exist
-                $targetDirectory = $uploadsDir . "$cage_id/";
                 if (!file_exists($targetDirectory)) {
-                    if (!mkdir($targetDirectory, 0777, true)) {
-                        $_SESSION['message'] .= " Failed to create cage_id directory.";
-                    }
+                    mkdir($targetDirectory, 0777, true); // true for recursive create (if needed)
                 }
-                chown($targetDirectory, 'www-data');
-                chgrp($targetDirectory, 'www-data');
-                chmod($targetDirectory, 0755);
-                
+            
 
                 $originalFileName = basename($_FILES['fileUpload']['name']);
                 $targetFilePath = $targetDirectory . $originalFileName;
                 $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
+            
 
                 // Check if file already exists
                 if (!file_exists($targetFilePath)) {
@@ -212,16 +197,14 @@ if (isset($_GET['id'])) {
                         if ($insert->execute()) {
                             $_SESSION['message'] .= " File uploaded successfully.";
                         } else {
-                            $_SESSION['message'] .= " File upload failed, please try again. Error: " . $insert->error;
+                            $_SESSION['message'] .= " File upload failed, please try again.";
                         }
                     } else {
-                        $_SESSION['message'] .= " Sorry, there was an error uploading your file. Error: " . $_FILES['fileUpload']['error'];
+                        $_SESSION['message'] .= " Sorry, there was an error uploading your file.";
                     }
                 } else {
                     $_SESSION['message'] .= " Sorry, file already exists.";
                 }
-            } else if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] != UPLOAD_ERR_NO_FILE) {
-                $_SESSION['message'] .= " Error uploading file: " . $_FILES['fileUpload']['error'];
             }
 
             // Redirect to the dashboard page
