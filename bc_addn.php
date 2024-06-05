@@ -159,7 +159,7 @@ require 'header.php';
         }
 
         .warning-text {
-            color: #dc3545; /* Subtle red color */
+            color: #dc3545;
             font-size: 14px;
         }
     </style>

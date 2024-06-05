@@ -356,6 +356,15 @@ require 'header.php';
             width: 70%;
         }
 
+        .required-asterisk {
+            color: red;
+        }
+
+        .warning-text {
+            color: #dc3545;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
 
             .table-wrapper th,
@@ -380,18 +389,19 @@ require 'header.php';
                     <div class="card-header">
                         <h4>Edit Breeding Cage</h4>
                     </div>
+                    <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
                     <div class="card-body">
                         <form method="POST" action="bc_edit.php?id=<?= htmlspecialchars($id); ?>" enctype="multipart/form-data">
 
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
                             <div class="mb-3">
-                                <label for="cage_id" class="form-label">Cage ID</label>
+                                <label for="cage_id" class="form-label">Cage ID <span class="required-asterisk">*</span></label>
                                 <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= htmlspecialchars($breedingcage['cage_id']); ?>" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="pi_name" class="form-label">PI Name</label>
+                                <label for="pi_name" class="form-label">PI Name <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="pi_name" name="pi_name" required>
                                     <option value="<?= htmlspecialchars($breedingcage['pi_name']); ?>" selected>
                                         <?= htmlspecialchars($breedingcage['pi_name']); ?>
@@ -405,7 +415,7 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="cross" class="form-label">Cross</label>
+                                <label for="cross" class="form-label">Cross <span class="required-asterisk">*</span></label>
                                 <input type="text" class="form-control" id="cross" name="cross" value="<?= htmlspecialchars($breedingcage['cross']); ?>" required>
                             </div>
 
@@ -415,27 +425,27 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="user" class="form-label">User</label>
+                                <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>
                                 <input type="text" class="form-control" id="user" name="user" value="<?= htmlspecialchars($breedingcage['user']); ?>" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="male_id" class="form-label">Male ID</label>
+                                <label for="male_id" class="form-label">Male ID <span class="required-asterisk">*</span></label>
                                 <input type="text" class="form-control" id="male_id" name="male_id" value="<?= htmlspecialchars($breedingcage['male_id']); ?>" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="female_id" class="form-label">Female ID</label>
+                                <label for="female_id" class="form-label">Female ID <span class="required-asterisk">*</span></label>
                                 <input type="text" class="form-control" id="female_id" name="female_id" value="<?= htmlspecialchars($breedingcage['female_id']); ?>" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="male_dob" class="form-label">Male DOB</label>
+                                <label for="male_dob" class="form-label">Male DOB <span class="required-asterisk">*</span></label>
                                 <input type="date" class="form-control" id="male_dob" name="male_dob" value="<?= htmlspecialchars($breedingcage['male_dob']); ?>" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="female_dob" class="form-label">Female DOB</label>
+                                <label for="female_dob" class="form-label">Female DOB <span class="required-asterisk">*</span></label>
                                 <input type="date" class="form-control" id="female_dob" name="female_dob" value="<?= htmlspecialchars($breedingcage['female_dob']); ?>" required>
                             </div>
 
@@ -510,28 +520,28 @@ require 'header.php';
                                         <div class="litter-entry">
                                             <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
                                             <div class="mb-3">
-                                                <label for="dom[]" class="form-label">DOM</label>
+                                                <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
                                                 <input type="date" class="form-control" name="dom[]" value="<?= htmlspecialchars($litter['dom']); ?>" required>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="litter_dob[]" class="form-label">Litter DOB</label>
-                                                <input type="date" class="form-control" name="litter_dob[]" value="<?= htmlspecialchars($litter['litter_dob']); ?>">
+                                                <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
+                                                <input type="date" class="form-control" name="litter_dob[]" value="<?= htmlspecialchars($litter['litter_dob']); ?>" required>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="pups_alive[]" class="form-label">Pups Alive</label>
+                                                <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
                                                 <input type="number" class="form-control" name="pups_alive[]" value="<?= htmlspecialchars($litter['pups_alive']); ?>" required min="0" step="1">
                                             </div>
                                             <div class="mb-3">
-                                                <label for="pups_dead[]" class="form-label">Pups Dead</label>
+                                                <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
                                                 <input type="number" class="form-control" name="pups_dead[]" value="<?= htmlspecialchars($litter['pups_dead']); ?>" required min="0" step="1">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="pups_male[]" class="form-label">Pups Male</label>
-                                                <input type="number" class="form-control" name="pups_male[]" value="<?= htmlspecialchars($litter['pups_male']); ?>" required min="0" step="1">
+                                                <input type="number" class="form-control" name="pups_male[]" value="<?= htmlspecialchars($litter['pups_male']); ?>" min="0" step="1">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="pups_female[]" class="form-label">Pups Female</label>
-                                                <input type="number" class="form-control" name="pups_female[]" value="<?= htmlspecialchars($litter['pups_female']); ?>" required min="0" step="1">
+                                                <input type="number" class="form-control" name="pups_female[]" value="<?= htmlspecialchars($litter['pups_female']); ?>" min="0" step="1">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
