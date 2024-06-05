@@ -181,7 +181,6 @@ if (isset($_GET['id'])) {
                 if (!file_exists($uploadsDir)) {
                     if (!mkdir($uploadsDir, 0777, true)) {
                         $_SESSION['message'] .= " Failed to create uploads directory.";
-                        error_log("Failed to create uploads directory: " . $uploadsDir);
                     }
                 }
                 chown($uploadsDir, 'www-data');
@@ -193,7 +192,6 @@ if (isset($_GET['id'])) {
                 if (!file_exists($targetDirectory)) {
                     if (!mkdir($targetDirectory, 0777, true)) {
                         $_SESSION['message'] .= " Failed to create cage_id directory.";
-                        error_log("Failed to create cage_id directory: " . $targetDirectory);
                     }
                 }
                 chown($targetDirectory, 'www-data');
