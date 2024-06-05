@@ -173,20 +173,26 @@ if (isset($_GET['id'])) {
 
             // Handle file upload
             if (isset($_FILES['fileUpload'])) {
-                $targetDirectory = "uploads/$cage_id/"; // Modify the target directory
-            
-                $targetDirectory = "uploads/$cage_id/";
+                $targetDirectory = "uploads/$cage_id/"; // Define the target directory
 
                 // Create the cage_id specific sub-directory if it doesn't exist
                 if (!file_exists($targetDirectory)) {
-                    mkdir($targetDirectory, 0777, true); // true for recursive create (if needed)
+                    if (!mkdir($targetDirectory, 0777, true)) {
+                        $_SESSION['message'] .= " Failed to create directory.";
+                        exit;
+                    }
                 }
-            
 
                 $originalFileName = basename($_FILES['fileUpload']['name']);
                 $targetFilePath = $targetDirectory . $originalFileName;
                 $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-            
+
+                // Allow only certain file formats
+                $allowedFileTypes = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx']; // Add allowed file types here
+                if (!in_array($fileType, $allowedFileTypes)) {
+                    $_SESSION['message'] .= " Sorry, only JPG, JPEG, PNG, PDF, DOC, and DOCX files are allowed.";
+                    exit;
+                }
 
                 // Check if file already exists
                 if (!file_exists($targetFilePath)) {
