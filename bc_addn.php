@@ -153,6 +153,10 @@ require 'header.php';
             border-radius: 8px;
             margin: auto;
         }
+
+        .required-asterisk {
+            color: red;
+        }
     </style>
     <script>
         // Function to navigate back to the previous page
@@ -174,19 +178,19 @@ require 'header.php';
             litterDiv.innerHTML = `
             <hr>
             <div class="mb-3">
-                <label for="dom[]" class="form-label">DOM</label>
+                <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
                 <input type="date" class="form-control" name="dom[]" required>
             </div>
             <div class="mb-3">
-                <label for="litter_dob[]" class="form-label">Litter DOB</label>
-                <input type="date" class="form-control" name="litter_dob[]">
+                <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
+                <input type="date" class="form-control" name="litter_dob[]" required>
             </div>
             <div class="mb-3">
-                <label for="pups_alive[]" class="form-label">Pups Alive</label>
+                <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
                 <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
             </div>
             <div class="mb-3">
-                <label for="pups_dead[]" class="form-label">Pups Dead</label>
+                <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
                 <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
             </div>
             <div class="mb-3">
@@ -227,12 +231,12 @@ require 'header.php';
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
             <div class="mb-3">
-                <label for="cage_id" class="form-label">Cage ID</label>
+                <label for="cage_id" class="form-label">Cage ID <span class="required-asterisk">*</span></label>
                 <input type="text" class="form-control" id="cage_id" name="cage_id" required>
             </div>
 
             <div class="mb-3">
-                <label for="pi_name" class="form-label">PI Name</label>
+                <label for="pi_name" class="form-label">PI Name <span class="required-asterisk">*</span></label>
                 <select class="form-control" id="pi_name" name="pi_name" required>
                     <option value="" disabled selected>Select PI</option>
                     <?php
@@ -245,7 +249,7 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="cross" class="form-label">Cross</label>
+                <label for="cross" class="form-label">Cross <span class="required-asterisk">*</span></label>
                 <input type="text" class="form-control" id="cross" name="cross" required>
             </div>
 
@@ -255,27 +259,27 @@ require 'header.php';
             </div>
 
             <div class="mb-3">
-                <label for="user" class="form-label">User</label>
+                <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>
                 <input type="text" class="form-control" id="user" name="user" required>
             </div>
 
             <div class="mb-3">
-                <label for="male_id" class="form-label">Male ID</label>
+                <label for="male_id" class="form-label">Male ID <span class="required-asterisk">*</span></label>
                 <input type="text" class="form-control" id="male_id" name="male_id" required>
             </div>
 
             <div class="mb-3">
-                <label for="female_id" class="form-label">Female ID</label>
+                <label for="female_id" class="form-label">Female ID <span class="required-asterisk">*</span></label>
                 <input type="text" class="form-control" id="female_id" name="female_id" required>
             </div>
 
             <div class="mb-3">
-                <label for="male_dob" class="form-label">Male DOB</label>
+                <label for="male_dob" class="form-label">Male DOB <span class="required-asterisk">*</span></label>
                 <input type="date" class="form-control" id="male_dob" name="male_dob" required>
             </div>
 
             <div class="mb-3">
-                <label for="female_dob" class="form-label">Female DOB</label>
+                <label for="female_dob" class="form-label">Female DOB <span class="required-asterisk">*</span></label>
                 <input type="date" class="form-control" id="female_dob" name="female_dob" required>
             </div>
 
