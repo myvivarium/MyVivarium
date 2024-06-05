@@ -154,6 +154,10 @@ require 'header.php';
             margin: auto;
         }
 
+        .form-label {
+            font-weight: bold;
+        }
+
         .required-asterisk {
             color: red;
         }
