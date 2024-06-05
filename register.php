@@ -65,6 +65,52 @@ function sendConfirmationEmail($to, $token)
     }
 }
 
+// Inform admins if a new user signup
+function notifyAdmins($newUserDetails)
+{
+    global $con, $url;
+    $adminQuery = "SELECT username FROM users WHERE role = 'admin'";
+    $adminResult = mysqli_query($con, $adminQuery);
+
+    if (mysqli_num_rows($adminResult) > 0) {
+        $subject = 'New User Registration Notification';
+        $message = "A new user has registered on the lab management system. Here are the details:\n";
+        $message .= "Name: " . $newUserDetails['name'] . "\n";
+        $message .= "Email: " . $newUserDetails['email'] . "\n";
+        $message .= "Position: " . $newUserDetails['position'] . "\n";
+        $message .= "Email Verified: " . ($newUserDetails['email_verified'] == 1 ? 'Yes' : 'No') . "\n";
+
+        $mail = new PHPMailer(true);
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host = SMTP_HOST;
+            $mail->Port = SMTP_PORT;
+            $mail->SMTPAuth = true;
+            $mail->Username = SMTP_USERNAME;
+            $mail->Password = SMTP_PASSWORD;
+            $mail->SMTPSecure = SMTP_ENCRYPTION;
+
+            // Recipients
+            $mail->setFrom(SENDER_EMAIL, SENDER_NAME);
+
+            while ($adminRow = mysqli_fetch_assoc($adminResult)) {
+                $adminEmail = $adminRow['username'];
+                $mail->addAddress($adminEmail);
+            }
+
+            // Content
+            $mail->isHTML(false);
+            $mail->Subject = $subject;
+            $mail->Body = $message;
+
+            $mail->send();
+        } catch (Exception $e) {
+            error_log("Admin notification could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        }
+    }
+}
+
 // Query to fetch the lab name
 $labQuery = "SELECT lab_name FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
@@ -107,6 +153,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($stmt->execute()) {
                 sendConfirmationEmail($username, $email_token);
+
+                // Prepare new user details for admin notification
+                $newUserDetails = [
+                    'name' => $name,
+                    'email' => $username,
+                    'position' => $position,
+                    'email_verified' => $email_verified
+                ];
+                notifyAdmins($newUserDetails);
+
                 $_SESSION['resultMessage'] = "Registration successful. Please check your email to confirm your email address.";
             } else {
                 $_SESSION['resultMessage'] = "Registration failed. Please try again.";
