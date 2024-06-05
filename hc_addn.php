@@ -282,7 +282,7 @@ require 'header.php';
                 <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"></textarea>
             </div>
 
-            <?php for ($i = 1; $i <= 5; $i++) : ?>
+            <?php for ($i = 0; $i <= 5; $i++) : ?>
                 <div id="mouse_fields_<?php echo $i; ?>" style="display: none;">
                     <h4>Mouse #<?php echo $i; ?></h4>
                     <div class="mb-3">
