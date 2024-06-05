@@ -139,6 +139,7 @@ require 'header.php';
         }
 
         @media (max-width: 768px) {
+
             .table-wrapper th,
             .table-wrapper td {
                 padding: 12px 8px;
@@ -155,9 +156,9 @@ require 'header.php';
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-center">
                         <h4>Breeding Cage Dashboard</h4>
-                        <div class="action-icons">
+                        <div class="action-icons mt-3 mt-md-0">
                             <!-- Add new cage button with tooltip -->
                             <a href="bc_addn.php" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Cage">
                                 <i class="fas fa-plus"></i>
@@ -168,6 +169,7 @@ require 'header.php';
                             </a>
                         </div>
                     </div>
+
 
                     <div class="card-body">
                         <!-- Breeding Cage Search Box -->
