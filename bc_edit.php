@@ -110,7 +110,7 @@ if (isset($_GET['id'])) {
             // Handle file upload
             if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
 
-                $uploadsDir = __DIR__ . "/uploads/";
+                $uploadsDir = "/uploads/";
                 $targetDirectory = $uploadsDir . "$cage_id/";
 
                 // Ensure the correct permissions and ownership for the uploads directory
