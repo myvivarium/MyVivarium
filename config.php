@@ -20,17 +20,6 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-/*
-    .env file format for SMTP configuration:
-    SMTP_HOST=smtp.example.com
-    SMTP_PORT=587
-    SMTP_USERNAME=username
-    SMTP_PASSWORD=password
-    SMTP_ENCRYPTION=tls
-    SENDER_EMAIL=sender@example.com
-    SENDER_NAME=Sender Name
-*/
-
 // Define constants for SMTP server settings and sender information
 define('SMTP_HOST', $_ENV['SMTP_HOST']); // SMTP server hostname
 define('SMTP_PORT', $_ENV['SMTP_PORT']); // SMTP server port
