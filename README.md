@@ -49,9 +49,15 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
     - Move all the contents of the MyVivarium directory to your web server’s public directory (e.g., `public_html`, `www`):
         ```bash
         mv * /path/to/your/public_html/
+        cp .env /path/to/your/public_html/
         ```
+5. **Set ownership and permissions:**
+    ```bash
+    sudo chown -R www-data:www-data /path/to/your/public_html
+    sudo chmod -R 755 /path/to/your/public_html
+    ```
 
-5. **Set up the database:**
+6. **Set up the database:**
     - Log in to your MySQL server:
         ```bash
         mysql -u yourusername -p
@@ -60,29 +66,8 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
         ```sql
         CREATE DATABASE myvivarium;
         USE myvivarium;
-        SOURCE /path/to/your/public_html/database/schema.sql;
+        SOURCE /path/to/your/public_html/schema.sql;
         ```
-
-### Function of Each File
-- `index.php`: Main entry point for the application, handles user login.
-- `config.php`: Contains SMTP configuration.
-- `dbcon.php`: Manages database connections.
-- `user_profile.php`: Allows users to update their profile and request password resets.
-- `register.php`: Handles user registration and email verification.
-- `reset_password.php`: Manages the password reset process.
-- `manage_lab.php`: Allows admins to manage lab details.
-- `manage_users.php`: Provides functionalities for admin to manage users.
-
-## Usage
-1. Access the application in your web browser:
-    ```
-    http://yourdomain.com
-    ```
-
-2. Register a new user or log in with existing credentials.
-
-3. Manage your lab, users, and monitor environmental conditions in real-time.
-
 ## Configuration
 ### SMTP Configuration
 Update the following environment variables in your `.env` file:
@@ -93,7 +78,7 @@ SMTP_USERNAME=username
 SMTP_PASSWORD=password
 SMTP_ENCRYPTION=tls
 SENDER_EMAIL=sender@example.com
-SENDER_NAME=MyVivarium
+SENDER_NAME=Sender Name
  ```
 
 ### Database Configuration
@@ -105,7 +90,7 @@ DB_PASSWORD=password
 DB_DATABASE=myvivarium
  ```
 
- ### Default Admin User
+### Default Admin User
 
 For initial setup, use the following default admin credentials:
 
@@ -114,6 +99,25 @@ For initial setup, use the following default admin credentials:
 
 **Important**: Delete this default admin user and create a new admin user after the initial setup for security reasons.
 
+## Usage
+1. Access the application in your web browser:
+    ```
+    http://yourdomain.com
+    ```
+
+2. Register a new user or log in with existing credentials.
+
+3. Manage your lab, users, and monitor environmental conditions in real-time.
+
+### Function of Each File
+- `index.php`: Main entry point for the application, handles user login.
+- `config.php`: Contains SMTP configuration.
+- `dbcon.php`: Manages database connections.
+- `user_profile.php`: Allows users to update their profile and request password resets.
+- `register.php`: Handles user registration and email verification.
+- `reset_password.php`: Manages the password reset process.
+- `manage_lab.php`: Allows admins to manage lab details.
+- `manage_users.php`: Provides functionalities for admin to manage users.
 
 
 ## Contributing
