@@ -27,6 +27,8 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 
 ![image](https://myvivarium.online/images/myvivarium.gif)
 
+## Installation
+
 ### Prerequisites
 - PHP 7.4 or higher
 - MySQL
