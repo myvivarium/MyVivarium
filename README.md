@@ -93,7 +93,7 @@ SMTP_USERNAME=username
 SMTP_PASSWORD=password
 SMTP_ENCRYPTION=tls
 SENDER_EMAIL=sender@example.com
-SENDER_NAME=Sender Name
+SENDER_NAME=MyVivarium
  ```
 
 ### Database Configuration
