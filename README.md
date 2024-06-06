@@ -1,5 +1,8 @@
 # MyVivarium
 
+![Logo](https://myvivarium.online/images/logo1.jpg)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+
 MyVivarium is an online platform designed to manage your vivarium effectively. It provides features such as user registration, profile management, lab management, and real-time environmental monitoring with IoT sensors.
 
 ## Table of Contents
