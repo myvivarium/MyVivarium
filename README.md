@@ -8,8 +8,6 @@
 
 MyVivarium is an online platform designed to manage your vivarium effectively. It provides features such as user registration, profile management, lab management, and real-time environmental monitoring with IoT sensors.
 
-![image](https://myvivarium.online/images/myvivarium.gif)
-
 ## Table of Contents
 - [Features](#features)
 - [Installation](#installation)
@@ -25,7 +23,9 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 - Real-time environmental monitoring using IoT sensors.
 - Secure and compliant data management.
 
-## Installation
+## Screenshot
+
+![image](https://myvivarium.online/images/myvivarium.gif)
 
 ### Prerequisites
 - PHP 7.4 or higher
