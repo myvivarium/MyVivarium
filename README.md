@@ -66,7 +66,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
         ```sql
         CREATE DATABASE myvivarium;
         USE myvivarium;
-        SOURCE /path/to/your/public_html/schema.sql;
+        SOURCE /path/to/your/public_html/database/schema.sql;
         ```
 ## Configuration
 ### SMTP Configuration
@@ -78,7 +78,7 @@ SMTP_USERNAME=username
 SMTP_PASSWORD=password
 SMTP_ENCRYPTION=tls
 SENDER_EMAIL=sender@example.com
-SENDER_NAME=Sender Name
+SENDER_NAME=MyVivarium
  ```
 
 ### Database Configuration
@@ -110,15 +110,43 @@ For initial setup, use the following default admin credentials:
 3. Manage your lab, users, and monitor environmental conditions in real-time.
 
 ### Function of Each File
-- `index.php`: Main entry point for the application, handles user login.
-- `config.php`: Contains SMTP configuration.
 - `dbcon.php`: Manages database connections.
-- `user_profile.php`: Allows users to update their profile and request password resets.
+- `config.php`: Contains SMTP configuration.
+- `index.php`: Main entry point for the application, handles user login.
 - `register.php`: Handles user registration and email verification.
+- `home.php`: Displays the home page with a welcome message, cage statistics, and general notes.
+- `forgot_password.php`: Handles the password reset process, including generating and sending reset emails.
 - `reset_password.php`: Manages the password reset process.
-- `manage_lab.php`: Allows admins to manage lab details.
+- `confirm_email.php`: Manages email confirmation by verifying tokens and updating user status.
+- `user_profile.php`: Allows users to update their profile and request password resets.
 - `manage_users.php`: Provides functionalities for admin to manage users.
-
+- `manage_lab.php`: Allows admins to manage lab details.
+- `iot_sensors.php`: Displays IoT sensor data for different rooms using iframes.
+- `bc_dash.php`: Displays a dashboard for managing breeding cages with search and pagination.
+- `bc_fetch_data.php`: Handles pagination and search functionality for breeding cages.
+- `bc_addn.php`: Handles the creation of new breeding cages and associated litter data.
+- `bc_view.php`: Viewing the details of a breeding cage.
+- `bc_edit.php`: Manages editing of breeding cage details, including litter information and file uploads.
+- `bc_drop.php`: Handles the deletion of breeding cages and their related data.
+- `bc_slct_crd.php`: Selects breeding cages for printing cage cards.
+- `bc_prnt_crd.php`: Generates printable cards for breeding cages with their latest litter records.
+- `hc_dash.php`: Displays a dashboard for managing holding cages.
+- `hc_fetch_data.php`: Handles pagination and search functionality for holding cages.
+- `hc_addn.php`: Adds new holding cages.
+- `hc_view.php`: Viewing the details of a holding cage.
+- `hc_edit.php`: Manages editing of holding cage details.
+- `hc_drop.php`: Handles the deletion of holding cages.
+- `hc_slct_crd.php`: Selects holding cages for printing cage cards.
+- `hc_prnt_crd.php`: Generates printable cards for holding cages.
+- `nt_app.php`: Main script for the sticky note application.
+- `nt_add.php`: Adds new sticky notes.
+- `nt_edit.php`: Edits existing sticky notes.
+- `nt_rmv.php`: Removes sticky notes.
+- `header.php`: Generates the header and navigation menu for the web application.
+- `footer.php`: Provides the footer section with dynamic lab name and current year.
+- `message.php`: Displays session messages as Bootstrap alerts.
+- `logout.php`: Logs out the user by destroying the session and redirecting to the login page.
+- `delete_file.php`: Handles the deletion of uploaded files from the server and database.
 
 ## Contributing
 We welcome contributions to improve MyVivarium. Please follow these steps to contribute:
