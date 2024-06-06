@@ -43,7 +43,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
         ```bash
         cp .env.example .env
         ```
-    - Update the `.env` file with your database and SMTP settings.
+    - Update the `.env` file with your database and SMTP settings. See [Configuration](#configuration)
 
 4. **Place the project files in the web server directory:**
     - Move all the contents of the MyVivarium directory to your web server’s public directory (e.g., `public_html`, `www`):
@@ -63,24 +63,15 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
         SOURCE /path/to/your/public_html/schema.sql;
         ```
 
-### Directory Structure
-Ensure the `.env.example` and `schema.sql` files are in the root of your repository before moving to the web server directory.
-
-MyVivarium/
-├── .env.example
-├── schema.sql
-├── index.php
-├── config.php
-├── dbcon.php
-├── user_profile.php
-├── register.php
-├── reset_password.php
-├── manage_lab.php
-├── manage_users.php
-├── vendor/
-├── icons/
-├── images/
-├── ...
+### Function of Each File
+- `index.php`: Main entry point for the application, handles user login.
+- `config.php`: Contains SMTP configuration.
+- `dbcon.php`: Manages database connections.
+- `user_profile.php`: Allows users to update their profile and request password resets.
+- `register.php`: Handles user registration and email verification.
+- `reset_password.php`: Manages the password reset process.
+- `manage_lab.php`: Allows admins to manage lab details.
+- `manage_users.php`: Provides functionalities for admin to manage users.
 
 ## Usage
 1. Access the application in your web browser:
@@ -95,6 +86,7 @@ MyVivarium/
 ## Configuration
 ### SMTP Configuration
 Update the following environment variables in your `.env` file:
+ ```bash
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587
 SMTP_USERNAME=username
@@ -102,13 +94,26 @@ SMTP_PASSWORD=password
 SMTP_ENCRYPTION=tls
 SENDER_EMAIL=sender@example.com
 SENDER_NAME=Sender Name
+ ```
 
 ### Database Configuration
 Ensure the database credentials are set correctly in the `.env` file:
+ ```bash
 DB_HOST=localhost
 DB_USERNAME=username
 DB_PASSWORD=password
 DB_DATABASE=myvivarium
+ ```
+
+ ### Default Admin User
+
+For initial setup, use the following default admin credentials:
+
+- **Email**: admin@myvivarium.online
+- **Password**: password
+
+**Important**: Delete this default admin user and create a new admin user after the initial setup for security reasons.
+
 
 
 ## Contributing
