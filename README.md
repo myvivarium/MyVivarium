@@ -60,7 +60,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
         ```sql
         CREATE DATABASE myvivarium;
         USE myvivarium;
-        SOURCE /path/to/your/public_html/schema.sql;
+        SOURCE /path/to/your/public_html/database/schema.sql;
         ```
 
 ### Function of Each File
