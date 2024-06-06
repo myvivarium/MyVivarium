@@ -10,10 +10,10 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 
 ## Table of Contents
 - [Features](#features)
-- [Installation](#installation)
 - [Screenshot](#screenshot)
+- [Installation](#installation)
 - [Usage](#usage)
-- [Configuration](#configuration)
+- [Function of Each File](#FunctionofEachFile)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -86,8 +86,8 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
         USE myvivarium;
         SOURCE /path/to/your/public_html/database/schema.sql;
         ```
-## Configuration
-### SMTP Configuration
+### Configuration
+#### SMTP Configuration
 Update the following environment variables in your `.env` file:
  ```bash
 SMTP_HOST=smtp.example.com
@@ -99,7 +99,7 @@ SENDER_EMAIL=sender@example.com
 SENDER_NAME=MyVivarium
  ```
 
-### Database Configuration
+#### Database Configuration
 Ensure the database credentials are set correctly in the `.env` file:
  ```bash
 DB_HOST=localhost
@@ -127,7 +127,7 @@ For initial setup, use the following default admin credentials:
 
 3. Manage your lab, users, and monitor environmental conditions in real-time.
 
-### Function of Each File
+## Function of Each File
 - `dbcon.php`: Manages database connections.
 - `config.php`: Contains SMTP configuration.
 - `index.php`: Main entry point for the application, handles user login.
