@@ -13,7 +13,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 - [Screenshot](#screenshot)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Function of Each File](#functionofeachfile)
+- [Function of Each File](#function-of-each-file)
 - [Contributing](#contributing)
 - [License](#license)
 
