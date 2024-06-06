@@ -108,7 +108,7 @@ if (isset($_GET['id'])) {
             $updateQuery->close();
 
             // Handle file upload
-            if (isset($_FILES['fileUpload'])) {
+            if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
                 $targetDirectory = "uploads/$cage_id/"; // Define the target directory
 
                 // Create the cage_id specific sub-directory if it doesn't exist
