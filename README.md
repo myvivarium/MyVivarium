@@ -36,8 +36,15 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 1. **Clone the repository:**
     ```bash
     git clone https://github.com/myvivarium/MyVivarium.git
+    ```
+    or
+    ```bash
+    git clone git@github.com:myvivarium/MyVivarium.git
+    ```
+    ```bash
     cd MyVivarium
     ```
+
 
 2. **Install dependencies using Composer:**
     ```bash
