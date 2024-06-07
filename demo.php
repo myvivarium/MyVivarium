@@ -30,7 +30,7 @@
 
 <body>
     <div class="demo-warning">
-        DEMO WEBSITE: DO NOT ENTER REAL DATA. THIS IS FOR TESTING PURPOSES ONLY.
+        DEMO WEBSITE: FOR TESTING PURPOSES ONLY.
     </div>
 </body>
 
