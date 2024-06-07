@@ -291,17 +291,28 @@ mysqli_close($con);
                 width: 150px;
             }
         }
+
+        .demo-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #dc3545;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 0;
+            z-index: 1000;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 
 <body>
-    <div class="demo-warning bg-danger text-white text-center w-100 py-2">
+    <div class="demo-warning">
         DEMO WEBSITE: DO NOT ENTER REAL DATA. THIS IS FOR TESTING PURPOSES ONLY.
     </div>
     <header class="bg-dark text-white text-center py-3 d-flex flex-wrap justify-content-center align-items-center">
-        <div class="demo-warning bg-danger text-white text-center w-100 py-2">
-            DEMO WEBSITE: DO NOT ENTER REAL DATA. THIS IS FOR TESTING PURPOSES ONLY.
-        </div>
         <div class="logo-container d-flex justify-content-center align-items-center">
             <img src="images/logo1.jpg" alt="Logo" class="header-logo">
         </div>
