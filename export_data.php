@@ -13,6 +13,7 @@ if (!isset($_SESSION['username'])) {
 // Check if the user is an admin
 if ($_SESSION['role'] != 'admin') {
     $_SESSION['message'] = "Access Denied";
+    header("Location: index.php"); // Redirect to the index page
     exit();
 }
 
@@ -23,7 +24,7 @@ function exportTableToCSV($con, $tableName) {
     $result = $con->query($query);
 
     if (!$result) {
-        echo "Failed to retrieve data from $tableName: " . $con->error;
+        error_log("Failed to retrieve data from $tableName: " . $con->error);
         return '';
     }
 
@@ -83,10 +84,15 @@ while ($tableRow = $tableResult->fetch_row()) {
 $zip->close();
 
 // Output the zip file
-readfile($zipFilename);
+if (file_exists($zipFilename)) {
+    readfile($zipFilename);
 
-// Delete the temporary file
-unlink($zipFilename);
+    // Delete the temporary file
+    unlink($zipFilename);
+} else {
+    error_log("Failed to find the zip file: " . $zipFilename);
+    die("Failed to create the zip file for download.");
+}
 
 // Close the connection
 $con->close();
