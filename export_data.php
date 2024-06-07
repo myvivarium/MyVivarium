@@ -21,7 +21,7 @@ if ($_SESSION['role'] != 'admin') {
 
 // Function to export a single table to a CSV format
 function exportTableToCSV($con, $tableName) {
-    $query = "SELECT * FROM `$tableName`";
+    $query = ($tableName == 'users') ? "SELECT id, name, username, position, role, status FROM `$tableName`" : "SELECT * FROM `$tableName`";
     $result = $con->query($query);
 
     if (!$result) {
