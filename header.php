@@ -123,7 +123,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 
 <body>
     <!-- Header Section -->
-    <?php include('demo.php'); ?>
+    <?php if ($demo === "yes") include('demo/demo.php'); ?>
     <div class="header-footer">
         <div class="logo-container">
             <a href="home.php">

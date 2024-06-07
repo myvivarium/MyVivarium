@@ -30,7 +30,9 @@ if (file_exists(__DIR__ . '/.env')) {
 $servername = $_ENV['DB_HOST'] ?? 'localhost'; // Default to 'localhost' if not set
 $username = $_ENV['DB_USERNAME'] ?? 'root'; // Default to 'root' if not set
 $password = $_ENV['DB_PASSWORD'] ?? ''; // Default to an empty string if not set
-$dbname = $_ENV['DB_DATABASE'] ?? 'database'; // Default to 'database' if not set
+$dbname = $_ENV['DB_DATABASE'] ?? 'myvivarium'; // Default to 'database' if not set
+
+$demo = $_ENV['DEMO'] ?? ''; // Default to an empty string if not set
 
 // Create a new connection to the database using the object-oriented style
 $con = new mysqli($servername, $username, $password, $dbname);

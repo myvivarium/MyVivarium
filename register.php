@@ -292,6 +292,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
 
 <body>
     <!-- Header with Lab Name -->
+    <?php if ($demo === "yes") include('demo/demo.php'); ?>
     <header class="bg-dark text-white text-center py-3 d-flex flex-wrap justify-content-center align-items-center">
         <div class="logo-container d-flex justify-content-center align-items-center">
             <img src="images/logo1.jpg" alt="Logo" class="header-logo">
