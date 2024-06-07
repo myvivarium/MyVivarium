@@ -26,6 +26,22 @@ $query = "SELECT * FROM data LIMIT 1";
 $result = mysqli_query($con, $query);
 $labData = mysqli_fetch_assoc($result);
 
+// Provide default values if no data is found
+if (!$labData) {
+    $labData = [
+        'lab_name' => '',
+        'url' => '',
+        'r1_temp' => '',
+        'r1_humi' => '',
+        'r1_illu' => '',
+        'r1_pres' => '',
+        'r2_temp' => '',
+        'r2_humi' => '',
+        'r2_illu' => '',
+        'r2_pres' => ''
+    ];
+}
+
 $updateMessage = '';
 
 // Handle form submission for lab data update
@@ -42,16 +58,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_lab'])) {
     $r2_illu = filter_input(INPUT_POST, 'r2_illu', FILTER_SANITIZE_STRING);
     $r2_pres = filter_input(INPUT_POST, 'r2_pres', FILTER_SANITIZE_STRING);
 
-    // Update lab data in the database
-    $updateQuery = "UPDATE data SET lab_name = ?, url = ?, r1_temp = ?, r1_humi = ?, r1_illu = ?, r1_pres = ?, r2_temp = ?, r2_humi = ?, r2_illu = ?, r2_pres = ?";
-    $updateStmt = $con->prepare($updateQuery);
-    $updateStmt->bind_param("ssssssssss", $labName, $url, $r1_temp, $r1_humi, $r1_illu, $r1_pres, $r2_temp, $r2_humi, $r2_illu, $r2_pres);
+    // Check if data already exists
+    $checkQuery = "SELECT COUNT(*) as count FROM data";
+    $checkResult = mysqli_query($con, $checkQuery);
+    $rowCount = mysqli_fetch_assoc($checkResult)['count'];
+
+    if ($rowCount > 0) {
+        // Update existing data
+        $updateQuery = "UPDATE data SET lab_name = ?, url = ?, r1_temp = ?, r1_humi = ?, r1_illu = ?, r1_pres = ?, r2_temp = ?, r2_humi = ?, r2_illu = ?, r2_pres = ?";
+        $updateStmt = $con->prepare($updateQuery);
+        $updateStmt->bind_param("ssssssssss", $labName, $url, $r1_temp, $r1_humi, $r1_illu, $r1_pres, $r2_temp, $r2_humi, $r2_illu, $r2_pres);
+    } else {
+        // Insert new data
+        $insertQuery = "INSERT INTO data (lab_name, url, r1_temp, r1_humi, r1_illu, r1_pres, r2_temp, r2_humi, r2_illu, r2_pres) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $updateStmt = $con->prepare($insertQuery);
+        $updateStmt->bind_param("ssssssssss", $labName, $url, $r1_temp, $r1_humi, $r1_illu, $r1_pres, $r2_temp, $r2_humi, $r2_illu, $r2_pres);
+    }
+
     $updateStmt->execute();
     $updateStmt->close();
 
     // Refresh lab data
     $result = mysqli_query($con, $query);
     $labData = mysqli_fetch_assoc($result);
+
+    if (!$labData) {
+        $labData = [
+            'lab_name' => '',
+            'url' => '',
+            'r1_temp' => '',
+            'r1_humi' => '',
+            'r1_illu' => '',
+            'r1_pres' => '',
+            'r2_temp' => '',
+            'r2_humi' => '',
+            'r2_illu' => '',
+            'r2_pres' => ''
+        ];
+    }
 
     $updateMessage = "Lab information updated successfully.";
 }
