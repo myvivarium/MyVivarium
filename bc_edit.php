@@ -219,6 +219,27 @@ require 'header.php';
 
 <head>
     <script>
+        // Function to get today's date in YYYY-MM-DD format
+        function getCurrentDate() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        // Function to set the max date to today for all date input fields
+        function setMaxDate() {
+            const currentDate = getCurrentDate();
+            const dateFields = document.querySelectorAll('input[type="date"]');
+            dateFields.forEach(field => {
+                field.setAttribute('max', currentDate);
+            });
+        }
+
+        // Initial call to set max date on page load
+        setMaxDate();
+
         // Function to navigate back to the previous page
         function goBack() {
             window.history.back();
@@ -255,7 +276,7 @@ require 'header.php';
                 const year = date.getFullYear();
 
                 // Check if the date is valid and within the range 1900-2099 and not in the future
-                return date && !isNaN(date) && year >= 1900 && year <= 2099 && date <= now;
+                return date && !isNaN(date) && year >= 1900 && date <= now;
             }
 
             document.querySelector('form').addEventListener('submit', function(event) {
@@ -290,11 +311,11 @@ require 'header.php';
             <hr>
             <div class="mb-3">
                 <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
-                <input type="date" class="form-control" name="dom[]" required min="1900-01-01" max="2099-12-31">
+                <input type="date" class="form-control" name="dom[]" required min="1900-01-01">
             </div>
             <div class="mb-3">
                 <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
-                <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01" max="2099-12-31">
+                <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01">
             </div>
             <div class="mb-3">
                 <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
@@ -493,12 +514,12 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="male_dob" class="form-label">Male DOB <span class="required-asterisk">*</span></label>
-                                <input type="date" class="form-control" id="male_dob" name="male_dob" value="<?= htmlspecialchars($breedingcage['male_dob']); ?>" required min="1900-01-01" max="2099-12-31">
+                                <input type="date" class="form-control" id="male_dob" name="male_dob" value="<?= htmlspecialchars($breedingcage['male_dob']); ?>" required min="1900-01-01">
                             </div>
 
                             <div class="mb-3">
                                 <label for="female_dob" class="form-label">Female DOB <span class="required-asterisk">*</span></label>
-                                <input type="date" class="form-control" id="female_dob" name="female_dob" value="<?= htmlspecialchars($breedingcage['female_dob']); ?>" required min="1900-01-01" max="2099-12-31">
+                                <input type="date" class="form-control" id="female_dob" name="female_dob" value="<?= htmlspecialchars($breedingcage['female_dob']); ?>" required min="1900-01-01">
                             </div>
 
                             <div class="mb-3">
@@ -573,11 +594,11 @@ require 'header.php';
                                             <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
                                             <div class="mb-3">
                                                 <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
-                                                <input type="date" class="form-control" name="dom[]" value="<?= htmlspecialchars($litter['dom']); ?>" required min="1900-01-01" max="2099-12-31">
+                                                <input type="date" class="form-control" name="dom[]" value="<?= htmlspecialchars($litter['dom']); ?>" required min="1900-01-01">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
-                                                <input type="date" class="form-control" name="litter_dob[]" value="<?= htmlspecialchars($litter['litter_dob']); ?>" required min="1900-01-01" max="2099-12-31">
+                                                <input type="date" class="form-control" name="litter_dob[]" value="<?= htmlspecialchars($litter['litter_dob']); ?>" required min="1900-01-01">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>

@@ -255,6 +255,27 @@ require 'header.php';
         }
     </style>
     <script>
+        // Function to get today's date in YYYY-MM-DD format
+        function getCurrentDate() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        // Function to set the max date to today for all date input fields
+        function setMaxDate() {
+            const currentDate = getCurrentDate();
+            const dateFields = document.querySelectorAll('input[type="date"]');
+            dateFields.forEach(field => {
+                field.setAttribute('max', currentDate);
+            });
+        }
+
+        // Initial call to set max date on page load
+        setMaxDate();
+
         // Function to go back to the previous page
         function goBack() {
             window.history.back();
@@ -293,7 +314,7 @@ require 'header.php';
                 const year = date.getFullYear();
 
                 // Check if the date is valid and within the range 1900-2099 and not in the future
-                return date && !isNaN(date) && year >= 1900 && year <= 2099 && date <= now;
+                return date && !isNaN(date) && year >= 1900 && date <= now;
             }
 
             // Listen for input changes to provide immediate feedback
@@ -397,7 +418,7 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="dob" class="form-label">DOB <span class="required-asterisk">*</span></label>
-                                <input type="date" class="form-control" id="dob" name="dob" value="<?= htmlspecialchars($holdingcage['dob']); ?>" required min="1900-01-01" max="2099-12-31">
+                                <input type="date" class="form-control" id="dob" name="dob" value="<?= htmlspecialchars($holdingcage['dob']); ?>" required min="1900-01-01">
                             </div>
 
                             <div class="mb-3">
