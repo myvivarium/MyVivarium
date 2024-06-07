@@ -217,6 +217,19 @@ mysqli_close($con);
             width: 100%;
         }
 
+        /* Override Bootstrap's default font family */
+        body,
+        .container,
+        .card,
+        .card-header,
+        .card-body,
+        .card-text,
+        .card-title,
+        h2,
+        p {
+            font-family: 'Poppins', sans-serif !important;
+        }
+
         .login-form {
             padding: 10px;
             background-color: white;
