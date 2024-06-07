@@ -297,6 +297,9 @@ mysqli_close($con);
 <body>
 
     <header class="bg-dark text-white text-center py-3 d-flex flex-wrap justify-content-center align-items-center">
+        <div class="demo-warning bg-danger text-white text-center w-100 py-2">
+            DEMO WEBSITE: DO NOT ENTER REAL DATA. THIS IS FOR TESTING PURPOSES ONLY.
+        </div>
         <div class="logo-container d-flex justify-content-center align-items-center">
             <img src="images/logo1.jpg" alt="Logo" class="header-logo">
         </div>
