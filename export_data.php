@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database Table Exporter
  * 
@@ -11,7 +12,7 @@
  */
 
 // Start the session to use session variables
-session_start(); 
+session_start();
 
 // Include the database connection file
 include 'dbcon.php';
@@ -38,7 +39,8 @@ if ($_SESSION['role'] != 'admin') {
  * @param string $tableName Name of the table to export.
  * @return string CSV content as a string.
  */
-function exportTableToCSV($con, $tableName) {
+function exportTableToCSV($con, $tableName)
+{
     // Define a specific query for the 'users' table; otherwise, select all columns
     $query = ($tableName == 'users') ? "SELECT id, name, username, position, role, status FROM `$tableName`" : "SELECT * FROM `$tableName`";
     $result = $con->query($query);
@@ -52,7 +54,7 @@ function exportTableToCSV($con, $tableName) {
     // Fetch column names
     $columns = $result->fetch_fields();
     $csvContent = '';
-    
+
     // Start output buffering to store CSV content
     ob_start();
     $output = fopen('php://output', 'w');
@@ -116,4 +118,3 @@ $_SESSION['message'] = "Data exported successfully!";
 // Close the database connection
 $con->close();
 exit();
-?>
