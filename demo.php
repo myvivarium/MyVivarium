@@ -30,7 +30,8 @@
 
 <body>
     <div class="demo-warning">
-        DEMO WEBSITE: FOR TESTING PURPOSES ONLY.
+        <span style="font-family: 'Arial', sans-serif;">DEMO WEBSITE: FOR TESTING PURPOSES ONLY.</span>
+    </div>
     </div>
 </body>
 
