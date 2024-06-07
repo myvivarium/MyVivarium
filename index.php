@@ -302,7 +302,6 @@ mysqli_close($con);
             text-align: center;
             padding: 10px 0;
             z-index: 1000;
-            font-weight: bold;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
     </style>
