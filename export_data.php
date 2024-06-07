@@ -9,12 +9,12 @@ function exportTableToCSV($con, $tableName) {
 
     if (!$result) {
         echo "Failed to retrieve data from $tableName: " . $con->error;
-        return;
+        return '';
     }
 
     $columns = $result->fetch_fields();
-    $csvFileName = $tableName . ".csv";
-
+    $csvContent = '';
+    
     // Use output buffering to store CSV content
     ob_start();
     $output = fopen('php://output', 'w');
