@@ -224,6 +224,57 @@ require 'header.php';
             window.history.back();
         }
 
+        // Function to validate date format & provide feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateFields = document.querySelectorAll('#male_dob, #female_dob, input[name^="dom"], input[name^="litter_dob"]');
+            dateFields.forEach(field => {
+                const warningText = document.createElement('span');
+                warningText.style.color = 'red';
+                warningText.style.display = 'none';
+                field.parentNode.appendChild(warningText);
+
+                field.addEventListener('input', function() {
+                    const dateValue = field.value;
+                    const isValidDate = validateDate(dateValue);
+                    if (!isValidDate) {
+                        warningText.textContent = 'Invalid Date. Please enter a valid date.';
+                        warningText.style.display = 'block';
+                    } else {
+                        warningText.textContent = '';
+                        warningText.style.display = 'none';
+                    }
+                });
+            });
+
+            function validateDate(dateString) {
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!dateString.match(regex)) return false;
+
+                const date = new Date(dateString);
+                const now = new Date();
+                const year = date.getFullYear();
+
+                // Check if the date is valid and within the range 1900-2099 and not in the future
+                return date && !isNaN(date) && year >= 1900 && year <= 2099 && date <= now;
+            }
+
+            document.querySelector('form').addEventListener('submit', function(event) {
+                let isValid = true;
+                dateFields.forEach(field => {
+                    const dateValue = field.value;
+                    if (!validateDate(dateValue)) {
+                        const warningText = field.nextElementSibling;
+                        warningText.textContent = 'Invalid Date. Please enter a valid date.';
+                        warningText.style.display = 'block';
+                        isValid = false;
+                    }
+                });
+                if (!isValid) {
+                    event.preventDefault(); // Prevent form submission if any date is invalid
+                }
+            });
+        });
+
         // Function to adjust the height of the textarea dynamically
         function adjustTextareaHeight(element) {
             element.style.height = "auto";
@@ -238,28 +289,28 @@ require 'header.php';
             litterDiv.innerHTML = `
             <hr>
             <div class="mb-3">
-                <label for="dom[]" class="form-label">DOM</label>
-                <input type="date" class="form-control" name="dom[]" required>
+                <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
+                <input type="date" class="form-control" name="dom[]" required min="1900-01-01" max="2099-12-31">
             </div>
             <div class="mb-3">
-                <label for="litter_dob[]" class="form-label">Litter DOB</label>
-                <input type="date" class="form-control" name="litter_dob[]">
+                <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
+                <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01" max="2099-12-31">
             </div>
             <div class="mb-3">
-                <label for="pups_alive[]" class="form-label">Pups Alive</label>
+                <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
                 <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
             </div>
             <div class="mb-3">
-                <label for="pups_dead[]" class="form-label">Pups Dead</label>
+                <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
                 <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
             </div>
             <div class="mb-3">
                 <label for="pups_male[]" class="form-label">Pups Male</label>
-                <input type="number" class="form-control" name="pups_male[]" required min="0" step="1">
+                <input type="number" class="form-control" name="pups_male[]" min="0" step="1">
             </div>
             <div class="mb-3">
                 <label for="pups_female[]" class="form-label">Pups Female</label>
-                <input type="number" class="form-control" name="pups_female[]" required min="0" step="1">
+                <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
             </div>
             <div class="mb-3">
                 <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
@@ -442,12 +493,12 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="male_dob" class="form-label">Male DOB <span class="required-asterisk">*</span></label>
-                                <input type="date" class="form-control" id="male_dob" name="male_dob" value="<?= htmlspecialchars($breedingcage['male_dob']); ?>" required>
+                                <input type="date" class="form-control" id="male_dob" name="male_dob" value="<?= htmlspecialchars($breedingcage['male_dob']); ?>" required min="1900-01-01" max="2099-12-31">
                             </div>
 
                             <div class="mb-3">
                                 <label for="female_dob" class="form-label">Female DOB <span class="required-asterisk">*</span></label>
-                                <input type="date" class="form-control" id="female_dob" name="female_dob" value="<?= htmlspecialchars($breedingcage['female_dob']); ?>" required>
+                                <input type="date" class="form-control" id="female_dob" name="female_dob" value="<?= htmlspecialchars($breedingcage['female_dob']); ?>" required min="1900-01-01" max="2099-12-31">
                             </div>
 
                             <div class="mb-3">
@@ -522,11 +573,11 @@ require 'header.php';
                                             <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
                                             <div class="mb-3">
                                                 <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
-                                                <input type="date" class="form-control" name="dom[]" value="<?= htmlspecialchars($litter['dom']); ?>" required>
+                                                <input type="date" class="form-control" name="dom[]" value="<?= htmlspecialchars($litter['dom']); ?>" required min="1900-01-01" max="2099-12-31">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
-                                                <input type="date" class="form-control" name="litter_dob[]" value="<?= htmlspecialchars($litter['litter_dob']); ?>" required>
+                                                <input type="date" class="form-control" name="litter_dob[]" value="<?= htmlspecialchars($litter['litter_dob']); ?>" required min="1900-01-01" max="2099-12-31">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>

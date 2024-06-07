@@ -197,7 +197,7 @@ require 'header.php';
             element.style.height = (element.scrollHeight) + "px";
         }
 
-        // Function to validate date
+        // Function to validate date format & provide feedback
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
             const dobInput = document.getElementById('dob');
