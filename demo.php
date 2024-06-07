@@ -21,6 +21,10 @@
         header {
             margin-top: 30px;
         }
+
+        .header-footer {
+            margin-top: 30px;
+        }
     </style>
 </head>
 
