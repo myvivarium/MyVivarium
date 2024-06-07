@@ -13,7 +13,7 @@
             background-color: #dc3545;
             color: #ffffff;
             text-align: center;
-            padding: 10px 0;
+            vertical-align: middle;
             z-index: 1000;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
