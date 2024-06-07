@@ -1,10 +1,25 @@
 <?php
+session_start(); // Start the session to use session variables
+
 // Include the database connection file
 include 'dbcon.php';
 
+// Check if the user is logged in and is an admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: index.php"); 
+        // Redirect to login if not logged in
+    } else {
+        $_SESSION['message'] = "Access Denied";
+        header("Location: index.php");
+    }
+    exit();
+}
+
 // Function to export a single table to a CSV format
-function exportTableToCSV($con, $tableName) {
-    $query = "SELECT * FROM `$tableName`";
+function exportTableToCSV($con, $tableName)
+{
+    $query = ($tableName == 'users') ? "SELECT id, name, username, position, role, status FROM `$tableName`" : "SELECT * FROM `$tableName`";
     $result = $con->query($query);
 
     if (!$result) {
@@ -14,7 +29,7 @@ function exportTableToCSV($con, $tableName) {
 
     $columns = $result->fetch_fields();
     $csvContent = '';
-    
+
     // Use output buffering to store CSV content
     ob_start();
     $output = fopen('php://output', 'w');
@@ -69,6 +84,12 @@ readfile($zipFilename);
 // Delete the temporary file
 unlink($zipFilename);
 
+// Close the connection
 $con->close();
+
+// Set a session message for success confirmation
+$_SESSION['message'] = "Data exported successfully!";
+
+// Redirect back to the admin page (adjust as necessary)
+header("Location: index.php");
 exit();
-?>
