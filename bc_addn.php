@@ -175,26 +175,7 @@ require 'header.php';
 
         // Function to validate date format & provide feedback
         document.addEventListener('DOMContentLoaded', function() {
-            const dateFields = document.querySelectorAll('#male_dob, #female_dob, input[name^="dom"], input[name^="litter_dob"]');
-            dateFields.forEach(field => {
-                const warningText = document.createElement('span');
-                warningText.style.color = 'red';
-                warningText.style.display = 'none';
-                field.parentNode.appendChild(warningText);
-
-                field.addEventListener('input', function() {
-                    const dateValue = field.value;
-                    const isValidDate = validateDate(dateValue);
-                    if (!isValidDate) {
-                        warningText.textContent = 'Invalid Date. Please enter a valid date.';
-                        warningText.style.display = 'block';
-                    } else {
-                        warningText.textContent = '';
-                        warningText.style.display = 'none';
-                    }
-                });
-            });
-
+            // Function to validate date
             function validateDate(dateString) {
                 const regex = /^\d{4}-\d{2}-\d{2}$/;
                 if (!dateString.match(regex)) return false;
@@ -207,12 +188,57 @@ require 'header.php';
                 return date && !isNaN(date) && year >= 1900 && year <= 2099 && date <= now;
             }
 
-            document.querySelector('form').addEventListener('submit', function(event) {
+            // Function to attach event listeners to date fields
+            function attachDateValidation() {
+                const dateFields = document.querySelectorAll('input[type="date"]');
+                dateFields.forEach(field => {
+                    if (!field.dataset.validated) { // Check if already validated
+                        const warningText = document.createElement('span');
+                        warningText.style.color = 'red';
+                        warningText.style.display = 'none';
+                        field.parentNode.appendChild(warningText);
+
+                        field.addEventListener('input', function() {
+                            const dateValue = field.value;
+                            const isValidDate = validateDate(dateValue);
+                            if (!isValidDate) {
+                                warningText.textContent = 'Invalid Date. Please enter a valid date.';
+                                warningText.style.display = 'block';
+                            } else {
+                                warningText.textContent = '';
+                                warningText.style.display = 'none';
+                            }
+                        });
+
+                        // Mark the field as validated
+                        field.dataset.validated = 'true';
+                    }
+                });
+            }
+
+            // Initial call to validate existing date fields
+            attachDateValidation();
+
+            // Observe the form for changes (e.g., new nodes added dynamically)
+            const form = document.querySelector('form');
+            const observer = new MutationObserver(() => {
+                attachDateValidation(); // Reattach validation to new nodes
+            });
+
+            // Start observing the form
+            observer.observe(form, {
+                childList: true,
+                subtree: true
+            });
+
+            // Prevent form submission if dates are invalid
+            form.addEventListener('submit', function(event) {
                 let isValid = true;
+                const dateFields = document.querySelectorAll('input[type="date"]');
                 dateFields.forEach(field => {
                     const dateValue = field.value;
+                    const warningText = field.nextElementSibling;
                     if (!validateDate(dateValue)) {
-                        const warningText = field.nextElementSibling;
                         warningText.textContent = 'Invalid Date. Please enter a valid date.';
                         warningText.style.display = 'block';
                         isValid = false;
