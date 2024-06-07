@@ -297,6 +297,7 @@ mysqli_close($con);
             top: 0;
             left: 0;
             width: 100%;
+            height: 40px;
             background-color: #dc3545;
             color: #ffffff;
             text-align: center;
@@ -306,7 +307,7 @@ mysqli_close($con);
         }
 
         header {
-            margin-top: 50px; /* Match this to the height of the demo-warning div */
+            margin-top: 40px;
         }
     </style>
 </head>
