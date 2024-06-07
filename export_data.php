@@ -5,20 +5,20 @@ session_start(); // Start the session to use session variables
 include 'dbcon.php';
 
 // Check if the user is logged in and is an admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: index.php"); 
-        // Redirect to login if not logged in
-    } else {
-        $_SESSION['message'] = "Access Denied";
-        header("Location: index.php");
-    }
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php"); // Redirect to login if not logged in
+    exit();
+}
+
+// Check if the user is an admin
+if ($_SESSION['role'] != 'admin') {
+    $_SESSION['message'] = "Access Denied";
     exit();
 }
 
 // Function to export a single table to a CSV format
-function exportTableToCSV($con, $tableName)
-{
+function exportTableToCSV($con, $tableName) {
+    // Exclude sensitive data from the users table
     $query = ($tableName == 'users') ? "SELECT id, name, username, position, role, status FROM `$tableName`" : "SELECT * FROM `$tableName`";
     $result = $con->query($query);
 
@@ -67,13 +67,17 @@ header('Content-Disposition: attachment;filename="exported_data.zip"');
 // Create a new ZipArchive
 $zip = new ZipArchive();
 $zipFilename = tempnam(sys_get_temp_dir(), 'zip');
-$zip->open($zipFilename, ZipArchive::CREATE);
+if (!$zip->open($zipFilename, ZipArchive::CREATE)) {
+    die("Failed to create zip file");
+}
 
 // Loop through each table and add the CSV to the zip file
 while ($tableRow = $tableResult->fetch_row()) {
     $tableName = $tableRow[0];
     $csvContent = exportTableToCSV($con, $tableName);
-    $zip->addFromString($tableName . '.csv', $csvContent);
+    if (!empty($csvContent)) {
+        $zip->addFromString($tableName . '.csv', $csvContent);
+    }
 }
 
 $zip->close();
@@ -93,3 +97,4 @@ $_SESSION['message'] = "Data exported successfully!";
 // Redirect back to the admin page (adjust as necessary)
 header("Location: index.php");
 exit();
+?>
