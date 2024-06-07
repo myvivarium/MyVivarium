@@ -189,6 +189,64 @@ require 'header.php';
 
             // Initial call to set max date on page load
             setMaxDate();
+
+            // Function to dynamically add new litter entry
+            function addLitter() {
+                const litterDiv = document.createElement('div');
+                litterDiv.className = 'litter-entry';
+
+                litterDiv.innerHTML = `
+                <hr>
+                <div class="mb-3">
+                    <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
+                    <input type="date" class="form-control" name="dom[]" required min="1900-01-01">
+                </div>
+                <div class="mb-3">
+                    <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
+                    <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
+                    <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
+                    <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_male[]" class="form-label">Pups Male</label>
+                    <input type="number" class="form-control" name="pups_male[]" min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_female[]" class="form-label">Pups Female</label>
+                    <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="remarks[]" class="form-label">Remarks</label>
+                    <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"></textarea>
+                </div>
+                <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
+            `;
+
+                document.getElementById('litterEntries').appendChild(litterDiv);
+
+                // Apply max date to new date fields
+                setMaxDate();
+            }
+
+            // Function to adjust the height of the textarea dynamically
+            function adjustTextareaHeight(element) {
+                element.style.height = "auto";
+                element.style.height = (element.scrollHeight) + "px";
+            }
+
+            // Function to remove a litter entry dynamically
+            function removeLitter(element) {
+                element.parentElement.remove();
+            }
+
+            // Ensure the function addLitter is available globally
+            window.addLitter = addLitter;
         });
 
         // Function to navigate back to the previous page
@@ -272,61 +330,6 @@ require 'header.php';
                 }
             });
         });
-
-        // Function to adjust the height of the textarea dynamically
-        function adjustTextareaHeight(element) {
-            element.style.height = "auto";
-            element.style.height = (element.scrollHeight) + "px";
-        }
-
-        // Function to add a new litter entry dynamically
-        function addLitter() {
-            const litterDiv = document.createElement('div');
-            litterDiv.className = 'litter-entry';
-
-            litterDiv.innerHTML = `
-    <hr>
-    <div class="mb-3">
-        <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
-        <input type="date" class="form-control" name="dom[]" required min="1900-01-01">
-    </div>
-    <div class="mb-3">
-        <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
-        <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01">
-    </div>
-    <div class="mb-3">
-        <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
-        <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
-    </div>
-    <div class="mb-3">
-        <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
-        <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
-    </div>
-    <div class="mb-3">
-        <label for="pups_male[]" class="form-label">Pups Male</label>
-        <input type="number" class="form-control" name="pups_male[]" min="0" step="1">
-    </div>
-    <div class="mb-3">
-        <label for="pups_female[]" class="form-label">Pups Female</label>
-        <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
-    </div>
-    <div class="mb-3">
-        <label for="remarks[]" class="form-label">Remarks</label>
-        <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"></textarea>
-    </div>
-    <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
-    `;
-
-            document.getElementById('litterEntries').appendChild(litterDiv);
-
-            // Apply max date to new date fields
-            setMaxDate();
-        }
-
-        // Function to remove a litter entry dynamically
-        function removeLitter(element) {
-            element.parentElement.remove();
-        }
     </script>
 </head>
 
