@@ -295,7 +295,9 @@ mysqli_close($con);
 </head>
 
 <body>
-
+    <div class="demo-warning bg-danger text-white text-center w-100 py-2">
+        DEMO WEBSITE: DO NOT ENTER REAL DATA. THIS IS FOR TESTING PURPOSES ONLY.
+    </div>
     <header class="bg-dark text-white text-center py-3 d-flex flex-wrap justify-content-center align-items-center">
         <div class="demo-warning bg-danger text-white text-center w-100 py-2">
             DEMO WEBSITE: DO NOT ENTER REAL DATA. THIS IS FOR TESTING PURPOSES ONLY.
