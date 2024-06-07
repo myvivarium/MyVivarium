@@ -304,6 +304,10 @@ mysqli_close($con);
             z-index: 1000;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
+        header {
+            margin-top: 50px; /* Match this to the height of the demo-warning div */
+        }
     </style>
 </head>
 
