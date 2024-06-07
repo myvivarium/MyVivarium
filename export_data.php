@@ -69,6 +69,6 @@ readfile($zipFilename);
 // Delete the temporary file
 unlink($zipFilename);
 
-$conn->close();
+$con->close();
 exit();
 ?>
