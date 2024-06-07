@@ -57,19 +57,6 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             padding: 0;
         }
 
-        /* Override Bootstrap's default font family */
-        body,
-        .container,
-        .card,
-        .card-header,
-        .card-body,
-        .card-text,
-        .card-title,
-        h2,
-        p {
-            font-family: 'Poppins', sans-serif !important;
-        }
-
         /* Styling for header and footer */
         .header-footer {
             display: flex;
