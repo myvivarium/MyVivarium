@@ -196,6 +196,39 @@ require 'header.php';
             element.style.height = "auto";
             element.style.height = (element.scrollHeight) + "px";
         }
+
+        // Function to validate date
+        document.addEventListener('DOMContentLoaded', function() {
+            const dobInput = document.getElementById('dob');
+            const warningText = document.createElement('span');
+            warningText.style.color = 'red';
+            warningText.style.display = 'none';
+            dobInput.parentNode.appendChild(warningText);
+
+            dobInput.addEventListener('input', function() {
+                const dobValue = dobInput.value;
+                const isValidDate = validateDate(dobValue);
+                if (!isValidDate) {
+                    warningText.textContent = 'Invalid Date. Please enter a valid date.';
+                    warningText.style.display = 'block';
+                } else {
+                    warningText.textContent = '';
+                    warningText.style.display = 'none';
+                }
+            });
+
+            function validateDate(dateString) {
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!dateString.match(regex)) return false;
+
+                const date = new Date(dateString);
+                const now = new Date();
+                const year = date.getFullYear();
+
+                // Check if the date is a valid date and within the range 1900-2099
+                return date && !isNaN(date) && year >= 1900 && year <= 2099 && date < now;
+            }
+        });
     </script>
 
 </head>
@@ -260,7 +293,7 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="dob" class="form-label">DOB <span class="required-asterisk">*</span></label>
-                <input type="date" class="form-control" id="dob" name="dob" required>
+                <input type="date" class="form-control" id="dob" name="dob" required min="1900-01-01" max="2099-12-31">
             </div>
 
             <div class="mb-3">
