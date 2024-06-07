@@ -1,5 +1,7 @@
 <?php
-session_start(); // Start the session to use session variables
+
+// Start the session to use session variables
+session_start(); 
 
 // Include the database connection file
 include 'dbcon.php';
@@ -19,18 +21,17 @@ if ($_SESSION['role'] != 'admin') {
 
 // Function to export a single table to a CSV format
 function exportTableToCSV($con, $tableName) {
-    // Exclude sensitive data from the users table
-    $query = ($tableName == 'users') ? "SELECT id, name, username, position, role, status FROM `$tableName`" : "SELECT * FROM `$tableName`";
+    $query = "SELECT * FROM `$tableName`";
     $result = $con->query($query);
 
     if (!$result) {
-        error_log("Failed to retrieve data from $tableName: " . $con->error);
+        echo "Failed to retrieve data from $tableName: " . $con->error;
         return '';
     }
 
     $columns = $result->fetch_fields();
     $csvContent = '';
-
+    
     // Use output buffering to store CSV content
     ob_start();
     $output = fopen('php://output', 'w');
@@ -68,39 +69,26 @@ header('Content-Disposition: attachment;filename="exported_data.zip"');
 // Create a new ZipArchive
 $zip = new ZipArchive();
 $zipFilename = tempnam(sys_get_temp_dir(), 'zip');
-if (!$zip->open($zipFilename, ZipArchive::CREATE)) {
-    die("Failed to create zip file");
-}
+$zip->open($zipFilename, ZipArchive::CREATE);
 
 // Loop through each table and add the CSV to the zip file
 while ($tableRow = $tableResult->fetch_row()) {
     $tableName = $tableRow[0];
     $csvContent = exportTableToCSV($con, $tableName);
-    if (!empty($csvContent)) {
-        $zip->addFromString($tableName . '.csv', $csvContent);
-    }
+    $zip->addFromString($tableName . '.csv', $csvContent);
 }
 
 $zip->close();
 
 // Output the zip file
-if (file_exists($zipFilename)) {
-    readfile($zipFilename);
+readfile($zipFilename);
 
-    // Delete the temporary file
-    unlink($zipFilename);
-} else {
-    error_log("Failed to find the zip file: " . $zipFilename);
-    die("Failed to create the zip file for download.");
-}
-
-// Close the connection
-$con->close();
+// Delete the temporary file
+unlink($zipFilename);
 
 // Set a session message for success confirmation
 $_SESSION['message'] = "Data exported successfully!";
 
-// Redirect back to the admin page (adjust as necessary)
-header("Location: index.php");
+$con->close();
 exit();
 ?>
