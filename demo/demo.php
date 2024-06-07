@@ -14,6 +14,7 @@
             color: #ffffff;
             text-align: center;
             vertical-align: middle;
+            padding-top: 3px;
             z-index: 1000;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
