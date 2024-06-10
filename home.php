@@ -57,7 +57,7 @@ require 'header.php';
         .container {
             display: flex;
             flex-direction: column;
-            min-height: 80vh;
+            min-height: 100vh;
         }
 
         .main-content {
