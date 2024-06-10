@@ -61,6 +61,11 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             padding: 1rem;
             text-align: center;
             margin: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
         }
 
         .header .logo-container {
@@ -102,6 +107,11 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             padding: 0px 0px 20px 0px;
             text-align: center;
             margin: 0;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            z-index: 998;
         }
 
         .nav .btn {
