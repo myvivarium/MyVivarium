@@ -48,16 +48,25 @@ require 'header.php';
     <title>Home | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
         .flex-container {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            justify-content: space-between;
         }
 
         .content {
-            flex: 1;
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
@@ -73,6 +82,7 @@ require 'header.php';
 <body>
     <div class="flex-container">
         <div class="content">
+            <!-- Existing container and content goes here -->
             <div class="container">
                 <!-- Display session messages if any -->
                 <?php include('message.php'); ?>

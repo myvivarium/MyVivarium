@@ -9,11 +9,11 @@
 <style>
     .footer {
         background-color: #343a40;
-        margin: 0;
-        padding: 10px 0;
+        padding: 10px 0; /* Adjust padding */
         text-align: center;
         width: 100%;
         box-sizing: border-box;
+        margin: 0; /* Remove any extra margin */
     }
 
     .footer-text {
