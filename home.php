@@ -149,7 +149,7 @@ require 'header.php';
             const headerHeight = header ? header.offsetHeight : 0; // Header height, 0 if no header
 
             // Calculate total content height including header and footer
-            const totalContentHeight = containerHeight + footerHeight + headerHeight + navcontainerHeight;
+            const totalContentHeight = containerHeight + footerHeight - headerHeight - navcontainerHeight;
 
             // Adjust the footer position based on total content height and viewport height
             if (totalContentHeight < windowHeight) {
