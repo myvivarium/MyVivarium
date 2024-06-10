@@ -65,7 +65,10 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             color: white;
             padding: 1rem;
             text-align: center;
+            flex: 0 0 auto;
+            /* Ensure header doesn't grow or shrink */
             margin: 0;
+            /* Remove any extra margin */
         }
 
         .header .logo-container {
@@ -102,9 +105,13 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 
         .nav-container {
             background-color: #343a40;
-            padding: 0px 0px 20px 0px;
+            padding: 0;
+            /* Adjust padding */
             text-align: center;
             margin: 0;
+            /* Remove any extra margin */
+            flex: 0 0 auto;
+            /* Ensure nav-container doesn't grow or shrink */
         }
 
         .nav .btn {
@@ -115,6 +122,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             min-width: auto;
         }
     </style>
+
 </head>
 
 <body>

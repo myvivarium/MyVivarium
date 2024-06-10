@@ -32,9 +32,6 @@ $holdingCount = $holdingCountRow['count'];
 $matingCountResult = $con->query("SELECT COUNT(*) AS count FROM bc_basic");
 $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
-
-// Include the header file
-require 'header.php';
 ?>
 
 <!doctype html>
