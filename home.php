@@ -75,12 +75,15 @@ require 'header.php';
             box-sizing: border-box;
         }
     </style>
+
 </head>
 
 <!-- Inside the body tag, add the flex-container -->
 
 <body>
     <div class="flex-container">
+        <!-- Include the header file inside the flex-container -->
+        <?php include 'header.php'; ?>
         <div class="content">
             <!-- Existing container and content goes here -->
             <div class="container">
@@ -142,6 +145,7 @@ require 'header.php';
         <?php include 'footer.php'; ?>
     </div>
 </body>
+
 
 
 </html>
