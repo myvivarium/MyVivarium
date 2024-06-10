@@ -260,14 +260,15 @@ mysqli_close($con);
             color: white;
             padding: 1rem;
             text-align: center;
+            margin: 0;
         }
 
-        .logo-container {
+        .header .logo-container {
             padding: 0;
             margin: 0;
         }
 
-        header img.header-logo {
+        .header img.header-logo {
             width: 300px;
             height: auto;
             display: block;
