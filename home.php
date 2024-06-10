@@ -68,7 +68,6 @@ require 'header.php';
             padding: 20px;
             box-sizing: border-box;
         }
-
     </style>
 </head>
 
@@ -128,34 +127,38 @@ require 'header.php';
             </div>
         </div>
     </div>
-            <!-- Include the footer file -->
-            <?php include 'footer.php'; ?>
+    <!-- Include the footer file -->
+    <?php include 'footer.php'; ?>
 
     <script>
         function adjustFooter() {
             const footer = document.getElementById('footer');
             const container = document.querySelector('.top-container');
 
-            // Remove inline styles to calculate natural height
+            // Reset footer styles to compute natural height
             footer.style.position = 'relative';
             footer.style.bottom = 'auto';
+            footer.style.width = '100%'; // Ensure footer spans full width
 
-            const containerHeight = container.offsetHeight;
+            const containerHeight = container.scrollHeight; // Use scrollHeight for accurate content height
             const windowHeight = window.innerHeight;
+            const footerHeight = footer.offsetHeight; // Include footer height in the calculation
+            const totalContentHeight = containerHeight + footerHeight;
 
-            // If content is shorter than viewport, fix the footer at the bottom
-            if (containerHeight < windowHeight) {
+            // Adjust the footer position based on content height and viewport height
+            if (totalContentHeight < windowHeight) {
                 footer.style.position = 'absolute';
                 footer.style.bottom = '0';
             } else {
                 footer.style.position = 'relative';
-                footer.style.bottom = 'auto';
             }
         }
 
+        // Adjust footer on page load and window resize
         window.addEventListener('load', adjustFooter);
         window.addEventListener('resize', adjustFooter);
     </script>
+
 </body>
 
 </html>

@@ -9,7 +9,7 @@
 <style>
     .footer {
         background-color: #343a40;
-        padding: 15px 0;
+        padding: 20px 0;
         text-align: center;
         width: 100%;
         box-sizing: border-box;
