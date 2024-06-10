@@ -20,7 +20,7 @@
         }
 
         .header {
-            margin-top: 50px;
+            margin-top: 35px;
         }
     </style>
 </head>
