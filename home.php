@@ -47,16 +47,28 @@ require 'header.php';
     <title>Home | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
-        /* Basic styling for body */
-        body {
+        body,
+        html {
             margin: 0;
             padding: 0;
+            height: 100%;
         }
 
-        /* Styling for main content container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         .main-content {
-            justify-content: center;
-            align-items: center;
+            flex: 1;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
     </style>
 </head>
@@ -119,6 +131,33 @@ require 'header.php';
 
     <!-- Include the footer file -->
     <?php include 'footer.php'; ?>
+
+    <script>
+        function adjustFooter() {
+            const footer = document.getElementById('footer');
+            const mainContent = document.querySelector('.main-content');
+            const container = document.querySelector('.container');
+
+            // Remove inline styles to calculate natural height
+            footer.style.position = 'relative';
+            footer.style.bottom = 'auto';
+
+            const containerHeight = container.offsetHeight;
+            const windowHeight = window.innerHeight;
+
+            // If content is shorter than viewport, fix the footer at the bottom
+            if (containerHeight < windowHeight) {
+                footer.style.position = 'absolute';
+                footer.style.bottom = '0';
+            } else {
+                footer.style.position = 'relative';
+                footer.style.bottom = 'auto';
+            }
+        }
+
+        window.addEventListener('load', adjustFooter);
+        window.addEventListener('resize', adjustFooter);
+    </script>
 
 </body>
 
