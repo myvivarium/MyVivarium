@@ -299,97 +299,122 @@ mysqli_close($con);
 </head>
 
 <body>
-    <!-- Header Section -->
-    <?php if ($demo === "yes") include('demo/demo.php'); ?>
-    <div class="header">
-        <div class="logo-container">
-            <a href="home.php">
-                <img src="images/logo1.jpg" alt="Logo" class="header-logo">
-            </a>
+    <div class="top-container">
+        <!-- Header Section -->
+        <?php if ($demo === "yes") include('demo/demo.php'); ?>
+        <div class="header">
+            <div class="logo-container">
+                <a href="home.php">
+                    <img src="images/logo1.jpg" alt="Logo" class="header-logo">
+                </a>
+            </div>
+            <h2><?php echo htmlspecialchars($labName); ?></h2>
         </div>
-        <h2><?php echo htmlspecialchars($labName); ?></h2>
-    </div>
 
-    <!-- Main Content -->
-    <div class="container mt-4">
-        <div class="row">
-            <!-- Slideshow Column -->
-            <div class="col-md-6">
-                <div id="labCarousel" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active"> <img class="d-block w-100" src="images/DSC_0536.JPG" alt="Image 1"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0537.JPG" alt="Image 2"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0539.JPG" alt="Image 3"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0540.JPG" alt="Image 4"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0560.JPG" alt="Image 7"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0562.JPG" alt="Image 8"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0586.JPG" alt="Image 11"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0593.JPG" alt="Image 12"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0607.JPG" alt="Image 13"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0623.JPG" alt="Image 14"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0658.JPG" alt="Image 15"> </div>
-                        <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0665.JPG" alt="Image 16"> </div>
+        <!-- Main Content -->
+        <div class="container mt-4">
+            <div class="row">
+                <!-- Slideshow Column -->
+                <div class="col-md-6">
+                    <div id="labCarousel" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active"> <img class="d-block w-100" src="images/DSC_0536.JPG" alt="Image 1"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0537.JPG" alt="Image 2"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0539.JPG" alt="Image 3"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0540.JPG" alt="Image 4"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0560.JPG" alt="Image 7"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0562.JPG" alt="Image 8"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0586.JPG" alt="Image 11"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0593.JPG" alt="Image 12"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0607.JPG" alt="Image 13"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0623.JPG" alt="Image 14"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0658.JPG" alt="Image 15"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0665.JPG" alt="Image 16"> </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Login Form Column -->
+                <div class="col-md-6">
+                    <div class="login-form">
+                        <h3>Login</h3>
+                        <?php if (isset($error_message)) { ?>
+                            <div class="alert alert-danger">
+                                <?php echo $error_message; ?>
+                            </div>
+                        <?php } ?>
+                        <form method="POST" action="">
+                            <div class="form-group">
+                                <label for="username">Email Address</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" name="login">Login</button>
+                            <a href="register.php" class="btn btn-secondary">Register</a>
+                            <br><br>
+                            <a href="forgot_password.php" class="forgot-password-link">Forgot Password?</a>
+                        </form>
                     </div>
                 </div>
             </div>
 
-            <!-- Login Form Column -->
-            <div class="col-md-6">
-                <div class="login-form">
-                    <h3>Login</h3>
-                    <?php if (isset($error_message)) { ?>
-                        <div class="alert alert-danger">
-                            <?php echo $error_message; ?>
-                        </div>
-                    <?php } ?>
-                    <form method="POST" action="">
-                        <div class="form-group">
-                            <label for="username">Email Address</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary" name="login">Login</button>
-                        <a href="register.php" class="btn btn-secondary">Register</a>
-                        <br><br>
-                        <a href="forgot_password.php" class="forgot-password-link">Forgot Password?</a>
-                    </form>
-                </div>
-            </div>
-        </div>
+            <!-- New Row for Unique Features -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h2 class="text-center">Welcome to the <?php echo htmlspecialchars($labName); ?></h2>
+                    <p class="text-center italic">Elevate Your Research with IoT-Enhanced Colony Management</p>
 
-        <!-- New Row for Unique Features -->
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <h2 class="text-center">Welcome to the <?php echo htmlspecialchars($labName); ?></h2>
-                <p class="text-center italic">Elevate Your Research with IoT-Enhanced Colony Management</p>
+                    <!-- Feature Box 1 -->
+                    <div class="col-md-6 mb-6 mx-auto feature-box text-center">
+                        <h3>Real-Time Environmental Monitoring</h3>
+                        <p>Gain unparalleled insights into the conditions of your vivarium. Our IoT sensors continuously track temperature and humidity levels, ensuring a stable and controlled environment for your research animals.</p>
+                    </div>
 
-                <!-- Feature Box 1 -->
-                <div class="col-md-6 mb-6 mx-auto feature-box text-center">
-                    <h3>Real-Time Environmental Monitoring</h3>
-                    <p>Gain unparalleled insights into the conditions of your vivarium. Our IoT sensors continuously track temperature and humidity levels, ensuring a stable and controlled environment for your research animals.</p>
-                </div>
+                    <!-- Feature Box 2 -->
+                    <div class="col-md-6 mb-6 mx-auto feature-box text-center">
+                        <h3>Effortless Cage and Mouse Tracking</h3>
+                        <p>Seamlessly monitor every cage and mouse in your facility. No more manual record-keeping or confusion.</p>
+                    </div>
 
-                <!-- Feature Box 2 -->
-                <div class="col-md-6 mb-6 mx-auto feature-box text-center">
-                    <h3>Effortless Cage and Mouse Tracking</h3>
-                    <p>Seamlessly monitor every cage and mouse in your facility. No more manual record-keeping or confusion.</p>
-                </div>
-
-                <!-- Feature Box 3 -->
-                <div class="col-md-6 mb-6 mx-auto feature-box text-center">
-                    <h3>Security and Compliance</h3>
-                    <p>Rest easy knowing your data is secure and compliant with industry regulations. We prioritize data integrity and confidentiality.</p>
+                    <!-- Feature Box 3 -->
+                    <div class="col-md-6 mb-6 mx-auto feature-box text-center">
+                        <h3>Security and Compliance</h3>
+                        <p>Rest easy knowing your data is secure and compliant with industry regulations. We prioritize data integrity and confidentiality.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
     <!-- Include the footer -->
     <?php include 'footer.php'; ?>
+    <script>
+        function adjustFooter() {
+            const footer = document.getElementById('footer');
+            const container = document.querySelector('.top-container');
 
+            // Remove inline styles to calculate natural height
+            footer.style.position = 'relative';
+            footer.style.bottom = 'auto';
+
+            const containerHeight = container.offsetHeight;
+            const windowHeight = window.innerHeight;
+
+            // If content is shorter than viewport, fix the footer at the bottom
+            if (containerHeight < windowHeight) {
+                footer.style.position = 'absolute';
+                footer.style.bottom = '0';
+            } else {
+                footer.style.position = 'relative';
+                footer.style.bottom = 'auto';
+            }
+        }
+
+        window.addEventListener('load', adjustFooter);
+        window.addEventListener('resize', adjustFooter);
+    </script>
 </body>
 
 </html>

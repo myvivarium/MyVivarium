@@ -55,7 +55,7 @@ require 'header.php';
             width: 100%;
         }
 
-        .container {
+        .top-container {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -73,7 +73,7 @@ require 'header.php';
 </head>
 
 <body>
-    <div class="container">
+    <div class="top-container">
         <div class="main-content">
             <!-- Display session messages if any -->
             <?php include('message.php'); ?>
@@ -134,7 +134,7 @@ require 'header.php';
     <script>
         function adjustFooter() {
             const footer = document.getElementById('footer');
-            const container = document.querySelector('.container');
+            const container = document.querySelector('.top-container');
 
             // Remove inline styles to calculate natural height
             footer.style.position = 'relative';
