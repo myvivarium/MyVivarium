@@ -55,14 +55,7 @@ require 'header.php';
             width: 100%;
         }
 
-        .top-container {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
         .main-content {
-            flex: 1;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
@@ -73,7 +66,6 @@ require 'header.php';
 </head>
 
 <body>
-    <div class="top-container">
         <div class="main-content">
             <!-- Display session messages if any -->
             <?php include('message.php'); ?>
@@ -127,7 +119,6 @@ require 'header.php';
                 </div>
             </div>
         </div>
-    </div>
     <!-- Include the footer file -->
     <?php include 'footer.php'; ?>
 

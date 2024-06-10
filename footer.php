@@ -25,7 +25,7 @@
 </style>
 
 <!-- Footer content -->
-<div id="footer" class="footer">
+<div id="footer" class="footer navbar-fixed-bottom">
     <!-- Dynamic footer text displaying the current year and lab name, with HTML special characters escaped -->
     <p class="footer-text">&copy; <?php echo date("Y"); ?>
         <?php
