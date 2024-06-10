@@ -131,6 +131,42 @@ require 'header.php';
     <!-- Include the footer file -->
     <?php include 'footer.php'; ?>
 
+    <script>
+        function adjustFooter() {
+            const footer = document.getElementById('footer');
+            const container = document.querySelector('.top-container');
+            const header = document.querySelector('.header');
+            const navcontainer = document.querySelector('.nav-container');
+
+            // Reset footer styles to compute natural height
+            footer.style.position = 'relative';
+            footer.style.bottom = 'auto';
+            footer.style.width = '100%';
+
+            // Calculate the height occupied by header and nav container
+            const headerHeight = header ? header.offsetHeight : 0;
+            const navcontainerHeight = navcontainer ? navcontainer.offsetHeight : 0;
+            const footerHeight = footer.offsetHeight;
+
+            // Calculate available space minus header and nav container
+            const availableSpace = window.innerHeight - headerHeight - navcontainerHeight;
+
+            // Calculate total content height
+            const contentHeight = container.scrollHeight + footerHeight;
+
+            // Adjust footer position based on content height and available space
+            if (contentHeight < availableSpace) {
+                footer.style.position = 'absolute';
+                footer.style.bottom = '0';
+            } else {
+                footer.style.position = 'relative';
+            }
+        }
+
+        // Adjust footer on page load and window resize
+        window.addEventListener('load', adjustFooter);
+        window.addEventListener('resize', adjustFooter);
+    </script>
 
 
 </body>
