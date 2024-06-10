@@ -235,7 +235,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             font-size: 12px;
         }
 
-        header {
+        .header {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -244,21 +244,22 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             color: white;
             padding: 1rem;
             text-align: center;
+            margin: 0;
         }
 
-        .logo-container {
+        .header .logo-container {
             padding: 0;
             margin: 0;
         }
 
-        header img.header-logo {
+        .header img.header-logo {
             width: 300px;
             height: auto;
             display: block;
             margin: 0;
         }
 
-        header h1 {
+        .header h2 {
             margin-left: 15px;
             margin-bottom: 0;
             margin-top: 12px;
@@ -269,12 +270,11 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
         }
 
         @media (max-width: 576px) {
-            header h1 {
-                font-size: 2.2rem;
-                margin-left: 10px;
+            .header h2 {
+                font-size: 1.8rem;
             }
 
-            header img.header-logo {
+            .header img.header-logo {
                 width: 150px;
             }
 
@@ -291,14 +291,16 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
 </head>
 
 <body>
-    <!-- Header with Lab Name -->
+    <!-- Header Section -->
     <?php if ($demo === "yes") include('demo/demo.php'); ?>
-    <header class="bg-dark text-white text-center py-3 d-flex flex-wrap justify-content-center align-items-center">
-        <div class="logo-container d-flex justify-content-center align-items-center">
-            <img src="images/logo1.jpg" alt="Logo" class="header-logo">
+    <div class="header">
+        <div class="logo-container">
+            <a href="home.php">
+                <img src="images/logo1.jpg" alt="Logo" class="header-logo">
+            </a>
         </div>
-        <h1 class="ml-3 mb-0"><?php echo htmlspecialchars($labName); ?></h1>
-    </header>
+        <h2><?php echo htmlspecialchars($labName); ?></h2>
+    </div>
     <br>
     <div class="container">
         <h2>User Registration</h2>
