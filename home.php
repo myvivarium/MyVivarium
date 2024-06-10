@@ -151,7 +151,7 @@ require 'header.php';
             const windowHeight = window.innerHeight;
 
             // Adjust footer position based on content height
-            if (containerHeight + totalHeaderNavHeight < windowHeight) {
+            if (containerHeight - totalHeaderNavHeight < windowHeight) {
                 footer.style.position = 'absolute';
                 footer.style.bottom = '0';
                 footer.style.width = '100%'; // Ensure the footer spans the full width
