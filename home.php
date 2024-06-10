@@ -68,6 +68,7 @@ require 'header.php';
             padding: 20px;
             box-sizing: border-box;
         }
+
     </style>
 </head>
 
@@ -127,48 +128,34 @@ require 'header.php';
             </div>
         </div>
     </div>
-    <!-- Include the footer file -->
-    <?php include 'footer.php'; ?>
+            <!-- Include the footer file -->
+            <?php include 'footer.php'; ?>
 
     <script>
         function adjustFooter() {
-            const header = document.querySelector('.header');
-            const navContainer = document.querySelector('.nav-container');
             const footer = document.getElementById('footer');
             const container = document.querySelector('.container');
-
-            // Calculate the combined height of the header and navigation
-            const headerHeight = header ? header.offsetHeight : 0;
-            const navHeight = navContainer ? navContainer.offsetHeight : 0;
-            const totalHeaderNavHeight = headerHeight + navHeight;
 
             // Remove inline styles to calculate natural height
             footer.style.position = 'relative';
             footer.style.bottom = 'auto';
 
-            // Get the height of the container and the viewport
             const containerHeight = container.offsetHeight;
             const windowHeight = window.innerHeight;
 
-            // Adjust footer position based on content height
-            if (containerHeight - totalHeaderNavHeight < windowHeight) {
+            // If content is shorter than viewport, fix the footer at the bottom
+            if (containerHeight < windowHeight) {
                 footer.style.position = 'absolute';
                 footer.style.bottom = '0';
-                footer.style.width = '100%'; // Ensure the footer spans the full width
             } else {
                 footer.style.position = 'relative';
                 footer.style.bottom = 'auto';
             }
-
-            // Adjust top margin of the container to prevent content overlap
-            container.style.marginTop = `${totalHeaderNavHeight}px`;
         }
 
-        // Add event listeners to adjust layout on load and resize
         window.addEventListener('load', adjustFooter);
         window.addEventListener('resize', adjustFooter);
     </script>
-
 </body>
 
 </html>
