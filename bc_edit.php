@@ -148,25 +148,26 @@ if (isset($_GET['id'])) {
             $delete_litter_ids = isset($_POST['delete_litter_ids']) ? $_POST['delete_litter_ids'] : [];
 
             // Process litter data
-            if (count($dom) > 0) {
-                for ($i = 0; $i < count($dom); $i++) {
-                    $dom_i = mysqli_real_escape_string($con, $dom[$i]);
-                    $litter_dob_i = mysqli_real_escape_string($con, $litter_dob[$i]);
-                    $pups_alive_i = mysqli_real_escape_string($con, $pups_alive[$i]);
-                    $pups_dead_i = mysqli_real_escape_string($con, $pups_dead[$i]);
-                    $pups_male_i = mysqli_real_escape_string($con, $pups_male[$i]);
-                    $pups_female_i = mysqli_real_escape_string($con, $pups_female[$i]);
-                    $remarks_litter_i = mysqli_real_escape_string($con, $remarks_litter[$i]);
-                    $litter_id_i = mysqli_real_escape_string($con, $litter_id[$i]);
+            if (isset($_POST['dom']) && isset($_POST['litter_dob'])) {
+                // Iterate over each new litter entry
+                for ($i = 0; $i < count($_POST['dom']); $i++) {
+                    $dom_i = mysqli_real_escape_string($con, $_POST['dom'][$i]);
+                    $litter_dob_i = mysqli_real_escape_string($con, $_POST['litter_dob'][$i]);
+                    $pups_alive_i = mysqli_real_escape_string($con, $_POST['pups_alive'][$i]);
+                    $pups_dead_i = mysqli_real_escape_string($con, $_POST['pups_dead'][$i]);
+                    $pups_male_i = mysqli_real_escape_string($con, $_POST['pups_male'][$i]);
+                    $pups_female_i = mysqli_real_escape_string($con, $_POST['pups_female'][$i]);
+                    $remarks_litter_i = mysqli_real_escape_string($con, $_POST['remarks_litter'][$i]);
+                    $litter_id_i = isset($_POST['litter_id'][$i]) ? mysqli_real_escape_string($con, $_POST['litter_id'][$i]) : '';
 
+                    // If litter_id exists, update the entry
                     if (!empty($litter_id_i)) {
-                        // Update existing litter entry
                         $updateLitterQuery = $con->prepare("UPDATE bc_litter SET `dom` = ?, `litter_dob` = ?, `pups_alive` = ?, `pups_dead` = ?, `pups_male` = ?, `pups_female` = ?, `remarks` = ? WHERE `id` = ?");
                         $updateLitterQuery->bind_param("ssssssss", $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i, $litter_id_i);
                         $updateLitterQuery->execute();
                         $updateLitterQuery->close();
                     } else {
-                        // Insert new litter entry
+                        // If no litter_id, insert a new entry
                         $insertLitterQuery = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                         $insertLitterQuery->bind_param("ssssssss", $cage_id, $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i);
                         $insertLitterQuery->execute();
@@ -175,8 +176,8 @@ if (isset($_GET['id'])) {
                 }
             }
 
-            // Handle deleted litter entries
-            if (count($delete_litter_ids) > 0) {
+            // Handle deletion of litter entries
+            if (!empty($delete_litter_ids)) {
                 foreach ($delete_litter_ids as $delete_litter_id) {
                     if (!empty($delete_litter_id)) {
                         $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
@@ -246,41 +247,40 @@ require 'header.php';
                 litterDiv.className = 'litter-entry';
 
                 litterDiv.innerHTML = `
-                <hr>
-                <div class="mb-3">
-                    <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
-                    <input type="date" class="form-control" name="dom[]" required min="1900-01-01">
-                </div>
-                <div class="mb-3">
-                    <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
-                    <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
-                    <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
-                    <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_male[]" class="form-label">Pups Male</label>
-                    <input type="number" class="form-control" name="pups_male[]" min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_female[]" class="form-label">Pups Female</label>
-                    <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="remarks[]" class="form-label">Remarks</label>
-                    <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"></textarea>
-                </div>
-                <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
-            `;
+            <hr>
+            <div class="mb-3">
+                <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
+                <input type="date" class="form-control" name="dom[]" required min="1900-01-01">
+            </div>
+            <div class="mb-3">
+                <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
+                <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01">
+            </div>
+            <div class="mb-3">
+                <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
+                <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
+                <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_male[]" class="form-label">Pups Male</label>
+                <input type="number" class="form-control" name="pups_male[]" min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_female[]" class="form-label">Pups Female</label>
+                <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="remarks_litter[]" class="form-label">Remarks</label>
+                <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
+            </div>
+            <input type="hidden" name="litter_id[]" value="">
+            <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
+        `;
 
                 document.getElementById('litterEntries').appendChild(litterDiv);
-
-                // Apply max date to new date fields
                 setMaxDate();
             }
 
