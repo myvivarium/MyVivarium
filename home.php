@@ -48,79 +48,109 @@ require 'header.php';
     <title>Home | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
-        /* Basic styling for body */
-        body {
+        body,
+        html {
             margin: 0;
             padding: 0;
+            height: 100%;
         }
 
-        /* Styling for main content container */
-        .main-content {
-            justify-content: center;
-            align-items: center;
+        .flex-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .header-footer {
+            background-color: #343a40;
+            padding: 20px 0;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .footer-text {
+            color: white;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .header-footer {
+                padding: 15px 0;
+            }
         }
     </style>
 </head>
 
+<!-- Inside the body tag, add the flex-container -->
+
 <body>
+    <div class="flex-container">
+        <div class="content">
+            <!-- Your existing container and content goes here -->
+            <div class="container">
+                <!-- Display session messages if any -->
+                <?php include('message.php'); ?>
+                <br>
+                <div class="row align-items-center">
+                    <!-- Welcome message with user information -->
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>
+                            <span style="font-size: smaller; color: #555; border-bottom: 2px solid #ccc; padding: 0 5px;">
+                                [<?php echo htmlspecialchars($_SESSION['position']); ?>]
+                            </span>
+                        </h2>
+                    </div>
 
-    <div class="container">
-        <!-- Display session messages if any -->
-        <?php include('message.php'); ?>
-        <br>
-        <div class="row align-items-center">
-            <!-- Welcome message with user information -->
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>
-                    <span style="font-size: smaller; color: #555; border-bottom: 2px solid #ccc; padding: 0 5px;">
-                        [<?php echo htmlspecialchars($_SESSION['position']); ?>]
-                    </span>
-                </h2>
-            </div>
-
-            <!-- Display stats for Holding Cage and Breeding Cage -->
-            <div class="card">
-                <div class="card-body">
-                    <div class="row mt-4">
-                        <!-- Holding Cage Stats -->
-                        <div class="col-md-6">
-                            <div class="card text-center">
-                                <div class="card-header bg-primary text-white">
-                                    <a href="hc_dash.php" style="color: white; text-decoration: none;">Holding Cage</a>
+                    <!-- Display stats for Holding Cage and Breeding Cage -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row mt-4">
+                                <!-- Holding Cage Stats -->
+                                <div class="col-md-6">
+                                    <div class="card text-center">
+                                        <div class="card-header bg-primary text-white">
+                                            <a href="hc_dash.php" style="color: white; text-decoration: none;">Holding Cage</a>
+                                        </div>
+                                        <div class="card-body">
+                                            <h5 class="card-title"><?php echo $holdingCount; ?></h5>
+                                            <p class="card-text">Total Entries</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <h5 class="card-title"><?php echo $holdingCount; ?></h5>
-                                    <p class="card-text">Total Entries</p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Breeding Cage Stats -->
-                        <div class="col-md-6">
-                            <div class="card text-center">
-                                <div class="card-header bg-primary text-white">
-                                    <a href="bc_dash.php" style="color: white; text-decoration: none;">Breeding Cage</a>
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title"><?php echo $matingCount; ?></h5>
-                                    <p class="card-text">Total Entries</p>
+                                <!-- Breeding Cage Stats -->
+                                <div class="col-md-6">
+                                    <div class="card text-center">
+                                        <div class="card-header bg-primary text-white">
+                                            <a href="bc_dash.php" style="color: white; text-decoration: none;">Breeding Cage</a>
+                                        </div>
+                                        <div class="card-body">
+                                            <h5 class="card-title"><?php echo $matingCount; ?></h5>
+                                            <p class="card-text">Total Entries</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Display sticky notes section -->
+                    <div style="margin-top: 50px;">
+                        <h2><?php echo htmlspecialchars($labName); ?> - General Notes</h2>
+                        <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
+                    </div>
                 </div>
             </div>
-
-            <!-- Display sticky notes section -->
-            <div style="margin-top: 50px;">
-                <h2><?php echo htmlspecialchars($labName); ?> - General Notes</h2>
-                <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
-            </div>
         </div>
+
+        <!-- Include the footer file -->
+        <?php include 'footer.php'; ?>
     </div>
-
-    <!-- Include the footer file -->
-    <?php include 'footer.php'; ?>
-
 </body>
+
 
 </html>
