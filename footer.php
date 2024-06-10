@@ -9,13 +9,16 @@
 <style>
     .footer {
         background-color: #343a40;
-        padding: 20px 0;
+        padding: auto;
         text-align: center;
         width: 100%;
         box-sizing: border-box;
         color: white;
-        margin-top: auto;
+        margin: auto;
         position: relative;
+        bottom: 0;
+        left: 0;
+        right: 0;
     }
 
     .footer-text {
