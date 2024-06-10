@@ -33,7 +33,7 @@ $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
 
 // Include the header file
-//require 'header.php';
+require 'header.php';
 ?>
 
 <!doctype html>
@@ -65,7 +65,6 @@ $matingCount = $matingCountRow['count'];
 
 <body>
     <div class="top-container">
-        <?php include('header.php'); ?>
         <!-- Display session messages if any -->
         <?php include('message.php'); ?>
         <br>
