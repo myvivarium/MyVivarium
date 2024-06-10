@@ -80,8 +80,8 @@ $matingCount = $matingCountRow['count'];
 <body>
     <div class="flex-container">
         <div class="content">
-            <?php include 'header.php'; ?>
             <div class="container">
+            <?php include 'header.php'; ?>
                 <!-- Display session messages if any -->
                 <?php include('message.php'); ?>
                 <br>
