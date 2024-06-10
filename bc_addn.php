@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pi_name = $_POST['pi_name'];
     $cross = $_POST['cross'];
     $iacuc = $_POST['iacuc'];
-    $user = $_POST['user'];
+    $user = isset($_POST['user']) ? implode(',', array_map('trim', $_POST['user'])) : '';
     $male_id = $_POST['male_id'];
     $female_id = $_POST['female_id'];
     $male_dob = $_POST['male_dob'];
@@ -376,8 +376,8 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>
-                <select class="form-control" id="user" name="user" required>
-                    <option value="" disabled selected>Select User</option>
+                <select class="form-control" id="user" name="user[]" multiple required>
+                    <option value="" disabled>Select User(s)</option>
                     <?php
                     // Populate the dropdown with options from the database
                     while ($userRow = $userResult->fetch_assoc()) {
@@ -388,6 +388,7 @@ require 'header.php';
                     ?>
                 </select>
             </div>
+
 
             <div class="mb-3">
                 <label for="male_id" class="form-label">Male ID <span class="required-asterisk">*</span></label>
