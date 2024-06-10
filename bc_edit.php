@@ -22,19 +22,13 @@ session_regenerate_id(true);
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit;
 }
 
 // Generate CSRF token if not already set
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-// Redirect to index.php if the user is not logged in
-if (!isset($_SESSION['name'])) {
-    header("Location: index.php");
-    exit;
 }
 
 // Query to retrieve options where role is 'Principal Investigator'
@@ -219,6 +213,11 @@ require 'header.php';
 
 <head>
     <script>
+        // Function to navigate back to the previous page
+        function goBack() {
+            window.history.back();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Function to get today's date in YYYY-MM-DD format
             function getCurrentDate() {
@@ -240,35 +239,64 @@ require 'header.php';
 
             // Initial call to set max date on page load
             setMaxDate();
-        });
 
-        // Function to navigate back to the previous page
-        function goBack() {
-            window.history.back();
-        }
+            // Function to dynamically add new litter entry
+            function addLitter() {
+                const litterDiv = document.createElement('div');
+                litterDiv.className = 'litter-entry';
+
+                litterDiv.innerHTML = `
+                <hr>
+                <div class="mb-3">
+                    <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
+                    <input type="date" class="form-control" name="dom[]" required min="1900-01-01">
+                </div>
+                <div class="mb-3">
+                    <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
+                    <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
+                    <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
+                    <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_male[]" class="form-label">Pups Male</label>
+                    <input type="number" class="form-control" name="pups_male[]" min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="pups_female[]" class="form-label">Pups Female</label>
+                    <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
+                </div>
+                <div class="mb-3">
+                    <label for="remarks[]" class="form-label">Remarks</label>
+                    <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"></textarea>
+                </div>
+                <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
+            `;
+
+                document.getElementById('litterEntries').appendChild(litterDiv);
+
+                // Apply max date to new date fields
+                setMaxDate();
+            }
+
+            // Function to adjust the height of the textarea dynamically
+            function adjustTextareaHeight(element) {
+                element.style.height = "auto";
+                element.style.height = (element.scrollHeight) + "px";
+            }
+
+            // Ensure the function addLitter is available globally
+            window.addLitter = addLitter;
+        });
 
         // Function to validate date format & provide feedback
         document.addEventListener('DOMContentLoaded', function() {
-            const dateFields = document.querySelectorAll('#male_dob, #female_dob, input[name^="dom"], input[name^="litter_dob"]');
-            dateFields.forEach(field => {
-                const warningText = document.createElement('span');
-                warningText.style.color = 'red';
-                warningText.style.display = 'none';
-                field.parentNode.appendChild(warningText);
-
-                field.addEventListener('input', function() {
-                    const dateValue = field.value;
-                    const isValidDate = validateDate(dateValue);
-                    if (!isValidDate) {
-                        warningText.textContent = 'Invalid Date. Please enter a valid date.';
-                        warningText.style.display = 'block';
-                    } else {
-                        warningText.textContent = '';
-                        warningText.style.display = 'none';
-                    }
-                });
-            });
-
+            // Function to validate date
             function validateDate(dateString) {
                 const regex = /^\d{4}-\d{2}-\d{2}$/;
                 if (!dateString.match(regex)) return false;
@@ -281,12 +309,57 @@ require 'header.php';
                 return date && !isNaN(date) && year >= 1900 && date <= now;
             }
 
-            document.querySelector('form').addEventListener('submit', function(event) {
+            // Function to attach event listeners to date fields
+            function attachDateValidation() {
+                const dateFields = document.querySelectorAll('input[type="date"]');
+                dateFields.forEach(field => {
+                    if (!field.dataset.validated) { // Check if already validated
+                        const warningText = document.createElement('span');
+                        warningText.style.color = 'red';
+                        warningText.style.display = 'none';
+                        field.parentNode.appendChild(warningText);
+
+                        field.addEventListener('input', function() {
+                            const dateValue = field.value;
+                            const isValidDate = validateDate(dateValue);
+                            if (!isValidDate) {
+                                warningText.textContent = 'Invalid Date. Please enter a valid date.';
+                                warningText.style.display = 'block';
+                            } else {
+                                warningText.textContent = '';
+                                warningText.style.display = 'none';
+                            }
+                        });
+
+                        // Mark the field as validated
+                        field.dataset.validated = 'true';
+                    }
+                });
+            }
+
+            // Initial call to validate existing date fields
+            attachDateValidation();
+
+            // Observe the form for changes (e.g., new nodes added dynamically)
+            const form = document.querySelector('form');
+            const observer = new MutationObserver(() => {
+                attachDateValidation(); // Reattach validation to new nodes
+            });
+
+            // Start observing the form
+            observer.observe(form, {
+                childList: true,
+                subtree: true
+            });
+
+            // Prevent form submission if dates are invalid
+            form.addEventListener('submit', function(event) {
                 let isValid = true;
+                const dateFields = document.querySelectorAll('input[type="date"]');
                 dateFields.forEach(field => {
                     const dateValue = field.value;
+                    const warningText = field.nextElementSibling;
                     if (!validateDate(dateValue)) {
-                        const warningText = field.nextElementSibling;
                         warningText.textContent = 'Invalid Date. Please enter a valid date.';
                         warningText.style.display = 'block';
                         isValid = false;
@@ -297,54 +370,6 @@ require 'header.php';
                 }
             });
         });
-
-        // Function to adjust the height of the textarea dynamically
-        function adjustTextareaHeight(element) {
-            element.style.height = "auto";
-            element.style.height = (element.scrollHeight) + "px";
-        }
-
-        // Function to add a new litter entry dynamically
-        function addLitter() {
-            const litterDiv = document.createElement('div');
-            litterDiv.className = 'litter-entry';
-
-            litterDiv.innerHTML = `
-            <hr>
-            <div class="mb-3">
-                <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
-                <input type="date" class="form-control" name="dom[]" required min="1900-01-01">
-            </div>
-            <div class="mb-3">
-                <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
-                <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01">
-            </div>
-            <div class="mb-3">
-                <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
-                <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
-            </div>
-            <div class="mb-3">
-                <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
-                <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
-            </div>
-            <div class="mb-3">
-                <label for="pups_male[]" class="form-label">Pups Male</label>
-                <input type="number" class="form-control" name="pups_male[]" min="0" step="1">
-            </div>
-            <div class="mb-3">
-                <label for="pups_female[]" class="form-label">Pups Female</label>
-                <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
-            </div>
-            <div class="mb-3">
-                <label for="remarks_litter[]" class="form-label">Remarks Litter</label>
-                <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
-            </div>
-            <input type="hidden" name="litter_id[]" value="">
-            <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
-        `;
-
-            document.getElementById('litterEntries').appendChild(litterDiv);
-        }
 
         // Function to remove a litter entry dynamically
         function removeLitter(element) {

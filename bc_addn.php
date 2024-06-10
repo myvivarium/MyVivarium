@@ -24,19 +24,13 @@ session_regenerate_id(true);
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit;
 }
 
 // Generate CSRF token if not already set
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-// Redirect to index.php if the user is not logged in
-if (!isset($_SESSION['name'])) {
-    header("Location: index.php");
-    exit;
 }
 
 // Query to retrieve options where role is 'Principal Investigator'
