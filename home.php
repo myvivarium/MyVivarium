@@ -69,6 +69,7 @@ require 'header.php';
             box-sizing: border-box;
         }
     </style>
+
 </head>
 
 <body>
@@ -129,43 +130,6 @@ require 'header.php';
     </div>
     <!-- Include the footer file -->
     <?php include 'footer.php'; ?>
-
-    <script>
-    function adjustFooter() {
-        const footer = document.getElementById('footer');
-        const container = document.querySelector('.top-container');
-        const header = document.querySelector('.header'); // Assuming .header is the class for the header
-        const navcontainer = document.querySelector('.nav-container'); // Assuming .nav-container is the class for nav container
-
-        // Reset footer styles to compute natural height
-        footer.style.position = 'relative';
-        footer.style.bottom = 'auto';
-        footer.style.width = '100%'; // Ensure footer spans full width
-
-        // Get the heights of the header, nav container, and footer
-        const headerHeight = header ? header.offsetHeight : 0;
-        const navcontainerHeight = navcontainer ? navcontainer.offsetHeight : 0;
-        const footerHeight = footer.offsetHeight;
-
-        // Calculate the available space minus header and nav container
-        const availableSpace = window.innerHeight - headerHeight - navcontainerHeight;
-
-        // Calculate the total content height
-        const contentHeight = container.scrollHeight + footerHeight;
-
-        // Adjust the footer position based on the available space and content height
-        if (contentHeight < availableSpace) {
-            footer.style.position = 'absolute';
-            footer.style.bottom = '0';
-        } else {
-            footer.style.position = 'relative';
-        }
-    }
-
-    // Adjust footer on page load and window resize
-    window.addEventListener('load', adjustFooter);
-    window.addEventListener('resize', adjustFooter);
-</script>
 
 
 
