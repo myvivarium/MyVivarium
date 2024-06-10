@@ -89,7 +89,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
         @media (max-width: 576px) {
             .header h2 {
                 font-size: 1.8rem;
-                margin-bottom: 4px;
+                margin-bottom: 5px;
             }
 
             .header img.header-logo {

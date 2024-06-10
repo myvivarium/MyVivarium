@@ -176,6 +176,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         @media (max-width: 576px) {
             .header h2 {
                 font-size: 1.8rem;
+                margin-bottom: 5px;
             }
 
             .header img.header-logo {

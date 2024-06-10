@@ -272,6 +272,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
         @media (max-width: 576px) {
             .header h2 {
                 font-size: 1.8rem;
+                margin-bottom: 5px;
             }
 
             .header img.header-logo {
