@@ -19,11 +19,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        header {
-            margin-top: 30px;
-        }
-
-        .header-footer {
+        .header {
             margin-top: 30px;
         }
     </style>
