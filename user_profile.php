@@ -56,7 +56,7 @@ function generateInitials($name) {
 
 // Function to ensure unique initials
 function ensureUniqueInitials($con, $initials, $currentUsername) {
-    $uniqueInitials = $initials;
+    $uniqueInitials = substr($initials, 0, 3); // Limit initials to a maximum of 3 characters
     $suffix = 1;
     $maxLength = 10; // Define the maximum length for initials including suffix
 
@@ -74,7 +74,7 @@ function ensureUniqueInitials($con, $initials, $currentUsername) {
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            $uniqueInitials = $initials . $suffix;
+            $uniqueInitials = substr($initials, 0, 3) . $suffix; // Ensure initials part is still limited to 3 characters
             $suffix++;
         } else {
             break;
