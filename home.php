@@ -68,96 +68,83 @@ require 'header.php';
             padding: 20px;
             box-sizing: border-box;
         }
-
-        .footer {
-            width: 100%;
-            /* Ensure footer spans full width */
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #343a40;
-            padding: 20px 0;
-            text-align: center;
-            color: white;
-        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="main-content">
-            <!-- Display session messages if any -->
-            <?php include('message.php'); ?>
-            <br>
-            <div class="row align-items-center">
-                <!-- Welcome message with user information -->
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>
-                        <span style="font-size: smaller; color: #555; border-bottom: 2px solid #ccc; padding: 0 5px;">
-                            [<?php echo htmlspecialchars($_SESSION['position']); ?>]
-                        </span>
-                    </h2>
-                </div>
+        <!-- Display session messages if any -->
+        <?php include('message.php'); ?>
+        <br>
+        <div class="row align-items-center">
+            <!-- Welcome message with user information -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>
+                    <span style="font-size: smaller; color: #555; border-bottom: 2px solid #ccc; padding: 0 5px;">
+                        [<?php echo htmlspecialchars($_SESSION['position']); ?>]
+                    </span>
+                </h2>
+            </div>
 
-                <!-- Display stats for Holding Cage and Breeding Cage -->
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row mt-4">
-                            <!-- Holding Cage Stats -->
-                            <div class="col-md-6">
-                                <div class="card text-center">
-                                    <div class="card-header bg-primary text-white">
-                                        <a href="hc_dash.php" style="color: white; text-decoration: none;">Holding Cage</a>
-                                    </div>
-                                    <div class="card-body">
-                                        <h5 class="card-title"><?php echo $holdingCount; ?></h5>
-                                        <p class="card-text">Total Entries</p>
-                                    </div>
+            <!-- Display stats for Holding Cage and Breeding Cage -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mt-4">
+                        <!-- Holding Cage Stats -->
+                        <div class="col-md-6">
+                            <div class="card text-center">
+                                <div class="card-header bg-primary text-white">
+                                    <a href="hc_dash.php" style="color: white; text-decoration: none;">Holding Cage</a>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo $holdingCount; ?></h5>
+                                    <p class="card-text">Total Entries</p>
                                 </div>
                             </div>
-                            <!-- Breeding Cage Stats -->
-                            <div class="col-md-6">
-                                <div class="card text-center">
-                                    <div class="card-header bg-primary text-white">
-                                        <a href="bc_dash.php" style="color: white; text-decoration: none;">Breeding Cage</a>
-                                    </div>
-                                    <div class="card-body">
-                                        <h5 class="card-title"><?php echo $matingCount; ?></h5>
-                                        <p class="card-text">Total Entries</p>
-                                    </div>
+                        </div>
+                        <!-- Breeding Cage Stats -->
+                        <div class="col-md-6">
+                            <div class="card text-center">
+                                <div class="card-header bg-primary text-white">
+                                    <a href="bc_dash.php" style="color: white; text-decoration: none;">Breeding Cage</a>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo $matingCount; ?></h5>
+                                    <p class="card-text">Total Entries</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Display sticky notes section -->
-                <div style="margin-top: 50px;">
-                    <h2><?php echo htmlspecialchars($labName); ?> - General Notes</h2>
-                    <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
-                </div>
+            <!-- Display sticky notes section -->
+            <div style="margin-top: 50px;">
+                <h2><?php echo htmlspecialchars($labName); ?> - General Notes</h2>
+                <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
             </div>
         </div>
         <!-- Include the footer file -->
-        <div id="footer"><?php include 'footer.php'; ?></div>
+        <?php include 'footer.php'; ?>
     </div>
 
     <script>
         function adjustFooter() {
             const footer = document.getElementById('footer');
+            const mainContent = document.querySelector('.main-content');
             const container = document.querySelector('.container');
 
+            // Remove inline styles to calculate natural height
             footer.style.position = 'relative';
             footer.style.bottom = 'auto';
 
             const containerHeight = container.offsetHeight;
             const windowHeight = window.innerHeight;
 
+            // If content is shorter than viewport, fix the footer at the bottom
             if (containerHeight < windowHeight) {
                 footer.style.position = 'absolute';
                 footer.style.bottom = '0';
-                footer.style.width = '100%'; // Ensures the footer spans the full width
             } else {
                 footer.style.position = 'relative';
                 footer.style.bottom = 'auto';
@@ -167,7 +154,6 @@ require 'header.php';
         window.addEventListener('load', adjustFooter);
         window.addEventListener('resize', adjustFooter);
     </script>
-
 </body>
 
 </html>
