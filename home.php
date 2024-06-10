@@ -124,14 +124,13 @@ require 'header.php';
                 <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
             </div>
         </div>
-        <!-- Include the footer file -->
-        <?php include 'footer.php'; ?>
     </div>
+    <!-- Include the footer file -->
+    <?php include 'footer.php'; ?>
 
     <script>
         function adjustFooter() {
             const footer = document.getElementById('footer');
-            const mainContent = document.querySelector('.main-content');
             const container = document.querySelector('.container');
 
             // Remove inline styles to calculate natural height
