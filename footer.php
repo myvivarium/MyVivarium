@@ -7,7 +7,7 @@
 <!-- Footer Section -->
 
 <style>
-    .footer {
+    footer {
         background-color: #343a40;
         padding: 20px 0;
         text-align: center;
@@ -25,7 +25,7 @@
 </style>
 
 <!-- Footer content -->
-<div class="footer navbar-fixed-bottom static-bottom">
+<footer class="fixed-bottom">
     <!-- Dynamic footer text displaying the current year and lab name, with HTML special characters escaped -->
     <p class="footer-text">&copy; <?php echo date("Y"); ?>
         <?php
@@ -35,4 +35,4 @@
             echo "My Vivarium";
         }
         ?>. All rights reserved.</p>
-</div>
+</footer>
