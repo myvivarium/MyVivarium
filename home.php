@@ -58,11 +58,15 @@ require 'header.php';
         .container {
             display: flex;
             flex-direction: column;
-            min-height: 100vh; 
+            min-height: 100vh;
         }
 
         .main-content {
             flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .footer {
@@ -75,7 +79,6 @@ require 'header.php';
 </head>
 
 <body>
-
     <div class="container">
         <div class="main-content">
             <!-- Display session messages if any -->
@@ -160,7 +163,6 @@ require 'header.php';
         window.addEventListener('load', adjustFooter);
         window.addEventListener('resize', adjustFooter);
     </script>
-
 </body>
 
 </html>
