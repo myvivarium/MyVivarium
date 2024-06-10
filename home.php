@@ -70,10 +70,16 @@ require 'header.php';
         }
 
         .footer {
+            width: 100%;
+            /* Ensure footer spans full width */
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
+            background-color: #343a40;
+            padding: 20px 0;
+            text-align: center;
+            color: white;
         }
     </style>
 </head>
@@ -134,26 +140,24 @@ require 'header.php';
             </div>
         </div>
         <!-- Include the footer file -->
-        <?php include 'footer.php'; ?>
+        <div id="footer"><?php include 'footer.php'; ?></div>
     </div>
 
     <script>
         function adjustFooter() {
             const footer = document.getElementById('footer');
-            const mainContent = document.querySelector('.main-content');
             const container = document.querySelector('.container');
 
-            // Remove inline styles to calculate natural height
             footer.style.position = 'relative';
             footer.style.bottom = 'auto';
 
             const containerHeight = container.offsetHeight;
             const windowHeight = window.innerHeight;
 
-            // If content is shorter than viewport, fix the footer at the bottom
             if (containerHeight < windowHeight) {
                 footer.style.position = 'absolute';
                 footer.style.bottom = '0';
+                footer.style.width = '100%'; // Ensures the footer spans the full width
             } else {
                 footer.style.position = 'relative';
                 footer.style.bottom = 'auto';
@@ -163,6 +167,7 @@ require 'header.php';
         window.addEventListener('load', adjustFooter);
         window.addEventListener('resize', adjustFooter);
     </script>
+
 </body>
 
 </html>
