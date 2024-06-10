@@ -58,6 +58,7 @@ require 'header.php';
 
         .content {
             flex: 1;
+            margin-bottom: -100px;
         }
 
         .container {
