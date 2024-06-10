@@ -107,10 +107,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             padding: 0px 0px 20px 0px;
             text-align: center;
             margin: 0;
-            position: fixed;
-            top: 60px;
-            left: 0;
-            right: 0;
+            position: relative;
             z-index: 998;
         }
 
