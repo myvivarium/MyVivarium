@@ -120,7 +120,61 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
 }
 
+// Function to generate initials from the user's name
+function generateInitials($name)
+{
+    $parts = explode(" ", $name);
+    $initials = "";
 
+    foreach ($parts as $part) {
+        if (!empty($part) && ctype_alpha($part[0])) {  // Check if the first character is an alphabet letter
+            $initials .= strtoupper($part[0]);
+        }
+    }
+
+    return substr($initials, 0, 3);  // Return up to 3 characters
+}
+
+// Function to ensure unique initials
+function ensureUniqueInitials($con, $initials)
+{
+    $uniqueInitials = $initials;
+    $suffix = 1;
+    $maxLength = 10;  // Define the maximum length for initials including suffix
+
+    $checkQuery = "SELECT initials FROM users WHERE initials = ?";
+    $stmt = $con->prepare($checkQuery);
+
+    if (!$stmt) {
+        error_log("Failed to prepare statement: " . $con->error);
+        return $initials;  // Return the original initials if statement preparation fails
+    }
+
+    do {
+        $stmt->bind_param("s", $uniqueInitials);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $uniqueInitials = $initials . $suffix;
+            $suffix++;
+        } else {
+            break;
+        }
+
+        $stmt->free_result();  // Clear the result set for the next iteration
+
+    } while (strlen($uniqueInitials) <= $maxLength);
+
+    $stmt->close();
+
+    // Truncate if the initials exceed the maximum length
+    if (strlen($uniqueInitials) > $maxLength) {
+        $uniqueInitials = substr($uniqueInitials, 0, $maxLength);
+    }
+
+    return $uniqueInitials;
+}
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -151,7 +205,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Hash the password and insert the new user into the database
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-            $uniqueInitials = "";
+            // Generate and ensure unique initials
+            $initials = generateInitials($name);
+            $uniqueInitials = ensureUniqueInitials($con, $initials);
 
             $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status, email_verified, email_token, initials) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("sssssssiss", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token, $uniqueInitials);
