@@ -19,6 +19,12 @@ session_start();
 // Include the database connection
 require 'dbcon.php';
 
+// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit; // Exit to ensure no further code is executed
+}
+
 // Check if both 'id' and 'confirm' parameters are set, and if 'confirm' is 'true'
 if (isset($_GET['id'], $_GET['confirm']) && $_GET['confirm'] == 'true') {
     // Sanitize the ID parameter to prevent SQL injection

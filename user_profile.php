@@ -23,8 +23,9 @@ use PHPMailer\PHPMailer\Exception;
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit;
+    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: index.php?redirect=$currentUrl");
+    exit; // Exit to ensure no further code is executed
 }
 
 // Fetch user details from the database

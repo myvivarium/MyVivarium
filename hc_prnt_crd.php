@@ -18,6 +18,13 @@ session_start();
 // Include the database connection file
 require 'dbcon.php';
 
+// Check if the user is logged in
+if (!isset($_SESSION['username'])) {
+    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: index.php?redirect=$currentUrl");
+    exit; // Exit to ensure no further code is executed
+}
+
 // Query to get lab data (URL)
 $labQuery = "SELECT * FROM data LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);

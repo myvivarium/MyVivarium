@@ -17,6 +17,12 @@ session_start();
 // Include the database connection file
 require 'dbcon.php';
 
+// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit; // Exit to ensure no further code is executed
+}
+
 // Pagination variables
 $limit = 15; // Number of entries to show in a page.
 $page = isset($_GET['page']) ? $_GET['page'] : 1; // Current page number, default is 1

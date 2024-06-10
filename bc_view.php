@@ -17,11 +17,11 @@ session_start();
 // Include the database connection file
 require 'dbcon.php';
 
-// Check if the user is not logged in, redirect them to index.php with a redirect parameter
-if (!isset($_SESSION['name'])) {
+// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
+if (!isset($_SESSION['username'])) {
     $currentUrl = urlencode($_SERVER['REQUEST_URI']);
     header("Location: index.php?redirect=$currentUrl");
-    exit;
+    exit; // Exit to ensure no further code is executed
 }
 
 // Enable error reporting for debugging

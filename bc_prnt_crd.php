@@ -24,10 +24,11 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     $url = $row['url']; // Store the lab URL
 }
 
-// Check if the user is not logged in, redirect them to index.php
-if (!isset($_SESSION['name'])) {
-    header("Location: index.php");
-    exit;
+// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
+if (!isset($_SESSION['username'])) {
+    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: index.php?redirect=$currentUrl");
+    exit; // Exit to ensure no further code is executed
 }
 
 // Check if the ID parameter is set in the URL

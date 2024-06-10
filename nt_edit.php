@@ -11,6 +11,12 @@
  * Date: [Date]
  */
 
+ // Check if the user is logged in
+if (!isset($_SESSION['username'])) {
+    echo json_encode(['success' => false, 'message' => 'You must be logged in to edit a note.']);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require 'dbcon.php'; // Include the database connection file
 

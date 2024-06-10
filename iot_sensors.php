@@ -17,9 +17,10 @@ session_start();
 require 'dbcon.php';
 
 // Check if the user is logged in
-if (!isset($_SESSION['name'])) {
-    header("Location: index.php"); // Redirect to login page if not logged in
-    exit;
+if (!isset($_SESSION['username'])) {
+    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: index.php?redirect=$currentUrl");
+    exit; // Exit to ensure no further code is executed
 }
 
 // Query to fetch the IoT sensor links

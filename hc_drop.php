@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HoldingCage Deletion Script
+ * Holding Cage Deletion Script
  * 
  * This script handles the deletion of a cage and its related files from the database. 
  * It uses prepared statements to prevent SQL injection and transactions to ensure data integrity.
@@ -15,6 +15,12 @@ session_start();
 
 // Include the database connection file
 require 'dbcon.php';
+
+// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit; // Exit to ensure no further code is executed
+}
 
 // Check if both 'id' and 'confirm' parameters are set, and if 'confirm' is 'true'
 if (isset($_GET['id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'true') {

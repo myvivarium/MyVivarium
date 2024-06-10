@@ -17,17 +17,17 @@ session_start();
 // Include the database connection file
 include 'dbcon.php';
 
-// Check if the user is logged in and is an admin
+// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
-    // Redirect to the login page if the user is not logged in
-    header("Location: index.php");
-    exit();
+    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: index.php?redirect=$currentUrl");
+    exit; // Exit to ensure no further code is executed
 }
 
 // Check if the user has admin privileges
 if ($_SESSION['role'] != 'admin') {
     // Set an error message and redirect to the index page if not an admin
-    $_SESSION['message'] = "Access Denied";
+    $_SESSION['message'] = "Access Denied. Contact Admin";
     header("Location: index.php");
     exit();
 }

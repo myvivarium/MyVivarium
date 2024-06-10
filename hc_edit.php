@@ -19,21 +19,16 @@ require 'dbcon.php';
 // Regenerate session ID to prevent session fixation
 session_regenerate_id(true);
 
-// Check if the user is logged in
+// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit;
+    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: index.php?redirect=$currentUrl");
+    exit; // Exit to ensure no further code is executed
 }
 
 // Generate a CSRF token if it doesn't exist
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-// Check if the user is not logged in, redirect them to index.php
-if (!isset($_SESSION['name'])) {
-    header("Location: index.php");
-    exit;
 }
 
 // Enable error reporting for debugging

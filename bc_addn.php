@@ -22,10 +22,11 @@ require 'dbcon.php';
 // Regenerate session ID to prevent session fixation
 session_regenerate_id(true);
 
-// Check if the user is logged in
+// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
-    header("Location: index.php");
-    exit;
+    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: index.php?redirect=$currentUrl");
+    exit; // Exit to ensure no further code is executed
 }
 
 // Generate CSRF token if not already set

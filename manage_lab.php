@@ -15,10 +15,16 @@ session_start();
 // Include the database connection file
 require 'dbcon.php';
 
-// Check if the user is logged in
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+// Check if the user is logged in and has admin role
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    // Redirect non-admin users to the index page
+    header("Location: index.php");
     exit; // Ensure no further code is executed
+}
+
+// CSRF token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
 // Fetch lab details from the database
@@ -46,6 +52,11 @@ $updateMessage = '';
 
 // Handle form submission for lab data update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_lab'])) {
+
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('CSRF token validation failed');
+    }
+
     // Sanitize and fetch form inputs
     $labName = filter_input(INPUT_POST, 'lab_name', FILTER_SANITIZE_STRING);
     $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_URL);
@@ -159,6 +170,7 @@ require 'header.php';
         <h2>Manage Lab</h2>
         <!-- Form for updating lab information -->
         <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <div class="form-group">
                 <label for="lab_name">Lab Name</label>
                 <textarea class="form-control" id="lab_name" name="lab_name" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['lab_name']); ?></textarea>
