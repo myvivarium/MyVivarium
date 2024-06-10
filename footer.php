@@ -7,7 +7,7 @@
 <!-- Footer Section -->
 
 <style>
-    .header-footer {
+    .footer {
         background-color: #343a40;
         margin: 0;
         padding: 10px 0;
@@ -22,14 +22,14 @@
     }
 
     @media (max-width: 768px) {
-        .header-footer {
+        .footer {
             padding: 15px 0;
         }
     }
 </style>
 
 <!-- Footer content -->
-<div class="header-footer">
+<div class="footer">
     <!-- Dynamic footer text displaying the current year and lab name, with HTML special characters escaped -->
     <p class="footer-text">&copy; <?php echo date("Y"); ?>
         <?php

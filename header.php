@@ -58,7 +58,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
         }
 
         /* Styling for header and footer */
-        .header-footer {
+        .header {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -70,19 +70,19 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             margin: 0;
         }
 
-        .header-footer .logo-container {
+        .header .logo-container {
             padding: 0;
             margin: 0;
         }
 
-        .header-footer img.header-logo {
+        .header img.header-logo {
             width: 300px;
             height: auto;
             display: block;
             margin: 0;
         }
 
-        .header-footer h2 {
+        .header h2 {
             margin-left: 15px;
             margin-bottom: 0;
             margin-top: 12px;
@@ -94,11 +94,11 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 
         /* Responsive styling for smaller screens */
         @media (max-width: 576px) {
-            .header-footer h2 {
+            .header h2 {
                 font-size: 1.8rem;
             }
 
-            .header-footer img.header-logo {
+            .header img.header-logo {
                 width: 150px;
             }
         }
@@ -124,7 +124,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 <body>
     <!-- Header Section -->
     <?php if ($demo === "yes") include('demo/demo.php'); ?>
-    <div class="header-footer">
+    <div class="header">
         <div class="logo-container">
             <a href="home.php">
                 <img src="images/logo1.jpg" alt="Logo" class="header-logo">
