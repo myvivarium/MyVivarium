@@ -68,7 +68,7 @@ function sendConfirmationEmail($to, $token)
 // Inform admins if a new user signup
 function notifyAdmins($newUserDetails)
 {
-    global $con, $url;
+    global $con;
     $adminQuery = "SELECT username FROM users WHERE role = 'admin'";
     $adminResult = mysqli_query($con, $adminQuery);
 
