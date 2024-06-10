@@ -34,6 +34,10 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// Query to retrieve users with initials and names
+$userQuery = "SELECT initials, name FROM users WHERE status = 'approved'";
+$userResult = $con->query($userQuery);
+
 // Query to retrieve options where role is 'Principal Investigator'
 $query = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result = $con->query($query);
@@ -372,7 +376,17 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>
-                <input type="text" class="form-control" id="user" name="user" required>
+                <select class="form-control" id="user" name="user" required>
+                    <option value="" disabled selected>Select User</option>
+                    <?php
+                    // Populate the dropdown with options from the database
+                    while ($userRow = $userResult->fetch_assoc()) {
+                        $initials = htmlspecialchars($userRow['initials']);
+                        $name = htmlspecialchars($userRow['name']);
+                        echo "<option value='$initials'>$initials ! $name</option>";
+                    }
+                    ?>
+                </select>
             </div>
 
             <div class="mb-3">
