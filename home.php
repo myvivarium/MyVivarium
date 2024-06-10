@@ -48,12 +48,6 @@ require 'header.php';
     <title>Home | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
-        body,
-        html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
 
         .flex-container {
             display: flex;
