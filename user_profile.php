@@ -40,6 +40,59 @@ $stmt->close();
 
 $updateMessage = ''; // Initialize message for profile update
 
+// Function to generate initials from the user's name
+function generateInitials($name) {
+    $parts = explode(" ", $name);
+    $initials = "";
+
+    foreach ($parts as $part) {
+        if (!empty($part) && ctype_alpha($part[0])) {
+            $initials .= strtoupper($part[0]);
+        }
+    }
+
+    return substr($initials, 0, 3); // Return up to 3 characters
+}
+
+// Function to ensure unique initials
+function ensureUniqueInitials($con, $initials, $currentUsername) {
+    $uniqueInitials = $initials;
+    $suffix = 1;
+    $maxLength = 10; // Define the maximum length for initials including suffix
+
+    $checkQuery = "SELECT initials FROM users WHERE initials = ? AND username != ?";
+    $stmt = $con->prepare($checkQuery);
+    
+    if (!$stmt) {
+        error_log("Failed to prepare statement: " . $con->error);
+        return $initials; // Return the original initials if statement preparation fails
+    }
+
+    do {
+        $stmt->bind_param("ss", $uniqueInitials, $currentUsername);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $uniqueInitials = $initials . $suffix;
+            $suffix++;
+        } else {
+            break;
+        }
+        
+        $stmt->free_result(); // Clear the result set for the next iteration
+
+    } while (strlen($uniqueInitials) <= $maxLength);
+
+    $stmt->close();
+    
+    if (strlen($uniqueInitials) > $maxLength) {
+        $uniqueInitials = substr($uniqueInitials, 0, $maxLength);
+    }
+
+    return $uniqueInitials;
+}
+
 // Handle form submission for profile update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
     $newUsername = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_EMAIL);
@@ -50,37 +103,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
     // Check if the email address (username) has changed
     $emailChanged = ($newUsername !== $username);
 
-    // Update user details in the database
-    $updateQuery = "UPDATE users SET username = ?, name = ?, position = ? initials = ?";
-    if ($emailChanged) {
-        $updateQuery .= ", email_verified = 0";
-    }
-    $updateQuery .= " WHERE username = ?";
-    $updateStmt = $con->prepare($updateQuery);
-    if ($emailChanged) {
-        $updateStmt->bind_param("sssss", $newUsername, $name, $position, $initials, $username);
-    } else {
-        $updateStmt->bind_param("sssss", $newUsername, $name, $position, $initials, $username);
-    }
-    $updateStmt->execute();
-    $updateStmt->close();
+    // Ensure initials are unique
+    $uniqueInitials = ensureUniqueInitials($con, $initials, $username);
 
-    // Update the session username if it was changed
-    if ($emailChanged) {
-        $_SESSION['username'] = $newUsername;
-        $username = $newUsername;
-        $updateMessage = "Profile information updated successfully. Please log out and log back in to reflect the changes everywhere.";
+    if ($uniqueInitials !== $initials) {
+        $updateMessage = "The initials '$initials' are already in use by another user. Please choose different initials.";
     } else {
-        $updateMessage = "Profile information updated successfully.";
-    }
+        // Update user details in the database
+        $updateQuery = "UPDATE users SET username = ?, name = ?, position = ?, initials = ?";
+        if ($emailChanged) {
+            $updateQuery .= ", email_verified = 0";
+        }
+        $updateQuery .= " WHERE username = ?";
+        $updateStmt = $con->prepare($updateQuery);
 
-    // Refresh user data
-    $stmt = $con->prepare($query);
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
-    $stmt->close();
+        if ($emailChanged) {
+            $updateStmt->bind_param("sssss", $newUsername, $name, $position, $uniqueInitials, $username);
+        } else {
+            $updateStmt->bind_param("sssss", $newUsername, $name, $position, $uniqueInitials, $username);
+        }
+
+        if ($updateStmt->execute()) {
+            // Update the session username if it was changed
+            if ($emailChanged) {
+                $_SESSION['username'] = $newUsername;
+                $username = $newUsername;
+                $updateMessage = "Profile information updated successfully. Please log out and log back in to reflect the changes everywhere.";
+            } else {
+                $updateMessage = "Profile information updated successfully.";
+            }
+        } else {
+            $updateMessage = "An error occurred while updating the profile. Please try again.";
+        }
+
+        $updateStmt->close();
+
+        // Refresh user data
+        $stmt = $con->prepare($query);
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        $stmt->close();
+    }
 }
 
 // Handle form submission for password reset
@@ -223,7 +288,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
                 <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
             </div>
             <div class="form-group">
-                <label for="initials" >Initials <span class="note1">(Your Initials will be displayed in Cage Card)</span></label>
+                <label for="initials">Initials <span class="note1">(Your Initials will be displayed in Cage Card)</span></label>
                 <input type="text" class="form-control" id="initials" name="initials" value="<?php echo htmlspecialchars($user['initials']); ?>" required>
             </div>
             <div class="form-group">
