@@ -289,7 +289,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             </div>
             <div class="form-group">
                 <label for="initials">Initials <span class="note1">(Your Initials will be displayed in Cage Card)</span></label>
-                <input type="text" class="form-control" id="initials" name="initials" value="<?php echo htmlspecialchars($user['initials']); ?>" required>
+                <input type="text" class="form-control" id="initials" name="initials" value="<?php echo htmlspecialchars($user['initials']); ?>" maxlength="3" required>
             </div>
             <div class="form-group">
                 <label for="position">Position</label>
