@@ -51,11 +51,13 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Basic styling for body */
         body {
             margin: 0;
             padding: 0;
         }
 
+        /* Styling for header and footer */
         .header {
             display: flex;
             flex-wrap: wrap;
@@ -65,7 +67,6 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             color: white;
             padding: 1rem;
             text-align: center;
-            flex: 0 0 auto;
             margin: 0;
         }
 
@@ -91,6 +92,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             font-weight: 500;
         }
 
+        /* Responsive styling for smaller screens */
         @media (max-width: 576px) {
             .header h2 {
                 font-size: 1.8rem;
@@ -101,12 +103,12 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             }
         }
 
+        /* Styling for navigation container */
         .nav-container {
             background-color: #343a40;
-            padding: 0;
+            padding: 0px 0px 20px 0px;
             text-align: center;
             margin: 0;
-            flex: 0 0 auto;
         }
 
         .nav .btn {
@@ -117,7 +119,6 @@ if ($row = mysqli_fetch_assoc($labResult)) {
             min-width: auto;
         }
     </style>
-
 </head>
 
 <body>

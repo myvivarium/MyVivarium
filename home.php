@@ -18,10 +18,9 @@ session_start();
 require 'dbcon.php';
 
 // Check if the user is logged in, redirect to login page if not logged in
-if (!isset($_SESSION['username'])) {
-    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
-    header("Location: index.php?redirect=$currentUrl");
-    exit; // Exit to ensure no further code is executed
+if (!isset($_SESSION['name'])) {
+    header("Location: index.php"); // Redirect to login page if not logged in
+    exit;
 }
 
 // Fetch the counts for holding and breeding cages
@@ -32,6 +31,9 @@ $holdingCount = $holdingCountRow['count'];
 $matingCountResult = $con->query("SELECT COUNT(*) AS count FROM bc_basic");
 $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
+
+// Include the header file
+require 'header.php';
 ?>
 
 <!doctype html>
@@ -45,103 +47,79 @@ $matingCount = $matingCountRow['count'];
     <title>Home | <?php echo htmlspecialchars($labName); ?></title>
 
     <style>
-        body,
-        html {
+        /* Basic styling for body */
+        body {
             margin: 0;
             padding: 0;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
         }
 
-        .flex-container {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        .content {
-            flex: 1 1 auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .container {
-            max-width: 800px;
-            padding: 0 15px;
-            margin: 0 auto;
-            box-sizing: border-box;
+        /* Styling for main content container */
+        .main-content {
+            justify-content: center;
+            align-items: center;
         }
     </style>
-
 </head>
 
-<!-- Inside the body tag, add the flex-container -->
-
 <body>
-    <div class="flex-container">
-        <div class="content">
-            <div class="container">
-            <?php include 'header.php'; ?>
-                <!-- Display session messages if any -->
-                <?php include('message.php'); ?>
-                <br>
-                <div class="row align-items-center">
-                    <!-- Welcome message with user information -->
-                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                        <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>
-                            <span style="font-size: smaller; color: #555; border-bottom: 2px solid #ccc; padding: 0 5px;">
-                                [<?php echo htmlspecialchars($_SESSION['position']); ?>]
-                            </span>
-                        </h2>
-                    </div>
 
-                    <!-- Display stats for Holding Cage and Breeding Cage -->
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row mt-4">
-                                <!-- Holding Cage Stats -->
-                                <div class="col-md-6">
-                                    <div class="card text-center">
-                                        <div class="card-header bg-primary text-white">
-                                            <a href="hc_dash.php" style="color: white; text-decoration: none;">Holding Cage</a>
-                                        </div>
-                                        <div class="card-body">
-                                            <h5 class="card-title"><?php echo $holdingCount; ?></h5>
-                                            <p class="card-text">Total Entries</p>
-                                        </div>
-                                    </div>
+    <div class="container">
+        <!-- Display session messages if any -->
+        <?php include('message.php'); ?>
+        <br>
+        <div class="row align-items-center">
+            <!-- Welcome message with user information -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>
+                    <span style="font-size: smaller; color: #555; border-bottom: 2px solid #ccc; padding: 0 5px;">
+                        [<?php echo htmlspecialchars($_SESSION['position']); ?>]
+                    </span>
+                </h2>
+            </div>
+
+            <!-- Display stats for Holding Cage and Breeding Cage -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mt-4">
+                        <!-- Holding Cage Stats -->
+                        <div class="col-md-6">
+                            <div class="card text-center">
+                                <div class="card-header bg-primary text-white">
+                                    <a href="hc_dash.php" style="color: white; text-decoration: none;">Holding Cage</a>
                                 </div>
-                                <!-- Breeding Cage Stats -->
-                                <div class="col-md-6">
-                                    <div class="card text-center">
-                                        <div class="card-header bg-primary text-white">
-                                            <a href="bc_dash.php" style="color: white; text-decoration: none;">Breeding Cage</a>
-                                        </div>
-                                        <div class="card-body">
-                                            <h5 class="card-title"><?php echo $matingCount; ?></h5>
-                                            <p class="card-text">Total Entries</p>
-                                        </div>
-                                    </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo $holdingCount; ?></h5>
+                                    <p class="card-text">Total Entries</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Breeding Cage Stats -->
+                        <div class="col-md-6">
+                            <div class="card text-center">
+                                <div class="card-header bg-primary text-white">
+                                    <a href="bc_dash.php" style="color: white; text-decoration: none;">Breeding Cage</a>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo $matingCount; ?></h5>
+                                    <p class="card-text">Total Entries</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Display sticky notes section -->
-                    <div style="margin-top: 50px;">
-                        <h2><?php echo htmlspecialchars($labName); ?> - General Notes</h2>
-                        <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
-                    </div>
                 </div>
             </div>
+
+            <!-- Display sticky notes section -->
+            <div style="margin-top: 50px;">
+                <h2><?php echo htmlspecialchars($labName); ?> - General Notes</h2>
+                <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
+            </div>
         </div>
-
-        <!-- Include the footer file -->
-        <?php include 'footer.php'; ?>
     </div>
+
+    <!-- Include the footer file -->
+    <?php include 'footer.php'; ?>
+
 </body>
-
-
 
 </html>
