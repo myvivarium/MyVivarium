@@ -120,9 +120,53 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     $labName = $row['lab_name'];
 }
 
+/**
+ * Function to generate initials from the user's name.
+ * It concatenates the first letters of each part of the name, 
+ * up to a maximum of 3 characters.
+ */
+function generateInitials($name) {
+    $parts = explode(" ", $name);
+    $initials = "";
+
+    foreach ($parts as $part) {
+        if (!empty($part)) {
+            $initials .= strtoupper($part[0]);
+        }
+    }
+
+    return substr($initials, 0, 3);
+}
+
+/**
+ * Function to ensure unique initials by appending a numeric suffix if needed.
+ * It checks the database for existing initials and appends numbers until
+ * a unique set of initials is found.
+ */
+function ensureUniqueInitials($con, $initials) {
+    $uniqueInitials = $initials;
+    $suffix = 1;
+
+    $checkQuery = "SELECT initials FROM users WHERE initials = ?";
+    $stmt = $con->prepare($checkQuery);
+    $stmt->bind_param("s", $uniqueInitials);
+    $stmt->execute();
+    $stmt->store_result();
+
+    while ($stmt->num_rows > 0) {
+        $uniqueInitials = $initials . $suffix;
+        $suffix++;
+        $stmt->bind_param("s", $uniqueInitials);
+        $stmt->execute();
+        $stmt->store_result();
+    }
+
+    $stmt->close();
+    return $uniqueInitials;
+}
+
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Check honeypot field for spam detection
     if (!empty($_POST['honeypot'])) {
         $_SESSION['resultMessage'] = "Spam detected! Please try again.";
     } else {
@@ -133,10 +177,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
         $role = "user";
         $status = "pending";
-        $email_verified = 0; // Explicitly set to integer 0
-        $email_token = bin2hex(random_bytes(16)); // Generate a random token
+        $email_verified = 0;
+        $email_token = bin2hex(random_bytes(16));
 
-        // Check if the email already exists
         $checkEmailQuery = "SELECT username FROM users WHERE username = ?";
         $checkEmailStmt = $con->prepare($checkEmailQuery);
         $checkEmailStmt->bind_param("s", $username);
@@ -146,33 +189,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($checkEmailStmt->num_rows > 0) {
             $_SESSION['resultMessage'] = "Email address already registered. Please try logging in or use a different email.";
         } else {
-            // Hash the password and insert the new user into the database
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-            $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status, email_verified, email_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssssis", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token);
+
+            // Generate and ensure unique initials
+            $initials = generateInitials($name);
+            $uniqueInitials = ensureUniqueInitials($con, $initials);
+
+            $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status, email_verified, email_token, initials) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssisiss", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token, $uniqueInitials);
 
             if ($stmt->execute()) {
                 sendConfirmationEmail($username, $email_token);
-
-                // Prepare new user details for admin notification
-                $newUserDetails = [
+                notifyAdmins([
                     'name' => $name,
                     'email' => $username,
                     'position' => $position,
                     'email_verified' => $email_verified
-                ];
-                notifyAdmins($newUserDetails);
-
+                ]);
                 $_SESSION['resultMessage'] = "Registration successful. Please check your email to confirm your email address.";
             } else {
                 $_SESSION['resultMessage'] = "Registration failed. Please try again.";
             }
+
             $stmt->close();
         }
         $checkEmailStmt->close();
     }
     $con->close();
-    // Redirect to the same script to avoid POST resubmission issues
     header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
     exit;
 }
