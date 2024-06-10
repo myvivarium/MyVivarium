@@ -214,6 +214,20 @@ mysqli_close($con);
 
     <!-- Custom CSS -->
     <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        .top-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         .carousel img {
             height: 320px;
             object-fit: cover;
