@@ -33,7 +33,7 @@ $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
 
 // Include the header file
-require 'header.php';
+//require 'header.php';
 ?>
 
 <!doctype html>
