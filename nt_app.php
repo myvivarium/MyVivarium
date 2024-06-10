@@ -221,7 +221,7 @@ $result = $stmt->get_result();
 </head>
 
 <body>
-    <div class="container" style="margin: 50px 0px;">
+    <div class="nt-container" style="margin: 50px 0px;">
         <div id="message"></div> <!-- Added this div for displaying messages -->
         <button class="add-note-btn" onclick="togglePopup('addNotePopup')">Add Sticky Note</button>
         <br>
