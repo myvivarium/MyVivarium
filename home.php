@@ -32,7 +32,6 @@ $holdingCount = $holdingCountRow['count'];
 $matingCountResult = $con->query("SELECT COUNT(*) AS count FROM bc_basic");
 $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
-
 ?>
 
 <!doctype html>
@@ -96,11 +95,11 @@ $matingCount = $matingCountRow['count'];
 
 <body>
     <div class="flex-container">
-    <?php include('header.php'); ?>
         <div class="content">
             <div class="container">
+            <?php include('header.php'); ?>
                 <!-- Display session messages if any -->
-               
+                <?php include('message.php'); ?>
                 <br>
                 <div class="row align-items-center">
                     <!-- Welcome message with user information -->
