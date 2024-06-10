@@ -79,10 +79,8 @@ $matingCount = $matingCountRow['count'];
 
 <body>
     <div class="flex-container">
-        <!-- Include the header file inside the flex-container -->
-        <?php include 'header.php'; ?>
         <div class="content">
-            <!-- Existing container and content goes here -->
+            <?php include 'header.php'; ?>
             <div class="container">
                 <!-- Display session messages if any -->
                 <?php include('message.php'); ?>
