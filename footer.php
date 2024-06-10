@@ -7,21 +7,24 @@
 <!-- Footer Section -->
 
 <style>
-    /* Header and Footer Styling */
-
-    /* Styling for the header and footer section */
     .header-footer {
         background-color: #343a40;
-        padding: 20px 0;
+        margin: 0;
+        padding: 10px 0;
         text-align: center;
         width: 100%;
         box-sizing: border-box;
     }
 
-    /* Styling for the footer text */
     .footer-text {
         color: white;
         margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .header-footer {
+            padding: 15px 0;
+        }
     }
 </style>
 

@@ -51,7 +51,13 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Basic styling for body */
+        body {
+            margin: 0;
+            padding: 0;
+        }
 
+        /* Styling for header and footer */
         .header-footer {
             display: flex;
             flex-wrap: wrap;

@@ -32,6 +32,9 @@ $holdingCount = $holdingCountRow['count'];
 $matingCountResult = $con->query("SELECT COUNT(*) AS count FROM bc_basic");
 $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
+
+// Include the header file
+require 'header.php';
 ?>
 
 <!doctype html>
@@ -68,26 +71,6 @@ $matingCount = $matingCountRow['count'];
             margin: 0 auto;
             box-sizing: border-box;
         }
-
-        .header-footer {
-            background-color: #343a40;
-            margin: 0;
-            padding: 10px 0;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .footer-text {
-            color: white;
-            margin: 0;
-        }
-
-        @media (max-width: 768px) {
-            .header-footer {
-                padding: 15px 0;
-            }
-        }
     </style>
 </head>
 
@@ -97,7 +80,6 @@ $matingCount = $matingCountRow['count'];
     <div class="flex-container">
         <div class="content">
             <div class="container">
-            <?php include('header.php'); ?>
                 <!-- Display session messages if any -->
                 <?php include('message.php'); ?>
                 <br>
