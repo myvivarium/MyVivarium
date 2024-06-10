@@ -59,6 +59,7 @@ require 'header.php';
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            width: 800px;
         }
     </style>
 </head>
