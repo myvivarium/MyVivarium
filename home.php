@@ -135,6 +135,7 @@ require 'header.php';
             const footer = document.getElementById('footer');
             const container = document.querySelector('.top-container');
             const header = document.querySelector('.header'); // Assuming .header is the class for the header
+            const navcontainer = document.querySelector('.nav-container'); 
 
             // Reset footer styles to compute natural height
             footer.style.position = 'relative';
@@ -144,10 +145,11 @@ require 'header.php';
             const containerHeight = container.scrollHeight; // Accurate content height
             const windowHeight = window.innerHeight;
             const footerHeight = footer.offsetHeight; // Footer height
+            const navcontainerHeight = navcontainer.offsetHeight; // navcontainer height
             const headerHeight = header ? header.offsetHeight : 0; // Header height, 0 if no header
 
             // Calculate total content height including header and footer
-            const totalContentHeight = containerHeight + footerHeight + headerHeight;
+            const totalContentHeight = containerHeight + footerHeight + headerHeight + navcontainerHeight;
 
             // Adjust the footer position based on total content height and viewport height
             if (totalContentHeight < windowHeight) {
