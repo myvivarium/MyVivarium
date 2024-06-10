@@ -33,8 +33,6 @@ $matingCountResult = $con->query("SELECT COUNT(*) AS count FROM bc_basic");
 $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
 
-// Include the header file
-require 'header.php';
 ?>
 
 <!doctype html>
@@ -99,9 +97,10 @@ require 'header.php';
 <body>
     <div class="flex-container">
         <div class="content">
+            <?php include('header.php'); ?>
             <div class="container">
                 <!-- Display session messages if any -->
-                <?php include('message.php'); ?>
+               
                 <br>
                 <div class="row align-items-center">
                     <!-- Welcome message with user information -->
