@@ -313,18 +313,19 @@ mysqli_close($con);
 </head>
 
 <body>
-    <div class="top-container">
-        <!-- Header Section -->
-        <?php if ($demo === "yes") include('demo/demo.php'); ?>
-        <div class="header">
-            <div class="logo-container">
-                <a href="home.php">
-                    <img src="images/logo1.jpg" alt="Logo" class="header-logo">
-                </a>
-            </div>
-            <h2><?php echo htmlspecialchars($labName); ?></h2>
-        </div>
 
+    <!-- Header Section -->
+    <?php if ($demo === "yes") include('demo/demo.php'); ?>
+    <div class="header">
+        <div class="logo-container">
+            <a href="home.php">
+                <img src="images/logo1.jpg" alt="Logo" class="header-logo">
+            </a>
+        </div>
+        <h2><?php echo htmlspecialchars($labName); ?></h2>
+    </div>
+
+    <div class="top-container">
         <!-- Main Content -->
         <div class="container mt-4">
             <div class="row">
@@ -402,6 +403,7 @@ mysqli_close($con);
             </div>
         </div>
     </div>
+    
     <!-- Include the footer -->
     <?php include 'footer.php'; ?>
     <script>
