@@ -44,22 +44,23 @@ $updateMessage = ''; // Initialize message for profile update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
     $newUsername = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_EMAIL);
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+    $initials = filter_input(INPUT_POST, 'initials', FILTER_SANITIZE_STRING);
     $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
 
     // Check if the email address (username) has changed
     $emailChanged = ($newUsername !== $username);
 
     // Update user details in the database
-    $updateQuery = "UPDATE users SET username = ?, name = ?, position = ?";
+    $updateQuery = "UPDATE users SET username = ?, name = ?, position = ? initials = ?";
     if ($emailChanged) {
         $updateQuery .= ", email_verified = 0";
     }
     $updateQuery .= " WHERE username = ?";
     $updateStmt = $con->prepare($updateQuery);
     if ($emailChanged) {
-        $updateStmt->bind_param("ssss", $newUsername, $name, $position, $username);
+        $updateStmt->bind_param("sssss", $newUsername, $name, $position, $initials, $username);
     } else {
-        $updateStmt->bind_param("ssss", $newUsername, $name, $position, $username);
+        $updateStmt->bind_param("sssss", $newUsername, $name, $position, $initials, $username);
     }
     $updateStmt->execute();
     $updateStmt->close();
@@ -205,6 +206,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             text-align: center;
             margin-top: 10px;
         }
+
+        .note1 {
+            color: #888;
+            font-size: 12px;
+        }
     </style>
 </head>
 
@@ -215,6 +221,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="initials" >Initials <span class="note1">(Your Initials will be displayed in Cage Card)</span></label>
+                <input type="text" class="form-control" id="initials" name="initials" value="<?php echo htmlspecialchars($user['initials']); ?>" required>
             </div>
             <div class="form-group">
                 <label for="position">Position</label>
