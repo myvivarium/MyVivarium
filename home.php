@@ -59,15 +59,23 @@ require 'header.php';
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            justify-content: space-between;
         }
 
         .content {
             flex: 1;
         }
 
+        .container {
+            padding: 0 15px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
         .header-footer {
             background-color: #343a40;
-            padding: 20px 0;
+            margin: 0;
+            padding: 10px 0;
             text-align: center;
             width: 100%;
             box-sizing: border-box;
@@ -91,7 +99,6 @@ require 'header.php';
 <body>
     <div class="flex-container">
         <div class="content">
-            <!-- Your existing container and content goes here -->
             <div class="container">
                 <!-- Display session messages if any -->
                 <?php include('message.php'); ?>
