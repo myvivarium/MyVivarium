@@ -148,7 +148,12 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                 <ul class="dropdown-menu" aria-labelledby="dashboardMenuButton">
                     <li><a class="dropdown-item" href="hc_dash.php">Holding Cage</a></li>
                     <li><a class="dropdown-item" href="bc_dash.php">Breeding Cage</a></li>
-                    <li><a class="dropdown-item" href="iot_sensors.php">IOT Sensors</a></li>
+                    <?php
+                    // Display admin options if the user is an admin
+                    if (!empty($r1_temp) || !empty($r1_humi) || !empty($r1_illu) || !empty($r1_pres) || !empty($r2_temp) || !empty($r2_humi) || !empty($r2_illu) || !empty($r2_pres)) {
+                        echo '<li><a class="dropdown-item" href="iot_sensors.php">IOT Sensors</a></li>';
+                    }
+                    ?>
                 </ul>
             </div>
 
