@@ -96,8 +96,8 @@ $matingCount = $matingCountRow['count'];
 
 <body>
     <div class="flex-container">
+    <?php include('header.php'); ?>
         <div class="content">
-            <?php include('header.php'); ?>
             <div class="container">
                 <!-- Display session messages if any -->
                
