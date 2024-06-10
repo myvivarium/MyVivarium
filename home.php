@@ -67,6 +67,7 @@ $matingCount = $matingCountRow['count'];
         }
 
         .container {
+            max-width: 800px;
             padding: 0 15px;
             margin: 0 auto;
             box-sizing: border-box;
