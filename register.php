@@ -210,7 +210,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $uniqueInitials = ensureUniqueInitials($con, $initials);
 
             $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status, email_verified, email_token, initials) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssssisiss", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token, $uniqueInitials);
+            $stmt->bind_param("sssssssiss", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token, $uniqueInitials);
 
             if ($stmt->execute()) {
                 sendConfirmationEmail($username, $email_token);
