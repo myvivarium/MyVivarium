@@ -33,7 +33,7 @@ $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
 
 // Include the header file
-require 'header.php';
+//require 'header.php';
 ?>
 
 <!doctype html>
@@ -55,24 +55,17 @@ require 'header.php';
             width: 100%;
         }
 
-        .container {
+        .top-container {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-        }
-
-        .main-content {
-            flex: 1;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            box-sizing: border-box;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
+    <div class="top-container">
+        <?php include('header.php'); ?>
         <!-- Display session messages if any -->
         <?php include('message.php'); ?>
         <br>
@@ -131,7 +124,7 @@ require 'header.php';
     <script>
         function adjustFooter() {
             const footer = document.getElementById('footer');
-            const container = document.querySelector('.container');
+            const container = document.querySelector('.top-container');
 
             // Remove inline styles to calculate natural height
             footer.style.position = 'relative';
