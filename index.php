@@ -263,12 +263,12 @@ mysqli_close($con);
             margin: 0;
         }
 
-        .header .logo-container {
+        .logo-container {
             padding: 0;
             margin: 0;
         }
 
-        .header img.header-logo {
+        header img.header-logo {
             width: 300px;
             height: auto;
             display: block;
