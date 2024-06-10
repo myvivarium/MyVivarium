@@ -131,39 +131,42 @@ require 'header.php';
     <?php include 'footer.php'; ?>
 
     <script>
-        function adjustFooter() {
-            const footer = document.getElementById('footer');
-            const container = document.querySelector('.top-container');
-            const header = document.querySelector('.header'); // Assuming .header is the class for the header
-            const navcontainer = document.querySelector('.nav-container'); 
+    function adjustFooter() {
+        const footer = document.getElementById('footer');
+        const container = document.querySelector('.top-container');
+        const header = document.querySelector('.header'); // Assuming .header is the class for the header
+        const navcontainer = document.querySelector('.nav-container'); // Assuming .nav-container is the class for nav container
 
-            // Reset footer styles to compute natural height
+        // Reset footer styles to compute natural height
+        footer.style.position = 'relative';
+        footer.style.bottom = 'auto';
+        footer.style.width = '100%'; // Ensure footer spans full width
+
+        // Get the heights of the header, nav container, and footer
+        const headerHeight = header ? header.offsetHeight : 0;
+        const navcontainerHeight = navcontainer ? navcontainer.offsetHeight : 0;
+        const footerHeight = footer.offsetHeight;
+
+        // Calculate the available space minus header and nav container
+        const availableSpace = window.innerHeight - headerHeight - navcontainerHeight;
+
+        // Calculate the total content height
+        const contentHeight = container.scrollHeight + footerHeight;
+
+        // Adjust the footer position based on the available space and content height
+        if (contentHeight < availableSpace) {
+            footer.style.position = 'absolute';
+            footer.style.bottom = '0';
+        } else {
             footer.style.position = 'relative';
-            footer.style.bottom = 'auto';
-            footer.style.width = '100%'; // Ensure footer spans full width
-
-            const containerHeight = container.scrollHeight; // Accurate content height
-            const windowHeight = window.innerHeight;
-            const footerHeight = footer.offsetHeight; // Footer height
-            const navcontainerHeight = navcontainer.offsetHeight; // navcontainer height
-            const headerHeight = header ? header.offsetHeight : 0; // Header height, 0 if no header
-
-            // Calculate total content height including header and footer
-            const totalContentHeight = containerHeight + footerHeight - headerHeight - navcontainerHeight;
-
-            // Adjust the footer position based on total content height and viewport height
-            if (totalContentHeight < windowHeight) {
-                footer.style.position = 'absolute';
-                footer.style.bottom = '0';
-            } else {
-                footer.style.position = 'relative';
-            }
         }
+    }
 
-        // Adjust footer on page load and window resize
-        window.addEventListener('load', adjustFooter);
-        window.addEventListener('resize', adjustFooter);
-    </script>
+    // Adjust footer on page load and window resize
+    window.addEventListener('load', adjustFooter);
+    window.addEventListener('resize', adjustFooter);
+</script>
+
 
 
 </body>
