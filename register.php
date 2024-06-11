@@ -360,7 +360,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
         <h2><?php echo htmlspecialchars($labName); ?></h2>
     </div>
     <br>
-    <div class="container">
+    <div class="container content">
         <h2>User Registration</h2>
         <br>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">

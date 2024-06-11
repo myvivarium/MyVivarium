@@ -83,7 +83,7 @@ require 'header.php';
 </head>
 
 <body>
-    <div class="container mt-4">
+    <div class="container mt-4 content">
         <!-- Section for Room 1 IOT Sensors -->
         <?php if (!empty($r1_temp) || !empty($r1_humi) || !empty($r1_illu) || !empty($r1_pres)) : ?>
             <div class="row mb-4">

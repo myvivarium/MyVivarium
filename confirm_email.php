@@ -146,7 +146,7 @@ if ($row = mysqli_fetch_assoc($labResult)) {
         <h2><?php echo htmlspecialchars($labName); ?></h2>
     </div>
     <br>
-    <div class="container">
+    <div class="container content">
         <h2>Email Confirmation</h2>
         <br>
 

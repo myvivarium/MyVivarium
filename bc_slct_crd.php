@@ -119,24 +119,33 @@ require 'header.php';
 </head>
 
 <body>
-    <div class="container mt-4">
-        <h4>Select Breeding Cages for Printing</h4>
-        <form>
-            <div class="mb-3">
-                <label for="cageIds" class="form-label">Select Cage IDs (up to 4):</label>
+    <br>
+    <br>
+    <div class="content">
+        <br>
+        <br>
+        <div class="container">
+            <h4>Select Breeding Cages for Printing</h4>
+            <br>
+            <form>
+                <div class="form-group">
+                    <label for="cageIds" class="form-label">Select Cage IDs (up to 4):</label>
+                    <br>
+                    <select id="cageIds" name="id[]" class="form-select" multiple size="10">
+                        <?php foreach ($cageIds as $cageId) : ?>
+                            <option value="<?= htmlspecialchars($cageId) ?>"><?= htmlspecialchars($cageId) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
                 <br>
-                <select id="cageIds" name="id[]" class="form-select" multiple size="10">
-                    <?php foreach ($cageIds as $cageId) : ?>
-                        <option value="<?= htmlspecialchars($cageId) ?>"><?= htmlspecialchars($cageId) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="btn-container">
-                <button type="submit" class="btn btn-primary btn-print" onclick="handleSubmit(event, 'bc_prnt_crd.php')">Print Cage Card</button>
-                <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
-            </div>
-        </form>
+                <div class="btn-container">
+                    <button type="submit" class="btn btn-primary btn-print" onclick="handleSubmit(event, 'bc_prnt_crd.php')">Print Cage Card</button>
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
+                </div>
+            </form>
+        </div>
     </div>
+    <br>
     <?php include 'footer.php'; ?>
 </body>
 

@@ -199,7 +199,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     </div>
     <br>
     <br>
-    <div class="container">
+    <div class="container content">
         <h2>Reset Password</h2>
         <br>
         <form method="POST" action="">

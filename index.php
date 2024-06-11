@@ -223,12 +223,6 @@ mysqli_close($con);
             width: 100%;
         }
 
-        .top-container {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
         .carousel img {
             height: 320px;
             object-fit: cover;
@@ -327,7 +321,7 @@ mysqli_close($con);
         <h2><?php echo htmlspecialchars($labName); ?></h2>
     </div>
 
-    <div class="top-container">
+    <div class="content">
         <!-- Main Content -->
         <div class="container mt-4">
             <div class="row">

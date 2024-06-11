@@ -20,6 +20,10 @@ require 'dbcon.php';
 // Regenerate session ID to prevent session fixation
 session_regenerate_id(true);
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Check if the user is logged in
 // Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
@@ -101,6 +105,7 @@ if (isset($_GET['id'])) {
 
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            
             // Validate CSRF token
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 die('CSRF token validation failed');
@@ -475,7 +480,7 @@ require 'header.php';
                 alert('Cannot proceed with "Unknown PI". Please select a valid PI.');
             }
         });
-    });
+        });
     </script>
 
     <title>Edit Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
@@ -488,12 +493,6 @@ require 'header.php';
 
 
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
-        }
-
         .container {
             max-width: 800px;
             background-color: #f8f9fa;
@@ -566,10 +565,6 @@ require 'header.php';
             .table-wrapper th,
             .table-wrapper td {
                 padding: 12px 8px;
-            }
-
-            .table-wrapper th,
-            .table-wrapper td {
                 text-align: center;
             }
         }
@@ -578,7 +573,7 @@ require 'header.php';
 </head>
 
 <body>
-    <div class="container mt-4">
+    <div class="container content mt-4">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">

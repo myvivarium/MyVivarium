@@ -108,7 +108,6 @@ require 'header.php';
             text-align: left;
         }
 
-        /* Button styles */
         .btn-sm {
             margin-right: 5px;
         }
@@ -148,7 +147,7 @@ require 'header.php';
 </head>
 
 <body>
-    <div class="container mt-4">
+    <div class="container content mt-4">
         <!-- Include message for user notifications -->
         <?php include('message.php'); ?>
         <div class="row">

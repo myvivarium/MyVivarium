@@ -236,7 +236,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 
     <br>
     <br>
-    <div class="container">
+    <div class="container content">
         <h2>Forgot Password</h2>
         <br>
         <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
@@ -257,7 +257,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     <br>
 
     <!-- Footer Section -->
-    <br>
     <?php include 'footer.php'; ?>
 
 </body>

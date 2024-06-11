@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holding Cage Dashboard
+ * Holding Cage Dashboard Script
  * 
  * This script displays the holding cage dashboard for logged-in users. It includes functionalities such as 
  * adding new cages, printing cage cards, searching cages, and pagination. The page content is dynamically
@@ -88,32 +88,27 @@ require 'header.php';
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            /* Default font family */
         }
 
         .table-wrapper {
             margin-bottom: 50px;
             overflow-x: auto;
-            /* Enable horizontal scrolling on small screens */
         }
 
         .table-wrapper table {
             width: 100%;
             border-collapse: collapse;
-            /* Collapse table borders */
         }
 
         .table-wrapper th,
         .table-wrapper td {
             border: 1px solid #ddd;
-            /* Light gray border */
             padding: 8px;
             text-align: left;
         }
 
         .btn-sm {
             margin-right: 5px;
-            /* Small margin for buttons */
         }
 
         .btn-icon {
@@ -144,29 +139,28 @@ require 'header.php';
             .table-wrapper th,
             .table-wrapper td {
                 padding: 12px 8px;
+                text-align: center;
             }
 
-            .table-wrapper th,
-            .table-wrapper td {
-                text-align: center;
-                /* Center text for smaller screens */
-            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container mt-4">
-        <?php include('message.php'); ?> <!-- Include message file for displaying messages -->
+    <div class="container content mt-4">
+        <!-- Include message file for displaying messages -->
+        <?php include('message.php'); ?>
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-center">
                         <h4>Holding Cage Dashboard</h4>
                         <div class="action-icons mt-3 mt-md-0">
+                            <!-- Add new cage button with tooltip -->
                             <a href="hc_addn.php" class="btn btn-primary btn-icon" data-toggle="tooltip" data-placement="top" title="Add New Cage">
                                 <i class="fas fa-plus"></i>
                             </a>
+                            <!-- Print cage card button with tooltip -->
                             <a href="hc_slct_crd.php" class="btn btn-success btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage Card">
                                 <i class="fas fa-print"></i>
                             </a>

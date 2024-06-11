@@ -280,17 +280,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 </head>
 
 <body>
-    <div class="container">
+    <div class="container content">
+    <br>
         <h2>User Profile</h2>
+        <br>
+        <br>
         <form method="POST" action="">
             <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
             </div>
+            <br>
             <div class="form-group">
                 <label for="initials">Initials <span class="note1">(Your Initials will be displayed in Cage Card)</span></label>
                 <input type="text" class="form-control" id="initials" name="initials" value="<?php echo htmlspecialchars($user['initials']); ?>" maxlength="3" required>
             </div>
+            <br>
             <div class="form-group">
                 <label for="position">Position</label>
                 <select class="form-control" id="position" name="position">
@@ -308,19 +313,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
                     <option value="Interns and Volunteers" <?php echo ($user['position'] == 'Interns and Volunteers') ? 'selected' : ''; ?>>Interns and Volunteers</option>
                 </select>
             </div>
+            <br>
             <div class="form-group">
                 <label for="username">Email Address</label>
                 <input type="email" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
             </div>
             <button type="submit" class="btn1 btn-primary" name="update_profile">Update Profile</button>
         </form>
+        <br>
         <?php if ($updateMessage) {
             echo "<p class='update-message'>$updateMessage</p>";
         } ?>
         <br>
         <br>
         <br>
+        <br>
         <h2>Request Password Change</h2>
+        <br>
+        <br>
         <form method="POST" action="">
             <button type="submit" class="btn1 btn-warning" name="reset">Request Password Change</button>
         </form>

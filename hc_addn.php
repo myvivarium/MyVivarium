@@ -21,7 +21,10 @@
  * Date: [Date]
  */
 
+// Start a new session or resume the existing session
 session_start();
+
+// Include the database connection file
 require 'dbcon.php';  // Include database connection file
 
 // Regenerate session ID to prevent session fixation
@@ -39,9 +42,13 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// Query to retrieve users with initials and names
+$userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
+$userResult = $con->query($userQuery);
+
 // Query to retrieve options where role is 'Principal Investigator'
-$query = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
-$result = $con->query($query);
+$piQuery = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
+$piResult = $con->query($piQuery);
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -56,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pi_name = $_POST['pi_name'];
     $strain = $_POST['strain'];
     $iacuc = $_POST['iacuc'];
-    $user = $_POST['user'];
+    $user = isset($_POST['user']) ? implode(',', array_map('trim', $_POST['user'])) : '';
     $qty = $_POST['qty'];
     $dob = $_POST['dob'];
     $sex = $_POST['sex'];
@@ -149,6 +156,12 @@ require 'header.php';
 
 <head>
     <title>Add New Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
+
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Include Select2 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
 
     <style>
         .container {
@@ -261,12 +274,20 @@ require 'header.php';
                 }
             });
         });
+
+        $(document).ready(function() {
+            $('#user').select2({
+                placeholder: "Select User(s)",
+                allowClear: true
+            });
+        });
     </script>
 
 </head>
 
 <body>
-    <div class="container mt-4" style="max-width: 800px; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
+    <div class="container mt-4 content">
+
         <h4>Add New Holding Cage</h4>
 
         <?php include('message.php'); ?>
@@ -275,6 +296,7 @@ require 'header.php';
 
         <form method="POST">
 
+            <!-- CSRF token field -->
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
             <div class="mb-3">
@@ -288,8 +310,11 @@ require 'header.php';
                     <option value="" disabled selected>Select PI</option>
                     <?php
                     // Populate dropdown with options from the database
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value='" . $row['name'] . "'>" . $row['name'] . "</option>";
+                    while ($row = $piResult->fetch_assoc()) {
+                        $pi_id = htmlspecialchars($row['id']);
+                        $pi_initials = htmlspecialchars($row['initials']);
+                        $pi_name = htmlspecialchars($row['name']);
+                        echo "<option value='$pi_id'>$pi_initials [$pi_name]</option>";
                     }
                     ?>
                 </select>
@@ -307,7 +332,17 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>
-                <input type="text" class="form-control" id="user" name="user" required>
+                <select class="form-control" id="user" name="user[]" multiple required>
+                    <?php
+                    // Populate the dropdown with options from the database
+                    while ($userRow = $userResult->fetch_assoc()) {
+                        $user_id = htmlspecialchars($userRow['id']);
+                        $initials = htmlspecialchars($userRow['initials']);
+                        $name = htmlspecialchars($userRow['name']);
+                        echo "<option value='$user_id'>$initials [$name]</option>";
+                    }
+                    ?>
+                </select>
             </div>
 
             <div class="mb-3">

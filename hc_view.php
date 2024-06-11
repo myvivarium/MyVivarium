@@ -27,12 +27,24 @@ if (!isset($_SESSION['username'])) {
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Query to get lab data (URL)
+$labQuery = "SELECT * FROM data LIMIT 1";
+$labResult = mysqli_query($con, $labQuery);
+
+// Fetch the URL from the lab data
+if ($row = mysqli_fetch_assoc($labResult)) {
+    $url = $row['url'];
+}
+
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the holding cage record with the specified ID
-    $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
+    $query = "SELECT hc.*, pi.initials AS pi_initials, pi.name AS pi_name 
+                FROM hc_basic hc 
+                LEFT JOIN users pi ON hc.pi_name = pi.id 
+                WHERE hc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
     // Fetch files related to the cage ID
@@ -42,6 +54,23 @@ if (isset($_GET['id'])) {
     // Check if the record exists
     if (mysqli_num_rows($result) === 1) {
         $holdingcage = mysqli_fetch_assoc($result);
+
+        // If PI name is null, re-query the hc_basic table without the join
+        if (is_null($holdingcage['pi_name'])) {
+            $queryBasic = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
+            $resultBasic = mysqli_query($con, $queryBasic);
+
+            if (mysqli_num_rows($resultBasic) === 1) {
+                $holdingcage = mysqli_fetch_assoc($resultBasic);
+                $holdingcage['pi_initials'] = 'NA'; // Set empty initials
+                $holdingcage['pi_name'] = 'NA'; // Set empty PI name
+            } else {
+                // If the re-query also fails, set an error message and redirect to the dashboard
+                $_SESSION['message'] = 'Error fetching the cage details.';
+                header("Location: hc_dash.php");
+                exit();
+            }
+        }
     } else {
         $_SESSION['message'] = 'Invalid ID.';
         header("Location: hc_dash.php");
@@ -52,6 +81,40 @@ if (isset($_GET['id'])) {
     header("Location: hc_dash.php");
     exit();
 }
+
+function getUserDetailsByIds($con, $userIds)
+{
+    $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+    $query = "SELECT id, initials, name FROM users WHERE id IN ($placeholders)";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $userDetails = [];
+    while ($row = $result->fetch_assoc()) {
+        $userDetails[$row['id']] = htmlspecialchars($row['initials'] . ' [' . $row['name'] . ']');
+    }
+    $stmt->close();
+    return $userDetails;
+}
+
+// Explode the user IDs if they are comma-separated
+$userIds = array_map('intval', explode(',', $holdingcage['user']));
+
+// Fetch the user details based on IDs
+$userDetails = getUserDetailsByIds($con, $userIds);
+
+// Prepare a string to display user details
+$userDisplay = [];
+foreach ($userIds as $userId) {
+    if (isset($userDetails[$userId])) {
+        $userDisplay[] = $userDetails[$userId];
+    } else {
+        $userDisplay[] = htmlspecialchars($userId);
+    }
+}
+$userDisplayString = implode(', ', $userDisplay);
+
 
 // Include the header file
 require 'header.php';
@@ -70,7 +133,7 @@ require 'header.php';
             var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
 
             // URL to generate the QR code image
-            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://myvivarium.online/bc_view.php?id=' + cageId;
+            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://' + $url + '/hc_view.php?id=' + cageId;
 
             // HTML content for the popup, including a dynamic title and the QR code image
             var htmlContent = `
@@ -101,13 +164,13 @@ require 'header.php';
         }
     </script>
 
-    <style>
-        body {
+<style>
+                body {
             background: none !important;
             background-color: transparent !important;
         }
-
-        .content-container {
+        
+        .container {
             max-width: 800px;
             background-color: #f8f9fa;
             padding: 20px;
@@ -131,21 +194,24 @@ require 'header.php';
             border: 1px solid gray;
             padding: 8px;
             text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .table-wrapper th:nth-child(1),
         .table-wrapper td:nth-child(1) {
-            width: 25%;
+            width: 30%;
         }
 
         .table-wrapper th:nth-child(2),
         .table-wrapper td:nth-child(2) {
-            width: 25%;
+            width: 70%;
         }
 
-        .table-wrapper th:nth-child(3),
-        .table-wrapper td:nth-child(3) {
-            width: 50%;
+        .remarks-column {
+            max-width: 400px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         span {
@@ -171,13 +237,40 @@ require 'header.php';
             display: flex;
             gap: 10px;
         }
+
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .btn-icon i {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+
+            .table-wrapper th,
+            .table-wrapper td {
+                padding: 12px 8px;
+            }
+
+            .table-wrapper th,
+            .table-wrapper td {
+                text-align: center;
+            }
+        }
     </style>
     <!-- Include FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
-    <div class="content-container mt-4">
+<div class="container content mt-4">
         <div class="card">
             <div class="card-header">
                 <h4>View Holding Cage <?= htmlspecialchars($holdingcage['cage_id']); ?></h4>
@@ -210,7 +303,7 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>PI Name</th>
-                        <td><?= htmlspecialchars($holdingcage['pi_name']); ?></td>
+                        <td><?= htmlspecialchars($holdingcage['pi_initials'] . ' [' . $holdingcage['pi_name'] . ']'); ?></td>
                     </tr>
                     <tr>
                         <th>Strain</th>
@@ -222,7 +315,7 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>User</th>
-                        <td><?= htmlspecialchars($holdingcage['user']); ?></td>
+                        <td><?= $userDisplayString; ?></td>
                     </tr>
                     <tr>
                         <th>Qty</th>

@@ -66,7 +66,7 @@ require 'header.php';
 </head>
 
 <body>
-        <div class="main-content">
+        <div class="main-content content">
             <!-- Display session messages if any -->
             <?php include('message.php'); ?>
             <br>

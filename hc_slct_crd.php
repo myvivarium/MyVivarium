@@ -120,28 +120,36 @@ require 'header.php';
 </head>
 
 <body>
-    <div class="container mt-4">
-        <h4>Select Holding Cages for Printing</h4>
-        <form>
-            <div class="mb-3">
-                <label for="cageIds" class="form-label">Select Cage IDs (up to 4):</label>
+    <br>
+    <br>
+    <div class="content">
+        <br>
+        <br>
+        <div class="container">
+            <h4>Select Holding Cages for Printing</h4>
+            <br>
+            <form>
+                <div class="mb-3">
+                    <label for="cageIds" class="form-label">Select Cage IDs (up to 4):</label>
+                    <br>
+                    <!-- Multi-select dropdown for selecting cage IDs -->
+                    <select id="cageIds" name="id[]" class="form-select" multiple size="10">
+                        <?php foreach ($cageIds as $cageId) : ?>
+                            <option value="<?= htmlspecialchars($cageId) ?>"><?= htmlspecialchars($cageId) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
                 <br>
-                <!-- Multi-select dropdown for selecting cage IDs -->
-                <select id="cageIds" name="id[]" class="form-select" multiple size="10">
-                    <?php foreach ($cageIds as $cageId) : ?>
-                        <option value="<?= htmlspecialchars($cageId) ?>"><?= htmlspecialchars($cageId) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="btn-container">
-                <!-- Button to print cage cards -->
-                <button type="submit" class="btn btn-primary btn-print" onclick="handleSubmit(event, 'hc_prnt_crd.php')">Print Cage Card</button>
-                <!-- Button to go back to the previous page -->
-                <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
-            </div>
-        </form>
+                <div class="btn-container">
+                    <!-- Button to print cage cards -->
+                    <button type="submit" class="btn btn-primary btn-print" onclick="handleSubmit(event, 'hc_prnt_crd.php')">Print Cage Card</button>
+                    <!-- Button to go back to the previous page -->
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
+                </div>
+            </form>
+        </div>
     </div>
-
+    <br>
     <!-- Include the footer file -->
     <?php include 'footer.php'; ?>
 </body>

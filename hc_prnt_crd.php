@@ -34,12 +34,6 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     $url = $row['url'];
 }
 
-// Check if the user is not logged in, redirect them to index.php
-if (!isset($_SESSION['name'])) {
-    header("Location: index.php");
-    exit;
-}
-
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
     $ids = explode(',', $_GET['id']); // Split the ID parameter into an array of IDs
@@ -47,12 +41,37 @@ if (isset($_GET['id'])) {
 
     foreach ($ids as $id) {
         // Fetch the holding cage record with the specified ID
-        $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
+        $query = "SELECT hc.*, pi.name AS pi_name 
+        FROM hc_basic hc 
+        JOIN users pi ON hc.pi_name = pi.id 
+        WHERE hc.cage_id = '$id'";
         $result = mysqli_query($con, $query);
 
         // If a valid record is found, add it to the holdingcages array
         if (mysqli_num_rows($result) === 1) {
             $holdingcages[] = mysqli_fetch_assoc($result);
+
+            // Explode the user IDs if they are comma-separated
+            $userIds = array_map('intval', explode(',', $holdingcages['user']));
+
+            // Fetch the user initials based on IDs
+            $userInitials = getUserInitialsByIds($con, $userIds);
+
+            // Prepare a string to display user initials
+            $userDisplay = [];
+            foreach ($userIds as $userId) {
+                if (isset($userInitials[$userId])) {
+                    $userDisplay[] = $userInitials[$userId];
+                } else {
+                    $userDisplay[] = htmlspecialchars($userId); // Fallback if ID not found
+                }
+            }
+            $userDisplayString = implode(', ', $userDisplay);
+
+            // Store user initials display string
+            $holdingcages['user_initials'] = $userDisplayString;
+            $holdingcages[] = $holdingcages;
+
         } else {
             // Set an error message for an invalid ID and redirect to the dashboard
             $_SESSION['message'] = "Invalid ID: $id";
@@ -157,7 +176,7 @@ if (isset($_GET['id'])) {
                         <tr>
                             <td style="width:40%;">
                                 <span style="font-weight: bold; padding:3px; text-transform: uppercase;">PI Name:</span>
-                                <span><?= $holdingcage["pi_name"] ?></span>
+                                <span><?= htmlspecialchars($holdingcage["pi_name"]); ?></span>
                             </td>
                             <td style="width:40%;">
                                 <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Strain:</span>
@@ -174,7 +193,7 @@ if (isset($_GET['id'])) {
                             </td>
                             <td style="width:40%;">
                                 <span style="font-weight: bold; padding:3px; text-transform: uppercase;">User:</span>
-                                <span><?= $holdingcage["user"] ?></span>
+                                <span><?= $holdingcage['user_initials']; ?></span>
                             </td>
                         </tr>
                         <tr>

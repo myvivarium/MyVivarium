@@ -30,6 +30,38 @@ if (isset($_GET['id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'true')
     // Start a transaction
     mysqli_begin_transaction($con);
 
+    // Fetch the logged-in user's ID and role from the session
+    $currentUserId = $_SESSION['user_id']; // Assuming user ID is stored in session
+    $userRole = $_SESSION['role']; // Assuming user role is stored in session
+
+    // Fetch the cage record to check for user assignment
+    $cageQuery = "SELECT `user` FROM hc_basic WHERE `cage_id` = ?";
+    if ($stmt = mysqli_prepare($con, $cageQuery)) {
+        mysqli_stmt_bind_param($stmt, "s", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $cage = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+
+        if (!$cage) {
+            $_SESSION['message'] = 'Cage not found.';
+            header("Location: hc_dash.php");
+            exit();
+        }
+    } else {
+        $_SESSION['message'] = 'Error retrieving cage data.';
+        header("Location: hc_dash.php");
+        exit();
+    }
+
+    // Check if the user is either an admin or assigned to the cage
+    $cageUsers = explode(',', $cage['user']); // Array of user IDs associated with the cage
+    if ($userRole !== 'admin' && !in_array($currentUserId, $cageUsers)) {
+        $_SESSION['message'] = 'Access denied. Only the assigned user or an admin can delete this cage.';
+        header("Location: hc_dash.php");
+        exit();
+    }
+
     try {
         // Prepare the SQL delete query for the hc_basic table
         $deleteQuery = "DELETE FROM hc_basic WHERE `cage_id` = ?";
@@ -76,7 +108,6 @@ if (isset($_GET['id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'true')
     // Redirect to the dashboard page
     header("Location: hc_dash.php");
     exit();
-
 } else {
 
     // Set an error message if deletion is not confirmed or ID is missing
@@ -84,5 +115,4 @@ if (isset($_GET['id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'true')
     // Redirect to the dashboard page
     header("Location: hc_dash.php");
     exit();
-
 }

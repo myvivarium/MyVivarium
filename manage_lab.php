@@ -166,7 +166,7 @@ require 'header.php';
 </head>
 
 <body>
-    <div class="container">
+    <div class="container content">
         <h2>Manage Lab</h2>
         <!-- Form for updating lab information -->
         <form method="POST" action="">

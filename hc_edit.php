@@ -19,6 +19,10 @@ require 'dbcon.php';
 // Regenerate session ID to prevent session fixation
 session_regenerate_id(true);
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
     $currentUrl = urlencode($_SERVER['REQUEST_URI']);
@@ -31,20 +35,23 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Query to retrieve users with initials and names
+$userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
+$userResult = $con->query($userQuery);
 
-// Query to retrieve options where role is 'PI' (Principal Investigator)
-$query1 = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
+// Query to retrieve options where role is 'Principal Investigator'
+$query1 = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result1 = $con->query($query1);
 
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Fetch the holding cage record with the specified ID
-    $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
+    // Fetch the holding cage record with the specified ID including PI name details
+    $query = "SELECT hc.*, pi.initials AS pi_initials, pi.name AS pi_full_name 
+                FROM hc_basic hc 
+                LEFT JOIN users pi ON hc.pi_name = pi.id 
+                WHERE hc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
     // Fetch associated files for the holding cage
@@ -54,6 +61,41 @@ if (isset($_GET['id'])) {
     // Check if the holding cage record exists
     if (mysqli_num_rows($result) === 1) {
         $holdingcage = mysqli_fetch_assoc($result);
+
+        // If PI name is null, re-query the hc_basic table without the join
+        if (is_null($holdingcage['pi_name'])) {
+            $queryBasic = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
+            $resultBasic = mysqli_query($con, $queryBasic);
+
+            if (mysqli_num_rows($resultBasic) === 1) {
+                $holdingcage = mysqli_fetch_assoc($resultBasic);
+                $holdingcage['pi_initials'] = 'NA'; // Set empty initials
+                $holdingcage['pi_name'] = 'NA'; // Set empty PI name
+            } else {
+                // If the re-query also fails, set an error message and redirect to the dashboard
+                $_SESSION['message'] = 'Error fetching the cage details.';
+                header("Location: hc_dash.php");
+                exit();
+            }
+        }
+
+        // Fetch currently selected users and explode them into an array
+        $selectedUsers = explode(',', $holdingcage['user']);
+
+        // Check if the logged-in user is the owner or an admin
+        $currentUserId = $_SESSION['user_id']; // User ID from session
+        $userRole = $_SESSION['role']; // User role from session
+        $cageUsers = explode(',', $holdingcage['user']); // Array of user IDs associated with the cage
+
+        // Check if the user is either an admin or one of the users associated with the cage
+        if ($userRole !== 'admin' && !in_array($currentUserId, $cageUsers)) {
+            $_SESSION['message'] = 'Access denied. Only the admin or the assigned user can edit.';
+            header("Location: hc_dash.php");
+            exit();
+        }
+
+        // Fetch currently selected PI
+        $selectedPiId = $holdingcage['pi_name'];
 
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -68,7 +110,9 @@ if (isset($_GET['id'])) {
             $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
             $strain = mysqli_real_escape_string($con, $_POST['strain']);
             $iacuc = mysqli_real_escape_string($con, $_POST['iacuc']);
-            $user = mysqli_real_escape_string($con, $_POST['user']);
+            $user = isset($_POST['user']) ? implode(',', array_map(function ($user_id) use ($con) {
+                return mysqli_real_escape_string($con, trim($user_id));
+            }, $_POST['user'])) : '';
             $qty = mysqli_real_escape_string($con, $_POST['qty']);
             $dob = mysqli_real_escape_string($con, $_POST['dob']);
             $sex = mysqli_real_escape_string($con, $_POST['sex']);
@@ -218,6 +262,27 @@ if (isset($_GET['id'])) {
     exit();
 }
 
+function getUserDetailsByIds($con, $userIds)
+{
+    $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+    $query = "SELECT id, initials, name FROM users WHERE id IN ($placeholders)";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $userDetails = [];
+    while ($row = $result->fetch_assoc()) {
+        $userDetails[$row['id']] = htmlspecialchars($row['initials'] . ' [' . $row['name'] . ']');
+    }
+    $stmt->close();
+    return $userDetails;
+}
+
+// Fetch currently selected PI details
+$piDetails = getUserDetailsByIds($con, [$selectedPiId]);
+$piDisplay = isset($piDetails[$selectedPiId]) ? $piDetails[$selectedPiId] : 'Unknown PI';
+
+
 // Include the header file
 require 'header.php';
 ?>
@@ -227,17 +292,70 @@ require 'header.php';
 
 <head>
     <title>Edit Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
+
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Include Select2 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+
     <style>
         .container {
             max-width: 800px;
             background-color: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
-            margin: auto;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .form-label {
             font-weight: bold;
+        }
+
+        .btn-primary {
+            margin-right: 10px;
+        }
+
+        .table-wrapper {
+            margin-bottom: 50px;
+            overflow-x: auto;
+        }
+
+        .table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-wrapper th,
+        .table-wrapper td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .btn-icon i {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .fixed-width th,
+        .fixed-width td {
+            width: 30%;
+        }
+
+        .fixed-width th:nth-child(2),
+        .fixed-width td:nth-child(2) {
+            width: 70%;
         }
 
         .required-asterisk {
@@ -248,7 +366,17 @@ require 'header.php';
             color: #dc3545;
             font-size: 14px;
         }
+
+        @media (max-width: 768px) {
+
+            .table-wrapper th,
+            .table-wrapper td {
+                padding: 12px 8px;
+                text-align: center;
+            }
+        }
     </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Function to get today's date in YYYY-MM-DD format
@@ -338,14 +466,33 @@ require 'header.php';
                 }
             });
         });
+
+        $(document).ready(function() {
+            $('#user').select2({
+                placeholder: "Select User(s)",
+                allowClear: true
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                const piSelect = document.getElementById('pi_name');
+                const selectedPiText = piSelect.options[piSelect.selectedIndex].text;
+
+                // Check if "Unknown PI" is selected
+                if (selectedPiText.includes('Unknown PI')) {
+                    event.preventDefault(); // Prevent form submission
+                    alert('Cannot proceed with "Unknown PI". Please select a valid PI.');
+                }
+            });
+        });
     </script>
 
 </head>
 
 <body>
-    <div class="container mt-4" style="max-width: 800px; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
-
-        <?php include('message.php'); ?> <!-- Include the message file -->
+    <div class="container content mt-4">
 
         <div class="row">
             <div class="col-md-12">
@@ -369,16 +516,18 @@ require 'header.php';
                             <div class="mb-3">
                                 <label for="pi_name" class="form-label">PI Name <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="pi_name" name="pi_name" required>
-                                    <option value="<?= htmlspecialchars($holdingcage['pi_name']); ?>" selected>
-                                        <?= htmlspecialchars($holdingcage['pi_name']); ?>
+                                    <!-- Display the currently selected PI, with the option to disable if "Unknown PI" -->
+                                    <option value="<?= htmlspecialchars($selectedPiId); ?>" <?= ($piDisplay === 'Unknown PI') ? 'disabled' : '' ?> selected>
+                                        <?= htmlspecialchars($piDisplay); ?>
                                     </option>
-                                    <?php
-                                    while ($row = $result1->fetch_assoc()) {
-                                        if ($row['name'] != $holdingcage['pi_name']) {
-                                            echo "<option value='" . htmlspecialchars($row['name']) . "'>" . htmlspecialchars($row['name']) . "</option>";
-                                        }
-                                    }
-                                    ?>
+                                    <!-- Iterate through the PI options, skipping the selected one -->
+                                    <?php while ($row = $result1->fetch_assoc()) : ?>
+                                        <?php if ($row['id'] !== $selectedPiId) : ?>
+                                            <option value="<?= htmlspecialchars($row['id']); ?>">
+                                                <?= htmlspecialchars($row['initials']) . ' [' . htmlspecialchars($row['name']) . ']'; ?>
+                                            </option>
+                                        <?php endif; ?>
+                                    <?php endwhile; ?>
                                 </select>
                             </div>
 
@@ -394,7 +543,18 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>
-                                <input type="text" class="form-control" id="user" name="user" value="<?= htmlspecialchars($holdingcage['user']); ?>" required>
+                                <select class="form-control" id="user" name="user[]" multiple required>
+                                    <?php
+                                    // Populate the dropdown with options from the database
+                                    while ($userRow = $userResult->fetch_assoc()) {
+                                        $user_id = htmlspecialchars($userRow['id']);
+                                        $initials = htmlspecialchars($userRow['initials']);
+                                        $name = htmlspecialchars($userRow['name']);
+                                        $selected = in_array($user_id, $selectedUsers) ? 'selected' : '';
+                                        echo "<option value='$user_id' $selected>$initials [$name]</option>";
+                                    }
+                                    ?>
+                                </select>
                             </div>
 
                             <div class="mb-3">

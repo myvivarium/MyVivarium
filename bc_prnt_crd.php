@@ -17,17 +17,20 @@ session_start();
 // Include the database connection file
 require 'dbcon.php';
 
-// Fetch lab data (URL) for generating QR codes
-$labQuery = "SELECT * FROM data LIMIT 1";
-$labResult = mysqli_query($con, $labQuery);
-if ($row = mysqli_fetch_assoc($labResult)) {
-    $url = $row['url']; // Store the lab URL
+// Check if the user is logged in
+if (!isset($_SESSION['username'])) {
+    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: index.php?redirect=$currentUrl");
+    exit; // Exit to ensure no further code is executed
 }
 
-// Check if the user is not logged in, redirect them to index.php
-if (!isset($_SESSION['name'])) {
-    header("Location: index.php");
-    exit;
+// Query to get lab data (URL)
+$labQuery = "SELECT * FROM data LIMIT 1";
+$labResult = mysqli_query($con, $labQuery);
+
+// Fetch the URL from the lab data
+if ($row = mysqli_fetch_assoc($labResult)) {
+    $url = $row['url'];
 }
 
 // Check if the ID parameter is set in the URL

@@ -45,6 +45,7 @@ $piResult = $con->query($piQuery);
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     // Validate CSRF token
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die('CSRF token validation failed');
@@ -349,7 +350,8 @@ require 'header.php';
 
 <body>
 
-    <div class="container mt-4">
+    <div class="container content mt-4">
+
         <h4>Add New Breeding Cage</h4>
 
         <?php include('message.php'); ?>

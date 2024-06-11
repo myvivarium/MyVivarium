@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Fetch Holding Cage Data Script
+ * Holding Cage Pagination and Search Script
  * 
  * This script handles fetching and displaying holding cage data with pagination and search functionality. 
  * It generates JSON output containing the table rows and pagination links, which can be dynamically 
@@ -16,6 +16,10 @@ session_start();
 
 // Include the database connection file
 require 'dbcon.php';
+
+// Fetch user role and ID from session
+$userRole = $_SESSION['role'];
+$currentUserId = $_SESSION['user_id'];
 
 // Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
@@ -49,11 +53,12 @@ $result = mysqli_query($con, $query); // Execute the query with pagination
 // Generate the table rows
 $tableRows = '';
 while ($row = mysqli_fetch_assoc($result)) {
-    $cageID = $row['cage_id'];
+    $cageID = $row['cage_id']; // Get the cage ID
     $query = "SELECT * FROM hc_basic WHERE `cage_id` = '$cageID'"; // Fetch all records for the current cage ID
-    $cageResult = mysqli_query($con, $query);
-    $numRows = mysqli_num_rows($cageResult);
-    $firstRow = true;
+    $cageResult = mysqli_query($con, $query); // Execute the query
+    $numRows = mysqli_num_rows($cageResult); // Get the number of rows for the cage ID
+    $firstRow = true; // Flag to check if it is the first row for the cage ID
+
     while ($holdingcage = mysqli_fetch_assoc($cageResult)) {
         $tableRows .= '<tr>';
         if ($firstRow) {
@@ -61,10 +66,13 @@ while ($row = mysqli_fetch_assoc($result)) {
             $firstRow = false;
         }
         $tableRows .= '<td class="action-icons" style="width: 50%; white-space: nowrap;">
-                        <a href="hc_view.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="View Cage"><i class="fas fa-eye"></i></a>
-                        <a href="hc_edit.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-secondary btn-sm btn-icon"><i class="fas fa-edit" data-toggle="tooltip" data-placement="top" title="Edit Cage"></i></a>';
-        if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-            $tableRows .= '<a href="#" onclick="confirmDeletion(\'' . htmlspecialchars($holdingcage['cage_id']) . '\')" class="btn btn-danger btn-sm btn-icon"><i class="fas fa-trash" data-toggle="tooltip" data-placement="top" title="Delete Cage"></i></a>';
+                        <a href="hc_view.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="View Cage"><i class="fas fa-eye"></i></a>';
+                        
+        // Check if the user is an admin or assigned to this cage
+        $assignedUsers = explode(',', $holdingcage['user']);
+        if ($userRole === 'admin' || in_array($currentUserId, $assignedUsers)) {
+            $tableRows .= '<a href="hc_edit.php?id=' . rawurlencode($holdingcage['cage_id']) . '" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage"><i class="fas fa-edit"></i></a>
+                           <a href="#" onclick="confirmDeletion(\'' . htmlspecialchars($holdingcage['cage_id']) . '\')" class="btn btn-danger btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Cage"><i class="fas fa-trash"></i></a>';
         }
         $tableRows .= '</td></tr>';
     }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * View Breeding Cage Details
+ * View Breeding Cage 
  *
  * This script displays detailed information about a specific breeding cage identified by its cage ID.
  * It retrieves data from the database, including basic information, associated files, and litter details.
@@ -27,6 +27,15 @@ if (!isset($_SESSION['username'])) {
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+// Query to get lab data (URL)
+$labQuery = "SELECT * FROM data LIMIT 1";
+$labResult = mysqli_query($con, $labQuery);
+
+// Fetch the URL from the lab data
+if ($row = mysqli_fetch_assoc($labResult)) {
+    $url = $row['url'];
+}
 
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
@@ -127,7 +136,7 @@ require 'header.php';
         // Function to display a QR code popup for the cage
         function showQrCodePopup(cageId) {
             var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
-            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://myvivarium.online/bc_view.php?id=' + cageId;
+            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://' + $url + '/bc_view.php?id=' + cageId;
             var htmlContent = `
             <html>
             <head>
@@ -155,6 +164,11 @@ require 'header.php';
     </script>
 
     <style>
+                body {
+            background: none !important;
+            background-color: transparent !important;
+        }
+        
         .container {
             max-width: 800px;
             background-color: #f8f9fa;
@@ -255,7 +269,7 @@ require 'header.php';
 
 <body>
 
-    <div class="container mt-4">
+    <div class="container content mt-4">
         <div class="card">
             <div class="card-header">
                 <h4>View Breeding Cage <?= htmlspecialchars($breedingcage['cage_id']); ?></h4>
