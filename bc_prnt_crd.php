@@ -55,6 +55,39 @@ if (isset($_GET['id'])) {
             // Store the breeding cage and its litters
             $breedingcage['litters'] = $litters;
             $breedingcages[] = $breedingcage;
+
+            function getUserDetailsByIds($con, $userIds)
+            {
+                $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+                $query = "SELECT id, initials, name FROM users WHERE id IN ($placeholders)";
+                $stmt = $con->prepare($query);
+                $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $userDetails = [];
+                while ($row = $result->fetch_assoc()) {
+                    $userDetails[$row['id']] = htmlspecialchars($row['initials']);
+                }
+                $stmt->close();
+                return $userDetails;
+            }
+
+            // Explode the user IDs if they are comma-separated
+            $userIds = array_map('intval', explode(',', $breedingcage['user']));
+
+            // Fetch the user details based on IDs
+            $userDetails = getUserDetailsByIds($con, $userIds);
+
+            // Prepare a string to display user details
+            $userDisplay = [];
+            foreach ($userIds as $userId) {
+                if (isset($userDetails[$userId])) {
+                    $userDisplay[] = $userDetails[$userId];
+                } else {
+                    $userDisplay[] = htmlspecialchars($userId);
+                }
+            }
+            $userDisplayString = implode(', ', $userDisplay);
         } else {
             // Set an error message and redirect if the ID is invalid
             $_SESSION['message'] = "Invalid ID: $id";
@@ -68,6 +101,7 @@ if (isset($_GET['id'])) {
     header("Location: bc_dash.php");
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -170,7 +204,7 @@ if (isset($_GET['id'])) {
                             </td>
                             <td style="width:40%;">
                                 <span style="font-weight: bold; padding:3px; text-transform: uppercase;">User:</span>
-                                <span><?= $breedingcage["user"] ?></span>
+                                <span><?= $userDisplayString; ?></span>
                             </td>
                         </tr>
                         <tr>
