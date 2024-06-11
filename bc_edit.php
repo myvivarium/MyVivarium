@@ -38,7 +38,7 @@ $userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
 $userResult = $con->query($userQuery);
 
 // Query to retrieve options where role is 'Principal Investigator'
-$query1 = "SELECT id, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
+$query1 = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result1 = $con->query($query1);
 
 // Check if the ID parameter is set in the URL
@@ -528,12 +528,12 @@ require 'header.php';
                             <div class="mb-3">
                                 <label for="pi_name" class="form-label">PI Name <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="pi_name" name="pi_name" required>
-                                    <option value="<?= htmlspecialchars($breedingcage['id']); ?>" selected>
+                                    <option value="<?= htmlspecialchars($breedingcage['pi_name']); ?>" selected>
                                         <?= htmlspecialchars($breedingcage['pi_name']); ?>
                                     </option>
                                     <?php while ($row = $result1->fetch_assoc()) : ?>
                                         <?php if ($row['name'] != $breedingcage['pi_name']) : ?>
-                                            <option value="<?= htmlspecialchars($row['id']); ?>"><?= htmlspecialchars($row['name']); ?></option>
+                                            <option value="<?= htmlspecialchars($row['name']); ?>"><?= htmlspecialchars($row['name']); ?></option>
                                         <?php endif; ?>
                                     <?php endwhile; ?>
                                 </select>

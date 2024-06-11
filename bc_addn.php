@@ -39,8 +39,9 @@ $userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
 $userResult = $con->query($userQuery);
 
 // Query to retrieve options where role is 'Principal Investigator'
-$query = "SELECT id, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
-$result = $con->query($query);
+$piQuery = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
+$piResult = $con->query($piQuery);
+
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -338,11 +339,11 @@ require 'header.php';
         });
 
         $(document).ready(function() {
-        $('#user').select2({
-            placeholder: "Select User(s)",
-            allowClear: true
+            $('#user').select2({
+                placeholder: "Select User(s)",
+                allowClear: true
+            });
         });
-    });
     </script>
 </head>
 
@@ -371,8 +372,11 @@ require 'header.php';
                     <option value="" disabled selected>Select PI</option>
                     <?php
                     // Populate dropdown with options from the database
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value='" . htmlspecialchars($row['id']) . "'>" . htmlspecialchars($row['name']) . "</option>";
+                    while ($row = $piResult->fetch_assoc()) {
+                        $pi_id = htmlspecialchars($row['id']);
+                        $pi_initials = htmlspecialchars($row['initials']);
+                        $pi_name = htmlspecialchars($row['name']);
+                        echo "<option value='$pi_id'>$pi_initials [$pi_name]</option>";
                     }
                     ?>
                 </select>
