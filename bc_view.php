@@ -69,7 +69,7 @@ function getUserDetailsByIds($con, $userIds) {
     $result = $stmt->get_result();
     $userDetails = [];
     while ($row = $result->fetch_assoc()) {
-        $userDetails[$row['id']] = htmlspecialchars($row['initials'] . ' ! ' . $row['name']);
+        $userDetails[$row['id']] = htmlspecialchars($row['initials'] . ' [' . $row['name'] . ']' );
     }
     $stmt->close();
     return $userDetails;
