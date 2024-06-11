@@ -144,6 +144,13 @@ require 'header.php';
 
 <head>
     <title>Add New Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
+
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Include Select2 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+
     <style>
         .container {
             max-width: 800px;
@@ -329,6 +336,13 @@ require 'header.php';
                 }
             });
         });
+
+        $(document).ready(function() {
+        $('#user').select2({
+            placeholder: "Select User(s)",
+            allowClear: true
+        });
+    });
     </script>
 </head>
 
@@ -377,7 +391,6 @@ require 'header.php';
             <div class="mb-3">
                 <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>
                 <select class="form-control" id="user" name="user[]" multiple required>
-                    <option value="" disabled>Select User(s)</option>
                     <?php
                     // Populate the dropdown with options from the database
                     while ($userRow = $userResult->fetch_assoc()) {
@@ -388,7 +401,6 @@ require 'header.php';
                     ?>
                 </select>
             </div>
-
 
             <div class="mb-3">
                 <label for="male_id" class="form-label">Male ID <span class="required-asterisk">*</span></label>
