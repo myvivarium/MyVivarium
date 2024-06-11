@@ -396,7 +396,7 @@ require 'header.php';
                     while ($userRow = $userResult->fetch_assoc()) {
                         $initials = htmlspecialchars($userRow['initials']);
                         $name = htmlspecialchars($userRow['name']);
-                        echo "<option value='$initials'>$initials | $name</option>";
+                        echo "<option value='$initials'>$initials [$name]</option>";
                     }
                     ?>
                 </select>

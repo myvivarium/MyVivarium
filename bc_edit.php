@@ -558,7 +558,7 @@ require 'header.php';
                                         $initials = htmlspecialchars($userRow['initials']);
                                         $name = htmlspecialchars($userRow['name']);
                                         $selected = in_array($initials, $selectedUsers) ? 'selected' : '';
-                                        echo "<option value='$initials' $selected>$initials | $name</option>";
+                                        echo "<option value='$initials' $selected>$initials [$name]</option>";
                                     }
                                     ?>
                                 </select>

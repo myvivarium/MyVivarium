@@ -86,7 +86,7 @@ $userDisplay = [];
 foreach ($userInitials as $initial) {
     $initial = trim($initial);
     if (isset($userNames[$initial])) {
-        $userDisplay[] = htmlspecialchars("$initial | " . $userNames[$initial]);
+        $userDisplay[] = htmlspecialchars("$initial [" . $userNames[$initial] . "]");
     } else {
         $userDisplay[] = htmlspecialchars($initial);
     }
