@@ -36,8 +36,11 @@ if (isset($_GET['id'])) {
     $breedingcages = []; // Initialize an array to store breeding cage data
 
     foreach ($ids as $id) {
-        // Fetch the breeding cage record with the specified ID
-        $query = "SELECT * FROM bc_basic WHERE `cage_id` = '$id'";
+        // Fetch the breeding cage record with the specified ID, including PI name details
+        $query = "SELECT bc.*, pi.name AS pi_name 
+        FROM bc_basic bc 
+        JOIN users pi ON bc.pi_name = pi.id 
+        WHERE bc.cage_id = '$id'";
         $result = mysqli_query($con, $query);
 
         if (mysqli_num_rows($result) === 1) {
@@ -187,7 +190,7 @@ function getUserInitialsByIds($con, $userIds) {
                         <tr>
                             <td style="width:40%;">
                                 <span style="font-weight: bold; padding:3px; text-transform: uppercase;">PI Name:</span>
-                                <span><?= $breedingcage["pi_name"] ?></span>
+                                <span><?= htmlspecialchars($breedingcage["pi_name"]); ?></span>
                             </td>
                             <td style="width:40%;">
                                 <span style="font-weight: bold; padding:3px; text-transform: uppercase;">Cross:</span>

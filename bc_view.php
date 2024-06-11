@@ -33,7 +33,10 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the breeding cage record with the specified ID
-    $query = "SELECT * FROM bc_basic WHERE `cage_id` = '$id'";
+    $query = "SELECT bc.*, pi.initials AS pi_initials, pi.name AS pi_name 
+    FROM bc_basic bc 
+    JOIN users pi ON bc.pi_name = pi.id 
+    WHERE bc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
     // Fetch files associated with the specified cage ID
@@ -262,7 +265,7 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>PI Name</th>
-                        <td><?= htmlspecialchars($breedingcage['pi_name']); ?></td>
+                        <td><?= htmlspecialchars($breedingcage['pi_initials'] . ' [' . $breedingcage['pi_name'] . ']'); ?></td>
                     </tr>
                     <tr>
                         <th>Cross</th>

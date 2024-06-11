@@ -38,15 +38,18 @@ $userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
 $userResult = $con->query($userQuery);
 
 // Query to retrieve options where role is 'Principal Investigator'
-$query1 = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
+$query1 = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result1 = $con->query($query1);
 
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Fetch the breeding cage record with the specified ID
-    $query = "SELECT * FROM bc_basic WHERE `cage_id` = '$id'";
+    // Fetch the breeding cage record with the specified ID including PI name details
+    $query = "SELECT bc.*, pi.initials AS pi_initials, pi.name AS pi_full_name 
+    FROM bc_basic bc 
+    JOIN users pi ON bc.pi_name = pi.id 
+    WHERE bc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
     // Fetch files associated with the specified cage ID
@@ -63,6 +66,9 @@ if (isset($_GET['id'])) {
 
         // Fetch currently selected users and explode them into an array
         $selectedUsers = explode(',', $breedingcage['user']);
+
+        // Fetch currently selected PI
+        $selectedPiId = $breedingcage['pi_name'];
 
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -215,6 +221,27 @@ if (isset($_GET['id'])) {
     header("Location: bc_dash.php");
     exit();
 }
+
+function getUserDetailsByIds($con, $userIds) {
+    $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+    $query = "SELECT id, initials, name FROM users WHERE id IN ($placeholders)";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $userDetails = [];
+    while ($row = $result->fetch_assoc()) {
+        $userDetails[$row['id']] = htmlspecialchars($row['initials'] . ' [' . $row['name'] . ']');
+    }
+    $stmt->close();
+    return $userDetails;
+}
+
+// Fetch currently selected PI details
+$piDetails = getUserDetailsByIds($con, [$selectedPiId]);
+$piDisplay = isset($piDetails[$selectedPiId]) ? $piDetails[$selectedPiId] : 'Unknown PI';
+
+
 
 // Include the header file
 require 'header.php';
@@ -528,13 +555,13 @@ require 'header.php';
                             <div class="mb-3">
                                 <label for="pi_name" class="form-label">PI Name <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="pi_name" name="pi_name" required>
-                                    <option value="<?= htmlspecialchars($breedingcage['pi_name']); ?>" selected>
-                                        <?= htmlspecialchars($breedingcage['pi_name']); ?>
+                                    <option value="<?= htmlspecialchars($selectedPiId); ?>" selected>
+                                        <?= $piDisplay; ?>
                                     </option>
                                     <?php while ($row = $result1->fetch_assoc()) : ?>
-                                        <?php if ($row['name'] != $breedingcage['pi_name']) : ?>
-                                            <option value="<?= htmlspecialchars($row['name']); ?>"><?= htmlspecialchars($row['name']); ?></option>
-                                        <?php endif; ?>
+                                        <option value="<?= htmlspecialchars($row['id']); ?>">
+                                            <?= htmlspecialchars($row['initials']) . ' [' . htmlspecialchars($row['name']) . ']'; ?>
+                                        </option>
                                     <?php endwhile; ?>
                                 </select>
                             </div>
