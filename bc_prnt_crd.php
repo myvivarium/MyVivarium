@@ -24,11 +24,10 @@ if ($row = mysqli_fetch_assoc($labResult)) {
     $url = $row['url']; // Store the lab URL
 }
 
-// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
-if (!isset($_SESSION['username'])) {
-    $currentUrl = urlencode($_SERVER['REQUEST_URI']);
-    header("Location: index.php?redirect=$currentUrl");
-    exit; // Exit to ensure no further code is executed
+// Check if the user is not logged in, redirect them to index.php
+if (!isset($_SESSION['name'])) {
+    header("Location: index.php");
+    exit;
 }
 
 // Check if the ID parameter is set in the URL
@@ -54,40 +53,26 @@ if (isset($_GET['id'])) {
 
             // Store the breeding cage and its litters
             $breedingcage['litters'] = $litters;
-            $breedingcages[] = $breedingcage;
-
-            function getUserDetailsByIds($con, $userIds)
-            {
-                $placeholders = implode(',', array_fill(0, count($userIds), '?'));
-                $query = "SELECT id, initials, name FROM users WHERE id IN ($placeholders)";
-                $stmt = $con->prepare($query);
-                $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $userDetails = [];
-                while ($row = $result->fetch_assoc()) {
-                    $userDetails[$row['id']] = htmlspecialchars($row['initials']);
-                }
-                $stmt->close();
-                return $userDetails;
-            }
 
             // Explode the user IDs if they are comma-separated
             $userIds = array_map('intval', explode(',', $breedingcage['user']));
 
-            // Fetch the user details based on IDs
-            $userDetails = getUserDetailsByIds($con, $userIds);
+            // Fetch the user initials based on IDs
+            $userInitials = getUserInitialsByIds($con, $userIds);
 
-            // Prepare a string to display user details
+            // Prepare a string to display user initials
             $userDisplay = [];
             foreach ($userIds as $userId) {
-                if (isset($userDetails[$userId])) {
-                    $userDisplay[] = $userDetails[$userId];
+                if (isset($userInitials[$userId])) {
+                    $userDisplay[] = $userInitials[$userId];
                 } else {
-                    $userDisplay[] = htmlspecialchars($userId);
+                    $userDisplay[] = htmlspecialchars($userId); // Fallback if ID not found
                 }
             }
             $userDisplayString = implode(', ', $userDisplay);
+
+            $breedingcage['user_initials'] = $userDisplayString;
+            $breedingcages[] = $breedingcage;
         } else {
             // Set an error message and redirect if the ID is invalid
             $_SESSION['message'] = "Invalid ID: $id";
@@ -102,6 +87,20 @@ if (isset($_GET['id'])) {
     exit();
 }
 
+function getUserInitialsByIds($con, $userIds) {
+    $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+    $query = "SELECT id, initials FROM users WHERE id IN ($placeholders)";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $userInitials = [];
+    while ($row = $result->fetch_assoc()) {
+        $userInitials[$row['id']] = htmlspecialchars($row['initials']);
+    }
+    $stmt->close();
+    return $userInitials;
+}
 ?>
 
 <!DOCTYPE html>
