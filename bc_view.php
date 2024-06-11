@@ -60,6 +60,39 @@ if (isset($_GET['id'])) {
     exit();
 }
 
+function getUserNamesByInitials($con, $initials) {
+    $placeholders = implode(',', array_fill(0, count($initials), '?'));
+    $query = "SELECT initials, name FROM users WHERE initials IN ($placeholders)";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param(str_repeat('s', count($initials)), ...$initials);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $userNames = [];
+    while ($row = $result->fetch_assoc()) {
+        $userNames[$row['initials']] = $row['name'];
+    }
+    $stmt->close();
+    return $userNames;
+}
+
+// Explode the user initials if they are comma-separated
+$userInitials = explode(',', $breedingcage['user']);
+
+// Fetch the user names based on initials
+$userNames = getUserNamesByInitials($con, $userInitials);
+
+// Prepare a string to display initials and names
+$userDisplay = [];
+foreach ($userInitials as $initial) {
+    $initial = trim($initial);
+    if (isset($userNames[$initial])) {
+        $userDisplay[] = htmlspecialchars("$initial | " . $userNames[$initial]);
+    } else {
+        $userDisplay[] = htmlspecialchars($initial);
+    }
+}
+$userDisplayString = implode(', ', $userDisplay);
+
 // Include the header file
 require 'header.php';
 ?>
@@ -242,7 +275,7 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>User</th>
-                        <td><?= htmlspecialchars($breedingcage['user']); ?></td>
+                        <td><?= $userDisplayString; ?></td>
                     </tr>
                     <tr>
                         <th>Male ID</th>
