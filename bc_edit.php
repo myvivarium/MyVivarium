@@ -76,8 +76,8 @@ if (isset($_GET['id'])) {
             $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
             $cross = mysqli_real_escape_string($con, $_POST['cross']);
             $iacuc = mysqli_real_escape_string($con, $_POST['iacuc']);
-            $user = isset($_POST['user']) ? implode(',', array_map(function ($initials) use ($con) {
-                return mysqli_real_escape_string($con, trim($initials));
+            $user = isset($_POST['user']) ? implode(',', array_map(function ($user_id) use ($con) {
+                return mysqli_real_escape_string($con, trim($user_id));
             }, $_POST['user'])) : '';
             $male_id = mysqli_real_escape_string($con, $_POST['male_id']);
             $female_id = mysqli_real_escape_string($con, $_POST['female_id']);
