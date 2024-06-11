@@ -60,35 +60,34 @@ if (isset($_GET['id'])) {
     exit();
 }
 
-function getUserNamesByInitials($con, $initials) {
-    $placeholders = implode(',', array_fill(0, count($initials), '?'));
-    $query = "SELECT initials, name FROM users WHERE initials IN ($placeholders)";
+function getUserDetailsByIds($con, $userIds) {
+    $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+    $query = "SELECT id, initials, name FROM users WHERE id IN ($placeholders)";
     $stmt = $con->prepare($query);
-    $stmt->bind_param(str_repeat('s', count($initials)), ...$initials);
+    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
     $stmt->execute();
     $result = $stmt->get_result();
-    $userNames = [];
+    $userDetails = [];
     while ($row = $result->fetch_assoc()) {
-        $userNames[$row['initials']] = $row['name'];
+        $userDetails[$row['id']] = htmlspecialchars($row['initials'] . ' ! ' . $row['name']);
     }
     $stmt->close();
-    return $userNames;
+    return $userDetails;
 }
 
-// Explode the user initials if they are comma-separated
-$userInitials = explode(',', $breedingcage['user']);
+// Explode the user IDs if they are comma-separated
+$userIds = array_map('intval', explode(',', $breedingcage['user']));
 
-// Fetch the user names based on initials
-$userNames = getUserNamesByInitials($con, $userInitials);
+// Fetch the user details based on IDs
+$userDetails = getUserDetailsByIds($con, $userIds);
 
-// Prepare a string to display initials and names
+// Prepare a string to display user details
 $userDisplay = [];
-foreach ($userInitials as $initial) {
-    $initial = trim($initial);
-    if (isset($userNames[$initial])) {
-        $userDisplay[] = htmlspecialchars("$initial [" . $userNames[$initial] . "]");
+foreach ($userIds as $userId) {
+    if (isset($userDetails[$userId])) {
+        $userDisplay[] = $userDetails[$userId];
     } else {
-        $userDisplay[] = htmlspecialchars($initial);
+        $userDisplay[] = htmlspecialchars($userId);
     }
 }
 $userDisplayString = implode(', ', $userDisplay);

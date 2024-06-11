@@ -555,10 +555,11 @@ require 'header.php';
                                     <?php
                                     // Populate the dropdown with options from the database
                                     while ($userRow = $userResult->fetch_assoc()) {
+                                        $user_id = htmlspecialchars($userRow['id']);
                                         $initials = htmlspecialchars($userRow['initials']);
                                         $name = htmlspecialchars($userRow['name']);
-                                        $selected = in_array($initials, $selectedUsers) ? 'selected' : '';
-                                        echo "<option value='$initials' $selected>$initials [$name]</option>";
+                                        $selected = in_array($user_id, $selectedUsers) ? 'selected' : '';
+                                        echo "<option value='$user_id' $selected>$initials [$name]</option>";
                                     }
                                     ?>
                                 </select>
