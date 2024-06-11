@@ -34,9 +34,9 @@ if (isset($_GET['id'])) {
 
     // Fetch the breeding cage record with the specified ID
     $query = "SELECT bc.*, pi.initials AS pi_initials, pi.name AS pi_name 
-    FROM bc_basic bc 
-    JOIN users pi ON bc.pi_name = pi.id 
-    WHERE bc.cage_id = '$id'";
+              FROM bc_basic bc 
+              LEFT JOIN users pi ON bc.pi_name = pi.id 
+              WHERE bc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
     // Fetch files associated with the specified cage ID
@@ -50,6 +50,23 @@ if (isset($_GET['id'])) {
     // Check if the breeding cage record exists
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
+
+        // If PI name is null, re-query the bc_basic table without the join
+        if (is_null($breedingcage['pi_name'])) {
+            $queryBasic = "SELECT * FROM bc_basic WHERE `cage_id` = '$id'";
+            $resultBasic = mysqli_query($con, $queryBasic);
+
+            if (mysqli_num_rows($resultBasic) === 1) {
+                $breedingcage = mysqli_fetch_assoc($resultBasic);
+                $breedingcage['pi_initials'] = 'NA'; // Set empty initials
+                $breedingcage['pi_name'] = 'NA'; // Set empty PI name
+            } else {
+                // If the re-query also fails, set an error message and redirect to the dashboard
+                $_SESSION['message'] = 'Error fetching the cage details.';
+                header("Location: bc_dash.php");
+                exit();
+            }
+        }
     } else {
         // If the record does not exist, set an error message and redirect to the dashboard
         $_SESSION['message'] = 'Invalid ID.';
@@ -63,7 +80,8 @@ if (isset($_GET['id'])) {
     exit();
 }
 
-function getUserDetailsByIds($con, $userIds) {
+function getUserDetailsByIds($con, $userIds)
+{
     $placeholders = implode(',', array_fill(0, count($userIds), '?'));
     $query = "SELECT id, initials, name FROM users WHERE id IN ($placeholders)";
     $stmt = $con->prepare($query);
@@ -72,7 +90,7 @@ function getUserDetailsByIds($con, $userIds) {
     $result = $stmt->get_result();
     $userDetails = [];
     while ($row = $result->fetch_assoc()) {
-        $userDetails[$row['id']] = htmlspecialchars($row['initials'] . ' [' . $row['name'] . ']' );
+        $userDetails[$row['id']] = htmlspecialchars($row['initials'] . ' [' . $row['name'] . ']');
     }
     $stmt->close();
     return $userDetails;

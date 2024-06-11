@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pups_dead = $_POST['pups_dead'];
                 $pups_male = $_POST['pups_male'];
                 $pups_female = $_POST['pups_female'];
-                $litter_remarks = $_POST['remarks'];
+                $litter_remarks = $_POST['remarks_litter'];
 
                 // Loop through each litter entry and insert into the database
                 for ($i = 0; $i < count($dom); $i++) {
@@ -229,8 +229,8 @@ require 'header.php';
                     <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
                 </div>
                 <div class="mb-3">
-                    <label for="remarks[]" class="form-label">Remarks</label>
-                    <textarea class="form-control" name="remarks[]" oninput="adjustTextareaHeight(this)"></textarea>
+                    <label for="remarks_litter[]" class="form-label">Remarks</label>
+                    <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
                 </div>
                 <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
             `;

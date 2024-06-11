@@ -47,9 +47,9 @@ if (isset($_GET['id'])) {
 
     // Fetch the breeding cage record with the specified ID including PI name details
     $query = "SELECT bc.*, pi.initials AS pi_initials, pi.name AS pi_full_name 
-    FROM bc_basic bc 
-    JOIN users pi ON bc.pi_name = pi.id 
-    WHERE bc.cage_id = '$id'";
+                FROM bc_basic bc 
+                LEFT JOIN users pi ON bc.pi_name = pi.id 
+                WHERE bc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
     // Fetch files associated with the specified cage ID
@@ -63,6 +63,23 @@ if (isset($_GET['id'])) {
     // Check if the breeding cage exists
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
+
+        // If PI name is null, re-query the bc_basic table without the join
+        if (is_null($breedingcage['pi_name'])) {
+            $queryBasic = "SELECT * FROM bc_basic WHERE `cage_id` = '$id'";
+            $resultBasic = mysqli_query($con, $queryBasic);
+
+            if (mysqli_num_rows($resultBasic) === 1) {
+                $breedingcage = mysqli_fetch_assoc($resultBasic);
+                $breedingcage['pi_initials'] = 'NA'; // Set empty initials
+                $breedingcage['pi_name'] = 'NA'; // Set empty PI name
+            } else {
+                // If the re-query also fails, set an error message and redirect to the dashboard
+                $_SESSION['message'] = 'Error fetching the cage details.';
+                header("Location: bc_dash.php");
+                exit();
+            }
+        }
 
         // Fetch currently selected users and explode them into an array
         $selectedUsers = explode(',', $breedingcage['user']);
@@ -445,6 +462,20 @@ require 'header.php';
                 allowClear: true
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(event) {
+            const piSelect = document.getElementById('pi_name');
+            const selectedPiText = piSelect.options[piSelect.selectedIndex].text;
+            
+            // Check if "Unknown PI" is selected
+            if (selectedPiText.includes('Unknown PI')) {
+                event.preventDefault(); // Prevent form submission
+                alert('Cannot proceed with "Unknown PI". Please select a valid PI.');
+            }
+        });
+    });
     </script>
 
     <title>Edit Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
@@ -568,8 +599,8 @@ require 'header.php';
                             <div class="mb-3">
                                 <label for="pi_name" class="form-label">PI Name <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="pi_name" name="pi_name" required>
-                                    <!-- Display the currently selected PI -->
-                                    <option value="<?= htmlspecialchars($selectedPiId); ?>" selected>
+                                    <!-- Display the currently selected PI, with the option to disable if "Unknown PI" -->
+                                    <option value="<?= htmlspecialchars($selectedPiId); ?>" <?= ($piDisplay === 'Unknown PI') ? 'disabled' : '' ?> selected>
                                         <?= htmlspecialchars($piDisplay); ?>
                                     </option>
                                     <!-- Iterate through the PI options, skipping the selected one -->
