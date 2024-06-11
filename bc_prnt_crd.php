@@ -71,6 +71,7 @@ if (isset($_GET['id'])) {
             }
             $userDisplayString = implode(', ', $userDisplay);
 
+            // Store user initials display string
             $breedingcage['user_initials'] = $userDisplayString;
             $breedingcages[] = $breedingcage;
         } else {
@@ -81,7 +82,7 @@ if (isset($_GET['id'])) {
         }
     }
 } else {
-    // Set an error message and redirect if the ID parameter is missing
+    // If the ID parameter is missing, set an error message and redirect to the dashboard
     $_SESSION['message'] = 'ID parameter is missing.';
     header("Location: bc_dash.php");
     exit();
@@ -203,7 +204,7 @@ function getUserInitialsByIds($con, $userIds) {
                             </td>
                             <td style="width:40%;">
                                 <span style="font-weight: bold; padding:3px; text-transform: uppercase;">User:</span>
-                                <span><?= $userDisplayString; ?></span>
+                                <span><?= $breedingcage['user_initials']; ?></span>
                             </td>
                         </tr>
                         <tr>
