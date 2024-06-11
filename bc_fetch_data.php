@@ -18,6 +18,10 @@ session_start();
 // Include the database connection
 require 'dbcon.php';
 
+// Fetch user role and ID from session
+$userRole = $_SESSION['role'];
+$currentUserId = $_SESSION['user_id'];
+
 // Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
     header("Location: index.php");
@@ -63,10 +67,13 @@ while ($row = mysqli_fetch_assoc($result)) {
             $firstRow = false; // Set the flag to false after the first row
         }
         $tableRows .= '<td class="action-icons" style="width: 50%; white-space: nowrap;">
-                        <a href="bc_view.php?id=' . rawurlencode($breedingcage['cage_id']) . '" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="View Cage"><i class="fas fa-eye"></i></a>
-                        <a href="bc_edit.php?id=' . rawurlencode($breedingcage['cage_id']) . '" class="btn btn-secondary btn-sm btn-icon"><i class="fas fa-edit" data-toggle="tooltip" data-placement="top" title="Edit Cage"></i></a>';
-        if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-            $tableRows .= '<a href="#" onclick="confirmDeletion(\'' . htmlspecialchars($breedingcage['cage_id']) . '\')" class="btn btn-danger btn-sm btn-icon"><i class="fas fa-trash" data-toggle="tooltip" data-placement="top" title="Delete Cage"></i></a>';
+                        <a href="bc_view.php?id=' . rawurlencode($breedingcage['cage_id']) . '" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="View Cage"><i class="fas fa-eye"></i></a>';
+                        
+        // Check if the user is an admin or assigned to this cage
+        $assignedUsers = explode(',', $breedingcage['user']);
+        if ($userRole === 'admin' || in_array($currentUserId, $assignedUsers)) {
+            $tableRows .= '<a href="bc_edit.php?id=' . rawurlencode($breedingcage['cage_id']) . '" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage"><i class="fas fa-edit"></i></a>
+                           <a href="#" onclick="confirmDeletion(\'' . htmlspecialchars($breedingcage['cage_id']) . '\')" class="btn btn-danger btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Cage"><i class="fas fa-trash"></i></a>';
         }
         $tableRows .= '</td></tr>';
     }

@@ -138,6 +138,7 @@ if (isset($_POST['login'])) {
                         $_SESSION['username'] = $row['username'];
                         $_SESSION['role'] = $row['role'];
                         $_SESSION['position'] = $row['position'];
+                        $_SESSION['user_id'] = $row['id'];
 
                         // Reset login attempts and unlock the account
                         $reset_attempts = "UPDATE users SET login_attempts = 0, account_locked = NULL WHERE username=?";

@@ -67,6 +67,18 @@ if (isset($_GET['id'])) {
         // Fetch currently selected users and explode them into an array
         $selectedUsers = explode(',', $breedingcage['user']);
 
+        // Check if the logged-in user is the owner or an admin
+        $currentUserId = $_SESSION['user_id']; // User ID from session
+        $userRole = $_SESSION['role']; // User role from session
+        $cageUsers = explode(',', $breedingcage['user']); // Array of user IDs associated with the cage
+
+        // Check if the user is either an admin or one of the users associated with the cage
+        if ($userRole !== 'admin' && !in_array($currentUserId, $cageUsers)) {
+            $_SESSION['message'] = 'Access denied. Only the admin or the assigned user can edit.';
+            header("Location: bc_dash.php");
+            exit();
+        }
+
         // Fetch currently selected PI
         $selectedPiId = $breedingcage['pi_name'];
 
@@ -222,7 +234,8 @@ if (isset($_GET['id'])) {
     exit();
 }
 
-function getUserDetailsByIds($con, $userIds) {
+function getUserDetailsByIds($con, $userIds)
+{
     $placeholders = implode(',', array_fill(0, count($userIds), '?'));
     $query = "SELECT id, initials, name FROM users WHERE id IN ($placeholders)";
     $stmt = $con->prepare($query);
@@ -555,13 +568,17 @@ require 'header.php';
                             <div class="mb-3">
                                 <label for="pi_name" class="form-label">PI Name <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="pi_name" name="pi_name" required>
+                                    <!-- Display the currently selected PI -->
                                     <option value="<?= htmlspecialchars($selectedPiId); ?>" selected>
-                                        <?= $piDisplay; ?>
+                                        <?= htmlspecialchars($piDisplay); ?>
                                     </option>
+                                    <!-- Iterate through the PI options, skipping the selected one -->
                                     <?php while ($row = $result1->fetch_assoc()) : ?>
-                                        <option value="<?= htmlspecialchars($row['id']); ?>">
-                                            <?= htmlspecialchars($row['initials']) . ' [' . htmlspecialchars($row['name']) . ']'; ?>
-                                        </option>
+                                        <?php if ($row['id'] !== $selectedPiId) : ?>
+                                            <option value="<?= htmlspecialchars($row['id']); ?>">
+                                                <?= htmlspecialchars($row['initials']) . ' [' . htmlspecialchars($row['name']) . ']'; ?>
+                                            </option>
+                                        <?php endif; ?>
                                     <?php endwhile; ?>
                                 </select>
                             </div>
