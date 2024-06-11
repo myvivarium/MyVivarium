@@ -34,7 +34,7 @@ if (empty($_SESSION['csrf_token'])) {
 }
 
 // Query to retrieve users with initials and names
-$userQuery = "SELECT initials, name FROM users WHERE status = 'approved'";
+$userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
 $userResult = $con->query($userQuery);
 
 // Query to retrieve options where role is 'Principal Investigator'
