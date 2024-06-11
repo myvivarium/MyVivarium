@@ -39,7 +39,7 @@ $userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
 $userResult = $con->query($userQuery);
 
 // Query to retrieve options where role is 'Principal Investigator'
-$query = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
+$query = "SELECT id, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result = $con->query($query);
 
 // Check if the form is submitted
@@ -372,7 +372,7 @@ require 'header.php';
                     <?php
                     // Populate dropdown with options from the database
                     while ($row = $result->fetch_assoc()) {
-                        echo "<option value='" . htmlspecialchars($row['name']) . "'>" . htmlspecialchars($row['name']) . "</option>";
+                        echo "<option value='" . htmlspecialchars($row['id']) . "'>" . htmlspecialchars($row['name']) . "</option>";
                     }
                     ?>
                 </select>
