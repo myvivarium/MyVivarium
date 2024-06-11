@@ -33,6 +33,10 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// Query to retrieve users with initials and names
+$userQuery = "SELECT initials, name FROM users WHERE status = 'approved'";
+$userResult = $con->query($userQuery);
+
 // Query to retrieve options where role is 'Principal Investigator'
 $query1 = "SELECT name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result1 = $con->query($query1);
@@ -57,6 +61,9 @@ if (isset($_GET['id'])) {
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
 
+        // Fetch currently selected users and explode them into an array
+        $selectedUsers = explode(',', $breedingcage['user']);
+
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Validate CSRF token
@@ -69,7 +76,9 @@ if (isset($_GET['id'])) {
             $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
             $cross = mysqli_real_escape_string($con, $_POST['cross']);
             $iacuc = mysqli_real_escape_string($con, $_POST['iacuc']);
-            $user = mysqli_real_escape_string($con, $_POST['user']);
+            $user = isset($_POST['user']) ? implode(',', array_map(function ($initials) use ($con) {
+                return mysqli_real_escape_string($con, trim($initials));
+            }, $_POST['user'])) : '';
             $male_id = mysqli_real_escape_string($con, $_POST['male_id']);
             $female_id = mysqli_real_escape_string($con, $_POST['female_id']);
             $male_dob = mysqli_real_escape_string($con, $_POST['male_dob']);
@@ -389,9 +398,23 @@ require 'header.php';
 
             litterEntry.remove();
         }
+
+        $(document).ready(function() {
+            $('#user').select2({
+                placeholder: "Select User(s)",
+                allowClear: true
+            });
+        });
     </script>
 
     <title>Edit Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
+
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Include Select2 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+
 
     <style>
         body {
@@ -528,7 +551,17 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>
-                                <input type="text" class="form-control" id="user" name="user" value="<?= htmlspecialchars($breedingcage['user']); ?>" required>
+                                <select class="form-control" id="user" name="user[]" multiple required>
+                                    <?php
+                                    // Populate the dropdown with options from the database
+                                    while ($userRow = $userResult->fetch_assoc()) {
+                                        $initials = htmlspecialchars($userRow['initials']);
+                                        $name = htmlspecialchars($userRow['name']);
+                                        $selected = in_array($initials, $selectedUsers) ? 'selected' : '';
+                                        echo "<option value='$initials' $selected>$initials | $name</option>";
+                                    }
+                                    ?>
+                                </select>
                             </div>
 
                             <div class="mb-3">
