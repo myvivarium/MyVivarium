@@ -147,6 +147,17 @@ mysqli_close($con);
             }
         }
     </style>
+
+    <script>
+        var currentAdminUsername = "<?php echo htmlspecialchars($_SESSION['username']); ?>";
+
+        function confirmAdminAction(username) {
+            if (username === currentAdminUsername) {
+                return confirm("Are you sure you want to change settings for your own account?");
+            }
+            return true;
+        }
+    </script>
 </head>
 
 <body>
@@ -172,7 +183,7 @@ mysqli_close($con);
                                 <td data-label="Status"><?php echo htmlspecialchars($row['status']); ?></td>
                                 <td data-label="Role"><?php echo htmlspecialchars($row['role']); ?></td>
                                 <td data-label="Actions">
-                                    <form action="manage_users.php" method="post" class="action-buttons">
+                                    <form action="manage_users.php" method="post" class="action-buttons" onsubmit="return confirmAdminAction('<?php echo htmlspecialchars($row['username']); ?>')">
                                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                         <input type="hidden" name="name" value="<?php echo htmlspecialchars($row['name']); ?>">
                                         <input type="hidden" name="username" value="<?php echo htmlspecialchars($row['username']); ?>">
@@ -195,6 +206,7 @@ mysqli_close($con);
                             </tr>
                         <?php } ?>
                     </tbody>
+
                 </table>
             </div>
         </div>

@@ -41,7 +41,8 @@ $stmt->close();
 $updateMessage = ''; // Initialize message for profile update
 
 // Function to generate initials from the user's name
-function generateInitials($name) {
+function generateInitials($name)
+{
     $parts = explode(" ", $name);
     $initials = "";
 
@@ -55,14 +56,15 @@ function generateInitials($name) {
 }
 
 // Function to ensure unique initials
-function ensureUniqueInitials($con, $initials, $currentUsername) {
+function ensureUniqueInitials($con, $initials, $currentUsername)
+{
     $uniqueInitials = substr($initials, 0, 3); // Limit initials to a maximum of 3 characters
     $suffix = 1;
     $maxLength = 10; // Define the maximum length for initials including suffix
 
     $checkQuery = "SELECT initials FROM users WHERE initials = ? AND username != ?";
     $stmt = $con->prepare($checkQuery);
-    
+
     if (!$stmt) {
         error_log("Failed to prepare statement: " . $con->error);
         return $initials; // Return the original initials if statement preparation fails
@@ -79,13 +81,13 @@ function ensureUniqueInitials($con, $initials, $currentUsername) {
         } else {
             break;
         }
-        
+
         $stmt->free_result(); // Clear the result set for the next iteration
 
     } while (strlen($uniqueInitials) <= $maxLength);
 
     $stmt->close();
-    
+
     if (strlen($uniqueInitials) > $maxLength) {
         $uniqueInitials = substr($uniqueInitials, 0, $maxLength);
     }
@@ -281,7 +283,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 
 <body>
     <div class="container content">
-    <br>
+        <br>
         <h2>User Profile</h2>
         <br>
         <br>
@@ -318,6 +320,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
                 <label for="username">Email Address</label>
                 <input type="email" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
             </div>
+            <br>
             <button type="submit" class="btn1 btn-primary" name="update_profile">Update Profile</button>
         </form>
         <br>
@@ -337,6 +340,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         <?php if ($resultMessage) {
             echo "<p class='result-message'>$resultMessage</p>";
         } ?>
+        <br>
         <p class="note">In order to reflect the changes everywhere, please log out and log back in.</p>
     </div>
     <?php include 'footer.php'; ?>

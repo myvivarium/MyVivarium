@@ -91,6 +91,15 @@ require 'header.php';
             font-family: Arial, sans-serif;
         }
 
+        .container {
+            max-width: 800px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
         .table-wrapper {
             margin-bottom: 50px;
             overflow-x: auto;
