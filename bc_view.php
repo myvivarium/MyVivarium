@@ -199,12 +199,17 @@ require 'header.php';
 
         .table-wrapper th:nth-child(1),
         .table-wrapper td:nth-child(1) {
-            width: 30%;
+            width: 25%;
         }
 
         .table-wrapper th:nth-child(2),
         .table-wrapper td:nth-child(2) {
-            width: 70%;
+            width: 25%;
+        }
+
+        .table-wrapper th:nth-child(3),
+        .table-wrapper td:nth-child(3) {
+            width: 50%;
         }
 
         .remarks-column {
