@@ -93,9 +93,7 @@ $strainResult = $con->query($strainQuery);
             z-index: 1000;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
             width: 80%;
-            /* Increased width and responsive */
             max-width: 800px;
-            /* Maximum width to ensure responsiveness */
         }
 
         .popup-overlay {
@@ -131,7 +129,6 @@ $strainResult = $con->query($strainQuery);
             display: flex;
             gap: 10px;
             justify-content: space-between;
-            /* To spread the buttons */
         }
 
         .required-asterisk {
@@ -141,12 +138,10 @@ $strainResult = $con->query($strainQuery);
         @media (max-width: 767px) {
             .form-buttons {
                 flex-direction: column;
-                /* Stack buttons vertically on small screens */
             }
 
             .form-buttons button {
                 width: 100%;
-                /* Full width buttons on small screens */
                 margin-bottom: 10px;
             }
         }
@@ -154,7 +149,6 @@ $strainResult = $con->query($strainQuery);
         @media (max-width: 576px) {
             .table thead {
                 display: none;
-                /* Hide table headers on small screens */
             }
 
             .table tr {
@@ -172,12 +166,10 @@ $strainResult = $con->query($strainQuery);
 
             .table-actions {
                 flex-direction: column;
-                /* Stack action buttons vertically on small screens */
             }
 
             .table-actions button {
                 width: 100%;
-                /* Full width action buttons on small screens */
                 margin-bottom: 10px;
             }
         }
@@ -304,7 +296,8 @@ $strainResult = $con->query($strainQuery);
     </script>
 
     <div class="extra-space"></div> <!-- Add extra space before the footer -->
-    <?php require 'footer.php'; // Include the footer ?>
+    <?php require 'footer.php'; // Include the footer 
+    ?>
 </body>
 
 </html>
