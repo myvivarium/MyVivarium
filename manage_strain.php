@@ -1,54 +1,67 @@
 <?php
-session_start();
-require 'dbcon.php';
-require 'header.php'; // Include the header
 
-// Initialize variables
+/**
+ * Manage Strains
+ * 
+ * This script provides functionality for managing strains in a database. It allows users to add new strains,
+ * edit existing strains, and delete strains. The interface includes a responsive popup form for data entry and 
+ * a table for displaying existing strains. The script uses PHP sessions for message handling and includes basic 
+ * input sanitization for security.
+ * 
+ * Author: [Your Name]
+ * Date: [Date]
+ */
+
+session_start(); // Start the session to use session variables
+require 'dbcon.php'; // Include database connection
+require 'header.php'; // Include the header for consistent page structure
+
+// Initialize variables for strain data
 $strainId = $strainName = $strainAka = $strainUrl = $strainRrid = "";
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add'])) {
         // Add new strain
-        $strainId = htmlspecialchars($_POST['strain_id']);
-        $strainName = htmlspecialchars($_POST['strain_name']);
-        $strainAka = htmlspecialchars($_POST['strain_aka']);
-        $strainUrl = htmlspecialchars($_POST['strain_url']);
-        $strainRrid = htmlspecialchars($_POST['strain_rrid']);
+        $strainId = htmlspecialchars($_POST['strain_id']); // Sanitize input
+        $strainName = htmlspecialchars($_POST['strain_name']); // Sanitize input
+        $strainAka = htmlspecialchars($_POST['strain_aka']); // Sanitize input
+        $strainUrl = htmlspecialchars($_POST['strain_url']); // Sanitize input
+        $strainRrid = htmlspecialchars($_POST['strain_rrid']); // Sanitize input
         $stmt = $con->prepare("INSERT INTO strain (str_id, str_name, str_aka, str_url, str_rrid) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $strainId, $strainName, $strainAka, $strainUrl, $strainRrid);
         if ($stmt->execute()) {
-            $_SESSION['message'] = "Strain added successfully.";
+            $_SESSION['message'] = "Strain added successfully."; // Success message
         } else {
-            $_SESSION['message'] = "Error adding strain.";
+            $_SESSION['message'] = "Error adding strain."; // Error message
         }
-        $stmt->close();
+        $stmt->close(); // Close the statement
     } elseif (isset($_POST['edit'])) {
         // Update existing strain
-        $strainId = htmlspecialchars($_POST['strain_id']);
-        $strainName = htmlspecialchars($_POST['strain_name']);
-        $strainAka = htmlspecialchars($_POST['strain_aka']);
-        $strainUrl = htmlspecialchars($_POST['strain_url']);
-        $strainRrid = htmlspecialchars($_POST['strain_rrid']);
+        $strainId = htmlspecialchars($_POST['strain_id']); // Sanitize input
+        $strainName = htmlspecialchars($_POST['strain_name']); // Sanitize input
+        $strainAka = htmlspecialchars($_POST['strain_aka']); // Sanitize input
+        $strainUrl = htmlspecialchars($_POST['strain_url']); // Sanitize input
+        $strainRrid = htmlspecialchars($_POST['strain_rrid']); // Sanitize input
         $stmt = $con->prepare("UPDATE strain SET str_name = ?, str_aka = ?, str_url = ?, str_rrid = ? WHERE str_id = ?");
         $stmt->bind_param("ssssi", $strainName, $strainAka, $strainUrl, $strainRrid, $strainId);
         if ($stmt->execute()) {
-            $_SESSION['message'] = "Strain updated successfully.";
+            $_SESSION['message'] = "Strain updated successfully."; // Success message
         } else {
-            $_SESSION['message'] = "Error updating strain.";
+            $_SESSION['message'] = "Error updating strain."; // Error message
         }
-        $stmt->close();
+        $stmt->close(); // Close the statement
     } elseif (isset($_POST['delete'])) {
         // Delete strain
-        $strainId = htmlspecialchars($_POST['strain_id']);
+        $strainId = htmlspecialchars($_POST['strain_id']); // Sanitize input
         $stmt = $con->prepare("DELETE FROM strain WHERE str_id = ?");
         $stmt->bind_param("i", $strainId);
         if ($stmt->execute()) {
-            $_SESSION['message'] = "Strain deleted successfully.";
+            $_SESSION['message'] = "Strain deleted successfully."; // Success message
         } else {
-            $_SESSION['message'] = "Error deleting strain.";
+            $_SESSION['message'] = "Error deleting strain."; // Error message
         }
-        $stmt->close();
+        $stmt->close(); // Close the statement
     }
 }
 
@@ -122,8 +135,8 @@ $strainResult = $con->query($strainQuery);
         }
 
         .required-asterisk {
-                color: red;
-            }
+            color: red;
+        }
 
         @media (max-width: 767px) {
             .form-buttons {
@@ -291,8 +304,7 @@ $strainResult = $con->query($strainQuery);
     </script>
 
     <div class="extra-space"></div> <!-- Add extra space before the footer -->
-    <?php require 'footer.php'; // Include the footer 
-    ?>
+    <?php require 'footer.php'; // Include the footer ?>
 </body>
 
 </html>
