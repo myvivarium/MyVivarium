@@ -43,6 +43,34 @@ $userResult = $con->query($userQuery);
 $query1 = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $result1 = $con->query($query1);
 
+// Query to retrieve strain details including common names
+$strainQuery = "SELECT str_id, str_name, str_aka FROM strain";
+$strainResult = $con->query($strainQuery);
+
+// Initialize an array to hold all options
+$strainOptions = [];
+
+// Process each row to generate options
+while ($strainrow = $strainResult->fetch_assoc()) {
+    $str_id = htmlspecialchars($strainrow['str_id'] ?? 'Unknown');
+    $str_name = htmlspecialchars($strainrow['str_name'] ?? 'Unnamed Strain');
+    $str_aka = $strainrow['str_aka'] ? htmlspecialchars($strainrow['str_aka']) : '';
+
+    // Add the main strain option
+    $strainOptions[] = "$str_id | $str_name";
+
+    // Explode the common names if they exist
+    if (!empty($str_aka)) {
+        $akaNames = explode(', ', $str_aka);
+        foreach ($akaNames as $aka) {
+            $strainOptions[] = "$str_id | " . htmlspecialchars(trim($aka));
+        }
+    }
+}
+
+// Sort the options based on str_id
+sort($strainOptions, SORT_STRING);
+
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -293,10 +321,13 @@ require 'header.php';
 <head>
     <title>Edit Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
-    <!-- Include Select2 CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+    <!-- Include Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Include Select2 JavaScript -->
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet">
+
+    <!-- Include Select2 JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
 
     <style>
@@ -365,6 +396,10 @@ require 'header.php';
         .warning-text {
             color: #dc3545;
             font-size: 14px;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 35px;
         }
 
         @media (max-width: 768px) {
@@ -474,6 +509,13 @@ require 'header.php';
             });
         });
 
+        $(document).ready(function() {
+            $('#strain').select2({
+                placeholder: "Select Strain",
+                allowClear: true
+            });
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
             form.addEventListener('submit', function(event) {
@@ -484,6 +526,20 @@ require 'header.php';
                 if (selectedPiText.includes('Unknown PI')) {
                     event.preventDefault(); // Prevent form submission
                     alert('Cannot proceed with "Unknown PI". Please select a valid PI.');
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                const piSelect = document.getElementById('strain');
+                const selectedPiText = piSelect.options[piSelect.selectedIndex].text;
+
+                // Check if "Unknown Strain" is selected
+                if (selectedPiText.includes('Unknown Strain')) {
+                    event.preventDefault(); // Prevent form submission
+                    alert('Cannot proceed with "Unknown Strain". Please select a valid Strain.');
                 }
             });
         });
@@ -533,7 +589,31 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="strain" class="form-label">Strain <span class="required-asterisk">*</span></label>
-                                <input type="text" class="form-control" id="strain" name="strain" value="<?= htmlspecialchars($holdingcage['strain']); ?>" required>
+                                <select class="form-control" id="strain" name="strain" required>
+                                    <option value="" disabled>Select Strain</option>
+                                    <?php
+                                    // Initialize a flag to check if the current strain exists in the options
+                                    $strainExists = false;
+
+                                    // Populate the dropdown with options
+                                    foreach ($strainOptions as $option) {
+                                        $value = explode(" | ", $option)[0]; // Extract str_id
+                                        $selected = ($value == $holdingcage['strain']) ? 'selected' : '';
+
+                                        if ($value == $holdingcage['strain']) {
+                                            $strainExists = true;
+                                        }
+
+                                        echo "<option value='$value' $selected>$option</option>";
+                                    }
+
+                                    // If the current strain is not in the list, add it as a separate option
+                                    if (!$strainExists && !empty($holdingcage['strain'])) {
+                                        $currentStrainId = htmlspecialchars($holdingcage['strain']);
+                                        echo "<option value='$currentStrainId' disabled selected>$currentStrainId | Unknown Strain</option>";
+                                    }
+                                    ?>
+                                </select>
                             </div>
 
                             <div class="mb-3">

@@ -41,9 +41,10 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the holding cage record with the specified ID
-    $query = "SELECT hc.*, pi.initials AS pi_initials, pi.name AS pi_name 
+    $query = "SELECT hc.*, pi.initials AS pi_initials, pi.name AS pi_name, s.str_name, s.str_url 
                 FROM hc_basic hc 
                 LEFT JOIN users pi ON hc.pi_name = pi.id 
+                LEFT JOIN strain s ON hc.strain = s.str_id
                 WHERE hc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
@@ -55,15 +56,21 @@ if (isset($_GET['id'])) {
     if (mysqli_num_rows($result) === 1) {
         $holdingcage = mysqli_fetch_assoc($result);
 
-        // If PI name is null, re-query the hc_basic table without the join
+        // Handle null or unmatched strain by setting default values
+        if (is_null($holdingcage['str_name']) || empty($holdingcage['str_name'])) {
+            $holdingcage['str_name'] = 'Unknown Strain';
+            $holdingcage['str_url'] = '#'; // Set a placeholder or default URL
+        }
+
+        // Handle null or unmatched PI name by re-querying the hc_basic table without the join
         if (is_null($holdingcage['pi_name'])) {
             $queryBasic = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
             $resultBasic = mysqli_query($con, $queryBasic);
 
             if (mysqli_num_rows($resultBasic) === 1) {
                 $holdingcage = mysqli_fetch_assoc($resultBasic);
-                $holdingcage['pi_initials'] = 'NA'; // Set empty initials
-                $holdingcage['pi_name'] = 'NA'; // Set empty PI name
+                $holdingcage['pi_initials'] = 'NA'; // Set default initials
+                $holdingcage['pi_name'] = 'NA'; // Set default PI name
             } else {
                 // If the re-query also fails, set an error message and redirect to the dashboard
                 $_SESSION['message'] = 'Error fetching the cage details.';
@@ -72,6 +79,7 @@ if (isset($_GET['id'])) {
             }
         }
     } else {
+        // If no record exists, set an error message and redirect to the dashboard
         $_SESSION['message'] = 'Invalid ID.';
         header("Location: hc_dash.php");
         exit();
@@ -164,12 +172,12 @@ require 'header.php';
         }
     </script>
 
-<style>
-                body {
+    <style>
+        body {
             background: none !important;
             background-color: transparent !important;
         }
-        
+
         .container {
             max-width: 800px;
             background-color: #f8f9fa;
@@ -275,7 +283,7 @@ require 'header.php';
 </head>
 
 <body>
-<div class="container content mt-4">
+    <div class="container content mt-4">
         <div class="card">
             <div class="card-header">
                 <h4>View Holding Cage <?= htmlspecialchars($holdingcage['cage_id']); ?></h4>
@@ -312,7 +320,11 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>Strain</th>
-                        <td><?= htmlspecialchars($holdingcage['strain']); ?></td>
+                        <td>
+                            <a href="<?= htmlspecialchars($holdingcage['str_url']); ?>" target="_blank">
+                            <?= htmlspecialchars($holdingcage['strain']); ?> | <?= htmlspecialchars($holdingcage['str_name']); ?>
+                            </a>
+                        </td>
                     </tr>
                     <tr>
                         <th>IACUC</th>

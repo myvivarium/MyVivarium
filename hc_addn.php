@@ -50,6 +50,34 @@ $userResult = $con->query($userQuery);
 $piQuery = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $piResult = $con->query($piQuery);
 
+// Query to retrieve strain details including common names
+$strainQuery = "SELECT str_id, str_name, str_aka FROM strain";
+$strainResult = $con->query($strainQuery);
+
+// Initialize an array to hold all options
+$strainOptions = [];
+
+// Process each row to generate options
+while ($strainrow = $strainResult->fetch_assoc()) {
+    $str_id = htmlspecialchars($strainrow['str_id'] ?? 'Unknown');
+    $str_name = htmlspecialchars($strainrow['str_name'] ?? 'Unnamed Strain');
+    $str_aka = $strainrow['str_aka'] ? htmlspecialchars($strainrow['str_aka']) : '';
+
+    // Add the main strain option
+    $strainOptions[] = "$str_id | $str_name";
+
+    // Explode the common names if they exist
+    if (!empty($str_aka)) {
+        $akaNames = explode(', ', $str_aka);
+        foreach ($akaNames as $aka) {
+            $strainOptions[] = "$str_id | " . htmlspecialchars(trim($aka));
+        }
+    }
+}
+
+// Sort the options based on str_id
+sort($strainOptions, SORT_STRING);
+
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -157,11 +185,15 @@ require 'header.php';
 <head>
     <title>Add New Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
-    <!-- Include Select2 CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+    <!-- Include Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Include Select2 JavaScript -->
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet">
+
+    <!-- Include Select2 JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+
 
     <style>
         .container {
@@ -184,7 +216,12 @@ require 'header.php';
             color: #dc3545;
             font-size: 14px;
         }
+
+        .select2-container .select2-selection--single {
+            height: 35px;
+        }
     </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Function to get today's date in YYYY-MM-DD format
@@ -281,6 +318,13 @@ require 'header.php';
                 allowClear: true
             });
         });
+
+        $(document).ready(function() {
+            $('#strain').select2({
+                placeholder: "Select Strain",
+                allowClear: true
+            });
+        });
     </script>
 
 </head>
@@ -322,8 +366,17 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="strain" class="form-label">Strain <span class="required-asterisk">*</span></label>
-                <input type="text" class="form-control" id="strain" name="strain" required>
+                <select class="form-control" id="strain" name="strain" required>
+                    <option value="" disabled selected>Select Strain</option>
+                    <?php
+                    // Populate the dropdown with all the options generated
+                    foreach ($strainOptions as $option) {
+                        echo "<option value='" . explode(" | ", $option)[0] . "'>$option</option>";
+                    }
+                    ?>
+                </select>
             </div>
+
 
             <div class="mb-3">
                 <label for="iacuc" class="form-label">IACUC</label>
