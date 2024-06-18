@@ -49,10 +49,21 @@ if (isset($_GET['id'])) {
 
         // If a valid record is found, add it to the holdingcages array
         if (mysqli_num_rows($result) === 1) {
-            $holdingcages[] = mysqli_fetch_assoc($result);
+            $holdingcage = mysqli_fetch_assoc($result);
+
+            // Fetch mouse data for this cage, limit to first 5 records
+            $mouseQuery = "SELECT mouse_id, genotype 
+                           FROM mouse 
+                           WHERE cage_id = '$id' 
+                           LIMIT 5";
+            $mouseResult = mysqli_query($con, $mouseQuery);
+            $mouseData = mysqli_fetch_all($mouseResult, MYSQLI_ASSOC);
+
+            // Append the mouse data to the holding cage record
+            $holdingcage['mice'] = $mouseData;
 
             // Explode the user IDs if they are comma-separated
-            $userIds = array_map('intval', explode(',', $holdingcages['user']));
+            $userIds = array_map('intval', explode(',', $holdingcage['user']));
 
             // Fetch the user initials based on IDs
             $userInitials = getUserInitialsByIds($con, $userIds);
@@ -69,9 +80,10 @@ if (isset($_GET['id'])) {
             $userDisplayString = implode(', ', $userDisplay);
 
             // Store user initials display string
-            $holdingcages['user_initials'] = $userDisplayString;
-            $holdingcages[] = $holdingcages;
+            $holdingcage['user_initials'] = $userDisplayString;
 
+            // Add the holding cage with mouse data to the array
+            $holdingcages[] = $holdingcage;
         } else {
             // Set an error message for an invalid ID and redirect to the dashboard
             $_SESSION['message'] = "Invalid ID: $id";
@@ -85,6 +97,24 @@ if (isset($_GET['id'])) {
     header("Location: hc_dash.php");
     exit();
 }
+
+// Function to fetch user initials by IDs
+function getUserInitialsByIds($con, $userIds)
+{
+    $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+    $query = "SELECT id, initials FROM users WHERE id IN ($placeholders)";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $userInitials = [];
+    while ($row = $result->fetch_assoc()) {
+        $userInitials[$row['id']] = htmlspecialchars($row['initials']);
+    }
+    $stmt->close();
+    return $userInitials;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -226,16 +256,16 @@ if (isset($_GET['id'])) {
                                 <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Genotype</span>
                             </td>
                         </tr>
-                        <?php for ($i = 1; $i <= 5; $i++) : ?>
+                        <?php foreach (range(1, 5) as $i) : ?>
                             <tr>
                                 <td style="width:40%; padding:3px;">
-                                    <span><?= $holdingcage["mouse_id_$i"] ?></span>
+                                    <span><?= isset($holdingcage['mice'][$i - 1]['mouse_id']) ? htmlspecialchars($holdingcage['mice'][$i - 1]['mouse_id']) : '' ?></span>
                                 </td>
                                 <td style="width:60%; padding:3px;">
-                                    <span><?= $holdingcage["genotype_$i"] ?></span>
+                                    <span><?= isset($holdingcage['mice'][$i - 1]['genotype']) ? htmlspecialchars($holdingcage['mice'][$i - 1]['genotype']) : '' ?></span>
                                 </td>
                             </tr>
-                        <?php endfor; ?>
+                        <?php endforeach; ?>
                     </table>
                 </td>
 

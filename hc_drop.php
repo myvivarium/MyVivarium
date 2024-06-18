@@ -3,7 +3,7 @@
 /**
  * Holding Cage Deletion Script
  * 
- * This script handles the deletion of a cage and its related files from the database. 
+ * This script handles the deletion of a cage and its related files and mouse data from the database. 
  * It uses prepared statements to prevent SQL injection and transactions to ensure data integrity.
  * 
  * Author: [Your Name]
@@ -93,22 +93,50 @@ if (isset($_GET['id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'true')
             throw new Exception('Error preparing delete statement for files table: ' . mysqli_error($con));
         }
 
+        // Prepare the SQL delete query for the mouse table
+        $deleteMouseQuery = "DELETE FROM mouse WHERE `cage_id` = ?";
+        if ($stmt = mysqli_prepare($con, $deleteMouseQuery)) {
+            // Bind the sanitized ID to the prepared statement
+            mysqli_stmt_bind_param($stmt, "s", $id);
+            // Execute the prepared statement
+            if (!mysqli_stmt_execute($stmt)) {
+                throw new Exception('Error executing delete statement for mouse table: ' . mysqli_error($con));
+            }
+            // Close the prepared statement
+            mysqli_stmt_close($stmt);
+        } else {
+            throw new Exception('Error preparing delete statement for mouse table: ' . mysqli_error($con));
+        }
+
         // Commit the transaction to save the changes
         mysqli_commit($con);
 
         // Set a success message in the session
-        $_SESSION['message'] = 'Cage ' . $id . ' and related files deleted successfully.';
+        $_SESSION['message'] = 'Cage ' . $id . ', related files and mouse data were deleted successfully.';
     } catch (Exception $e) {
         // Roll back the transaction in case of an error
         mysqli_rollback($con);
         // Log the error and set a user-friendly message
-        $_SESSION['message'] = 'Error executing the delete statements.';
+        $_SESSION['message'] = 'Error executing the delete statements. ' . $e->getMessage();
     }
 
     // Redirect to the dashboard page
     header("Location: hc_dash.php");
     exit();
 } else {
+    // Ask for confirmation if 'confirm' is not set or not 'true'
+    if (isset($_GET['id']) && !isset($_GET['confirm'])) {
+        $id = htmlspecialchars($_GET['id']); // Sanitize the ID for display
+
+        echo "<script>
+            if (confirm('Are you sure you want to delete cage $id and all related mouse data?')) {
+                window.location.href = 'hc_delete.php?id=$id&confirm=true';
+            } else {
+                window.location.href = 'hc_dash.php';
+            }
+        </script>";
+        exit();
+    }
 
     // Set an error message if deletion is not confirmed or ID is missing
     $_SESSION['message'] = 'Deletion was not confirmed or ID parameter is missing.';

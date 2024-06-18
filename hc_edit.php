@@ -3,8 +3,7 @@
 /**
  * Edit Holding Cage Script
  * 
- * This script handles the editing of holding cage records. It includes functionalities such as fetching existing
- * cage data, updating the cage information, handling CSRF protection, and managing file uploads and deletions.
+ * This script handles the editing of holding cage records, including mouse data. It allows for dynamic addition and deletion of mouse records.
  * 
  * Author: [Your Name]
  * Date: [Date]
@@ -86,6 +85,11 @@ if (isset($_GET['id'])) {
     $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
     $files = $con->query($query2);
 
+    // Fetch the mouse data related to this cage
+    $mouseQuery = "SELECT * FROM mouse WHERE cage_id = '$id'";
+    $mouseResult = mysqli_query($con, $mouseQuery);
+    $mice = mysqli_fetch_all($mouseResult, MYSQLI_ASSOC);
+
     // Check if the holding cage record exists
     if (mysqli_num_rows($result) === 1) {
         $holdingcage = mysqli_fetch_assoc($result);
@@ -141,92 +145,103 @@ if (isset($_GET['id'])) {
             $user = isset($_POST['user']) ? implode(',', array_map(function ($user_id) use ($con) {
                 return mysqli_real_escape_string($con, trim($user_id));
             }, $_POST['user'])) : '';
-            $qty = mysqli_real_escape_string($con, $_POST['qty']);
             $dob = mysqli_real_escape_string($con, $_POST['dob']);
             $sex = mysqli_real_escape_string($con, $_POST['sex']);
             $parent_cg = mysqli_real_escape_string($con, $_POST['parent_cg']);
             $remarks = mysqli_real_escape_string($con, $_POST['remarks']);
-            $mouse_id_1 = mysqli_real_escape_string($con, $_POST['mouse_id_1']);
-            $genotype_1 = mysqli_real_escape_string($con, $_POST['genotype_1']);
-            $notes_1 = mysqli_real_escape_string($con, $_POST['notes_1']);
-            $mouse_id_2 = mysqli_real_escape_string($con, $_POST['mouse_id_2']);
-            $genotype_2 = mysqli_real_escape_string($con, $_POST['genotype_2']);
-            $notes_2 = mysqli_real_escape_string($con, $_POST['notes_2']);
-            $mouse_id_3 = mysqli_real_escape_string($con, $_POST['mouse_id_3']);
-            $genotype_3 = mysqli_real_escape_string($con, $_POST['genotype_3']);
-            $notes_3 = mysqli_real_escape_string($con, $_POST['notes_3']);
-            $mouse_id_4 = mysqli_real_escape_string($con, $_POST['mouse_id_4']);
-            $genotype_4 = mysqli_real_escape_string($con, $_POST['genotype_4']);
-            $notes_4 = mysqli_real_escape_string($con, $_POST['notes_4']);
-            $mouse_id_5 = mysqli_real_escape_string($con, $_POST['mouse_id_5']);
-            $genotype_5 = mysqli_real_escape_string($con, $_POST['genotype_5']);
-            $notes_5 = mysqli_real_escape_string($con, $_POST['notes_5']);
 
             // Update query for hc_basic table
             $updateQuery = "UPDATE hc_basic SET
-                            `cage_id` = ?,
-                            `pi_name` = ?,
-                            `strain` = ?,
-                            `iacuc` = ?,
-                            `user` = ?,
-                            `qty` = ?,
-                            `dob` = ?,
-                            `sex` = ?,
-                            `parent_cg` = ?,
-                            `remarks` = ?,
-                            `mouse_id_1` = ?,
-                            `genotype_1` = ?,
-                            `notes_1` = ?,
-                            `mouse_id_2` = ?,
-                            `genotype_2` = ?,
-                            `notes_2` = ?,
-                            `mouse_id_3` = ?,
-                            `genotype_3` = ?,
-                            `notes_3` = ?,
-                            `mouse_id_4` = ?,
-                            `genotype_4` = ?,
-                            `notes_4` = ?,
-                            `mouse_id_5` = ?,
-                            `genotype_5` = ?,
-                            `notes_5` = ?
-                            WHERE `cage_id` = ?";
+                    `cage_id` = ?,
+                    `pi_name` = ?,
+                    `strain` = ?,
+                    `iacuc` = ?,
+                    `user` = ?,
+                    `dob` = ?,
+                    `sex` = ?,
+                    `parent_cg` = ?,
+                    `remarks` = ?
+                    WHERE `cage_id` = ?";
 
             // Prepare the update query
             $stmt = $con->prepare($updateQuery);
 
             // Bind parameters to the prepared statement
             $stmt->bind_param(
-                "sssssissssssssssssssssssss",
+                "ssssssssss",
                 $cage_id,
                 $pi_name,
                 $strain,
                 $iacuc,
                 $user,
-                $qty,
                 $dob,
                 $sex,
                 $parent_cg,
                 $remarks,
-                $mouse_id_1,
-                $genotype_1,
-                $notes_1,
-                $mouse_id_2,
-                $genotype_2,
-                $notes_2,
-                $mouse_id_3,
-                $genotype_3,
-                $notes_3,
-                $mouse_id_4,
-                $genotype_4,
-                $notes_4,
-                $mouse_id_5,
-                $genotype_5,
-                $notes_5,
                 $id
             );
 
             // Execute the prepared statement
             $result = $stmt->execute();
+
+            // Update the mouse table with new data
+            $mouse_ids = $_POST['mouse_id'] ?? [];
+            $genotypes = $_POST['genotype'] ?? [];
+            $notes = $_POST['notes'] ?? [];
+            $existing_mouse_ids = $_POST['existing_mouse_id'] ?? [];
+
+            // Handle existing and new mouse records
+            for ($i = 0; $i < count($mouse_ids); $i++) {
+                $mouse_id = mysqli_real_escape_string($con, $mouse_ids[$i]);
+                $genotype = mysqli_real_escape_string($con, $genotypes[$i]);
+                $note = mysqli_real_escape_string($con, $notes[$i]);
+                $existing_mouse_id = isset($existing_mouse_ids[$i]) ? mysqli_real_escape_string($con, $existing_mouse_ids[$i]) : null;
+
+                if (!empty($mouse_id)) {
+                    if ($existing_mouse_id) {
+                        // Update existing mouse record
+                        $updateMouseQuery = "UPDATE mouse SET mouse_id = ?, genotype = ?, notes = ? WHERE id = ?";
+                        $stmtMouseUpdate = $con->prepare($updateMouseQuery);
+                        $stmtMouseUpdate->bind_param("sssi", $mouse_id, $genotype, $note, $existing_mouse_id);
+                        $stmtMouseUpdate->execute();
+                        $stmtMouseUpdate->close();
+                    } else {
+                        // Insert new mouse record
+                        $insertMouseQuery = "INSERT INTO mouse (cage_id, mouse_id, genotype, notes) VALUES (?, ?, ?, ?)";
+                        $stmtMouseInsert = $con->prepare($insertMouseQuery);
+                        $stmtMouseInsert->bind_param("ssss", $cage_id, $mouse_id, $genotype, $note);
+                        $stmtMouseInsert->execute();
+                        $stmtMouseInsert->close();
+                    }
+                }
+            }
+
+            // Delete mouse records if marked for deletion
+            if (!empty($_POST['mice_to_delete'])) {
+                $miceToDelete = explode(',', $_POST['mice_to_delete']);
+                foreach ($miceToDelete as $mouseId) {
+                    $deleteMouseQuery = "DELETE FROM mouse WHERE id = ?";
+                    $stmtMouseDelete = $con->prepare($deleteMouseQuery);
+                    $stmtMouseDelete->bind_param("i", $mouseId);
+                    $stmtMouseDelete->execute();
+                    $stmtMouseDelete->close();
+                }
+            }
+
+            // Update the qty field in hc_basic based on the number of mouse records
+            $newQtyQuery = "SELECT COUNT(*) AS new_qty FROM mouse WHERE cage_id = ?";
+            $stmtNewQty = $con->prepare($newQtyQuery);
+            $stmtNewQty->bind_param("s", $cage_id);
+            $stmtNewQty->execute();
+            $stmtNewQty->bind_result($newQty);
+            $stmtNewQty->fetch();
+            $stmtNewQty->close();
+
+            $updateQtyQuery = "UPDATE hc_basic SET qty = ? WHERE cage_id = ?";
+            $stmtUpdateQty = $con->prepare($updateQtyQuery);
+            $stmtUpdateQty->bind_param("is", $newQty, $cage_id);
+            $stmtUpdateQty->execute();
+            $stmtUpdateQty->close();
 
             // Check if the update was successful
             if ($result) {
@@ -309,7 +324,6 @@ function getUserDetailsByIds($con, $userIds)
 // Fetch currently selected PI details
 $piDetails = getUserDetailsByIds($con, [$selectedPiId]);
 $piDisplay = isset($piDetails[$selectedPiId]) ? $piDetails[$selectedPiId] : 'Unknown PI';
-
 
 // Include the header file
 require 'header.php';
@@ -402,6 +416,13 @@ require 'header.php';
             height: 35px;
         }
 
+        .button-group {
+            display: flex;
+            gap: 10px;
+            /* Adjust the gap as needed */
+            margin-top: 10px;
+        }
+
         @media (max-width: 768px) {
 
             .table-wrapper th,
@@ -441,11 +462,47 @@ require 'header.php';
             window.history.back();
         }
 
-        // Function to show/hide mouse fields based on the quantity
-        function showMouseFields() {
-            var qty = document.getElementById('qty').value;
-            for (var i = 1; i <= 5; i++) {
-                document.getElementById('mouse_fields_' + i).style.display = i <= qty ? 'block' : 'none';
+        // Function to dynamically add new mouse fields
+        function addMouseField() {
+            const mouseContainer = document.getElementById('mouse_fields_container');
+            const mouseCount = mouseContainer.childElementCount + 1;
+
+            const mouseFieldHTML = `
+                <div id="mouse_fields_${mouseCount}" class="mouse-field">
+                    <br>
+                    <h4>Mouse #${mouseCount}</h4>
+                    <div class="mb-3">
+                        <label for="mouse_id_${mouseCount}" class="form-label">Mouse ID</label>
+                        <input type="text" class="form-control" id="mouse_id_${mouseCount}" name="mouse_id[]" value="">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="genotype_${mouseCount}" class="form-label">Genotype</label>
+                        <input type="text" class="form-control" id="genotype_${mouseCount}" name="genotype[]" value="">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes_${mouseCount}" class="form-label">Maintenance Notes</label>
+                        <textarea class="form-control" id="notes_${mouseCount}" name="notes[]" oninput="adjustTextareaHeight(this)"></textarea>
+                    </div>
+
+                    <button type="button" class="btn btn-danger btn-icon" onclick="markForDeletion(${mouseCount}, null)"><i class="fas fa-trash"></i></button>
+                </div>`;
+
+            mouseContainer.insertAdjacentHTML('beforeend', mouseFieldHTML);
+        }
+
+        // Function to mark mouse fields for deletion
+        function markForDeletion(mouseIndex, mouseId) {
+            const mouseField = document.getElementById(`mouse_fields_${mouseIndex}`);
+            mouseField.style.display = 'none'; // Hide the field visually
+
+            // Add the mouse ID to the hidden input for deletion tracking
+            if (mouseId !== null) {
+                const miceToDeleteInput = document.getElementById('mice_to_delete');
+                let miceToDelete = miceToDeleteInput.value ? miceToDeleteInput.value.split(',') : [];
+                miceToDelete.push(mouseId);
+                miceToDeleteInput.value = miceToDelete.join(',');
             }
         }
 
@@ -533,11 +590,11 @@ require 'header.php';
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
             form.addEventListener('submit', function(event) {
-                const piSelect = document.getElementById('strain');
-                const selectedPiText = piSelect.options[piSelect.selectedIndex].text;
+                const strainSelect = document.getElementById('strain');
+                const selectedStrainText = strainSelect.options[strainSelect.selectedIndex].text;
 
                 // Check if "Unknown Strain" is selected
-                if (selectedPiText.includes('Unknown Strain')) {
+                if (selectedStrainText.includes('Unknown Strain')) {
                     event.preventDefault(); // Prevent form submission
                     alert('Cannot proceed with "Unknown Strain". Please select a valid Strain.');
                 }
@@ -556,12 +613,12 @@ require 'header.php';
                     <div class="card-header">
                         <h4>Edit Holding Cage</h4>
                         <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
-
                     </div>
 
                     <div class="card-body">
                         <form method="POST" action="hc_edit.php?id=<?= $id; ?>" enctype="multipart/form-data">
 
+                            <input type="hidden" id="mice_to_delete" name="mice_to_delete" value="">
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
                             <div class="mb-3">
@@ -638,22 +695,6 @@ require 'header.php';
                             </div>
 
                             <div class="mb-3">
-                                <label for="qty" class="form-label">Qty <span class="required-asterisk">*</span></label>
-                                <select class="form-control" id="qty" name="qty" required onchange="showMouseFields()">
-                                    <option value="<?= htmlspecialchars($holdingcage['qty']); ?>" selected>
-                                        <?= htmlspecialchars($holdingcage['qty']); ?>
-                                    </option>
-                                    <?php
-                                    for ($i = 0; $i <= 5; $i++) {
-                                        if ($i != $holdingcage['qty']) {
-                                            echo "<option value=\"$i\">$i</option>";
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
                                 <label for="dob" class="form-label">DOB <span class="required-asterisk">*</span></label>
                                 <input type="date" class="form-control" id="dob" name="dob" value="<?= htmlspecialchars($holdingcage['dob']); ?>" required min="1900-01-01">
                             </div>
@@ -685,26 +726,45 @@ require 'header.php';
                                 <textarea class="form-control" id="remarks" name="remarks" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($holdingcage['remarks']); ?></textarea>
                             </div>
 
-                            <!-- Loop to dynamically create fields for each mouse -->
-                            <?php for ($i = 1; $i <= 5; $i++) : ?>
-                                <div id="mouse_fields_<?php echo $i; ?>" style="display: <?= $i <= $holdingcage['qty'] ? 'block' : 'none'; ?>;">
-                                    <h4>Mouse #<?php echo $i; ?></h4>
-                                    <div class="mb-3">
-                                        <label for="mouse_id_<?php echo $i; ?>" class="form-label">Mouse ID</label>
-                                        <input type="text" class="form-control" id="mouse_id_<?php echo $i; ?>" name="mouse_id_<?php echo $i; ?>" value="<?= htmlspecialchars($holdingcage["mouse_id_$i"]); ?>">
-                                    </div>
+                            <!-- Separator -->
+                            <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
 
-                                    <div class="mb-3">
-                                        <label for="genotype_<?php echo $i; ?>" class="form-label">Genotype</label>
-                                        <input type="text" class="form-control" id="genotype_<?php echo $i; ?>" name="genotype_<?php echo $i; ?>" value="<?= htmlspecialchars($holdingcage["genotype_$i"]); ?>">
-                                    </div>
+                            <!-- HTML Form Section for Mouse Fields -->
+                            <div id="mouse_fields_container">
+                                <!-- Loop to dynamically create fields for each mouse -->
+                                <?php foreach ($mice as $i => $mouse) : ?>
+                                    <div id="mouse_fields_<?= $i + 1 ?>" class="mouse-field" data-mouse-id="<?= $mouse['id'] ?>">
+                                        <br>
+                                        <h4>Mouse #<?= $i + 1 ?></h4>
+                                        <input type="hidden" name="existing_mouse_id[]" value="<?= htmlspecialchars($mouse['id']) ?>">
+                                        <div class="mb-3">
+                                            <label for="mouse_id_<?= $i + 1 ?>" class="form-label">Mouse ID</label>
+                                            <input type="text" class="form-control" id="mouse_id_<?= $i + 1 ?>" name="mouse_id[]" value="<?= htmlspecialchars($mouse['mouse_id']) ?>">
+                                        </div>
 
-                                    <div class="mb-3">
-                                        <label for="notes_<?php echo $i; ?>" class="form-label">Maintenance Notes</label>
-                                        <textarea class="form-control" id="notes_<?php echo $i; ?>" name="notes_<?php echo $i; ?>" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($holdingcage["notes_$i"]); ?></textarea>
+                                        <div class="mb-3">
+                                            <label for="genotype_<?= $i + 1 ?>" class="form-label">Genotype</label>
+                                            <input type="text" class="form-control" id="genotype_<?= $i + 1 ?>" name="genotype[]" value="<?= htmlspecialchars($mouse['genotype']) ?>">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="notes_<?= $i + 1 ?>" class="form-label">Maintenance Notes</label>
+                                            <textarea class="form-control" id="notes_<?= $i + 1 ?>" name="notes[]" oninput="adjustTextareaHeight(this)"><?= htmlspecialchars($mouse['notes']) ?></textarea>
+                                        </div>
+
+                                        <div class="button-group">
+                                            <button type="button" class="btn btn-danger btn-icon" onclick="markForDeletion(<?= $i + 1 ?>, <?= $mouse['id'] ?>)"><i class="fas fa-trash"></i></button>
+                                        </div>
                                     </div>
-                                </div>
-                            <?php endfor; ?>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <!-- Button to add new mouse fields -->
+                            <div class="button-group">
+                                <button type="button" class="btn btn-primary" onclick="addMouseField()">
+                                    <i class="fas fa-plus"></i> Add Mouse
+                                </button>
+                            </div>
 
                             <!-- Separator -->
                             <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">

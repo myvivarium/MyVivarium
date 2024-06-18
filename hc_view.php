@@ -78,6 +78,11 @@ if (isset($_GET['id'])) {
                 exit();
             }
         }
+
+        // Fetch the mouse data related to this cage
+        $mouseQuery = "SELECT * FROM mouse WHERE cage_id = '$id'";
+        $mouseResult = mysqli_query($con, $mouseQuery);
+        $mice = mysqli_fetch_all($mouseResult, MYSQLI_ASSOC);
     } else {
         // If no record exists, set an error message and redirect to the dashboard
         $_SESSION['message'] = 'Invalid ID.';
@@ -123,7 +128,6 @@ foreach ($userIds as $userId) {
 }
 $userDisplayString = implode(', ', $userDisplay);
 
-
 // Include the header file
 require 'header.php';
 ?>
@@ -141,7 +145,7 @@ require 'header.php';
             var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
 
             // URL to generate the QR code image
-            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://' + $url + '/hc_view.php?id=' + cageId;
+            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://' + <?php echo json_encode($url); ?> + '/hc_view.php?id=' + cageId;
 
             // HTML content for the popup, including a dynamic title and the QR code image
             var htmlContent = `
@@ -322,7 +326,7 @@ require 'header.php';
                         <th>Strain</th>
                         <td>
                             <a href="<?= htmlspecialchars($holdingcage['str_url']); ?>" target="_blank">
-                            <?= htmlspecialchars($holdingcage['strain']); ?> | <?= htmlspecialchars($holdingcage['str_name']); ?>
+                                <?= htmlspecialchars($holdingcage['strain']); ?> | <?= htmlspecialchars($holdingcage['str_name']); ?>
                             </a>
                         </td>
                     </tr>
@@ -356,22 +360,26 @@ require 'header.php';
                     </tr>
                 </table>
 
-                <!-- Loop to display details for each mouse in the cage -->
-                <?php for ($i = 1; $i <= $holdingcage['qty']; $i++) : ?>
-                    <h4>Mouse #<?= $i; ?></h4>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Mouse ID</th>
-                            <th>Genotype</th>
-                            <th>Notes</th>
-                        </tr>
-                        <tr>
-                            <td><?= htmlspecialchars($holdingcage["mouse_id_$i"]); ?></td>
-                            <td><?= htmlspecialchars($holdingcage["genotype_$i"]); ?></td>
-                            <td><?= htmlspecialchars($holdingcage["notes_$i"]); ?></td>
-                        </tr>
-                    </table>
-                <?php endfor; ?>
+                <!-- Display details for each mouse in the cage -->
+                <?php if (!empty($mice)) : ?>
+                    <?php foreach ($mice as $index => $mouse) : ?>
+                        <h4>Mouse #<?= $index + 1; ?></h4>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Mouse ID</th>
+                                <th>Genotype</th>
+                                <th>Notes</th>
+                            </tr>
+                            <tr>
+                                <td><?= htmlspecialchars($mouse['mouse_id']); ?></td>
+                                <td><?= htmlspecialchars($mouse['genotype']); ?></td>
+                                <td><?= htmlspecialchars($mouse['notes']); ?></td>
+                            </tr>
+                        </table>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <p>No mice data available for this cage.</p>
+                <?php endif; ?>
             </div>
 
             <!-- Separator -->
