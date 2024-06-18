@@ -19,9 +19,21 @@ $labResult = mysqli_query($con, $labQuery);
 
 // Default lab name if the query fails or returns no result
 $labName = "My Vivarium";
-if ($row = mysqli_fetch_assoc($labResult)) {
-    $labName = $row['lab_name'];
-    $url = $row['url'];
+
+// Initialize sensor variables
+$r1_temp = $r1_humi = $r1_illu = $r1_pres = $r2_temp = $r2_humi = $r2_illu = $r2_pres = "";
+
+if ($datarow = mysqli_fetch_assoc($labResult)) {
+    $labName = $datarow['lab_name'];
+    $url = $datarow['url'];
+    $r1_temp = $datarow['r1_temp'];
+    $r1_humi = $datarow['r1_humi'];
+    $r1_illu = $datarow['r1_illu'];
+    $r1_pres = $datarow['r1_pres'];
+    $r2_temp = $datarow['r2_temp'];
+    $r2_humi = $datarow['r2_humi'];
+    $r2_illu = $datarow['r2_illu'];
+    $r2_pres = $datarow['r2_pres'];
 }
 ?>
 
@@ -143,7 +155,6 @@ if ($row = mysqli_fetch_assoc($labResult)) {
                     <li><a class="dropdown-item" href="hc_dash.php">Holding Cage</a></li>
                     <li><a class="dropdown-item" href="bc_dash.php">Breeding Cage</a></li>
                     <?php
-                    // Display admin options if the user is an admin
                     if (!empty($r1_temp) || !empty($r1_humi) || !empty($r1_illu) || !empty($r1_pres) || !empty($r2_temp) || !empty($r2_humi) || !empty($r2_illu) || !empty($r2_pres)) {
                         echo '<li><a class="dropdown-item" href="iot_sensors.php">IOT Sensors</a></li>';
                     }
