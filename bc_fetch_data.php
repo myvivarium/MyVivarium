@@ -67,7 +67,8 @@ while ($row = mysqli_fetch_assoc($result)) {
             $firstRow = false; // Set the flag to false after the first row
         }
         $tableRows .= '<td class="action-icons" style="width: 50%; white-space: nowrap;">
-                        <a href="bc_view.php?id=' . rawurlencode($breedingcage['cage_id']) . '" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="View Cage"><i class="fas fa-eye"></i></a>';
+                        <a href="bc_view.php?id=' . rawurlencode($breedingcage['cage_id']) . '" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="View Cage"><i class="fas fa-eye"></i></a>
+                        <a href="manage_tasks.php?id=' . rawurlencode($breedingcage['cage_id']) . '" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Manage Tasks"><i class="fas fa-tasks"></i></a>';
                         
         // Check if the user is an admin or assigned to this cage
         $assignedUsers = explode(',', $breedingcage['user']);

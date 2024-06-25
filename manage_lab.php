@@ -28,25 +28,28 @@ if (empty($_SESSION['csrf_token'])) {
 }
 
 // Fetch lab details from the database
-$query = "SELECT * FROM data LIMIT 1";
+$query = "SELECT * FROM settings";
 $result = mysqli_query($con, $query);
-$labData = mysqli_fetch_assoc($result);
+$labData = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $labData[$row['name']] = $row['value'];
+}
 
 // Provide default values if no data is found
-if (!$labData) {
-    $labData = [
-        'lab_name' => '',
-        'url' => '',
-        'r1_temp' => '',
-        'r1_humi' => '',
-        'r1_illu' => '',
-        'r1_pres' => '',
-        'r2_temp' => '',
-        'r2_humi' => '',
-        'r2_illu' => '',
-        'r2_pres' => ''
-    ];
-}
+$defaultLabData = [
+    'lab_name' => '',
+    'url' => '',
+    'r1_temp' => '',
+    'r1_humi' => '',
+    'r1_illu' => '',
+    'r1_pres' => '',
+    'r2_temp' => '',
+    'r2_humi' => '',
+    'r2_illu' => '',
+    'r2_pres' => ''
+];
+
+$labData = array_merge($defaultLabData, $labData);
 
 $updateMessage = '';
 
@@ -58,55 +61,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_lab'])) {
     }
 
     // Sanitize and fetch form inputs
-    $labName = filter_input(INPUT_POST, 'lab_name', FILTER_SANITIZE_STRING);
-    $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_URL);
-    $r1_temp = filter_input(INPUT_POST, 'r1_temp', FILTER_SANITIZE_STRING);
-    $r1_humi = filter_input(INPUT_POST, 'r1_humi', FILTER_SANITIZE_STRING);
-    $r1_illu = filter_input(INPUT_POST, 'r1_illu', FILTER_SANITIZE_STRING);
-    $r1_pres = filter_input(INPUT_POST, 'r1_pres', FILTER_SANITIZE_STRING);
-    $r2_temp = filter_input(INPUT_POST, 'r2_temp', FILTER_SANITIZE_STRING);
-    $r2_humi = filter_input(INPUT_POST, 'r2_humi', FILTER_SANITIZE_STRING);
-    $r2_illu = filter_input(INPUT_POST, 'r2_illu', FILTER_SANITIZE_STRING);
-    $r2_pres = filter_input(INPUT_POST, 'r2_pres', FILTER_SANITIZE_STRING);
-
-    // Check if data already exists
-    $checkQuery = "SELECT COUNT(*) as count FROM data";
-    $checkResult = mysqli_query($con, $checkQuery);
-    $rowCount = mysqli_fetch_assoc($checkResult)['count'];
-
-    if ($rowCount > 0) {
-        // Update existing data
-        $updateQuery = "UPDATE data SET lab_name = ?, url = ?, r1_temp = ?, r1_humi = ?, r1_illu = ?, r1_pres = ?, r2_temp = ?, r2_humi = ?, r2_illu = ?, r2_pres = ?";
-        $updateStmt = $con->prepare($updateQuery);
-        $updateStmt->bind_param("ssssssssss", $labName, $url, $r1_temp, $r1_humi, $r1_illu, $r1_pres, $r2_temp, $r2_humi, $r2_illu, $r2_pres);
-    } else {
-        // Insert new data
-        $insertQuery = "INSERT INTO data (lab_name, url, r1_temp, r1_humi, r1_illu, r1_pres, r2_temp, r2_humi, r2_illu, r2_pres) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $updateStmt = $con->prepare($insertQuery);
-        $updateStmt->bind_param("ssssssssss", $labName, $url, $r1_temp, $r1_humi, $r1_illu, $r1_pres, $r2_temp, $r2_humi, $r2_illu, $r2_pres);
+    $inputFields = ['lab_name', 'url', 'r1_temp', 'r1_humi', 'r1_illu', 'r1_pres', 'r2_temp', 'r2_humi', 'r2_illu', 'r2_pres'];
+    $inputData = [];
+    foreach ($inputFields as $field) {
+        $inputData[$field] = filter_input(INPUT_POST, $field, FILTER_SANITIZE_STRING);
     }
 
-    $updateStmt->execute();
-    $updateStmt->close();
+    // Update or insert new data
+    foreach ($inputData as $name => $value) {
+        $checkQuery = "SELECT COUNT(*) as count FROM settings WHERE name = ?";
+        $checkStmt = $con->prepare($checkQuery);
+        $checkStmt->bind_param("s", $name);
+        $checkStmt->execute();
+        $checkStmt->bind_result($count);
+        $checkStmt->fetch();
+        $checkStmt->close();
+
+        if ($count > 0) {
+            // Update existing setting
+            $updateQuery = "UPDATE settings SET value = ? WHERE name = ?";
+            $updateStmt = $con->prepare($updateQuery);
+            $updateStmt->bind_param("ss", $value, $name);
+        } else {
+            // Insert new setting
+            $insertQuery = "INSERT INTO settings (name, value) VALUES (?, ?)";
+            $updateStmt = $con->prepare($insertQuery);
+            $updateStmt->bind_param("ss", $name, $value);
+        }
+        $updateStmt->execute();
+        $updateStmt->close();
+    }
 
     // Refresh lab data
     $result = mysqli_query($con, $query);
-    $labData = mysqli_fetch_assoc($result);
-
-    if (!$labData) {
-        $labData = [
-            'lab_name' => '',
-            'url' => '',
-            'r1_temp' => '',
-            'r1_humi' => '',
-            'r1_illu' => '',
-            'r1_pres' => '',
-            'r2_temp' => '',
-            'r2_humi' => '',
-            'r2_illu' => '',
-            'r2_pres' => ''
-        ];
+    $labData = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $labData[$row['name']] = $row['value'];
     }
+
+    $labData = array_merge($defaultLabData, $labData);
 
     $updateMessage = "Lab information updated successfully.";
 }

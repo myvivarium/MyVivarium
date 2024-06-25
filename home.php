@@ -32,6 +32,24 @@ $matingCountResult = $con->query("SELECT COUNT(*) AS count FROM bc_basic");
 $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
 
+// Fetch the task stats for the logged-in user
+$userId = $_SESSION['user_id'];
+$taskStatsQuery = "
+    SELECT 
+        COUNT(*) AS total, 
+        SUM(CASE WHEN status = 'Completed' THEN 1 ELSE 0 END) AS completed,
+        SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) AS in_progress,
+        SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) AS pending
+    FROM tasks
+    WHERE FIND_IN_SET('$userId', assigned_to)
+";
+$taskStatsResult = $con->query($taskStatsQuery);
+$taskStatsRow = $taskStatsResult->fetch_assoc();
+$totalTasks = $taskStatsRow['total'];
+$completedTasks = $taskStatsRow['completed'];
+$inProgressTasks = $taskStatsRow['in_progress'];
+$pendingTasks = $taskStatsRow['pending'];
+
 // Include the header file
 require 'header.php';
 ?>
@@ -66,59 +84,117 @@ require 'header.php';
 </head>
 
 <body>
-        <div class="main-content content">
-            <!-- Display session messages if any -->
-            <?php include('message.php'); ?>
-            <br>
-            <div class="row align-items-center">
-                <!-- Welcome message with user information -->
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>
-                        <span style="font-size: smaller; color: #555; border-bottom: 2px solid #ccc; padding: 0 5px;">
-                            [<?php echo htmlspecialchars($_SESSION['position']); ?>]
-                        </span>
-                    </h2>
-                </div>
+    <div class="main-content content">
+        <!-- Display session messages if any -->
+        <?php include('message.php'); ?>
+        <br>
+        <div class="row align-items-center">
+            <!-- Welcome message with user information -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>
+                    <span style="font-size: smaller; color: #555; border-bottom: 2px solid #ccc; padding: 0 5px;">
+                        [<?php echo htmlspecialchars($_SESSION['position']); ?>]
+                    </span>
+                </h2>
+            </div>
 
-                <!-- Display stats for Holding Cage and Breeding Cage -->
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row mt-4">
-                            <!-- Holding Cage Stats -->
-                            <div class="col-md-6">
-                                <div class="card text-center">
-                                    <div class="card-header bg-primary text-white">
-                                        <a href="hc_dash.php" style="color: white; text-decoration: none;">Holding Cage</a>
-                                    </div>
-                                    <div class="card-body">
-                                        <h5 class="card-title"><?php echo $holdingCount; ?></h5>
-                                        <p class="card-text">Total Entries</p>
-                                    </div>
+            <!-- Display stats for Holding Cage and Breeding Cage -->
+            <h2 class="mt-4">Cages Summary</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mt-4">
+                        <!-- Holding Cage Stats -->
+                        <div class="col-md-6">
+                            <div class="card text-center">
+                                <div class="card-header bg-primary text-white">
+                                    <a href="hc_dash.php" style="color: white; text-decoration: none;">Holding Cage</a>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo $holdingCount; ?></h5>
+                                    <p class="card-text">Total Entries</p>
                                 </div>
                             </div>
-                            <!-- Breeding Cage Stats -->
-                            <div class="col-md-6">
-                                <div class="card text-center">
-                                    <div class="card-header bg-primary text-white">
-                                        <a href="bc_dash.php" style="color: white; text-decoration: none;">Breeding Cage</a>
-                                    </div>
-                                    <div class="card-body">
-                                        <h5 class="card-title"><?php echo $matingCount; ?></h5>
-                                        <p class="card-text">Total Entries</p>
-                                    </div>
+                        </div>
+                        <!-- Breeding Cage Stats -->
+                        <div class="col-md-6">
+                            <div class="card text-center">
+                                <div class="card-header bg-primary text-white">
+                                    <a href="bc_dash.php" style="color: white; text-decoration: none;">Breeding Cage</a>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo $matingCount; ?></h5>
+                                    <p class="card-text">Total Entries</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Display sticky notes section -->
-                <div style="margin-top: 50px;">
-                    <h2><?php echo htmlspecialchars($labName); ?> - General Notes</h2>
-                    <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
+            <!-- Display Task Stats for Logged-in User -->
+            <h2 class="mt-4">Tasks Summary</h2>
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-body">
+                    <div class="row mt-4">
+                        <!-- Total Tasks -->
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-header bg-info text-white">
+                                    <a href="manage_tasks.php?filter=assigned_to_me" style="color: white; text-decoration: none;">Total Tasks</a>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo $totalTasks; ?></h5>
+                                    <p class="card-text">Total</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Completed Tasks -->
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-header bg-success text-white">
+                                    <a href="manage_tasks.php?search=completed&filter=assigned_to_me" style="color: white; text-decoration: none;">Completed</a>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo $completedTasks; ?></h5>
+                                    <p class="card-text">Completed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- In Progress Tasks -->
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-header bg-warning text-white">
+                                    <a href="manage_tasks.php?search=in+progress&filter=assigned_to_me" style="color: white; text-decoration: none;">In Progress</a>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo $inProgressTasks; ?></h5>
+                                    <p class="card-text">In Progress</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pending Tasks -->
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-header bg-danger text-white">
+                                    <a href="manage_tasks.php?search=pending&filter=assigned_to_me" style="color: white; text-decoration: none;">Pending</a>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo $pendingTasks; ?></h5>
+                                    <p class="card-text">Pending</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Display sticky notes section -->
+            <div style="margin-top: 50px;">
+                <h2><?php echo htmlspecialchars($labName); ?> - General Notes</h2>
+                <?php include 'nt_app.php'; ?> <!-- Include the note application file -->
+            </div>
         </div>
+    </div>
     <!-- Include the footer file -->
     <?php include 'footer.php'; ?>
 

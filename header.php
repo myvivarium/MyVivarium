@@ -13,9 +13,9 @@
 // Include the database connection file
 require 'dbcon.php';
 
-// Query to fetch the lab name from the database
-$labQuery = "SELECT * FROM data LIMIT 1";
-$labResult = mysqli_query($con, $labQuery);
+// Query to fetch settings from the database
+$query = "SELECT * FROM settings";
+$result = mysqli_query($con, $query);
 
 // Default lab name if the query fails or returns no result
 $labName = "My Vivarium";
@@ -23,17 +23,42 @@ $labName = "My Vivarium";
 // Initialize sensor variables
 $r1_temp = $r1_humi = $r1_illu = $r1_pres = $r2_temp = $r2_humi = $r2_illu = $r2_pres = "";
 
-if ($datarow = mysqli_fetch_assoc($labResult)) {
-    $labName = $datarow['lab_name'];
-    $url = $datarow['url'];
-    $r1_temp = $datarow['r1_temp'];
-    $r1_humi = $datarow['r1_humi'];
-    $r1_illu = $datarow['r1_illu'];
-    $r1_pres = $datarow['r1_pres'];
-    $r2_temp = $datarow['r2_temp'];
-    $r2_humi = $datarow['r2_humi'];
-    $r2_illu = $datarow['r2_illu'];
-    $r2_pres = $datarow['r2_pres'];
+// Fetch the settings from the database
+$settings = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $settings[$row['name']] = $row['value'];
+}
+
+// Set variables based on fetched settings
+if (isset($settings['lab_name'])) {
+    $labName = $settings['lab_name'];
+}
+if (isset($settings['url'])) {
+    $url = $settings['url'];
+}
+if (isset($settings['r1_temp'])) {
+    $r1_temp = $settings['r1_temp'];
+}
+if (isset($settings['r1_humi'])) {
+    $r1_humi = $settings['r1_humi'];
+}
+if (isset($settings['r1_illu'])) {
+    $r1_illu = $settings['r1_illu'];
+}
+if (isset($settings['r1_pres'])) {
+    $r1_pres = $settings['r1_pres'];
+}
+if (isset($settings['r2_temp'])) {
+    $r2_temp = $settings['r2_temp'];
+}
+if (isset($settings['r2_humi'])) {
+    $r2_humi = $settings['r2_humi'];
+}
+if (isset($settings['r2_illu'])) {
+    $r2_illu = $settings['r2_illu'];
+}
+if (isset($settings['r2_pres'])) {
+    $r2_pres = $settings['r2_pres'];
 }
 ?>
 
@@ -169,6 +194,7 @@ if ($datarow = mysqli_fetch_assoc($labResult)) {
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="settingsMenuButton">
                     <li><a class="dropdown-item" href="user_profile.php">User Profile</a></li>
+                    <li><a class="dropdown-item" href="manage_tasks.php">Manage Tasks</a></li>
                     <?php
                     // Display admin options if the user is an admin
                     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {

@@ -23,22 +23,40 @@ if (!isset($_SESSION['username'])) {
     exit; // Exit to ensure no further code is executed
 }
 
-// Query to fetch the IoT sensor links
-$dataQuery = "SELECT * FROM data LIMIT 1";
+// Query to fetch the IoT sensor links from the settings table
+$dataQuery = "SELECT name, value FROM settings WHERE name IN ('r1_temp', 'r1_humi', 'r1_illu', 'r1_pres', 'r2_temp', 'r2_humi', 'r2_illu', 'r2_pres')";
 $dataResult = mysqli_query($con, $dataQuery);
 
 // Initialize sensor variables
 $r1_temp = $r1_humi = $r1_illu = $r1_pres = $r2_temp = $r2_humi = $r2_illu = $r2_pres = "";
 
-if ($datarow = mysqli_fetch_assoc($dataResult)) {
-    $r1_temp = $datarow['r1_temp'];
-    $r1_humi = $datarow['r1_humi'];
-    $r1_illu = $datarow['r1_illu'];
-    $r1_pres = $datarow['r1_pres'];
-    $r2_temp = $datarow['r2_temp'];
-    $r2_humi = $datarow['r2_humi'];
-    $r2_illu = $datarow['r2_illu'];
-    $r2_pres = $datarow['r2_pres'];
+while ($row = mysqli_fetch_assoc($dataResult)) {
+    switch ($row['name']) {
+        case 'r1_temp':
+            $r1_temp = $row['value'];
+            break;
+        case 'r1_humi':
+            $r1_humi = $row['value'];
+            break;
+        case 'r1_illu':
+            $r1_illu = $row['value'];
+            break;
+        case 'r1_pres':
+            $r1_pres = $row['value'];
+            break;
+        case 'r2_temp':
+            $r2_temp = $row['value'];
+            break;
+        case 'r2_humi':
+            $r2_humi = $row['value'];
+            break;
+        case 'r2_illu':
+            $r2_illu = $row['value'];
+            break;
+        case 'r2_pres':
+            $r2_pres = $row['value'];
+            break;
+    }
 }
 
 // Include the header file

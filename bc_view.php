@@ -28,13 +28,14 @@ if (!isset($_SESSION['username'])) {
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Query to get lab data (URL)
-$labQuery = "SELECT * FROM data LIMIT 1";
+// Query to get lab data (URL) from the settings table
+$labQuery = "SELECT value FROM settings WHERE name = 'url' LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
-// Fetch the URL from the lab data
+// Default value if the query fails or returns no result
+$url = "";
 if ($row = mysqli_fetch_assoc($labResult)) {
-    $url = $row['url'];
+    $url = $row['value'];
 }
 
 // Check if the ID parameter is set in the URL
@@ -164,11 +165,11 @@ require 'header.php';
     </script>
 
     <style>
-                body {
+        body {
             background: none !important;
             background-color: transparent !important;
         }
-        
+
         .container {
             max-width: 800px;
             background-color: #f8f9fa;
@@ -279,6 +280,10 @@ require 'header.php';
                     </a>
                     <a href="bc_edit.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage">
                         <i class="fas fa-edit"></i>
+                    </a>
+                    <!-- Button to mange tasks for the cage -->
+                    <a href="manage_tasks.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Manage Tasks">
+                        <i class="fas fa-tasks"></i>
                     </a>
                     <a href="javascript:void(0);" onclick="showQrCodePopup('<?= rawurlencode($breedingcage['cage_id']); ?>')" class="btn btn-success btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="QR Code">
                         <i class="fas fa-qrcode"></i>

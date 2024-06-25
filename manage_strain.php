@@ -100,41 +100,48 @@ $strainResult = $con->query($strainQuery);
             display: none;
             position: fixed;
             top: 0;
-            left: 0;
+            left: 0%;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
 
-        .table-actions {
+        /* Button and Form Layout */
+        .table-actions,
+        .action-buttons,
+        .form-buttons {
             display: flex;
             gap: 10px;
+        }
+
+        .table-actions {
+            justify-content: flex-start;
+        }
+
+        .form-buttons {
+            justify-content: space-between;
         }
 
         .add-button {
             display: flex;
             justify-content: flex-end;
+            margin-bottom: 20px;
         }
 
         .add-button .btn {
             margin-bottom: 20px;
         }
 
-        .extra-space {
-            margin-bottom: 50px;
-        }
-
-        .form-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: space-between;
-        }
-
         .required-asterisk {
             color: red;
         }
 
+        .extra-space {
+            margin-bottom: 50px;
+        }
+
+        /* Responsive Styles */
         @media (max-width: 767px) {
             .form-buttons {
                 flex-direction: column;
@@ -164,16 +171,32 @@ $strainResult = $con->query($strainQuery);
                 border: 1px solid #dee2e6;
             }
 
-            .table-actions {
+            .table td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                text-transform: uppercase;
+                margin-bottom: 5px;
+                display: block;
+            }
+
+            .table-actions,
+            .action-buttons {
                 flex-direction: column;
             }
 
-            .table-actions button {
+            .table-actions button,
+            .action-buttons .btn {
                 width: 100%;
                 margin-bottom: 10px;
             }
+
+            .table-actions {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
         }
     </style>
+
 </head>
 
 <body>
@@ -240,17 +263,19 @@ $strainResult = $con->query($strainQuery);
             <tbody>
                 <?php while ($row = $strainResult->fetch_assoc()) : ?>
                     <tr>
-                        <td><?= htmlspecialchars($row['str_id']); ?></td>
-                        <td><?= htmlspecialchars($row['str_name']); ?></td>
-                        <td><?= htmlspecialchars($row['str_aka']); ?></td>
-                        <td><a href="<?= htmlspecialchars($row['str_url']); ?>" target="_blank"><?= htmlspecialchars($row['str_url']); ?></a></td>
-                        <td><?= htmlspecialchars($row['str_rrid']); ?></td>
-                        <td class="table-actions">
-                            <button class="btn btn-warning btn-sm" title="Edit" onclick="editStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>')"><i class="fas fa-edit"></i></button>
-                            <form action="manage_strain.php" method="post" style="display:inline-block;">
-                                <input type="hidden" name="strain_id" value="<?= $row['str_id']; ?>">
-                                <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this strain?');"><i class="fas fa-trash-alt"></i></button>
-                            </form>
+                        <td data-label="ID"><?= htmlspecialchars($row['str_id']); ?></td>
+                        <td data-label="Name"><?= htmlspecialchars($row['str_name']); ?></td>
+                        <td data-label="Common Names"><?= htmlspecialchars($row['str_aka']); ?></td>
+                        <td data-label="URL"><a href="<?= htmlspecialchars($row['str_url']); ?>" target="_blank"><?= htmlspecialchars($row['str_url']); ?></a></td>
+                        <td data-label="RRID"><?= htmlspecialchars($row['str_rrid']); ?></td>
+                        <td data-label="Actions" class="table-actions">
+                            <div class="action-buttons">
+                                <button class="btn btn-warning btn-sm" title="Edit" onclick="editStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>')"><i class="fas fa-edit"></i></button>
+                                <form action="manage_strain.php" method="post" style="display:inline-block;">
+                                    <input type="hidden" name="strain_id" value="<?= $row['str_id']; ?>">
+                                    <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this strain?');"><i class="fas fa-trash-alt"></i></button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 <?php endwhile; ?>

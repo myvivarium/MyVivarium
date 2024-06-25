@@ -80,8 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Fetch all users from the database
-$query = "SELECT * FROM users";
-$result = mysqli_query($con, $query);
+$userquery = "SELECT * FROM users";
+$userresult = mysqli_query($con, $userquery);
 
 // Include the header file
 require 'header.php';
@@ -176,7 +176,7 @@ mysqli_close($con);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                        <?php while ($row = mysqli_fetch_assoc($userresult)) { ?>
                             <tr>
                                 <td data-label="Name"><?php echo htmlspecialchars($row['name']); ?></td>
                                 <td data-label="Username"><?php echo htmlspecialchars($row['username']); ?></td>

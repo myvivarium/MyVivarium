@@ -13,16 +13,15 @@
 
 require 'dbcon.php'; // Include your database connection file
 
-// Query to fetch the lab name and URL
-$labQuery = "SELECT * FROM data LIMIT 1";
+// Query to fetch the lab name from the settings table
+$labQuery = "SELECT value FROM settings WHERE name = 'lab_name' LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
 // Default value if the query fails or returns no result
 $labName = "My Vivarium";
 if ($row = mysqli_fetch_assoc($labResult)) {
-    $labName = $row['lab_name'];
+    $labName = $row['value'];
 }
-
 ?>
 
 <!DOCTYPE html>

@@ -24,13 +24,14 @@ if (!isset($_SESSION['username'])) {
     exit; // Exit to ensure no further code is executed
 }
 
-// Query to get lab data (URL)
-$labQuery = "SELECT * FROM data LIMIT 1";
+// Query to get lab data (URL) from the settings table
+$labQuery = "SELECT value FROM settings WHERE name = 'url' LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
 
-// Fetch the URL from the lab data
+// Default value if the query fails or returns no result
+$url = "";
 if ($row = mysqli_fetch_assoc($labResult)) {
-    $url = $row['url'];
+    $url = $row['value'];
 }
 
 // Check if the ID parameter is set in the URL

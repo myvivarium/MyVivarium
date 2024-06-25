@@ -20,15 +20,20 @@ require 'vendor/autoload.php';  // Include PHPMailer autoload file
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Query to fetch the lab name and URL
-$labQuery = "SELECT * FROM data LIMIT 1";
+// Query to fetch the lab name and URL from the settings table
+$labQuery = "SELECT name, value FROM settings WHERE name IN ('lab_name', 'url')";
 $labResult = mysqli_query($con, $labQuery);
 
-// Default value if the query fails or returns no result
+// Default values if the query fails or returns no result
 $labName = "My Vivarium";
-if ($row = mysqli_fetch_assoc($labResult)) {
-    $labName = $row['lab_name'];
-    $url = $row['url'];
+$url = "";
+
+while ($row = mysqli_fetch_assoc($labResult)) {
+    if ($row['name'] === 'lab_name') {
+        $labName = $row['value'];
+    } elseif ($row['name'] === 'url') {
+        $url = $row['value'];
+    }
 }
 
 // Function to send confirmation email
