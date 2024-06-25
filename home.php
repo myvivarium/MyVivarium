@@ -45,10 +45,17 @@ $taskStatsQuery = "
 ";
 $taskStatsResult = $con->query($taskStatsQuery);
 $taskStatsRow = $taskStatsResult->fetch_assoc();
-$totalTasks = $taskStatsRow['total'];
-$completedTasks = $taskStatsRow['completed'];
-$inProgressTasks = $taskStatsRow['in_progress'];
-$pendingTasks = $taskStatsRow['pending'];
+$totalTasks = $taskStatsRow['total'] ?? 0;
+$completedTasks = $taskStatsRow['completed'] ?? 0;
+$inProgressTasks = $taskStatsRow['in_progress'] ?? 0;
+$pendingTasks = $taskStatsRow['pending'] ?? 0;
+
+// Set completedTasks, inProgressTasks, and pendingTasks to zero if totalTasks is zero
+if ($totalTasks == 0) {
+    $completedTasks = 0;
+    $inProgressTasks = 0;
+    $pendingTasks = 0;
+}
 
 // Include the header file
 require 'header.php';
