@@ -3,7 +3,7 @@
 /**
  * Manage Lab Page
  * 
- * This script allows logged-in users to view and update lab details, including the lab name, URL, and IoT sensor links for two rooms.
+ * This script allows logged-in users to view and update lab details, including the lab name, URL, timezone, and IoT sensor links for two rooms.
  * 
  * Author: [Your Name]
  * Date: [Date]
@@ -39,6 +39,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 $defaultLabData = [
     'lab_name' => '',
     'url' => '',
+    'timezone' => '',
     'r1_temp' => '',
     'r1_humi' => '',
     'r1_illu' => '',
@@ -61,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_lab'])) {
     }
 
     // Sanitize and fetch form inputs
-    $inputFields = ['lab_name', 'url', 'r1_temp', 'r1_humi', 'r1_illu', 'r1_pres', 'r2_temp', 'r2_humi', 'r2_illu', 'r2_pres'];
+    $inputFields = ['lab_name', 'url', 'timezone', 'r1_temp', 'r1_humi', 'r1_illu', 'r1_pres', 'r2_temp', 'r2_humi', 'r2_illu', 'r2_pres'];
     $inputData = [];
     foreach ($inputFields as $field) {
         $inputData[$field] = filter_input(INPUT_POST, $field, FILTER_SANITIZE_STRING);
@@ -171,6 +172,11 @@ require 'header.php';
             <div class="form-group">
                 <label for="url">URL</label>
                 <textarea class="form-control" id="url" name="url" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['url']); ?></textarea>
+            </div>
+            <div class="form-group">
+                <label for="timezone">Timezone</label>
+                <a href="https://www.php.net/manual/en/timezones.php" target="_blank">List of Supported Timezones</a>
+                <textarea class="form-control" id="timezone" name="timezone" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['timezone']); ?></textarea>
             </div>
             <div class="form-group">
                 <label for="r1_temp">Room 1 Temperature Sensor</label>
