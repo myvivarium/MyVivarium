@@ -174,9 +174,9 @@ require 'header.php';
                 <textarea class="form-control" id="url" name="url" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['url']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="timezone">Timezone</label>
-                <a href="https://www.php.net/manual/en/timezones.php" target="_blank">List of Supported Timezones</a>
-                <textarea class="form-control" id="timezone" name="timezone" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['timezone']); ?></textarea>
+                <label for="timezone">Timezone</label><br>
+                <a href="https://www.php.net/manual/en/timezones.php" target="_blank" style="margin-bottom: 10px; display: inline-block;">List of Supported Timezones</a>
+                <input type="text" class="form-control" id="timezone" name="timezone" value="<?php echo htmlspecialchars($labData['timezone']); ?>">
             </div>
             <div class="form-group">
                 <label for="r1_temp">Room 1 Temperature Sensor</label>
