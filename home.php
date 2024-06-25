@@ -139,7 +139,7 @@ require 'header.php';
             </div>
 
             <!-- Display Task Stats for Logged-in User -->
-            <h2 class="mt-4">Tasks Summary</h2>
+            <h2 class="mt-4">Summary of Your Tasks</h2>
             <div class="card" style="margin-top: 20px;">
                 <div class="card-body">
                     <div class="row mt-4">
