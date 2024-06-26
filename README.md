@@ -35,6 +35,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 - MySQL
 - Composer
 - Web server (e.g., Apache, Nginx)
+- Tutorial to install Linux, Apache, MySQL, PHP (LAMP) Stack on Ubuntu - [DigitalOcean LAMP Stack Tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-lamp-stack-on-ubuntu)
 
 ### Steps
 
@@ -49,7 +50,6 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
     ```bash
     cd MyVivarium
     ```
-
 
 2. **Install dependencies using Composer:**
     ```bash
@@ -86,6 +86,9 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
         USE myvivarium;
         SOURCE /path/to/your/public_html/database/schema.sql;
         ```
+7. **Set up a cron job for `send_email.php`:**
+    Follow the instructions on [Cloudways Blog](https://www.cloudways.com/blog/schedule-cron-jobs-in-php/#run-a-cron-job-in-php) to schedule a cron job for `send_email.php`.
+
 ### Configuration
 #### SMTP Configuration
 Update the following environment variables in your `.env` file:
@@ -166,13 +169,18 @@ For initial setup, use the following default admin credentials:
 - `message.php`: Displays session messages as Bootstrap alerts.
 - `logout.php`: Logs out the user by destroying the session and redirecting to the login page.
 - `delete_file.php`: Script handles deleting uploaded files from the server and database.
-- `export_data.php`: Allows admins to export all database tables into CSV files and package them into a ZIP file for download.
+- `export_data.php`: Allows admins to export all database tables into CSV files.
 - `manage_tasks.php`: Manages tasks in a database, allowing users to add, edit, and delete tasks.
 - `get_task.php`: Retrieves specific task details from the database with the provided task ID.
 - `send_email.php`: Processes a queue of pending emails, requires setting it up as a cron job.
 - `demo-banner.php`: Displays a banner at the top of the page in demo mode.
 - `demo-credentials.php`: Displays the demo admin credentials on the login page.
 - `demo-disclaimer.php`: Displays the demo disclaimer on the login page.
+
+## Demo Website
+
+We have a demo website available at [https://demo.myvivarium.online](https://demo.myvivarium.online). Please use the access details provided on the login page. This is a demo site for exploring features. All data will be cleared periodically. Do not enter any sensitive or critical information.
+
 
 ## Contributing
 We welcome contributions to improve MyVivarium. Please follow these steps to contribute:
