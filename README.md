@@ -70,7 +70,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 4. **Install dependencies using Composer:**
     ```bash
     composer install
-    ``
+    ```
 
 5. **Set up the database:**
     - Log in to your MySQL server:
