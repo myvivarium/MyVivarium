@@ -183,9 +183,7 @@ For initial setup, use the following default admin credentials:
 
 We have a demo website available for you to explore the features of MyVivarium. Click the button below to access the demo site:
 
-[![Visit Demo Site](https://img.shields.io/badge/Visit-Demo%20Site-blue?style=for-the-badge)](https://demo.myvivarium.online)
-
-<a href="https://demo.myvivarium.online" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: #007bff; text-align: center; text-decoration: none; border-radius: 5px;">Visit Demo Site</a>
+[![Visit Demo Site](https://img.shields.io/badge/Visit-Demo%20Site-blue?style=for-the-badge)](https://demo.myvivarium.online) _(opens in a new tab)_
 
 ### Access Details
 
