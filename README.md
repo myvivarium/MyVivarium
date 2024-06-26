@@ -183,7 +183,7 @@ For initial setup, use the following default admin credentials:
 
 We have a demo website available for you to explore the features of MyVivarium. Click the button below to access the demo site:
 
-[![Visit Demo Site](https://img.shields.io/badge/Visit-Demo%20Site-blue?style=for-the-badge)](https://demo.myvivarium.online)
+[![Visit Demo Site](https://img.shields.io/badge/Visit-Demo%20Site-blue?style=for-the-badge)](https://demo.myvivarium.online) _(opens in a new tab)_
 
 ### Access Details
 
@@ -196,10 +196,9 @@ To log in and explore the functionalities, please use the following access detai
 
 **Disclaimer**: This is a demo site for exploring features. All data will be cleared periodically. Do not enter any sensitive or critical information.
 
----
-
 Feel free to explore, test, and provide feedback. Enjoy your experience with MyVivarium!
 
+---
 
 ## Contributing
 We welcome contributions to improve MyVivarium. Please follow these steps to contribute:
