@@ -26,9 +26,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 - Real-time environmental monitoring using IoT sensors.
 - Secure and compliant data management.
 
-## Screenshot
-
-![image](https://myvivarium.online/images/myvivarium.gif)
+![image](https://myvivarium.online/images/illustration.jpg)
 
 ## Installation
 
@@ -119,14 +117,9 @@ DB_PASSWORD=password
 DB_DATABASE=myvivarium
  ```
 
-### Default Admin User
+## Screenshot
 
-For initial setup, use the following default admin credentials:
-
-- **Email**: admin@myvivarium.online
-- **Password**: password
-
-**Important**: Delete this default admin user and create a new admin user after the initial setup for security reasons.
+![image](https://myvivarium.online/images/myvivarium.gif)
 
 ## Usage
 1. Access the application in your web browser:
@@ -137,6 +130,15 @@ For initial setup, use the following default admin credentials:
 2. Register a new user or log in with existing credentials.
 
 3. Manage your lab, users, and monitor environmental conditions in real-time.
+
+### Default Admin User
+
+For initial setup, use the following default admin credentials:
+
+- **Email**: admin@myvivarium.online
+- **Password**: password
+
+**Important**: Delete this default admin user and create a new admin user after the initial setup for security reasons.
 
 ## Function of Each File
 - `dbcon.php`: Manages database connections.
