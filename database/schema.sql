@@ -28,19 +28,19 @@ CREATE TABLE `bc_litter` (
   PRIMARY KEY (`id`)                                -- Setting the primary key
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Creating the table to store environmental data for different rooms
-CREATE TABLE `data` (
-  `lab_name` varchar(255) NOT NULL,                 -- Name of the lab
-  `url` varchar(255) NOT NULL,                      -- URL associated with the lab
-  `r1_temp` varchar(255) NOT NULL,                  -- Temperature in room 1
-  `r1_humi` varchar(255) NOT NULL,                  -- Humidity in room 1
-  `r1_illu` varchar(255) NOT NULL,                  -- Illumination in room 1
-  `r1_pres` varchar(255) NOT NULL,                  -- Pressure in room 1
-  `r2_temp` varchar(255) NOT NULL,                  -- Temperature in room 2
-  `r2_humi` varchar(255) NOT NULL,                  -- Humidity in room 2
-  `r2_illu` varchar(255) NOT NULL,                  -- Illumination in room 2
-  `r2_pres` varchar(255) NOT NULL                   -- Pressure in room 2
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+-- Creating the table to store email queue information
+CREATE TABLE `email_queue` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
+  `recipient` varchar(255) NOT NULL,                -- Recipient email address
+  `subject` varchar(255) NOT NULL,                  -- Subject of the email
+  `body` text NOT NULL,                             -- Body content of the email
+  `status` enum('pending','sent','failed') NOT NULL DEFAULT 'pending', -- Email status
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(), -- Creation timestamp
+  `scheduled_at` timestamp NOT NULL DEFAULT current_timestamp(), -- Scheduled timestamp
+  `sent_at` timestamp NULL DEFAULT NULL,            -- Sent timestamp
+  `error_message` text DEFAULT NULL,                -- Error message if the email failed
+  PRIMARY KEY (`id`)                                -- Setting the primary key
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Creating the table to store information about uploaded files
 CREATE TABLE `files` (
@@ -57,31 +57,26 @@ CREATE TABLE `hc_basic` (
   `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
   `cage_id` varchar(255) NOT NULL,                  -- Identifier for the cage
   `pi_name` varchar(255) NOT NULL,                  -- Name of the principal investigator
-  `strain` varchar(255) NOT NULL,                   -- Strain of the animals
-  `iacuc` varchar(255) NOT NULL,                    -- IACUC (Institutional Animal Care and Use Committee) approval number
+  `strain` varchar(255) NOT NULL,                   -- Strain information
+  `iacuc` varchar(255) NOT NULL,                    -- IACUC approval number
   `user` varchar(255) NOT NULL,                     -- User associated with the record
   `qty` int(11) NOT NULL,                           -- Quantity of animals
   `dob` date NOT NULL,                              -- Date of birth of the animals
   `sex` varchar(255) NOT NULL,                      -- Sex of the animals
   `parent_cg` varchar(255) NOT NULL,                -- Parent cage identifier
   `remarks` text NOT NULL,                          -- Additional remarks
-  `mouse_id_1` varchar(255) NOT NULL,               -- Identifier for mouse 1
-  `genotype_1` varchar(255) NOT NULL,               -- Genotype of mouse 1
-  `notes_1` text NOT NULL,                          -- Notes for mouse 1
-  `mouse_id_2` varchar(255) NOT NULL,               -- Identifier for mouse 2
-  `genotype_2` varchar(255) NOT NULL,               -- Genotype of mouse 2
-  `notes_2` text NOT NULL,                          -- Notes for mouse 2
-  `mouse_id_3` varchar(255) NOT NULL,               -- Identifier for mouse 3
-  `genotype_3` varchar(255) NOT NULL,               -- Genotype of mouse 3
-  `notes_3` text NOT NULL,                          -- Notes for mouse 3
-  `mouse_id_4` varchar(255) NOT NULL,               -- Identifier for mouse 4
-  `genotype_4` varchar(255) NOT NULL,               -- Genotype of mouse 4
-  `notes_4` text NOT NULL,                          -- Notes for mouse 4
-  `mouse_id_5` varchar(255) NOT NULL,               -- Identifier for mouse 5
-  `genotype_5` varchar(255) NOT NULL,               -- Genotype of mouse 5
-  `notes_5` text NOT NULL,                          -- Notes for mouse 5
   PRIMARY KEY (`id`)                                -- Setting the primary key
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- Creating the table to store information about individual mice
+CREATE TABLE `mouse` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
+  `cage_id` varchar(255) NOT NULL,                  -- Identifier for the cage
+  `mouse_id` varchar(255) NOT NULL,                 -- Identifier for the mouse
+  `genotype` varchar(255) NOT NULL,                 -- Genotype information
+  `notes` text NOT NULL,                            -- Additional notes
+  PRIMARY KEY (`id`)                                -- Setting the primary key
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Creating the table to store notes data
 CREATE TABLE `nt_data` (
@@ -92,6 +87,40 @@ CREATE TABLE `nt_data` (
   `user_id` text NOT NULL,                          -- Identifier for the user who created the note
   PRIMARY KEY (`id`)                                -- Setting the primary key
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- Creating the table to store settings
+CREATE TABLE `settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
+  `name` varchar(255) NOT NULL,                     -- Name of the setting
+  `value` varchar(255) NOT NULL,                    -- Value of the setting
+  PRIMARY KEY (`id`)                                -- Setting the primary key
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Creating the table to store strain information
+CREATE TABLE `strain` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
+  `str_id` varchar(50) NOT NULL,                    -- Strain identifier
+  `str_name` varchar(255) NOT NULL,                 -- Strain name
+  `str_aka` varchar(255) DEFAULT NULL,              -- Alternate name for the strain
+  `str_url` varchar(255) DEFAULT NULL,              -- URL for the strain information
+  `str_rrid` varchar(255) DEFAULT NULL,             -- RRID for the strain
+  PRIMARY KEY (`id`)                                -- Setting the primary key
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Creating the table to store tasks
+CREATE TABLE `tasks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
+  `title` varchar(250) NOT NULL,                    -- Title of the task
+  `description` text NOT NULL,                      -- Description of the task
+  `assigned_by` varchar(50) NOT NULL,               -- User who assigned the task
+  `assigned_to` varchar(50) NOT NULL,               -- User assigned to the task
+  `status` enum('Pending','In Progress','Completed') NOT NULL DEFAULT 'Pending', -- Status of the task
+  `completion_date` date DEFAULT NULL,              -- Completion date of the task
+  `cage_id` varchar(50) DEFAULT NULL,               -- Identifier for the cage (optional)
+  `creation_date` timestamp NOT NULL DEFAULT current_timestamp(), -- Creation timestamp
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(), -- Update timestamp
+  PRIMARY KEY (`id`)                                -- Setting the primary key
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Creating the table to store user information
 CREATE TABLE `users` (
@@ -112,7 +141,9 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Inserting initial data into the users table
-INSERT INTO `users` 
-(`name`, `username`, `position`, `role`, `password`, `status`, `reset_token`, `reset_token_expiration`, `login_attempts`, `account_locked`, `email_verified`, `email_token`)
-VALUES 
-('Temporary Admin', 'admin@myvivarium.online', 'Principal Investigator', 'admin', '$2y$10$Y3sGVYIhu2BjpSFh9HA4We.lUhO.hvS9OVPb2Fb82N0BJGVFIXsmW', 'approved', NULL, NULL, 0, NULL, 1, NULL);
+INSERT INTO `users` (`name`, `username`, `position`, `role`, `password`, `status`, `reset_token`, `reset_token_expiration`, `login_attempts`, `account_locked`, `email_verified`, `email_token`)
+VALUES ('Temporary Admin', 'admin@myvivarium.online', 'Principal Investigator', 'admin', '$2y$10$Y3sGVYIhu2BjpSFh9HA4We.lUhO.hvS9OVPb2Fb82N0BJGVFIXsmW', 'approved', NULL, NULL, 0, NULL, 1, NULL);
+
+-- Inserting initial data into the strain table
+INSERT INTO `strain` (`str_id`, `str_name`, `str_aka`, `str_url`, `str_rrid`) 
+VALUES ('035561', 'STOCK Tc(HSA21,CAG-EGFP)1Yakaz/J', 'B6D2F1 TcMAC21', 'https://www.jax.org/strain/035561', 'IMSR_JAX:035561');
