@@ -6,8 +6,6 @@
  * This script displays the IOT sensor data for different rooms in the lab. The data is shown using iframes 
  * that load content from specified URLs stored in the database. The user must be logged in to access this page.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

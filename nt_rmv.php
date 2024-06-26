@@ -7,8 +7,6 @@
  * It expects a POST request with the note ID. The note can only be deleted by the user who created it.
  * The response is returned as JSON.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Include the database connection file

@@ -5,8 +5,6 @@
  * 
  * This script logs out the user by destroying the session and redirecting to the index.php page.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Check if a session is already started, and start a new session if not

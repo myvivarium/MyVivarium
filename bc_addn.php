@@ -9,8 +9,6 @@
  * and processes the form submission for adding a new breeding cage. The script also includes the functionality
  * to add litter data associated with the breeding cage.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

@@ -7,8 +7,6 @@
  * The selected cage IDs are passed to another script that generates printable cards for each cage.
  * The script includes session management, database retrieval, and HTML rendering with Select2 for enhanced dropdowns.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

@@ -6,8 +6,6 @@
  * This script retrieves and displays sticky notes for the logged-in user, allowing them to add, edit, and delete notes.
  * It uses AJAX for form submissions and dynamically updates the page without reloading.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 

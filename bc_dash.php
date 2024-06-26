@@ -8,8 +8,6 @@
  * for displaying breeding cages, search functionality, and actions such as adding a new cage or printing cage cards.
  * The script uses JavaScript for handling search, pagination, and confirmation dialogs.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

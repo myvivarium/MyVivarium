@@ -8,8 +8,6 @@
  * details. The script handles multiple cage IDs passed via URL parameters, generates QR codes for each cage, 
  * and arranges the cards in a 2x2 grid layout suitable for printing.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

@@ -8,8 +8,6 @@
  * a table for displaying existing strains. The script uses PHP sessions for message handling and includes basic 
  * input sanitization for security.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 session_start(); // Start the session to use session variables

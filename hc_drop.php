@@ -6,8 +6,6 @@
  * This script handles the deletion of a cage and its related files and mouse data from the database. 
  * It uses prepared statements to prevent SQL injection and transactions to ensure data integrity.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

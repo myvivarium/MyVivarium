@@ -7,8 +7,6 @@
  * It generates JSON output containing the table rows and pagination links, which can be dynamically 
  * inserted into an HTML page via JavaScript.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

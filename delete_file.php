@@ -7,8 +7,6 @@
  * It starts a session, checks if the file exists, deletes it from the server and database, and then redirects the user
  * to a specified URL.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

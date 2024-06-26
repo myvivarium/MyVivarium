@@ -7,8 +7,6 @@
  * It expects a POST request with the note ID and the updated note text.
  * The response is returned as JSON.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
  // Check if the user is logged in

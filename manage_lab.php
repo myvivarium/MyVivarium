@@ -5,8 +5,6 @@
  * 
  * This script allows logged-in users to view and update lab details, including the lab name, URL, timezone, and IoT sensor links for two rooms.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

@@ -5,8 +5,6 @@
  * 
  * This script handles the creation of new holding cages and includes functionalities to dynamically add or remove mouse data.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

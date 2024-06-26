@@ -5,8 +5,6 @@
  * 
  * This script handles the editing of holding cage records, including mouse data. It allows for dynamic addition and deletion of mouse records.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

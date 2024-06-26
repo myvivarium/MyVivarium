@@ -8,8 +8,6 @@
  * fetches cage data with pagination, and generates HTML for table rows and pagination links.
  * The generated HTML is returned as a JSON response.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

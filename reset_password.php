@@ -8,8 +8,6 @@
  * the token, allows the user to enter a new password, and updates 
  * the database with the new password if the token is valid.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Include the database connection file

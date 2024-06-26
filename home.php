@@ -7,8 +7,6 @@
  * along with statistics on holding and breeding cages, and provides links to their respective dashboards. 
  * Additionally, it includes a section for general notes.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

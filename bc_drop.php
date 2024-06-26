@@ -9,8 +9,6 @@
  * and redirects the user to the dashboard with a success message. If any errors occur, the transaction is rolled back,
  * and an error message is set.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

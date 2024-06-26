@@ -7,8 +7,6 @@
  * It uses the Select2 library for an enhanced multi-select dropdown and opens the selected 
  * cage IDs in a new tab for printing.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

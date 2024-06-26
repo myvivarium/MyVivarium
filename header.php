@@ -6,8 +6,6 @@
  * This script generates a header and navigation menu for the web application. The header displays the lab name and logo, 
  * and the navigation menu includes links to various dashboards and settings, with additional options for admin users.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Include the database connection file

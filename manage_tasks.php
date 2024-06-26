@@ -8,8 +8,6 @@
  * a table for displaying existing tasks. The script uses PHP sessions for message handling and includes basic 
  * input sanitization for security.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 ob_start(); // Start output buffering

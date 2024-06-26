@@ -6,8 +6,6 @@
  * This script displays detailed information about a specific holding cage, including related files and notes. 
  * It also provides options to view, edit, print the cage information, and generate a QR code for the cage.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

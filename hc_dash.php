@@ -7,8 +7,6 @@
  * adding new cages, printing cage cards, searching cages, and pagination. The page content is dynamically
  * loaded using JavaScript and AJAX.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

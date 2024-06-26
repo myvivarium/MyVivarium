@@ -7,8 +7,6 @@
  * The script first verifies if the user is logged in and has admin privileges. It then retrieves all table names from the database,
  * creates CSV files for each table, and stores these CSV files in a ZIP archive. The ZIP file is then provided for download.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start the session to use session variables

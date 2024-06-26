@@ -1,6 +1,16 @@
 #!/usr/bin/php
 <?php
 
+/**
+ * Email Queue Processor
+ *
+ * This script processes a queue of pending emails stored in the database. It attempts to send each email using 
+ * the PHPMailer library. If an email is successfully sent, its status is updated to 'sent' in the database. 
+ * If the sending fails, the status is updated to 'failed' and an error message is logged. The script is intended 
+ * to be executed from the command line.
+ * 
+ */
+
 require 'dbcon.php';  // Include database connection file
 require 'config.php';  // Include configuration file
 require 'vendor/autoload.php'; // Load PHPMailer library
@@ -8,7 +18,14 @@ require 'vendor/autoload.php'; // Load PHPMailer library
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Function to send an email using PHPMailer
+/**
+ * Function to send an email using PHPMailer
+ * 
+ * @param mixed $recipients Recipients of the email, either a comma-separated string or an array
+ * @param string $subject Subject of the email
+ * @param string $body Body of the email
+ * @return bool True if the email was sent successfully, false otherwise
+ */
 function sendEmail($recipients, $subject, $body)
 {
     $mail = new PHPMailer(true);
@@ -47,12 +64,15 @@ function sendEmail($recipients, $subject, $body)
         $mail->send();
         return true; // Return true if email sent successfully
     } catch (Exception $e) {
+        // Log error and return false if email sending fails
         error_log('Mail could not be sent. Mailer Error: ' . $mail->ErrorInfo);
-        return false; // Return false if email sending fails
+        return false;
     }
 }
 
-// Function to send pending emails from the queue
+/**
+ * Function to send pending emails from the queue
+ */
 function sendPendingEmails()
 {
     global $con;

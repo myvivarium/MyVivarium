@@ -6,8 +6,6 @@
  * This script handles user login, displays login errors, and redirects authenticated users to their intended destination or home page. 
  * It also displays a carousel of images and highlights the features of the web application.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Enable error reporting for debugging

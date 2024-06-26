@@ -7,8 +7,6 @@
  * for SMTP server settings and sender information. These constants are used for configuring the SMTP
  * server for sending emails.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Load Composer's autoload file

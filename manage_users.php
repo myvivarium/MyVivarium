@@ -6,8 +6,6 @@
  * This script provides functionality for an admin to manage users, including approving, setting to pending, deleting users,
  * and changing user roles. It also includes CSRF protection and session security enhancements.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

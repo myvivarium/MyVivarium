@@ -7,8 +7,6 @@
  * It verifies the email token from the URL, updates the user's email 
  * verification status, and displays an appropriate message.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 require 'dbcon.php'; // Include your database connection file

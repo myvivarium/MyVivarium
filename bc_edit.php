@@ -7,8 +7,6 @@
  * retrieves existing cage data, processes form submissions for updating the cage and litter information, and handles file uploads.
  * It also ensures security by regenerating session IDs and validating CSRF tokens.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

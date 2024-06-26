@@ -6,8 +6,6 @@
  * This script handles the addition of a note to the database. It checks if the user is logged in, processes the form submission,
  * and inserts the note into the 'nt_data' table. The response is returned as JSON.
  * 
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Include the database connection file

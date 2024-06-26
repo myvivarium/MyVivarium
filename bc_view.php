@@ -7,8 +7,6 @@
  * It retrieves data from the database, including basic information, associated files, and litter details.
  * The script ensures that only logged-in users can access the page and provides options for editing, printing, and viewing a QR code.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session

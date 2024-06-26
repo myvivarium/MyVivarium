@@ -7,8 +7,6 @@
  * generates printable cards for each cage, and displays them in a 2x2 table format.
  * The script also includes QR codes for quick access to detailed views of each cage.
  *
- * Author: [Your Name]
- * Date: [Date]
  */
 
 // Start a new session or resume the existing session
