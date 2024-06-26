@@ -169,7 +169,7 @@ For initial setup, use the following default admin credentials:
 - `export_data.php`: Allows admins to export all database tables into CSV files and package them into a ZIP file for download.
 - `manage_tasks.php`: Manages tasks in a database, allowing users to add, edit, and delete tasks.
 - `get_task.php`: Retrieves specific task details from the database with the provided task ID.
-- `send_email.php`: Processes a queue of pending emails using the PHPMailer library requires setting it up as a cron job.
+- `send_email.php`: Processes a queue of pending emails, requires setting it up as a cron job.
 - `demo-banner.php`: Displays a banner at the top of the page in demo mode.
 - `demo-credentials.php`: Displays the demo admin credentials on the login page.
 - `demo-disclaimer.php`: Displays the demo disclaimer on the login page.
