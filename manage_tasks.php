@@ -117,8 +117,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $assignedToEmailStmt->close();
         }
 
+        // Fetch the timezone from the settings table
+        $timezoneQuery = "SELECT value FROM settings WHERE name = 'timezone'";
+        $timezoneResult = mysqli_query($con, $timezoneQuery);
+        $timezoneRow = mysqli_fetch_assoc($timezoneResult);
+        $timezone = $timezoneRow['value'] ?? 'America/New_York';
+
+        // Set the default timezone
+        date_default_timezone_set($timezone);
+
         // Get the current date and time
-        date_default_timezone_set('America/New_York');
         $dateTime = date('Y-m-d H:i:s');
 
         // Convert assignedBy and assignedTo IDs to names
