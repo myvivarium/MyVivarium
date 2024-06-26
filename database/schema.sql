@@ -137,12 +137,13 @@ CREATE TABLE `users` (
   `account_locked` datetime DEFAULT NULL,           -- Datetime when the account was locked (optional)
   `email_verified` tinyint(1) DEFAULT 0,            -- Email verification status
   `email_token` varchar(255) DEFAULT NULL,          -- Token for email verification (optional)
+  `initials` varchar(10) DEFAULT NULL,              -- Name based initials
   PRIMARY KEY (`id`)                                -- Setting the primary key
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Inserting initial data into the users table
-INSERT INTO `users` (`name`, `username`, `position`, `role`, `password`, `status`, `reset_token`, `reset_token_expiration`, `login_attempts`, `account_locked`, `email_verified`, `email_token`)
-VALUES ('Temporary Admin', 'admin@myvivarium.online', 'Principal Investigator', 'admin', '$2y$10$Y3sGVYIhu2BjpSFh9HA4We.lUhO.hvS9OVPb2Fb82N0BJGVFIXsmW', 'approved', NULL, NULL, 0, NULL, 1, NULL);
+INSERT INTO `users` (`name`, `username`, `position`, `role`, `password`, `status`, `reset_token`, `reset_token_expiration`, `login_attempts`, `account_locked`, `email_verified`, `email_token`, `initials`)
+VALUES ('Temporary Admin', 'admin@myvivarium.online', 'Principal Investigator', 'admin', '$2y$10$Y3sGVYIhu2BjpSFh9HA4We.lUhO.hvS9OVPb2Fb82N0BJGVFIXsmW', 'approved', NULL, NULL, 0, NULL, 1, NULL, 'TAN');
 
 -- Inserting initial data into the strain table
 INSERT INTO `strain` (`str_id`, `str_name`, `str_aka`, `str_url`, `str_rrid`) 

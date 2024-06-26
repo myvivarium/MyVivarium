@@ -51,33 +51,28 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
     ```
     ```bash
     cd MyVivarium
-    ```
+    ````
 
-2. **Install dependencies using Composer:**
-    ```bash
-    composer install
-    ```
-
-3. **Set up the environment configuration:**
+2. **Set up the environment configuration:**
     - Copy the `.env.example` to `.env`:
         ```bash
         cp .env.example .env
         ```
     - Update the `.env` file with your database and SMTP settings. See [Configuration](#configuration)
 
-4. **Place the project files in the web server directory:**
+3. **Place the project files in the web server directory:**
     - Move all the contents of the MyVivarium directory to your web server’s public directory (e.g., `public_html`, `www`):
         ```bash
         mv * /path/to/your/public_html/
         cp .env /path/to/your/public_html/
         ```
-5. **Set ownership and permissions:**
-    ```bash
-    sudo chown -R www-data:www-data /path/to/your/public_html
-    sudo chmod -R 755 /path/to/your/public_html
-    ```
 
-6. **Set up the database:**
+4. **Install dependencies using Composer:**
+    ```bash
+    composer install
+    ``
+
+5. **Set up the database:**
     - Log in to your MySQL server:
         ```bash
         mysql -u yourusername -p
@@ -88,8 +83,19 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
         USE myvivarium;
         SOURCE /path/to/your/public_html/database/schema.sql;
         ```
-7. **Set up a cron job for `send_email.php`:**
+    - Alternatively, you can use your own database or an already existing database:
+        ```sql
+        SOURCE /path/to/your/public_html/database/schema.sql;
+        ```
+
+6. **Set up a cron job for `send_email.php`:**
     Follow the instructions on [Cloudways Blog](https://www.cloudways.com/blog/schedule-cron-jobs-in-php/#run-a-cron-job-in-php) to schedule a cron job for `send_email.php`.
+
+7. **Set ownership and permissions (if required):**
+    ```bash
+    sudo chown -R www-data:www-data /path/to/your/public_html
+    sudo chmod -R 755 /path/to/your/public_html
+    ```
 
 ### Configuration
 #### SMTP Configuration
