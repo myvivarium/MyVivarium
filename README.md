@@ -139,6 +139,7 @@ For initial setup, use the following default admin credentials:
 - `user_profile.php`: Allows users to update their profile and request password resets.
 - `manage_users.php`: Provides functionalities for admin to manage users.
 - `manage_lab.php`: Allows admins to manage lab details.
+- `manage_strain.php`: Allows admins to manage mouse strain details.
 - `iot_sensors.php`: Displays IoT sensor data for different rooms using iframes.
 - `bc_dash.php`: Displays a dashboard for managing breeding cages with search and pagination.
 - `bc_fetch_data.php`: Handles pagination and search functionality for breeding cages.
@@ -164,7 +165,14 @@ For initial setup, use the following default admin credentials:
 - `footer.php`: Provides the footer section with dynamic lab name and current year.
 - `message.php`: Displays session messages as Bootstrap alerts.
 - `logout.php`: Logs out the user by destroying the session and redirecting to the login page.
-- `delete_file.php`: Handles the deletion of uploaded files from the server and database.
+- `delete_file.php`: Script handles deleting uploaded files from the server and database.
+- `export_data.php`: Allows admins to export all database tables into CSV files and package them into a ZIP file for download.
+- `manage_tasks.php`: Manages tasks in a database, allowing users to add, edit, and delete tasks.
+- `get_task.php`: Retrieves specific task details from the database with the provided task ID.
+- `send_email.php`: Processes a queue of pending emails using the PHPMailer library requires setting it up as a cron job.
+- `demo-banner.php`: Displays a banner at the top of the page in demo mode.
+- `demo-credentials.php`: Displays the demo admin credentials on the login page.
+- `demo-disclaimer.php`: Displays the demo disclaimer on the login page.
 
 ## Contributing
 We welcome contributions to improve MyVivarium. Please follow these steps to contribute:

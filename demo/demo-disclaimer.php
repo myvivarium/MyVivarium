@@ -6,7 +6,6 @@
         Demo Disclaimer Display
 
         This HTML and CSS code snippet displays the demo disclaimer in a highlighted div box 
-
     -->
 
     <style>

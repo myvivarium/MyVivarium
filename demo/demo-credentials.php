@@ -8,7 +8,6 @@
         This HTML and CSS code snippet displays the demo username and password in a highlighted div box 
         at the bottom left corner of the index.php page. The box is styled to stand out with a light red 
         background and dark red text, ensuring that the credentials are easily noticeable.
-
     -->
 
     <style>

@@ -7,7 +7,6 @@
 
         This HTML file displays a fixed warning banner at the top of the webpage to indicate that the site is a demo
         and for testing purposes only. The banner is styled to be highly visible with a red background and white text.
-        
     -->
 
     <style>
