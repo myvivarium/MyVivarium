@@ -314,7 +314,7 @@ mysqli_close($con);
 <body>
 
     <!-- Header Section -->
-    <?php if ($demo === "yes") include('demo/demo.php'); ?>
+    <?php if ($demo === "yes") include('demo/demo-banner.php'); ?>
     <div class="header">
         <div class="logo-container">
             <a href="home.php">
@@ -346,6 +346,7 @@ mysqli_close($con);
                             <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0665.JPG" alt="Image 16"> </div>
                         </div>
                     </div>
+                    <?php if ($demo === "yes") include('demo/demo-disclaimer.php'); ?>
                 </div>
 
                 <!-- Login Form Column -->
@@ -368,12 +369,16 @@ mysqli_close($con);
                             </div>
                             <button type="submit" class="btn btn-primary" name="login">Login</button>
                             <a href="register.php" class="btn btn-secondary">Register</a>
-                            <br><br>
+                            <br>
+                            <br>
                             <a href="forgot_password.php" class="forgot-password-link">Forgot Password?</a>
                         </form>
                     </div>
+                    <?php if ($demo === "yes") include('demo/demo-credentials.php'); ?>
                 </div>
             </div>
+
+            
 
             <!-- New Row for Unique Features -->
             <div class="row mt-4">

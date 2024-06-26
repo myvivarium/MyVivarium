@@ -314,10 +314,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
                 </select>
             </div>
             <br>
-            <div class="form-group">
-                <label for="username">Email Address</label>
-                <input type="email" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
-            </div>
+            <?php if ($demo !== "yes") : ?>
+                <div class="form-group">
+                    <label for="username">Email Address</label>
+                    <input type="email" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
+                </div>
+            <?php endif; ?>
             <br>
             <button type="submit" class="btn1 btn-primary" name="update_profile">Update Profile</button>
         </form>

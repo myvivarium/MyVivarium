@@ -2,6 +2,14 @@
 <html lang="en">
 
 <head>
+    <!--
+        Demo Website Warning Banner
+
+        This HTML file displays a fixed warning banner at the top of the webpage to indicate that the site is a demo
+        and for testing purposes only. The banner is styled to be highly visible with a red background and white text.
+        
+    -->
+
     <style>
         .demo-warning {
             position: fixed;
@@ -26,9 +34,9 @@
 </head>
 
 <body>
+    <!-- Demo warning banner -->
     <div class="demo-warning">
         <span style="font-family: 'Arial', sans-serif;">DEMO WEBSITE: FOR TESTING PURPOSES ONLY.</span>
-    </div>
     </div>
 </body>
 
