@@ -11,12 +11,13 @@
 // Start the session to use session variables
 session_start();
 
-// Include database connection
+// Include the database connection file
 require 'dbcon.php';
 
-// Initialize response array
+// Initialize the response array
 $response = [];
 
+// Check if a valid task ID is provided via GET request
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     // Validate and sanitize the task ID
     $taskId = intval($_GET['id']);
@@ -25,10 +26,11 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $stmt = $con->prepare("SELECT * FROM tasks WHERE id = ?");
     $stmt->bind_param("i", $taskId);
 
+    // Execute the query and get the result
     if ($stmt->execute()) {
-        // Execute the query and get the result
         $result = $stmt->get_result();
 
+        // Check if a matching task is found
         if ($result->num_rows > 0) {
             // Fetch task data if a matching task is found
             $task = $result->fetch_assoc();
@@ -64,5 +66,4 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 // Output the response as JSON
 header('Content-Type: application/json');
 echo json_encode($response);
-
 ?>

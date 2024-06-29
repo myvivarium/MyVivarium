@@ -17,19 +17,19 @@
     <style>
         /* Style for the demo warning banner */
         .demo-warning {
-            position: fixed; /* Fixes the banner at the top */
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100%; /* Full width of the viewport */
-            height: 30px; /* Fixed height */
-            font-size: medium; /* Medium font size */
-            background-color: #dc3545; /* Red background color */
-            color: #ffffff; /* White text color */
-            text-align: center; /* Center the text */
-            vertical-align: middle; /* Vertical alignment */
-            padding-top: 2px; /* Padding at the top */
-            z-index: 1000; /* Ensures the banner stays on top */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
+            width: 100%;
+            height: 30px;
+            font-size: medium;
+            background-color: #dc3545;
+            color: #ffffff;
+            text-align: center;
+            vertical-align: middle;
+            padding-top: 2px;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* Adds a margin to the top of the header to avoid overlap with the fixed banner */
