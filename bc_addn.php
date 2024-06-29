@@ -8,7 +8,6 @@
  * It generates a CSRF token for form submissions, retrieves a list of Principal Investigators (PIs),
  * and processes the form submission for adding a new breeding cage. The script also includes the functionality
  * to add litter data associated with the breeding cage.
- *
  */
 
 // Start a new session or resume the existing session
@@ -39,7 +38,6 @@ $userResult = $con->query($userQuery);
 // Query to retrieve options where role is 'Principal Investigator'
 $piQuery = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $piResult = $con->query($piQuery);
-
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -337,6 +335,7 @@ require 'header.php';
             });
         });
 
+        // Initialize Select2 for the user dropdown
         $(document).ready(function() {
             $('#user').select2({
                 placeholder: "Select User(s)",
