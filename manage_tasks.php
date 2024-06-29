@@ -12,21 +12,26 @@
 
 ob_start(); // Start output buffering
 session_start(); // Start the session to use session variables
-require 'header.php';
+require 'header.php'; // Include header file
 require 'dbcon.php'; // Include database connection
 
 // Check if the user is logged in, redirect to login page if not logged in
 if (!isset($_SESSION['name'])) {
     header("Location: index.php"); // Redirect to login page if not logged in
-    exit;
+    exit; // Exit script
 }
 
 // Get the current user ID and name from the session
 $currentUserId = $_SESSION['user_id'] ?? null;
 $currentUserName = $_SESSION['name'] ?? '';
-$isAdmin = $_SESSION['role'] == 'admin'; // Assuming you have a 'role' key in session to check admin status
+$isAdmin = $_SESSION['role'] == 'admin'; // Check if the user is an admin
 
-// Redirect function with session message and cage_id in URL
+/**
+ * Redirect to manage_tasks.php with a message and optional cage ID
+ *
+ * @param string $message The message to display
+ * @param string|null $cageId The cage ID to include in the URL
+ */
 function redirectToPage($message, $cageId = null)
 {
     $_SESSION['message'] = $message;
@@ -38,7 +43,15 @@ function redirectToPage($message, $cageId = null)
     exit();
 }
 
-// Function to schedule an email
+/**
+ * Schedule an email by inserting it into the email_queue table
+ *
+ * @param mixed $recipients The recipients of the email
+ * @param string $subject The subject of the email
+ * @param string $body The body of the email
+ * @param string $scheduledAt The scheduled time to send the email
+ * @return bool True if the email was scheduled successfully, false otherwise
+ */
 function scheduleEmail($recipients, $subject, $body, $scheduledAt)
 {
     global $con;
@@ -56,12 +69,12 @@ function scheduleEmail($recipients, $subject, $body, $scheduledAt)
     $stmt->close();
 }
 
-// Fetch users and cages for dropdowns
+// Fetch users for the dropdown
 $userQuery = "SELECT id, name FROM users";
 $userResult = $con->query($userQuery);
 $users = $userResult ? array_column($userResult->fetch_all(MYSQLI_ASSOC), 'name', 'id') : [];
 
-// Handle form submission
+// Handle form submission for adding, editing, or deleting tasks
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = htmlspecialchars($_POST['title']);
     $description = htmlspecialchars($_POST['description']);
@@ -72,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $cageId = htmlspecialchars($_POST['cage_id']);
     $taskAction = '';
 
+    // Determine the action to perform (add, edit, or delete)
     if (isset($_POST['add'])) {
         $stmt = $con->prepare("INSERT INTO tasks (title, description, assigned_by, assigned_to, status, completion_date, cage_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssssss", $title, $description, $assignedBy, $assignedTo, $status, $completionDate, $cageId);
@@ -88,10 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $taskAction = 'deleted';
     }
 
+    // Execute the statement and handle the result
     if (!$stmt || !$stmt->execute()) {
         redirectToPage("Error: " . ($stmt ? $stmt->error : $con->error));
     } else {
-        // Fetch the emails of the assigned by and assigned to users
+        // Fetch emails of assigned by and assigned to users
         $emails = [];
         $assignedByEmailQuery = "SELECT username FROM users WHERE id = ?";
         $assignedByEmailStmt = $con->prepare($assignedByEmailQuery);
@@ -167,6 +182,7 @@ $search = htmlspecialchars($_GET['search'] ?? '');
 $cageIdFilter = htmlspecialchars($_GET['id'] ?? '');
 $filter = htmlspecialchars($_GET['filter'] ?? '');
 
+// Construct the task query with search and filter options
 $taskQuery = "SELECT * FROM tasks WHERE 1";
 if ($search) {
     $taskQuery .= " AND (title LIKE '%$search%' OR assigned_by LIKE '%$search%' OR assigned_to LIKE '%$search%' OR status LIKE '%$search%' OR cage_id LIKE '%$search%')";
@@ -186,6 +202,7 @@ if ($cageIdFilter) {
 
 $taskResult = $con->query($taskQuery);
 
+// Fetch cages for the dropdown
 $cageQuery = "SELECT cage_id FROM hc_basic UNION SELECT cage_id FROM bc_basic";
 $cageResult = $con->query($cageQuery);
 $cages = $cageResult ? array_column($cageResult->fetch_all(MYSQLI_ASSOC), 'cage_id') : [];
@@ -662,6 +679,9 @@ ob_end_flush(); // Flush the output buffer
             });
         });
 
+        /**
+         * Open the form for adding or editing a task
+         */
         function openForm() {
             document.getElementById('popupOverlay').style.display = 'block';
             document.getElementById('popupForm').style.display = 'block';
@@ -671,16 +691,25 @@ ob_end_flush(); // Flush the output buffer
             resetForm();
         }
 
+        /**
+         * Close the form for adding or editing a task
+         */
         function closeForm() {
             document.getElementById('popupOverlay').style.display = 'none';
             document.getElementById('popupForm').style.display = 'none';
         }
 
+        /**
+         * Close the form for viewing task details
+         */
         function closeViewForm() {
             document.getElementById('viewPopupOverlay').style.display = 'none';
             document.getElementById('viewPopupForm').style.display = 'none';
         }
 
+        /**
+         * Reset the task form to its default state
+         */
         function resetForm() {
             document.getElementById('id').value = '';
             document.getElementById('title').value = '';
@@ -699,6 +728,13 @@ ob_end_flush(); // Flush the output buffer
             }
         }
 
+        /**
+         * Fetch task data from the server for viewing or editing
+         *
+         * @param {number} id The ID of the task to fetch
+         * @param {string} action The action to perform ('edit' or 'view')
+         * @param {string} [cageId=''] The ID of the cage (optional)
+         */
         function fetchTaskData(id, action, cageId = '') {
             $.ajax({
                 url: 'get_task.php',
