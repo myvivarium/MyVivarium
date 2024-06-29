@@ -166,13 +166,14 @@ function ensureUniqueInitials($con, $initials) {
     return $uniqueInitials;
 }
 
-// Query to fetch the lab name
-$labQuery = "SELECT lab_name FROM data LIMIT 1";
+// Query to fetch the lab name from the settings table
+$labQuery = "SELECT value FROM settings WHERE name = 'lab_name' LIMIT 1";
 $labResult = mysqli_query($con, $labQuery);
-$labName = "My Vivarium"; // Default value if the query fails or returns no result
 
+// Default value if the query fails or returns no result
+$labName = "My Vivarium";
 if ($row = mysqli_fetch_assoc($labResult)) {
-    $labName = $row['lab_name'];
+    $labName = $row['value'];
 }
 
 // Handle form submission
