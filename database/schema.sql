@@ -10,7 +10,7 @@ CREATE TABLE `bc_basic` (
   `female_id` varchar(255) NOT NULL,                -- Identifier for the female animal
   `male_dob` date NOT NULL,                         -- Date of birth of the male animal
   `female_dob` date NOT NULL,                       -- Date of birth of the female animal
-  `remarks` text NOT NULL,                          -- Additional remarks
+  `remarks` text NOT NULL,                          -- Additional remarks or notes
   PRIMARY KEY (`id`)                                -- Setting the primary key
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -20,11 +20,11 @@ CREATE TABLE `bc_litter` (
   `cage_id` varchar(255) NOT NULL,                  -- Identifier for the cage
   `dom` date NOT NULL,                              -- Date of mating
   `litter_dob` date DEFAULT NULL,                   -- Date of birth of the litter
-  `pups_alive` int(4) NOT NULL,                     -- Number of alive pups
-  `pups_dead` int(4) NOT NULL,                      -- Number of dead pups
+  `pups_alive` int(4) NOT NULL,                     -- Number of pups alive
+  `pups_dead` int(4) NOT NULL,                      -- Number of pups dead
   `pups_male` int(4) NOT NULL,                      -- Number of male pups
   `pups_female` int(4) NOT NULL,                    -- Number of female pups
-  `remarks` text NOT NULL,                          -- Additional remarks
+  `remarks` text NOT NULL,                          -- Additional remarks or notes
   PRIMARY KEY (`id`)                                -- Setting the primary key
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -37,8 +37,8 @@ CREATE TABLE `email_queue` (
   `status` enum('pending','sent','failed') NOT NULL DEFAULT 'pending', -- Email status
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(), -- Creation timestamp
   `scheduled_at` timestamp NOT NULL DEFAULT current_timestamp(), -- Scheduled timestamp
-  `sent_at` timestamp NULL DEFAULT NULL,            -- Sent timestamp
-  `error_message` text DEFAULT NULL,                -- Error message if the email failed
+  `sent_at` timestamp NULL DEFAULT NULL,            -- Sent timestamp (nullable)
+  `error_message` text DEFAULT NULL,                -- Error message if the email failed (nullable)
   PRIMARY KEY (`id`)                                -- Setting the primary key
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
@@ -64,7 +64,7 @@ CREATE TABLE `hc_basic` (
   `dob` date NOT NULL,                              -- Date of birth of the animals
   `sex` varchar(255) NOT NULL,                      -- Sex of the animals
   `parent_cg` varchar(255) NOT NULL,                -- Parent cage identifier
-  `remarks` text NOT NULL,                          -- Additional remarks
+  `remarks` text NOT NULL,                          -- Additional remarks or notes
   PRIMARY KEY (`id`)                                -- Setting the primary key
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -115,7 +115,7 @@ CREATE TABLE `tasks` (
   `assigned_by` varchar(50) NOT NULL,               -- User who assigned the task
   `assigned_to` varchar(50) NOT NULL,               -- User assigned to the task
   `status` enum('Pending','In Progress','Completed') NOT NULL DEFAULT 'Pending', -- Status of the task
-  `completion_date` date DEFAULT NULL,              -- Completion date of the task
+  `completion_date` date DEFAULT NULL,              -- Completion date of the task (nullable)
   `cage_id` varchar(50) DEFAULT NULL,               -- Identifier for the cage (optional)
   `creation_date` timestamp NOT NULL DEFAULT current_timestamp(), -- Creation timestamp
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(), -- Update timestamp
@@ -131,12 +131,12 @@ CREATE TABLE `users` (
   `role` varchar(255) NOT NULL,                     -- Role of the user
   `password` varchar(255) NOT NULL,                 -- Hashed password
   `status` varchar(255) NOT NULL,                   -- Status of the user account
-  `reset_token` varchar(255) DEFAULT NULL,          -- Token for password reset (optional)
-  `reset_token_expiration` datetime DEFAULT NULL,   -- Expiration datetime for the reset token (optional)
+  `reset_token` varchar(255) DEFAULT NULL,          -- Token for password reset (nullable)
+  `reset_token_expiration` datetime DEFAULT NULL,   -- Expiration datetime for the reset token (nullable)
   `login_attempts` int(11) DEFAULT 0,               -- Count of login attempts
-  `account_locked` datetime DEFAULT NULL,           -- Datetime when the account was locked (optional)
+  `account_locked` datetime DEFAULT NULL,           -- Datetime when the account was locked (nullable)
   `email_verified` tinyint(1) DEFAULT 0,            -- Email verification status
-  `email_token` varchar(255) DEFAULT NULL,          -- Token for email verification (optional)
+  `email_token` varchar(255) DEFAULT NULL,          -- Token for email verification (nullable)
   `initials` varchar(10) DEFAULT NULL,              -- Name based initials
   PRIMARY KEY (`id`)                                -- Setting the primary key
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
