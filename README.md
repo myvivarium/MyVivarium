@@ -2,7 +2,7 @@
 
 # MyVivarium
 
-![Project Status](https://img.shields.io/badge/status-active-brightgreen) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/) 
+![Project Status](https://img.shields.io/badge/status-active-brightgreen) [![LGPL License](https://img.shields.io/badge/License-LGPL--3.0-blue.svg)](https://choosealicense.com/licenses/lgpl-3.0/)
 
 [![Visit Demo Site](https://img.shields.io/badge/Visit-Demo%20Site-blue?style=for-the-badge)](https://demo.myvivarium.online)
 
@@ -220,5 +220,5 @@ We welcome contributions to improve MyVivarium. Please follow these steps to con
 5. Open a pull request.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the LGPL License - see the [LICENSE](LICENSE) file for details.
 
