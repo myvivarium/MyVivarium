@@ -79,9 +79,10 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 // Generate the pagination links
 $paginationLinks = '';
+$searchParam = !empty($searchQuery) ? '&search=' . urlencode($searchQuery) : '';
 for ($i = 1; $i <= $totalPages; $i++) {
     $activeClass = ($i == $page) ? 'active' : ''; // Highlight the active page
-    $paginationLinks .= '<li class="page-item ' . $activeClass . '"><a class="page-link" href="javascript:void(0);" onclick="fetchData(' . $i . ')">' . $i . '</a></li>';
+    $paginationLinks .= '<li class="page-item ' . $activeClass . '"><a class="page-link" href="javascript:void(0);" onclick="fetchData(' . $i . ', \'' . $searchParam . '\')">' . $i . '</a></li>';
 }
 
 // Return the generated table rows and pagination links as a JSON response

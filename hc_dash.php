@@ -77,6 +77,18 @@ require 'header.php';
         document.addEventListener('DOMContentLoaded', function() {
             fetchData();
         });
+
+        function fetchData(page, searchQuery = '') {
+            const url = 'your_script.php?page=' + page + searchQuery;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('table-body').innerHTML = data.tableRows;
+                    document.getElementById('pagination-links').innerHTML = data.paginationLinks;
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
     </script>
 
     <title>Dashboard Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
@@ -96,7 +108,7 @@ require 'header.php';
             margin-top: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
         .table-wrapper {
             margin-bottom: 50px;
             overflow-x: auto;
