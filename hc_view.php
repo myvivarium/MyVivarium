@@ -40,10 +40,11 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the holding cage record with the specified ID
-    $query = "SELECT hc.*, pi.initials AS pi_initials, pi.name AS pi_name, s.str_name, s.str_url 
+    $query = "SELECT hc.*, pi.initials AS pi_initials, pi.name AS pi_name, s.str_name, s.str_url, i.file_url
                 FROM hc_basic hc 
                 LEFT JOIN users pi ON hc.pi_name = pi.id 
                 LEFT JOIN strain s ON hc.strain = s.str_id
+                LEFT JOIN iacuc i ON hc.iacuc = i.iacuc_id
                 WHERE hc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
@@ -335,7 +336,13 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>IACUC</th>
-                        <td><?= htmlspecialchars($holdingcage['iacuc']); ?></td>
+                        <td>
+                            <?php if (!empty($holdingcage['file_url'])) : ?>
+                                <a href="<?= htmlspecialchars($holdingcage['file_url']); ?>" target="_blank"><?= htmlspecialchars($holdingcage['iacuc']); ?></a>
+                            <?php else : ?>
+                                <?= htmlspecialchars($holdingcage['iacuc']); ?>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                     <tr>
                         <th>User</th>

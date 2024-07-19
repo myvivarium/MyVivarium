@@ -62,6 +62,11 @@ if (isset($_GET['id'])) {
     $query3 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id'";
     $litters = mysqli_query($con, $query3);
 
+    // Query to retrieve IACUC values
+    $iacucQuery = "SELECT iacuc_id, iacuc_title FROM iacuc";
+    $iacucResult = $con->query($iacucQuery);
+
+
     // Check if the breeding cage exists
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
@@ -103,7 +108,7 @@ if (isset($_GET['id'])) {
 
         // Process the form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            
+
             // Validate CSRF token
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 die('CSRF token validation failed');
@@ -464,20 +469,33 @@ require 'header.php';
                 placeholder: "Select User(s)",
                 allowClear: true
             });
+
+            $('#iacuc').select2({
+                placeholder: "Select IACUC",
+                allowClear: true,
+                templateResult: function(data) {
+                    if (!data.id) {
+                        return data.text;
+                    }
+                    var $result = $('<span>' + data.text + '</span>');
+                    $result.attr('title', data.element.title);
+                    return $result;
+                }
+            });
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form');
-        form.addEventListener('submit', function(event) {
-            const piSelect = document.getElementById('pi_name');
-            const selectedPiText = piSelect.options[piSelect.selectedIndex].text;
-            
-            // Check if "Unknown PI" is selected
-            if (selectedPiText.includes('Unknown PI')) {
-                event.preventDefault(); // Prevent form submission
-                alert('Cannot proceed with "Unknown PI". Please select a valid PI.');
-            }
-        });
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                const piSelect = document.getElementById('pi_name');
+                const selectedPiText = piSelect.options[piSelect.selectedIndex].text;
+
+                // Check if "Unknown PI" is selected
+                if (selectedPiText.includes('Unknown PI')) {
+                    event.preventDefault(); // Prevent form submission
+                    alert('Cannot proceed with "Unknown PI". Please select a valid PI.');
+                }
+            });
         });
     </script>
 
@@ -558,6 +576,22 @@ require 'header.php';
             font-size: 14px;
         }
 
+        .select2-container .select2-selection--single {
+            height: 35px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 35px;
+        }
+
         @media (max-width: 768px) {
 
             .table-wrapper th,
@@ -614,7 +648,19 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="iacuc" class="form-label">IACUC</label>
-                                <input type="text" class="form-control" id="iacuc" name="iacuc" value="<?= htmlspecialchars($breedingcage['iacuc']); ?>">
+                                <select class="form-control" id="iacuc" name="iacuc">
+                                    <option value="" disabled>Select IACUC</option>
+                                    <?php
+                                    // Populate the dropdown with IACUC values from the database
+                                    while ($iacucRow = $iacucResult->fetch_assoc()) {
+                                        $iacuc_id = htmlspecialchars($iacucRow['iacuc_id']);
+                                        $iacuc_title = htmlspecialchars($iacucRow['iacuc_title']);
+                                        $truncated_title = strlen($iacuc_title) > 20 ? substr($iacuc_title, 0, 20) . '...' : $iacuc_title;
+                                        $selected = ($iacuc_id == $breedingcage['iacuc']) ? 'selected' : '';
+                                        echo "<option value='$iacuc_id' title='$iacuc_title' $selected>$iacuc_id | $truncated_title</option>";
+                                    }
+                                    ?>
+                                </select>
                             </div>
 
                             <div class="mb-3">

@@ -26,14 +26,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $strainAka = htmlspecialchars($_POST['strain_aka']); // Sanitize input
         $strainUrl = htmlspecialchars($_POST['strain_url']); // Sanitize input
         $strainRrid = htmlspecialchars($_POST['strain_rrid']); // Sanitize input
-        $stmt = $con->prepare("INSERT INTO strain (str_id, str_name, str_aka, str_url, str_rrid) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $strainId, $strainName, $strainAka, $strainUrl, $strainRrid);
-        if ($stmt->execute()) {
-            $_SESSION['message'] = "Strain added successfully."; // Success message
+
+        // Check if strain ID already exists
+        $checkStmt = $con->prepare("SELECT COUNT(*) FROM strain WHERE str_id = ?");
+        $checkStmt->bind_param("s", $strainId);
+        $checkStmt->execute();
+        $checkStmt->bind_result($count);
+        $checkStmt->fetch();
+        $checkStmt->close();
+
+        if ($count > 0) {
+            $_SESSION['message'] = "Error: Strain ID already exists."; // Error message for duplicate ID
         } else {
-            $_SESSION['message'] = "Error adding strain."; // Error message
+            $stmt = $con->prepare("INSERT INTO strain (str_id, str_name, str_aka, str_url, str_rrid) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $strainId, $strainName, $strainAka, $strainUrl, $strainRrid);
+            if ($stmt->execute()) {
+                $_SESSION['message'] = "Strain added successfully."; // Success message
+            } else {
+                $_SESSION['message'] = "Error adding strain."; // Error message
+            }
+            $stmt->close(); // Close the statement
         }
-        $stmt->close(); // Close the statement
     } elseif (isset($_POST['edit'])) {
         // Update existing strain
         $strainId = htmlspecialchars($_POST['strain_id']); // Sanitize input
@@ -42,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $strainUrl = htmlspecialchars($_POST['strain_url']); // Sanitize input
         $strainRrid = htmlspecialchars($_POST['strain_rrid']); // Sanitize input
         $stmt = $con->prepare("UPDATE strain SET str_name = ?, str_aka = ?, str_url = ?, str_rrid = ? WHERE str_id = ?");
-        $stmt->bind_param("ssssi", $strainName, $strainAka, $strainUrl, $strainRrid, $strainId);
+        $stmt->bind_param("sssss", $strainName, $strainAka, $strainUrl, $strainRrid, $strainId);
         if ($stmt->execute()) {
             $_SESSION['message'] = "Strain updated successfully."; // Success message
         } else {
@@ -53,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Delete strain
         $strainId = htmlspecialchars($_POST['strain_id']); // Sanitize input
         $stmt = $con->prepare("DELETE FROM strain WHERE str_id = ?");
-        $stmt->bind_param("i", $strainId);
+        $stmt->bind_param("s", $strainId);
         if ($stmt->execute()) {
             $_SESSION['message'] = "Strain deleted successfully."; // Success message
         } else {
@@ -98,7 +111,7 @@ $strainResult = $con->query($strainQuery);
             display: none;
             position: fixed;
             top: 0;
-            left: 0%;
+            left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
@@ -247,7 +260,7 @@ $strainResult = $con->query($strainQuery);
 
         <!-- Display existing strains -->
         <h3>Existing Strains</h3>
-        <table class="table table-bordered table-responsive">
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>ID</th>

@@ -41,9 +41,10 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the breeding cage record with the specified ID
-    $query = "SELECT bc.*, pi.initials AS pi_initials, pi.name AS pi_name 
+    $query = "SELECT bc.*, pi.initials AS pi_initials, pi.name AS pi_name, i.file_url
               FROM bc_basic bc 
               LEFT JOIN users pi ON bc.pi_name = pi.id 
+              LEFT JOIN iacuc i ON bc.iacuc = i.iacuc_id
               WHERE bc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
@@ -308,7 +309,13 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>IACUC</th>
-                        <td><?= htmlspecialchars($breedingcage['iacuc']); ?></td>
+                        <td>
+                            <?php if (!empty($breedingcage['file_url'])) : ?>
+                                <a href="<?= htmlspecialchars($breedingcage['file_url']); ?>" target="_blank"><?= htmlspecialchars($breedingcage['iacuc']); ?></a>
+                            <?php else : ?>
+                                <?= htmlspecialchars($breedingcage['iacuc']); ?>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                     <tr>
                         <th>User</th>

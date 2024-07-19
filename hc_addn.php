@@ -36,6 +36,10 @@ $userResult = $con->query($userQuery);
 $piQuery = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $piResult = $con->query($piQuery);
 
+// Query to retrieve IACUC values
+$iacucQuery = "SELECT iacuc_id, iacuc_title FROM iacuc";
+$iacucResult = $con->query($iacucQuery);
+
 // Query to retrieve strain details including common names
 $strainQuery = "SELECT str_id, str_name, str_aka FROM strain";
 $strainResult = $con->query($strainQuery);
@@ -203,6 +207,18 @@ require 'header.php';
 
         .select2-container .select2-selection--single {
             height: 35px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 35px;
         }
 
         .button-group {
@@ -349,12 +365,23 @@ require 'header.php';
                 placeholder: "Select User(s)",
                 allowClear: true
             });
-        });
 
-        $(document).ready(function() {
             $('#strain').select2({
                 placeholder: "Select Strain",
                 allowClear: true
+            });
+
+            $('#iacuc').select2({
+                placeholder: "Select IACUC",
+                allowClear: true,
+                templateResult: function(data) {
+                    if (!data.id) {
+                        return data.text;
+                    }
+                    var $result = $('<span>' + data.text + '</span>');
+                    $result.attr('title', data.element.title);
+                    return $result;
+                }
             });
         });
     </script>
@@ -409,10 +436,20 @@ require 'header.php';
                 </select>
             </div>
 
-
             <div class="mb-3">
                 <label for="iacuc" class="form-label">IACUC</label>
-                <input type="text" class="form-control" id="iacuc" name="iacuc">
+                <select class="form-control" id="iacuc" name="iacuc">
+                    <option value="" disabled selected>Select IACUC</option>
+                    <?php
+                    // Populate the dropdown with IACUC values from the database
+                    while ($iacucRow = $iacucResult->fetch_assoc()) {
+                        $iacuc_id = htmlspecialchars($iacucRow['iacuc_id']);
+                        $iacuc_title = htmlspecialchars($iacucRow['iacuc_title']);
+                        $truncated_title = strlen($iacuc_title) > 40 ? substr($iacuc_title, 0, 40) . '...' : $iacuc_title;
+                        echo "<option value='$iacuc_id' title='$iacuc_title'>$iacuc_id | $truncated_title</option>";
+                    }
+                    ?>
+                </select>
             </div>
 
             <div class="mb-3">
