@@ -11,7 +11,8 @@ CREATE TABLE `bc_basic` (
   `male_dob` date NOT NULL,                         -- Date of birth of the male animal
   `female_dob` date NOT NULL,                       -- Date of birth of the female animal
   `remarks` text NOT NULL,                          -- Additional remarks or notes
-  PRIMARY KEY (`id`)                                -- Setting the primary key
+  PRIMARY KEY (`id`),                               -- Setting the primary key
+  KEY `idx_bc_basic_cage_id` (`cage_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Creating the table to store litter information
@@ -25,7 +26,9 @@ CREATE TABLE `bc_litter` (
   `pups_male` int(4) NOT NULL,                      -- Number of male pups
   `pups_female` int(4) NOT NULL,                    -- Number of female pups
   `remarks` text NOT NULL,                          -- Additional remarks or notes
-  PRIMARY KEY (`id`)                                -- Setting the primary key
+  PRIMARY KEY (`id`),                               -- Setting the primary key
+  KEY `idx_bc_litter_cage_id` (`cage_id`),
+  CONSTRAINT `fk_bc_litter_cage_id` FOREIGN KEY (`cage_id`) REFERENCES `bc_basic` (`cage_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Creating the table to store email queue information
@@ -39,8 +42,9 @@ CREATE TABLE `email_queue` (
   `scheduled_at` timestamp NOT NULL DEFAULT current_timestamp(), -- Scheduled timestamp
   `sent_at` timestamp NULL DEFAULT NULL,            -- Sent timestamp (nullable)
   `error_message` text DEFAULT NULL,                -- Error message if the email failed (nullable)
-  PRIMARY KEY (`id`)                                -- Setting the primary key
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  PRIMARY KEY (`id`),                               -- Setting the primary key
+  KEY `idx_email_queue_recipient` (`recipient`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Creating the table to store information about uploaded files
 CREATE TABLE `files` (
@@ -49,7 +53,8 @@ CREATE TABLE `files` (
   `file_path` varchar(255) NOT NULL,                -- Path to the uploaded file
   `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp(), -- Timestamp of the upload
   `cage_id` varchar(255) DEFAULT NULL,              -- Identifier for the cage (optional)
-  PRIMARY KEY (`id`)                                -- Setting the primary key
+  PRIMARY KEY (`id`),                               -- Setting the primary key
+  KEY `cage_id` (`cage_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Creating the table to store basic information about housed cages
@@ -62,10 +67,12 @@ CREATE TABLE `hc_basic` (
   `user` varchar(255) NOT NULL,                     -- User associated with the record
   `qty` int(11) NOT NULL,                           -- Quantity of animals
   `dob` date NOT NULL,                              -- Date of birth of the animals
-  `sex` varchar(255) NOT NULL,                      -- Sex of the animals
+  `sex` enum('male','female') DEFAULT NULL,         -- Sex of the animals
   `parent_cg` varchar(255) NOT NULL,                -- Parent cage identifier
   `remarks` text NOT NULL,                          -- Additional remarks or notes
-  PRIMARY KEY (`id`)                                -- Setting the primary key
+  PRIMARY KEY (`id`),                               -- Setting the primary key
+  KEY `cage_id` (`cage_id`),
+  KEY `strain` (`strain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Creating the table to store information about individual mice
@@ -75,8 +82,10 @@ CREATE TABLE `mouse` (
   `mouse_id` varchar(255) NOT NULL,                 -- Identifier for the mouse
   `genotype` varchar(255) NOT NULL,                 -- Genotype information
   `notes` text NOT NULL,                            -- Additional notes
-  PRIMARY KEY (`id`)                                -- Setting the primary key
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  PRIMARY KEY (`id`),                               -- Setting the primary key
+  KEY `cage_id` (`cage_id`),
+  CONSTRAINT `mouse_ibfk_1` FOREIGN KEY (`cage_id`) REFERENCES `hc_basic` (`cage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Creating the table to store notes data
 CREATE TABLE `nt_data` (
@@ -94,18 +103,19 @@ CREATE TABLE `settings` (
   `name` varchar(255) NOT NULL,                     -- Name of the setting
   `value` varchar(255) NOT NULL,                    -- Value of the setting
   PRIMARY KEY (`id`)                                -- Setting the primary key
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Creating the table to store strain information
 CREATE TABLE `strain` (
   `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `str_id` varchar(50) NOT NULL,                    -- Strain identifier
+  `str_id` varchar(255) NOT NULL,                   -- Strain identifier
   `str_name` varchar(255) NOT NULL,                 -- Strain name
   `str_aka` varchar(255) DEFAULT NULL,              -- Alternate name for the strain
   `str_url` varchar(255) DEFAULT NULL,              -- URL for the strain information
   `str_rrid` varchar(255) DEFAULT NULL,             -- RRID for the strain
-  PRIMARY KEY (`id`)                                -- Setting the primary key
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  PRIMARY KEY (`id`),                               -- Setting the primary key
+  KEY `idx_strain_str_id` (`str_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Creating the table to store tasks
 CREATE TABLE `tasks` (
@@ -120,7 +130,7 @@ CREATE TABLE `tasks` (
   `creation_date` timestamp NOT NULL DEFAULT current_timestamp(), -- Creation timestamp
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(), -- Update timestamp
   PRIMARY KEY (`id`)                                -- Setting the primary key
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Creating the table to store user information
 CREATE TABLE `users` (
@@ -137,8 +147,18 @@ CREATE TABLE `users` (
   `account_locked` datetime DEFAULT NULL,           -- Datetime when the account was locked (nullable)
   `email_verified` tinyint(1) DEFAULT 0,            -- Email verification status
   `email_token` varchar(255) DEFAULT NULL,          -- Token for email verification (nullable)
-  `initials` varchar(10) DEFAULT NULL,              -- Name based initials
+  `initials` varchar(5) DEFAULT NULL,              -- Name based initials
   PRIMARY KEY (`id`)                                -- Setting the primary key
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- Creating the table to store IACUC information
+CREATE TABLE `iacuc` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
+  `iacuc_id` varchar(255) NOT NULL,                 -- IACUC identifier
+  `iacuc_title` varchar(255) NOT NULL,              -- Title of the IACUC
+  `file_url` varchar(255) DEFAULT NULL,             -- URL of the IACUC file
+  PRIMARY KEY (`id`),                               -- Setting the primary key
+  UNIQUE KEY `iacuc_id` (`iacuc_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- Inserting initial data into the users table
@@ -146,5 +166,5 @@ INSERT INTO `users` (`name`, `username`, `position`, `role`, `password`, `status
 VALUES ('Temporary Admin', 'admin@myvivarium.online', 'Principal Investigator', 'admin', '$2y$10$Y3sGVYIhu2BjpSFh9HA4We.lUhO.hvS9OVPb2Fb82N0BJGVFIXsmW', 'approved', NULL, NULL, 0, NULL, 1, NULL, 'TAN');
 
 -- Inserting initial data into the strain table
-INSERT INTO `strain` (`str_id`, `str_name`, `str_aka`, `str_url`, `str_rrid`) 
+INSERT INTO `strain` (`str_id`, `str_name`, `str_aka`, `str_url`, `str_rrid`)
 VALUES ('035561', 'STOCK Tc(HSA21,CAG-EGFP)1Yakaz/J', 'B6D2F1 TcMAC21', 'https://www.jax.org/strain/035561', 'IMSR_JAX:035561');
