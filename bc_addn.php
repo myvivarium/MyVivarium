@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cage_id = $_POST['cage_id'];
     $pi_name = $_POST['pi_name'];
     $cross = $_POST['cross'];
-    $iacuc = $_POST['iacuc'];
+    $iacuc = isset($_POST['iacuc']) ? implode(',', $_POST['iacuc']) : ''; // Concatenate selected IACUC values
     $user = isset($_POST['user']) ? implode(',', array_map('trim', $_POST['user'])) : '';
     $male_id = $_POST['male_id'];
     $female_id = $_POST['female_id'];
@@ -421,8 +421,8 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="iacuc" class="form-label">IACUC</label>
-                <select class="form-control" id="iacuc" name="iacuc">
-                    <option value="" disabled selected>Select IACUC</option>
+                <select class="form-control" id="iacuc" name="iacuc[]" multiple>
+                    <option value="" disabled>Select IACUC</option>
                     <?php
                     // Populate the dropdown with IACUC values from the database
                     while ($iacucRow = $iacucResult->fetch_assoc()) {

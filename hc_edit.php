@@ -143,7 +143,9 @@ if (isset($_GET['id'])) {
             $cage_id = mysqli_real_escape_string($con, $_POST['cage_id']);
             $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
             $strain = mysqli_real_escape_string($con, $_POST['strain']);
-            $iacuc = mysqli_real_escape_string($con, $_POST['iacuc']);
+            $iacuc = isset($_POST['iacuc']) ? implode(',', array_map(function ($value) use ($con) {
+                return mysqli_real_escape_string($con, $value);
+            }, $_POST['iacuc'])) : '';
             $user = isset($_POST['user']) ? implode(',', array_map(function ($user_id) use ($con) {
                 return mysqli_real_escape_string($con, trim($user_id));
             }, $_POST['user'])) : '';
@@ -702,21 +704,29 @@ require 'header.php';
 
                             <div class="mb-3">
                                 <label for="iacuc" class="form-label">IACUC</label>
-                                <select class="form-control" id="iacuc" name="iacuc">
+                                <select class="form-control" id="iacuc" name="iacuc[]" multiple>
                                     <option value="" disabled>Select IACUC</option>
                                     <?php
-                                    // Populate the dropdown with IACUC values from the database
-                                    while ($iacucRow = $iacucResult->fetch_assoc()) {
-                                        $iacuc_id = htmlspecialchars($iacucRow['iacuc_id']);
-                                        $iacuc_title = htmlspecialchars($iacucRow['iacuc_title']);
-                                        $truncated_title = strlen($iacuc_title) > 40 ? substr($iacuc_title, 0, 40) . '...' : $iacuc_title;
-                                        $selected = ($iacuc_id == $holdingcage['iacuc']) ? 'selected' : '';
-                                        echo "<option value='$iacuc_id' title='$iacuc_title' $selected>$iacuc_id | $truncated_title</option>";
+                                    // Retrieve selected IACUC values
+                                    $selectedIacucs = isset($holdingcage['iacuc']) ? explode(',', $holdingcage['iacuc']) : [];
+
+                                    // Check if there are any IACUC values from the database
+                                    if ($iacucResult->num_rows > 0) {
+                                        // Populate the dropdown with IACUC values from the database
+                                        while ($iacucRow = $iacucResult->fetch_assoc()) {
+                                            $iacuc_id = htmlspecialchars($iacucRow['iacuc_id']);
+                                            $iacuc_title = htmlspecialchars($iacucRow['iacuc_title']);
+                                            $truncated_title = strlen($iacuc_title) > 40 ? substr($iacuc_title, 0, 40) . '...' : $iacuc_title;
+                                            $selected = in_array($iacuc_id, $selectedIacucs) ? 'selected' : '';
+                                            echo "<option value='$iacuc_id' title='$iacuc_title' $selected>$iacuc_id | $truncated_title</option>";
+                                        }
+                                    } else {
+                                        // Show an empty option if there are no IACUC values
+                                        echo "<option value='' disabled>No IACUC available</option>";
                                     }
                                     ?>
                                 </select>
                             </div>
-
 
                             <div class="mb-3">
                                 <label for="user" class="form-label">User <span class="required-asterisk">*</span></label>

@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cage_id = mysqli_real_escape_string($con, $_POST['cage_id']);
     $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
     $strain = mysqli_real_escape_string($con, $_POST['strain']);
-    $iacuc = mysqli_real_escape_string($con, $_POST['iacuc']);
+    $iacuc = isset($_POST['iacuc']) ? mysqli_real_escape_string($con, implode(',', $_POST['iacuc'])) : '';
     $user = isset($_POST['user']) ? implode(',', array_map('trim', $_POST['user'])) : '';
     $dob = mysqli_real_escape_string($con, $_POST['dob']);
     $sex = mysqli_real_escape_string($con, $_POST['sex']);
@@ -438,8 +438,8 @@ require 'header.php';
 
             <div class="mb-3">
                 <label for="iacuc" class="form-label">IACUC</label>
-                <select class="form-control" id="iacuc" name="iacuc">
-                    <option value="" disabled selected>Select IACUC</option>
+                <select class="form-control" id="iacuc" name="iacuc[]" multiple>
+                    <option value="" disabled>Select IACUC</option>
                     <?php
                     // Populate the dropdown with IACUC values from the database
                     while ($iacucRow = $iacucResult->fetch_assoc()) {

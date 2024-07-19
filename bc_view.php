@@ -41,10 +41,9 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the breeding cage record with the specified ID
-    $query = "SELECT bc.*, pi.initials AS pi_initials, pi.name AS pi_name, i.file_url
+    $query = "SELECT bc.*, pi.initials AS pi_initials, pi.name AS pi_name
               FROM bc_basic bc 
               LEFT JOIN users pi ON bc.pi_name = pi.id 
-              LEFT JOIN iacuc i ON bc.iacuc = i.iacuc_id
               WHERE bc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
@@ -76,6 +75,29 @@ if (isset($_GET['id'])) {
                 exit();
             }
         }
+
+        // Split the IACUC field into individual codes
+        $iacucCodes = explode(',', $breedingcage['iacuc']);
+        $iacucLinks = [];
+
+        // Fetch IACUC URLs
+        foreach ($iacucCodes as $iacucCode) {
+            $iacucCode = trim($iacucCode);
+            $iacucQuery = "SELECT file_url FROM iacuc WHERE iacuc_id = '$iacucCode'";
+            $iacucResult = mysqli_query($con, $iacucQuery);
+            if ($iacucResult && mysqli_num_rows($iacucResult) === 1) {
+                $iacucRow = mysqli_fetch_assoc($iacucResult);
+                if (!empty($iacucRow['file_url'])) {
+                    $iacucLinks[] = "<a href='" . htmlspecialchars($iacucRow['file_url']) . "' target='_blank'>" . htmlspecialchars($iacucCode) . "</a>";
+                } else {
+                    $iacucLinks[] = htmlspecialchars($iacucCode);
+                }
+            } else {
+                $iacucLinks[] = htmlspecialchars($iacucCode);
+            }
+        }
+
+        $iacucDisplayString = implode(', ', $iacucLinks);
     } else {
         // If the record does not exist, set an error message and redirect to the dashboard
         $_SESSION['message'] = 'Invalid ID.';
@@ -309,13 +331,7 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>IACUC</th>
-                        <td>
-                            <?php if (!empty($breedingcage['file_url'])) : ?>
-                                <a href="<?= htmlspecialchars($breedingcage['file_url']); ?>" target="_blank"><?= htmlspecialchars($breedingcage['iacuc']); ?></a>
-                            <?php else : ?>
-                                <?= htmlspecialchars($breedingcage['iacuc']); ?>
-                            <?php endif; ?>
-                        </td>
+                        <td><?= $iacucDisplayString; ?></td>
                     </tr>
                     <tr>
                         <th>User</th>

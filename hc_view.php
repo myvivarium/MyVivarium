@@ -40,11 +40,10 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the holding cage record with the specified ID
-    $query = "SELECT hc.*, pi.initials AS pi_initials, pi.name AS pi_name, s.str_name, s.str_url, i.file_url
+    $query = "SELECT hc.*, pi.initials AS pi_initials, pi.name AS pi_name, s.str_name, s.str_url, hc.iacuc
                 FROM hc_basic hc 
                 LEFT JOIN users pi ON hc.pi_name = pi.id 
                 LEFT JOIN strain s ON hc.strain = s.str_id
-                LEFT JOIN iacuc i ON hc.iacuc = i.iacuc_id
                 WHERE hc.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
@@ -79,6 +78,29 @@ if (isset($_GET['id'])) {
             }
         }
 
+        // Split the IACUC field into individual codes
+        $iacucCodes = explode(',', $holdingcage['iacuc']);
+        $iacucLinks = [];
+
+        // Fetch IACUC URLs
+        foreach ($iacucCodes as $iacucCode) {
+            $iacucCode = trim($iacucCode);
+            $iacucQuery = "SELECT file_url FROM iacuc WHERE iacuc_id = '$iacucCode'";
+            $iacucResult = mysqli_query($con, $iacucQuery);
+            if ($iacucResult && mysqli_num_rows($iacucResult) === 1) {
+                $iacucRow = mysqli_fetch_assoc($iacucResult);
+                if (!empty($iacucRow['file_url'])) {
+                    $iacucLinks[] = "<a href='" . htmlspecialchars($iacucRow['file_url']) . "' target='_blank'>" . htmlspecialchars($iacucCode) . "</a>";
+                } else {
+                    $iacucLinks[] = htmlspecialchars($iacucCode);
+                }
+            } else {
+                $iacucLinks[] = htmlspecialchars($iacucCode);
+            }
+        }
+
+        $iacucDisplayString = implode(', ', $iacucLinks);
+
         // Fetch the mouse data related to this cage
         $mouseQuery = "SELECT * FROM mouse WHERE cage_id = '$id'";
         $mouseResult = mysqli_query($con, $mouseQuery);
@@ -94,6 +116,7 @@ if (isset($_GET['id'])) {
     header("Location: hc_dash.php");
     exit();
 }
+
 
 function getUserDetailsByIds($con, $userIds)
 {
@@ -336,13 +359,7 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>IACUC</th>
-                        <td>
-                            <?php if (!empty($holdingcage['file_url'])) : ?>
-                                <a href="<?= htmlspecialchars($holdingcage['file_url']); ?>" target="_blank"><?= htmlspecialchars($holdingcage['iacuc']); ?></a>
-                            <?php else : ?>
-                                <?= htmlspecialchars($holdingcage['iacuc']); ?>
-                            <?php endif; ?>
-                        </td>
+                        <td><?= $iacucDisplayString; ?></td>
                     </tr>
                     <tr>
                         <th>User</th>
