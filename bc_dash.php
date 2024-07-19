@@ -41,44 +41,46 @@ require 'header.php';
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
     <script>
-        // Initialize tooltips
+        // Initialize tooltips when the document is ready
         $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();
         });
 
-        // Confirm deletion function
+        // Confirm deletion function with a dialog
         function confirmDeletion(id) {
-            var confirmDelete = confirm("Are you sure you want to delete this cage - '" + id + "'?");
+            var confirmDelete = confirm("Are you sure you want to delete cage - '" + id + "' and related mouse data?");
             if (confirmDelete) {
-                window.location.href = "bc_drop.php?id=" + id + "&confirm=true";
+                window.location.href = "bc_drop.php?id=" + id + "&confirm=true"; // Redirect to deletion script
             }
         }
 
-        // Fetch data function
+        // Fetch data function to load data dynamically
         function fetchData(page = 1, search = '') {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', 'bc_fetch_data.php?page=' + page + '&search=' + encodeURIComponent(search), true);
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     var response = JSON.parse(xhr.responseText);
-                    document.getElementById('tableBody').innerHTML = response.tableRows;
-                    document.getElementById('paginationLinks').innerHTML = response.paginationLinks;
+                    document.getElementById('tableBody').innerHTML = response.tableRows; // Insert table rows
+                    document.getElementById('paginationLinks').innerHTML = response.paginationLinks; // Insert pagination links
+                    document.getElementById('searchInput').value = search; // Preserve search input
                 }
             };
             xhr.send();
         }
 
-        // Search function
+        // Search function to initiate data fetch based on search query
         function searchCages() {
             var searchQuery = document.getElementById('searchInput').value;
             fetchData(1, searchQuery);
         }
 
-        // Fetch initial data when the document is loaded
+        // Fetch initial data when the DOM content is loaded
         document.addEventListener('DOMContentLoaded', function() {
             fetchData();
         });
     </script>
+
 
     <title>Dashboard Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
@@ -97,7 +99,7 @@ require 'header.php';
             margin-top: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
         .table-wrapper {
             margin-bottom: 50px;
             overflow-x: auto;
