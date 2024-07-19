@@ -54,29 +54,28 @@ require 'header.php';
         }
 
         // Fetch data function to load data dynamically
-        function fetchData(page, searchQuery = '') {
-            const url = 'hc_fetch_data.php?page=' + page + searchQuery;
-
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('table-body').innerHTML = data.tableRows;
-                    document.getElementById('pagination-links').innerHTML = data.paginationLinks;
-                })
-                .catch(error => console.error('Error fetching data:', error));
+        function fetchData(page = 1, search = '') {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'hc_fetch_data.php?page=' + page + '&search=' + encodeURIComponent(search), true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById('tableBody').innerHTML = response.tableRows; // Insert table rows
+                    document.getElementById('paginationLinks').innerHTML = response.paginationLinks; // Insert pagination links
+                }
+            };
+            xhr.send();
         }
 
-        // Example function to handle search form submission
-        function handleSearch(event) {
-            event.preventDefault();
-            const searchInput = document.getElementById('search-input').value;
-            const searchQuery = searchInput ? '&search=' + encodeURIComponent(searchInput) : '';
-            fetchData(1, searchQuery); // Start from the first page for a new search
+        // Search function to initiate data fetch based on search query
+        function searchCages() {
+            var searchQuery = document.getElementById('searchInput').value;
+            fetchData(1, searchQuery);
         }
 
-        // Initial data load
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchData(1); // Load the first page initially
+        // Fetch initial data when the DOM content is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchData();
         });
     </script>
 
@@ -97,7 +96,7 @@ require 'header.php';
             margin-top: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
+        
         .table-wrapper {
             margin-bottom: 50px;
             overflow-x: auto;
