@@ -62,6 +62,7 @@ require 'header.php';
                     var response = JSON.parse(xhr.responseText);
                     document.getElementById('tableBody').innerHTML = response.tableRows; // Insert table rows
                     document.getElementById('paginationLinks').innerHTML = response.paginationLinks; // Insert pagination links
+                    document.getElementById('searchInput').value = search; // Preserve search input
                 }
             };
             xhr.send();
@@ -78,6 +79,7 @@ require 'header.php';
             fetchData();
         });
     </script>
+
 
     <title>Dashboard Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
@@ -96,7 +98,7 @@ require 'header.php';
             margin-top: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
         .table-wrapper {
             margin-bottom: 50px;
             overflow-x: auto;
