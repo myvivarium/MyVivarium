@@ -153,6 +153,7 @@ For initial setup, use the following default admin credentials:
 - `manage_users.php`: Provides functionalities for admin to manage users.
 - `manage_lab.php`: Allows admins to manage lab details.
 - `manage_strain.php`: Allows admins to manage mouse strain details.
+- `manage_iacuc.php`: Allows admins to manage IACUC details.
 - `iot_sensors.php`: Displays IoT sensor data for different rooms using iframes.
 - `bc_dash.php`: Displays a dashboard for managing breeding cages with search and pagination.
 - `bc_fetch_data.php`: Handles pagination and search functionality for breeding cages.
