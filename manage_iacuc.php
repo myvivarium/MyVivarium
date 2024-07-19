@@ -15,7 +15,10 @@ require 'header.php'; // Include the header for consistent page structure
 
 // Handle file upload
 function handleFileUpload($file) {
-    $targetDir = "uploads/";
+    $targetDir = "uploads/iacuc/";
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0755, true); // Create directory if it doesn't exist
+    }
     $targetFile = $targetDir . basename($file["name"]);
     if (move_uploaded_file($file["tmp_name"], $targetFile)) {
         return $targetFile;
