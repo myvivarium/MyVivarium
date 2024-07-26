@@ -13,12 +13,15 @@
 // Start a new session or resume the existing session
 session_start();
 
+// Enable error reporting for debugging (disable in production)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Include the database connection
 require 'dbcon.php';
 
-// Fetch user role and ID from session
-$userRole = $_SESSION['role'];
-$currentUserId = $_SESSION['user_id'];
+// Start output buffering
+ob_start();
 
 // Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
@@ -26,15 +29,19 @@ if (!isset($_SESSION['username'])) {
     exit; // Exit to ensure no further code is executed
 }
 
+// Fetch user role and ID from session
+$userRole = $_SESSION['role'];
+$currentUserId = $_SESSION['user_id'];
+
 // Pagination variables
 $limit = 15; // Number of entries to show in a page
-$page = isset($_GET['page']) ? $_GET['page'] : 1; // Current page number
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page number, default to 1
 $offset = ($page - 1) * $limit; // Offset for the SQL query
 
 // Handle the search filter
 $searchQuery = '';
 if (isset($_GET['search'])) {
-    $searchQuery = urldecode($_GET['search']); // Decode the search parameter
+    $searchQuery = mysqli_real_escape_string($con, urldecode($_GET['search'])); // Decode and escape the search parameter
 }
 
 // Fetch the distinct cage IDs with pagination
@@ -85,8 +92,14 @@ for ($i = 1; $i <= $totalPages; $i++) {
     $paginationLinks .= '<li class="page-item ' . $activeClass . '"><a class="page-link" href="javascript:void(0);" onclick="fetchData(' . $i . ', \'' . htmlspecialchars($searchQuery, ENT_QUOTES) . '\')">' . $i . '</a></li>';
 }
 
+// Clear the output buffer to avoid sending unwanted output before JSON
+ob_end_clean();
+
 // Return the table rows and pagination links as a JSON response
+header('Content-Type: application/json');
 echo json_encode([
     'tableRows' => $tableRows,
     'paginationLinks' => $paginationLinks
 ]);
+
+?>
