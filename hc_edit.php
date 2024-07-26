@@ -694,18 +694,10 @@ require 'header.php';
                                 <select class="form-control" id="pi_name" name="pi_name" required>
                                     <!-- Display a placeholder option for selection -->
                                     <option value="" disabled>Select PI</option>
-                                    <?php if ($piDisplay !== 'Unknown PI') : ?>
-                                        <option value="<?= htmlspecialchars($selectedPiId); ?>" selected>
-                                            <?= htmlspecialchars($piDisplay); ?>
-                                        </option>
-                                    <?php endif; ?>
-                                    <!-- Iterate through the PI options -->
                                     <?php while ($row = $piResult->fetch_assoc()) : ?>
-                                        <?php if ($row['id'] !== $selectedPiId) : ?>
-                                            <option value="<?= htmlspecialchars($row['id']); ?>">
-                                                <?= htmlspecialchars($row['initials']) . ' [' . htmlspecialchars($row['name']) . ']'; ?>
-                                            </option>
-                                        <?php endif; ?>
+                                        <option value="<?= htmlspecialchars($row['id']); ?>" <?= ($row['id'] == $selectedPiId) ? 'selected' : ''; ?>>
+                                            <?= htmlspecialchars($row['initials']) . ' [' . htmlspecialchars($row['name']) . ']'; ?>
+                                        </option>
                                     <?php endwhile; ?>
                                 </select>
                             </div>
