@@ -59,11 +59,24 @@ require 'header.php';
             xhr.open('GET', 'hc_fetch_data.php?page=' + page + '&search=' + encodeURIComponent(search), true);
             xhr.onload = function() {
                 if (xhr.status === 200) {
-                    var response = JSON.parse(xhr.responseText);
-                    document.getElementById('tableBody').innerHTML = response.tableRows; // Insert table rows
-                    document.getElementById('paginationLinks').innerHTML = response.paginationLinks; // Insert pagination links
-                    document.getElementById('searchInput').value = search; // Preserve search input
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.tableRows && response.paginationLinks) {
+                            document.getElementById('tableBody').innerHTML = response.tableRows; // Insert table rows
+                            document.getElementById('paginationLinks').innerHTML = response.paginationLinks; // Insert pagination links
+                            document.getElementById('searchInput').value = search; // Preserve search input
+                        } else {
+                            console.error('Invalid response format:', response);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing JSON response:', e);
+                    }
+                } else {
+                    console.error('Request failed. Status:', xhr.status);
                 }
+            };
+            xhr.onerror = function() {
+                console.error('Request failed. An error occurred during the transaction.');
             };
             xhr.send();
         }
@@ -79,6 +92,7 @@ require 'header.php';
             fetchData();
         });
     </script>
+
 
 
     <title>Dashboard Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
