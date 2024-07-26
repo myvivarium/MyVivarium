@@ -17,12 +17,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if the user is logged in
-if (!isset($_SESSION['username'])) {
-    echo json_encode(['success' => false, 'message' => 'You must be logged in to delete a note.']);
-    exit;
-}
-
 // Initialize response array
 $response = ['success' => false, 'message' => 'Invalid request.'];
 
@@ -30,10 +24,9 @@ $response = ['success' => false, 'message' => 'Invalid request.'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_id'])) {
     // Retrieve the note ID from the POST data
     $note_id = $_POST['note_id'];
-    $user_id = $_SESSION['username']; // Assuming 'username' is the user's identifier
 
-    // Prepare the SQL statement
-    $sql = "DELETE FROM nt_data WHERE id = ? AND user_id = ?";
+    // Prepare the SQL statement to delete the note
+    $sql = "DELETE FROM notes WHERE id = ?";
     $stmt = $con->prepare($sql);
     if ($stmt === false) {
         $response['message'] = 'Prepare failed: ' . htmlspecialchars($con->error);
@@ -42,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_id'])) {
     }
 
     // Bind parameters
-    $stmt->bind_param("is", $note_id, $user_id);
+    $stmt->bind_param("i", $note_id);
 
     // Execute the statement
     if ($stmt->execute()) {
@@ -61,3 +54,4 @@ $con->close();
 
 // Return the response as JSON
 echo json_encode($response);
+?>

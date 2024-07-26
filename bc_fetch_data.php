@@ -38,7 +38,7 @@ if (isset($_GET['search'])) {
 }
 
 // Fetch the distinct cage IDs with pagination
-$query = "SELECT DISTINCT `cage_id` FROM bc_basic";
+$query = "SELECT DISTINCT `cage_id` FROM breeding";
 if (!empty($searchQuery)) {
     $query .= " WHERE `cage_id` LIKE '%$searchQuery%'"; // Add search filter to the query
 }
@@ -53,7 +53,7 @@ $result = mysqli_query($con, $query); // Execute the query to get the paginated 
 $tableRows = '';
 while ($row = mysqli_fetch_assoc($result)) {
     $cageID = $row['cage_id']; // Get the cage ID
-    $query = "SELECT * FROM bc_basic WHERE `cage_id` = '$cageID'"; // Query to fetch all records for the cage ID
+    $query = "SELECT * FROM breeding WHERE `cage_id` = '$cageID'"; // Query to fetch all records for the cage ID
     $cageResult = mysqli_query($con, $query); // Execute the query
     $numRows = mysqli_num_rows($cageResult); // Get the number of rows for the cage ID
     $firstRow = true; // Flag to check if it is the first row for the cage ID

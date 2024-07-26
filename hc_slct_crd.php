@@ -23,7 +23,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Fetch all distinct cage IDs from the database
-$query = "SELECT DISTINCT `cage_id` FROM hc_basic";
+$query = "SELECT DISTINCT `cage_id` FROM holding";
 $result = mysqli_query($con, $query);
 
 // Initialize an array to store cage IDs

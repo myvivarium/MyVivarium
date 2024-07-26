@@ -6,7 +6,6 @@
  * This script retrieves breeding cage data along with their latest litter records,
  * generates printable cards for each cage, and displays them in a 2x2 table format.
  * The script also includes QR codes for quick access to detailed views of each cage.
- *
  */
 
 // Start a new session or resume the existing session
@@ -39,45 +38,38 @@ if (isset($_GET['id'])) {
 
     foreach ($ids as $id) {
         // Fetch the breeding cage record with the specified ID, including PI name details
-        $query = "SELECT bc.*, pi.name AS pi_name 
-        FROM bc_basic bc 
-        JOIN users pi ON bc.pi_name = pi.id 
-        WHERE bc.cage_id = '$id'";
-        $result = mysqli_query($con, $query);
+        $query = "SELECT b.*, c.remarks AS remarks, pi.name AS pi_name
+        FROM breeding b
+        LEFT JOIN cages c ON b.cage_id = c.cage_id
+        LEFT JOIN users pi ON c.pi_name = pi.id
+        WHERE b.cage_id = ?";
+        $stmt = $con->prepare($query);
+        $stmt->bind_param("s", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        if (mysqli_num_rows($result) === 1) {
-            $breedingcage = mysqli_fetch_assoc($result); // Fetch the breeding cage data
+        if ($result->num_rows === 1) {
+            $breedingcage = $result->fetch_assoc(); // Fetch the breeding cage data
 
             // Fetch the latest 5 associated litter records for this breeding cage
-            $query1 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id' ORDER BY `dom` DESC LIMIT 5";
-            $result1 = mysqli_query($con, $query1);
+            $query1 = "SELECT * FROM litters WHERE cage_id = ? ORDER BY dom DESC LIMIT 5";
+            $stmt1 = $con->prepare($query1);
+            $stmt1->bind_param("s", $id);
+            $stmt1->execute();
+            $result1 = $stmt1->get_result();
             $litters = [];
-            while ($litter = mysqli_fetch_assoc($result1)) {
+            while ($litter = $result1->fetch_assoc()) {
                 $litters[] = $litter; // Store each litter record
             }
 
             // Store the breeding cage and its litters
             $breedingcage['litters'] = $litters;
 
-            // Explode the user IDs if they are comma-separated
-            $userIds = array_map('intval', explode(',', $breedingcage['user']));
-
-            // Fetch the user initials based on IDs
-            $userInitials = getUserInitialsByIds($con, $userIds);
-
-            // Prepare a string to display user initials
-            $userDisplay = [];
-            foreach ($userIds as $userId) {
-                if (isset($userInitials[$userId])) {
-                    $userDisplay[] = $userInitials[$userId];
-                } else {
-                    $userDisplay[] = htmlspecialchars($userId); // Fallback if ID not found
-                }
-            }
-            $userDisplayString = implode(', ', $userDisplay);
-
-            // Store user initials display string
+            // Fetch the user initials based on IDs from cage_users table
+            $userInitials = getUserInitialsByCageId($con, $id);
+            $userDisplayString = implode(', ', $userInitials);
             $breedingcage['user_initials'] = $userDisplayString;
+
             $breedingcages[] = $breedingcage;
         } else {
             // Set an error message and redirect if the ID is invalid
@@ -93,19 +85,40 @@ if (isset($_GET['id'])) {
     exit();
 }
 
-function getUserInitialsByIds($con, $userIds) {
-    $placeholders = implode(',', array_fill(0, count($userIds), '?'));
-    $query = "SELECT id, initials FROM users WHERE id IN ($placeholders)";
+function getUserInitialsByCageId($con, $cageId)
+{
+    $query = "SELECT u.initials 
+              FROM users u 
+              INNER JOIN cage_users cu ON u.id = cu.user_id 
+              WHERE cu.cage_id = ?";
     $stmt = $con->prepare($query);
-    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+    $stmt->bind_param("s", $cageId);
     $stmt->execute();
     $result = $stmt->get_result();
     $userInitials = [];
     while ($row = $result->fetch_assoc()) {
-        $userInitials[$row['id']] = htmlspecialchars($row['initials']);
+        $userInitials[] = htmlspecialchars($row['initials']);
     }
     $stmt->close();
     return $userInitials;
+}
+
+// Function to get IACUC IDs by cage ID
+function getIacucIdsByCageId($con, $cageId)
+{
+    $query = "SELECT i.iacuc_id FROM cage_iacuc ci
+              LEFT JOIN iacuc i ON ci.iacuc_id = i.iacuc_id
+              WHERE ci.cage_id = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("s", $cageId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $iacucIds = [];
+    while ($row = $result->fetch_assoc()) {
+        $iacucIds[] = $row['iacuc_id'];
+    }
+    $stmt->close();
+    return implode(', ', $iacucIds);
 }
 ?>
 
@@ -205,7 +218,7 @@ function getUserInitialsByIds($con, $userIds) {
                         <tr>
                             <td style="width:40%;">
                                 <span style="font-weight: bold; padding:3px; text-transform: uppercase;">IACUC:</span>
-                                <span><?= $breedingcage["iacuc"] ?></span>
+                                <span><?= htmlspecialchars(getIacucIdsByCageId($con, $breedingcage['cage_id'])); ?></span>
                             </td>
                             <td style="width:40%;">
                                 <span style="font-weight: bold; padding:3px; text-transform: uppercase;">User:</span>
@@ -236,22 +249,22 @@ function getUserInitialsByIds($con, $userIds) {
                     <table border="1" style="width: 5in; height: 1.5in; border-top: none;" id="cageB">
                         <tr>
                             <td style="width:25%;">
-                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">DOM</span>
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align: center;">DOM</span>
                             </td>
                             <td style="width:25%;">
-                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Litter DOB</span>
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align: center;">Litter DOB</span>
                             </td>
                             <td style="width:12.5%;">
-                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Alive</span>
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align: center;">Pups Alive</span>
                             </td>
                             <td style="width:12.5%;">
-                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Dead</span>
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align: center;">Pups Dead</span>
                             </td>
                             <td style="width:12.5%;">
-                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Male</span>
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align: center;">Pups Male</span>
                             </td>
                             <td style="width:12.5%;">
-                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align:center;">Pups Female</span>
+                                <span style="font-weight: bold; padding:3px; text-transform: uppercase; border-top: none; text-align: center;">Pups Female</span>
                             </td>
                         </tr>
                         <?php for ($i = 0; $i < 5; $i++) : ?>
@@ -262,16 +275,16 @@ function getUserInitialsByIds($con, $userIds) {
                                 <td style="width:25%; padding:3px;">
                                     <span><?= isset($breedingcage['litters'][$i]['litter_dob']) ? $breedingcage['litters'][$i]['litter_dob'] : '' ?></span>
                                 </td>
-                                <td style="width:12.5%; padding:3px;">
+                                <td style="width:12.5%; padding:3px; text-align:center;">
                                     <span><?= isset($breedingcage['litters'][$i]['pups_alive']) ? $breedingcage['litters'][$i]['pups_alive'] : '' ?></span>
                                 </td>
-                                <td style="width:12.5%; padding:3px;">
+                                <td style="width:12.5%; padding:3px; text-align:center;">
                                     <span><?= isset($breedingcage['litters'][$i]['pups_dead']) ? $breedingcage['litters'][$i]['pups_dead'] : '' ?></span>
                                 </td>
-                                <td style="width:12.5%; padding:3px;">
+                                <td style="width:12.5%; padding:3px; text-align:center;">
                                     <span><?= isset($breedingcage['litters'][$i]['pups_male']) ? $breedingcage['litters'][$i]['pups_male'] : '' ?></span>
                                 </td>
-                                <td style="width:12.5%; padding:3px;">
+                                <td style="width:12.5%; padding:3px; text-align:center;">
                                     <span><?= isset($breedingcage['litters'][$i]['pups_female']) ? $breedingcage['litters'][$i]['pups_female'] : '' ?></span>
                                 </td>
                             </tr>

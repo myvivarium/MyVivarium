@@ -2,26 +2,30 @@
 
 /**
  * Holding Cage Deletion Script
- * 
- * This script handles the deletion of a cage and its related files and mouse data from the database. 
- * It uses prepared statements to prevent SQL injection and transactions to ensure data integrity.
- * 
+ *
+ * This script handles the deletion of a holding cage and its related data from the database.
+ * It starts a session, checks if the required 'id' and 'confirm' parameters are set, sanitizes
+ * the ID parameter, and executes delete queries in a transaction to ensure data integrity.
+ * If the deletion is successful, it commits the transaction and redirects the user to the
+ * dashboard with a success message. If any errors occur, the transaction is rolled back, and
+ * an error message is set.
+ *
  */
 
 // Start a new session or resume the existing session
 session_start();
 
-// Include the database connection file
+// Include the database connection
 require 'dbcon.php';
 
-// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
+// Check if the user is not logged in, redirect them to index.php
 if (!isset($_SESSION['username'])) {
     header("Location: index.php");
     exit; // Exit to ensure no further code is executed
 }
 
 // Check if both 'id' and 'confirm' parameters are set, and if 'confirm' is 'true'
-if (isset($_GET['id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'true') {
+if (isset($_GET['id'], $_GET['confirm']) && $_GET['confirm'] == 'true') {
     // Sanitize the ID parameter to prevent SQL injection
     $id = mysqli_real_escape_string($con, $_GET['id']);
 
@@ -33,16 +37,25 @@ if (isset($_GET['id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'true')
     $userRole = $_SESSION['role']; // Assuming user role is stored in session
 
     // Fetch the cage record to check for user assignment
-    $cageQuery = "SELECT `user` FROM hc_basic WHERE `cage_id` = ?";
+    $cageQuery = "SELECT c.pi_name, cu.user_id 
+                    FROM cages c 
+                    LEFT JOIN cage_users cu ON c.cage_id = cu.cage_id 
+                    WHERE c.cage_id = ?";
     if ($stmt = mysqli_prepare($con, $cageQuery)) {
         mysqli_stmt_bind_param($stmt, "s", $id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
-        $cage = mysqli_fetch_assoc($result);
+
+        // Initialize an array to hold the user IDs associated with the cage
+        $cageUsers = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $cageUsers[] = $row['user_id'];
+        }
         mysqli_stmt_close($stmt);
 
-        if (!$cage) {
-            $_SESSION['message'] = 'Cage not found.';
+        // Check if any users were retrieved
+        if (empty($cageUsers)) {
+            $_SESSION['message'] = 'Cage not found or no users associated with this cage.';
             header("Location: hc_dash.php");
             exit();
         }
@@ -53,7 +66,6 @@ if (isset($_GET['id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'true')
     }
 
     // Check if the user is either an admin or assigned to the cage
-    $cageUsers = explode(',', $cage['user']); // Array of user IDs associated with the cage
     if ($userRole !== 'admin' && !in_array($currentUserId, $cageUsers)) {
         $_SESSION['message'] = 'Access denied. Only the assigned user or an admin can delete this cage.';
         header("Location: hc_dash.php");
@@ -61,84 +73,52 @@ if (isset($_GET['id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'true')
     }
 
     try {
-        // Prepare the SQL delete query for the hc_basic table
-        $deleteQuery = "DELETE FROM hc_basic WHERE `cage_id` = ?";
-        if ($stmt = mysqli_prepare($con, $deleteQuery)) {
-            // Bind the sanitized ID to the prepared statement
-            mysqli_stmt_bind_param($stmt, "s", $id);
-            // Execute the prepared statement
-            if (!mysqli_stmt_execute($stmt)) {
-                throw new Exception('Error executing delete statement for hc_basic table: ' . mysqli_error($con));
+        // Delete records from all related tables
+        $tables = [
+            'holding' => 'cage_id',
+            'mice' => 'cage_id',
+            'files' => 'cage_id',
+            'notes' => 'cage_id',
+            'cage_iacuc' => 'cage_id',
+            'cage_users' => 'cage_id',
+            'tasks' => 'cage_id',
+            'cages' => 'cage_id'
+        ];
+
+        foreach ($tables as $table => $column) {
+            $deleteQuery = "DELETE FROM $table WHERE $column = ?";
+            if ($stmt = mysqli_prepare($con, $deleteQuery)) {
+                mysqli_stmt_bind_param($stmt, "s", $id);
+                if (!mysqli_stmt_execute($stmt)) {
+                    throw new Exception("Error executing delete statement for $table table: " . mysqli_error($con));
+                }
+                mysqli_stmt_close($stmt);
+            } else {
+                throw new Exception("Error preparing delete statement for $table table: " . mysqli_error($con));
             }
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-        } else {
-            throw new Exception('Error preparing delete statement for hc_basic table: ' . mysqli_error($con));
         }
 
-        // Prepare the SQL delete query for the files table
-        $deleteFilesQuery = "DELETE FROM files WHERE `cage_id` = ?";
-        if ($stmt = mysqli_prepare($con, $deleteFilesQuery)) {
-            // Bind the sanitized ID to the prepared statement
-            mysqli_stmt_bind_param($stmt, "s", $id);
-            // Execute the prepared statement
-            if (!mysqli_stmt_execute($stmt)) {
-                throw new Exception('Error executing delete statement for files table: ' . mysqli_error($con));
-            }
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-        } else {
-            throw new Exception('Error preparing delete statement for files table: ' . mysqli_error($con));
-        }
-
-        // Prepare the SQL delete query for the mouse table
-        $deleteMouseQuery = "DELETE FROM mouse WHERE `cage_id` = ?";
-        if ($stmt = mysqli_prepare($con, $deleteMouseQuery)) {
-            // Bind the sanitized ID to the prepared statement
-            mysqli_stmt_bind_param($stmt, "s", $id);
-            // Execute the prepared statement
-            if (!mysqli_stmt_execute($stmt)) {
-                throw new Exception('Error executing delete statement for mouse table: ' . mysqli_error($con));
-            }
-            // Close the prepared statement
-            mysqli_stmt_close($stmt);
-        } else {
-            throw new Exception('Error preparing delete statement for mouse table: ' . mysqli_error($con));
-        }
-
-        // Commit the transaction to save the changes
+        // Commit the transaction
         mysqli_commit($con);
 
         // Set a success message in the session
-        $_SESSION['message'] = 'Cage ' . $id . ', related files and mouse data were deleted successfully.';
+        $_SESSION['message'] = 'Cage ' . $id . ' and related data deleted successfully.';
     } catch (Exception $e) {
-        // Roll back the transaction in case of an error
+        // Roll back the transaction
         mysqli_rollback($con);
         // Log the error and set a user-friendly message
-        $_SESSION['message'] = 'Error executing the delete statements. ' . $e->getMessage();
+        error_log($e->getMessage());
+        $_SESSION['message'] = 'Error executing the delete statements: ' . $e->getMessage();
     }
 
     // Redirect to the dashboard page
     header("Location: hc_dash.php");
     exit();
 } else {
-    // Ask for confirmation if 'confirm' is not set or not 'true'
-    if (isset($_GET['id']) && !isset($_GET['confirm'])) {
-        $id = htmlspecialchars($_GET['id']); // Sanitize the ID for display
-
-        echo "<script>
-            if (confirm('Are you sure you want to delete cage $id and all related mouse data?')) {
-                window.location.href = 'hc_delete.php?id=$id&confirm=true';
-            } else {
-                window.location.href = 'hc_dash.php';
-            }
-        </script>";
-        exit();
-    }
-
     // Set an error message if deletion is not confirmed or ID is missing
     $_SESSION['message'] = 'Deletion was not confirmed or ID parameter is missing.';
     // Redirect to the dashboard page
     header("Location: hc_dash.php");
     exit();
 }
+?>

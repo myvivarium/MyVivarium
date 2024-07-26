@@ -1,170 +1,175 @@
--- Creating the table to store basic information about breeding cages
-CREATE TABLE `bc_basic` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `cage_id` varchar(255) NOT NULL,                  -- Identifier for the cage
-  `pi_name` varchar(255) NOT NULL,                  -- Name of the principal investigator
-  `cross` varchar(255) NOT NULL,                    -- Cross type information
-  `iacuc` varchar(255) NOT NULL,                    -- IACUC (Institutional Animal Care and Use Committee) approval number
-  `user` varchar(255) NOT NULL,                     -- User associated with the record
-  `male_id` varchar(255) NOT NULL,                  -- Identifier for the male animal
-  `female_id` varchar(255) NOT NULL,                -- Identifier for the female animal
-  `male_dob` date NOT NULL,                         -- Date of birth of the male animal
-  `female_dob` date NOT NULL,                       -- Date of birth of the female animal
-  `remarks` text NOT NULL,                          -- Additional remarks or notes
-  PRIMARY KEY (`id`),                               -- Setting the primary key
-  KEY `idx_bc_basic_cage_id` (`cage_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store litter information
-CREATE TABLE `bc_litter` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `cage_id` varchar(255) NOT NULL,                  -- Identifier for the cage
-  `dom` date NOT NULL,                              -- Date of mating
-  `litter_dob` date DEFAULT NULL,                   -- Date of birth of the litter
-  `pups_alive` int(4) NOT NULL,                     -- Number of pups alive
-  `pups_dead` int(4) NOT NULL,                      -- Number of pups dead
-  `pups_male` int(4) NOT NULL,                      -- Number of male pups
-  `pups_female` int(4) NOT NULL,                    -- Number of female pups
-  `remarks` text NOT NULL,                          -- Additional remarks or notes
-  PRIMARY KEY (`id`),                               -- Setting the primary key
-  KEY `idx_bc_litter_cage_id` (`cage_id`),
-  CONSTRAINT `fk_bc_litter_cage_id` FOREIGN KEY (`cage_id`) REFERENCES `bc_basic` (`cage_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store email queue information
-CREATE TABLE `email_queue` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `recipient` varchar(255) NOT NULL,                -- Recipient email address
-  `subject` varchar(255) NOT NULL,                  -- Subject of the email
-  `body` text NOT NULL,                             -- Body content of the email
-  `status` enum('pending','sent','failed') NOT NULL DEFAULT 'pending', -- Email status
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(), -- Creation timestamp
-  `scheduled_at` timestamp NOT NULL DEFAULT current_timestamp(), -- Scheduled timestamp
-  `sent_at` timestamp NULL DEFAULT NULL,            -- Sent timestamp (nullable)
-  `error_message` text DEFAULT NULL,                -- Error message if the email failed (nullable)
-  PRIMARY KEY (`id`),                               -- Setting the primary key
-  KEY `idx_email_queue_recipient` (`recipient`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store information about uploaded files
-CREATE TABLE `files` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `file_name` varchar(255) NOT NULL,                -- Name of the uploaded file
-  `file_path` varchar(255) NOT NULL,                -- Path to the uploaded file
-  `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp(), -- Timestamp of the upload
-  `cage_id` varchar(255) DEFAULT NULL,              -- Identifier for the cage (optional)
-  PRIMARY KEY (`id`),                               -- Setting the primary key
-  KEY `cage_id` (`cage_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store basic information about housed cages
-CREATE TABLE `hc_basic` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `cage_id` varchar(255) NOT NULL,                  -- Identifier for the cage
-  `pi_name` varchar(255) NOT NULL,                  -- Name of the principal investigator
-  `strain` varchar(255) NOT NULL,                   -- Strain information
-  `iacuc` varchar(255) NOT NULL,                    -- IACUC approval number
-  `user` varchar(255) NOT NULL,                     -- User associated with the record
-  `qty` int(11) NOT NULL,                           -- Quantity of animals
-  `dob` date NOT NULL,                              -- Date of birth of the animals
-  `sex` enum('male','female') DEFAULT NULL,         -- Sex of the animals
-  `parent_cg` varchar(255) NOT NULL,                -- Parent cage identifier
-  `remarks` text NOT NULL,                          -- Additional remarks or notes
-  PRIMARY KEY (`id`),                               -- Setting the primary key
-  KEY `cage_id` (`cage_id`),
-  KEY `strain` (`strain`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store information about individual mice
-CREATE TABLE `mouse` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `cage_id` varchar(255) NOT NULL,                  -- Identifier for the cage
-  `mouse_id` varchar(255) NOT NULL,                 -- Identifier for the mouse
-  `genotype` varchar(255) NOT NULL,                 -- Genotype information
-  `notes` text NOT NULL,                            -- Additional notes
-  PRIMARY KEY (`id`),                               -- Setting the primary key
-  KEY `cage_id` (`cage_id`),
-  CONSTRAINT `mouse_ibfk_1` FOREIGN KEY (`cage_id`) REFERENCES `hc_basic` (`cage_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store notes data
-CREATE TABLE `nt_data` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `cage_id` varchar(255) DEFAULT NULL,              -- Identifier for the cage (optional)
-  `note_text` text DEFAULT NULL,                    -- Text of the note
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(), -- Timestamp of the note creation
-  `user_id` text NOT NULL,                          -- Identifier for the user who created the note
-  PRIMARY KEY (`id`)                                -- Setting the primary key
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store settings
-CREATE TABLE `settings` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `name` varchar(255) NOT NULL,                     -- Name of the setting
-  `value` varchar(255) NOT NULL,                    -- Value of the setting
-  PRIMARY KEY (`id`)                                -- Setting the primary key
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store strain information
-CREATE TABLE `strain` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `str_id` varchar(255) NOT NULL,                   -- Strain identifier
-  `str_name` varchar(255) NOT NULL,                 -- Strain name
-  `str_aka` varchar(255) DEFAULT NULL,              -- Alternate name for the strain
-  `str_url` varchar(255) DEFAULT NULL,              -- URL for the strain information
-  `str_rrid` varchar(255) DEFAULT NULL,             -- RRID for the strain
-  PRIMARY KEY (`id`),                               -- Setting the primary key
-  KEY `idx_strain_str_id` (`str_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store tasks
-CREATE TABLE `tasks` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `title` varchar(250) NOT NULL,                    -- Title of the task
-  `description` text NOT NULL,                      -- Description of the task
-  `assigned_by` varchar(50) NOT NULL,               -- User who assigned the task
-  `assigned_to` varchar(50) NOT NULL,               -- User assigned to the task
-  `status` enum('Pending','In Progress','Completed') NOT NULL DEFAULT 'Pending', -- Status of the task
-  `completion_date` date DEFAULT NULL,              -- Completion date of the task (nullable)
-  `cage_id` varchar(50) DEFAULT NULL,               -- Identifier for the cage (optional)
-  `creation_date` timestamp NOT NULL DEFAULT current_timestamp(), -- Creation timestamp
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(), -- Update timestamp
-  PRIMARY KEY (`id`)                                -- Setting the primary key
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store user information
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `name` varchar(255) NOT NULL,                     -- Name of the user
-  `username` varchar(255) NOT NULL,                 -- Username
-  `position` varchar(255) NOT NULL,                 -- Position of the user
-  `role` varchar(255) NOT NULL,                     -- Role of the user
-  `password` varchar(255) NOT NULL,                 -- Hashed password
-  `status` varchar(255) NOT NULL,                   -- Status of the user account
-  `reset_token` varchar(255) DEFAULT NULL,          -- Token for password reset (nullable)
-  `reset_token_expiration` datetime DEFAULT NULL,   -- Expiration datetime for the reset token (nullable)
-  `login_attempts` int(11) DEFAULT 0,               -- Count of login attempts
-  `account_locked` datetime DEFAULT NULL,           -- Datetime when the account was locked (nullable)
-  `email_verified` tinyint(1) DEFAULT 0,            -- Email verification status
-  `email_token` varchar(255) DEFAULT NULL,          -- Token for email verification (nullable)
-  `initials` varchar(5) DEFAULT NULL,              -- Name based initials
-  PRIMARY KEY (`id`)                                -- Setting the primary key
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- Creating the table to store IACUC information
 CREATE TABLE `iacuc` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,             -- Primary key, auto-incremented unique identifier
-  `iacuc_id` varchar(255) NOT NULL,                 -- IACUC identifier
-  `iacuc_title` varchar(255) NOT NULL,              -- Title of the IACUC
-  `file_url` varchar(255) DEFAULT NULL,             -- URL of the IACUC file
-  PRIMARY KEY (`id`),                               -- Setting the primary key
-  UNIQUE KEY `iacuc_id` (`iacuc_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `iacuc_id` varchar(255) NOT NULL,
+  `iacuc_title` varchar(255) NOT NULL,
+  `file_url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`iacuc_id`)
+);
+
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL, 
+  `username` varchar(255) NOT NULL,
+  `position` varchar(255) NOT NULL,
+  `role` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_token_expiration` datetime DEFAULT NULL,
+  `login_attempts` int DEFAULT 0,
+  `account_locked` datetime DEFAULT NULL,
+  `email_verified` tinyint DEFAULT 0,
+  `email_token` varchar(255) DEFAULT NULL,
+  `initials` varchar(5) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `cages` (
+  `cage_id` varchar(255) NOT NULL UNIQUE,
+  `pi_name` int DEFAULT NULL,
+  `quantity` int DEFAULT NULL,
+  `remarks` text NOT NULL,
+  PRIMARY KEY (`cage_id`),
+  FOREIGN KEY (`pi_name`) REFERENCES `users` (`id`) ON DELETE SET NULL
+);
+
+CREATE TABLE `cage_iacuc` (
+  `cage_id` varchar(255) NOT NULL,
+  `iacuc_id` varchar(255) NOT NULL,
+  PRIMARY KEY (`cage_id`, `iacuc_id`),
+  FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE,
+  FOREIGN KEY (`iacuc_id`) REFERENCES `iacuc` (`iacuc_id`) ON DELETE CASCADE
+);
+
+CREATE TABLE `cage_users` (
+  `cage_id` varchar(255) NOT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`cage_id`, `user_id`),
+  FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+);
+
+CREATE TABLE `strains` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `str_id` varchar(255) NOT NULL,
+  `str_name` varchar(255) NOT NULL,
+  `str_aka` varchar(255) DEFAULT NULL,
+  `str_url` varchar(255) DEFAULT NULL,
+  `str_rrid` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_strains_str_id` (`str_id`)
+);
+
+CREATE TABLE `holding` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cage_id` varchar(255) NOT NULL,
+  `strain` varchar(255) DEFAULT NULL,
+  `dob` date NOT NULL,
+  `sex` enum('male', 'female') DEFAULT NULL,
+  `parent_cg` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE,
+  FOREIGN KEY (`strain`) REFERENCES `strains` (`str_id`) ON DELETE SET NULL
+);
+
+CREATE TABLE `breeding` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cage_id` varchar(255) NOT NULL,
+  `cross` varchar(255) NOT NULL,
+  `male_id` varchar(255) NOT NULL,
+  `female_id` varchar(255) NOT NULL,
+  `male_dob` date NOT NULL,
+  `female_dob` date NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE
+);
+
+CREATE TABLE `litters` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cage_id` varchar(255) NOT NULL,
+  `dom` date NOT NULL,
+  `litter_dob` date DEFAULT NULL,
+  `pups_alive` int NOT NULL,
+  `pups_dead` int NOT NULL,
+  `pups_male` int NOT NULL,
+  `pups_female` int NOT NULL,
+  `remarks` text NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE
+);
+
+CREATE TABLE `files` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `file_name` varchar(255) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `cage_id` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE
+);
+
+CREATE TABLE `notes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cage_id` varchar(255) DEFAULT NULL,
+  `note_text` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `user_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+);
+
+CREATE TABLE `mice` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cage_id` varchar(255) NOT NULL,
+  `mouse_id` varchar(255) NOT NULL,
+  `genotype` varchar(255) NOT NULL,
+  `notes` text NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE
+);
+
+CREATE TABLE `tasks` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `assigned_by` int DEFAULT NULL,
+  `assigned_to` varchar(50) NOT NULL,
+  `status` enum('Pending','In Progress','Completed') NOT NULL DEFAULT 'Pending',
+  `completion_date` date DEFAULT NULL,
+  `cage_id` varchar(255) DEFAULT NULL,
+  `creation_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE,
+  FOREIGN KEY (`assigned_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+);
+
+CREATE TABLE `outbox` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `recipient` varchar(255) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `body` text NOT NULL,
+  `status` enum('pending','sent','failed') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `scheduled_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `sent_at` timestamp NULL DEFAULT NULL,
+  `error_message` text DEFAULT NULL,
+  `task_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_outbox_recipient` (`recipient`),
+  FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE SET NULL
+);
+
+CREATE TABLE `settings` (
+  `name` varchar(255) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  PRIMARY KEY (`name`)
+);
 
 -- Inserting initial data into the users table
 INSERT INTO `users` (`name`, `username`, `position`, `role`, `password`, `status`, `reset_token`, `reset_token_expiration`, `login_attempts`, `account_locked`, `email_verified`, `email_token`, `initials`)
 VALUES ('Temporary Admin', 'admin@myvivarium.online', 'Principal Investigator', 'admin', '$2y$10$Y3sGVYIhu2BjpSFh9HA4We.lUhO.hvS9OVPb2Fb82N0BJGVFIXsmW', 'approved', NULL, NULL, 0, NULL, 1, NULL, 'TAN');
 
 -- Inserting initial data into the strain table
-INSERT INTO `strain` (`str_id`, `str_name`, `str_aka`, `str_url`, `str_rrid`)
+INSERT INTO `strains` (`str_id`, `str_name`, `str_aka`, `str_url`, `str_rrid`)
 VALUES ('035561', 'STOCK Tc(HSA21,CAG-EGFP)1Yakaz/J', 'B6D2F1 TcMAC21', 'https://www.jax.org/strain/035561', 'IMSR_JAX:035561');

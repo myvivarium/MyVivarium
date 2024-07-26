@@ -41,10 +41,11 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the breeding cage record with the specified ID
-    $query = "SELECT bc.*, pi.initials AS pi_initials, pi.name AS pi_name
-              FROM bc_basic bc 
-              LEFT JOIN users pi ON bc.pi_name = pi.id 
-              WHERE bc.cage_id = '$id'";
+    $query = "SELECT b.*, c.remarks AS remarks, pi.initials AS pi_initials, pi.name AS pi_name
+          FROM breeding b
+          LEFT JOIN cages c ON b.cage_id = c.cage_id
+          LEFT JOIN users pi ON c.pi_name = pi.id
+          WHERE b.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
     // Fetch files associated with the specified cage ID
@@ -52,52 +53,29 @@ if (isset($_GET['id'])) {
     $files = $con->query($query2);
 
     // Fetch the breeding cage litter records with the specified ID
-    $query3 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id'";
+    $query3 = "SELECT * FROM litters WHERE `cage_id` = '$id'";
     $litters = mysqli_query($con, $query3);
 
     // Check if the breeding cage record exists
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
 
-        // If PI name is null, re-query the bc_basic table without the join
-        if (is_null($breedingcage['pi_name'])) {
-            $queryBasic = "SELECT * FROM bc_basic WHERE `cage_id` = '$id'";
-            $resultBasic = mysqli_query($con, $queryBasic);
-
-            if (mysqli_num_rows($resultBasic) === 1) {
-                $breedingcage = mysqli_fetch_assoc($resultBasic);
-                $breedingcage['pi_initials'] = 'NA'; // Set empty initials
-                $breedingcage['pi_name'] = 'NA'; // Set empty PI name
-            } else {
-                // If the re-query also fails, set an error message and redirect to the dashboard
-                $_SESSION['message'] = 'Error fetching the cage details.';
-                header("Location: bc_dash.php");
-                exit();
-            }
-        }
-
-        // Split the IACUC field into individual codes
-        $iacucCodes = explode(',', $breedingcage['iacuc']);
+        // Fetch IACUC codes associated with the cage
+        $iacucQuery = "SELECT ci.iacuc_id, i.file_url 
+                        FROM cage_iacuc ci 
+                        LEFT JOIN iacuc i ON ci.iacuc_id = i.iacuc_id
+                        WHERE ci.cage_id = '$id'";
+        $iacucResult = mysqli_query($con, $iacucQuery);
         $iacucLinks = [];
-
-        // Fetch IACUC URLs
-        foreach ($iacucCodes as $iacucCode) {
-            $iacucCode = trim($iacucCode);
-            $iacucQuery = "SELECT file_url FROM iacuc WHERE iacuc_id = '$iacucCode'";
-            $iacucResult = mysqli_query($con, $iacucQuery);
-            if ($iacucResult && mysqli_num_rows($iacucResult) === 1) {
-                $iacucRow = mysqli_fetch_assoc($iacucResult);
-                if (!empty($iacucRow['file_url'])) {
-                    $iacucLinks[] = "<a href='" . htmlspecialchars($iacucRow['file_url']) . "' target='_blank'>" . htmlspecialchars($iacucCode) . "</a>";
-                } else {
-                    $iacucLinks[] = htmlspecialchars($iacucCode);
-                }
+        while ($row = mysqli_fetch_assoc($iacucResult)) {
+            if (!empty($row['file_url'])) {
+                $iacucLinks[] = "<a href='" . htmlspecialchars($row['file_url']) . "' target='_blank'>" . htmlspecialchars($row['iacuc_id']) . "</a>";
             } else {
-                $iacucLinks[] = htmlspecialchars($iacucCode);
+                $iacucLinks[] = htmlspecialchars($row['iacuc_id']);
             }
         }
-
         $iacucDisplayString = implode(', ', $iacucLinks);
+
     } else {
         // If the record does not exist, set an error message and redirect to the dashboard
         $_SESSION['message'] = 'Invalid ID.';
@@ -127,8 +105,15 @@ function getUserDetailsByIds($con, $userIds)
     return $userDetails;
 }
 
-// Explode the user IDs if they are comma-separated
-$userIds = array_map('intval', explode(',', $breedingcage['user']));
+    // Fetch user IDs associated with the cage
+    $userIdsQuery = "SELECT cu.user_id 
+                 FROM cage_users cu 
+                 WHERE cu.cage_id = '$id'";
+    $userIdsResult = mysqli_query($con, $userIdsQuery);
+    $userIds = [];
+    while ($row = mysqli_fetch_assoc($userIdsResult)) {
+        $userIds[] = $row['user_id'];
+    }
 
 // Fetch the user details based on IDs
 $userDetails = getUserDetailsByIds($con, $userIds);

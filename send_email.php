@@ -78,7 +78,7 @@ function sendPendingEmails()
     global $con;
 
     // Fetch pending emails
-    $stmt = $con->prepare("SELECT id, recipient, subject, body FROM email_queue WHERE status = 'pending'");
+    $stmt = $con->prepare("SELECT id, recipient, subject, body FROM outbox WHERE status = 'pending'");
     $stmt->execute();
     $stmt->store_result(); // Store the result set to free the connection
     $stmt->bind_result($id, $recipient, $subject, $body);
@@ -99,7 +99,7 @@ function sendPendingEmails()
 
         // Update email status in the database
         // Prepare and close update statement within the loop to avoid the "Commands out of sync" error
-        $updateStmt = $con->prepare("UPDATE email_queue SET status = ?, sent_at = ?, error_message = ? WHERE id = ?");
+        $updateStmt = $con->prepare("UPDATE outbox SET status = ?, sent_at = ?, error_message = ? WHERE id = ?");
         $updateStmt->bind_param("sssi", $status, $sentAt, $errorMessage, $id);
         $updateStmt->execute();
         $updateStmt->close();

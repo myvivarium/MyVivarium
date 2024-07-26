@@ -26,11 +26,11 @@ if (!isset($_SESSION['username'])) {
 $response = ['success' => false, 'message' => 'Invalid request.'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note_text'])) {
     $note_text = $_POST['note_text'];
-    $user_id = $_SESSION['username']; // Assuming 'username' is the user's identifier
+    $user_id = $_SESSION['user_id']; // Assuming 'username' is the user's identifier
     $cage = isset($_POST['cage_id']) ? $_POST['cage_id'] : null;
 
     // Prepare the SQL statement
-    $sql = "INSERT INTO nt_data (user_id, note_text, cage_id) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO notes (user_id, note_text, cage_id) VALUES (?, ?, ?)";
     $stmt = $con->prepare($sql);
     if ($stmt === false) {
         $response['message'] = 'Prepare failed: ' . htmlspecialchars($con->error);

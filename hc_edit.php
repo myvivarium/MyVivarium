@@ -37,15 +37,15 @@ $userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
 $userResult = $con->query($userQuery);
 
 // Query to retrieve options where role is 'Principal Investigator'
-$query1 = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
-$result1 = $con->query($query1);
+$piQuery = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
+$piResult = $con->query($piQuery);
 
 // Query to retrieve IACUC values
 $iacucQuery = "SELECT iacuc_id, iacuc_title FROM iacuc";
 $iacucResult = $con->query($iacucQuery);
 
 // Query to retrieve strain details including common names
-$strainQuery = "SELECT str_id, str_name, str_aka FROM strain";
+$strainQuery = "SELECT str_id, str_name, str_aka FROM strains";
 $strainResult = $con->query($strainQuery);
 
 // Initialize an array to hold all options
@@ -77,56 +77,54 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the holding cage record with the specified ID including PI name details
-    $query = "SELECT hc.*, pi.initials AS pi_initials, pi.name AS pi_full_name 
-                FROM hc_basic hc 
-                LEFT JOIN users pi ON hc.pi_name = pi.id 
-                WHERE hc.cage_id = '$id'";
-    $result = mysqli_query($con, $query);
+    $query = "SELECT h.*, c.pi_name AS pi_name, c.quantity, c.remarks
+              FROM holding h
+              LEFT JOIN cages c ON h.cage_id = c.cage_id 
+              WHERE h.cage_id = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("s", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    echo $query;
 
     // Fetch associated files for the holding cage
-    $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
-    $files = $con->query($query2);
+    $query2 = "SELECT * FROM files WHERE cage_id = ?";
+    $stmt2 = $con->prepare($query2);
+    $stmt2->bind_param("s", $id);
+    $stmt2->execute();
+    $files = $stmt2->get_result();
 
     // Fetch the mouse data related to this cage
-    $mouseQuery = "SELECT * FROM mouse WHERE cage_id = '$id'";
-    $mouseResult = mysqli_query($con, $mouseQuery);
-    $mice = mysqli_fetch_all($mouseResult, MYSQLI_ASSOC);
+    $mouseQuery = "SELECT * FROM mice WHERE cage_id = ?";
+    $stmtMouse = $con->prepare($mouseQuery);
+    $stmtMouse->bind_param("s", $id);
+    $stmtMouse->execute();
+    $mouseResult = $stmtMouse->get_result();
+    $mice = $mouseResult->fetch_all(MYSQLI_ASSOC);
 
     // Check if the holding cage record exists
-    if (mysqli_num_rows($result) === 1) {
-        $holdingcage = mysqli_fetch_assoc($result);
+    if ($result->num_rows === 1) {
+        $holdingcage = $result->fetch_assoc();
 
-        // If PI name is null, re-query the hc_basic table without the join
-        if (is_null($holdingcage['pi_name'])) {
-            $queryBasic = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
-            $resultBasic = mysqli_query($con, $queryBasic);
+        // Fetch currently selected users
+        $selectedUsersQuery = "SELECT user_id FROM cage_users WHERE cage_id = ?";
+        $stmtUsers = $con->prepare($selectedUsersQuery);
+        $stmtUsers->bind_param("s", $id);
+        $stmtUsers->execute();
+        $usersResult = $stmtUsers->get_result();
+        $selectedUsers = array_column($usersResult->fetch_all(MYSQLI_ASSOC), 'user_id');
 
-            if (mysqli_num_rows($resultBasic) === 1) {
-                $holdingcage = mysqli_fetch_assoc($resultBasic);
-                $holdingcage['pi_initials'] = 'NA'; // Set empty initials
-                $holdingcage['pi_name'] = 'NA'; // Set empty PI name
-            } else {
-                // If the re-query also fails, set an error message and redirect to the dashboard
-                $_SESSION['message'] = 'Error fetching the cage details.';
-                header("Location: hc_dash.php");
-                exit();
-            }
+        // Fetching the selected IACUC values for the cage
+        $selectedIacucs = [];
+        $selectedIacucQuery = "SELECT iacuc_id FROM cage_iacuc WHERE cage_id = ?";
+        $stmtSelectedIacuc = $con->prepare($selectedIacucQuery);
+        $stmtSelectedIacuc->bind_param("s", $id);
+        $stmtSelectedIacuc->execute();
+        $resultSelectedIacuc = $stmtSelectedIacuc->get_result();
+        while ($row = $resultSelectedIacuc->fetch_assoc()) {
+            $selectedIacucs[] = $row['iacuc_id'];
         }
-
-        // Fetch currently selected users and explode them into an array
-        $selectedUsers = explode(',', $holdingcage['user']);
-
-        // Check if the logged-in user is the owner or an admin
-        $currentUserId = $_SESSION['user_id']; // User ID from session
-        $userRole = $_SESSION['role']; // User role from session
-        $cageUsers = explode(',', $holdingcage['user']); // Array of user IDs associated with the cage
-
-        // Check if the user is either an admin or one of the users associated with the cage
-        if ($userRole !== 'admin' && !in_array($currentUserId, $cageUsers)) {
-            $_SESSION['message'] = 'Access denied. Only the admin or the assigned user can edit.';
-            header("Location: hc_dash.php");
-            exit();
-        }
+        $stmtSelectedIacuc->close();
 
         // Fetch currently selected PI
         $selectedPiId = $holdingcage['pi_name'];
@@ -140,55 +138,75 @@ if (isset($_GET['id'])) {
             }
 
             // Retrieve and sanitize form data
-            $cage_id = mysqli_real_escape_string($con, $_POST['cage_id']);
+            $cage_id = trim(mysqli_real_escape_string($con, $_POST['cage_id']));
             $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
             $strain = mysqli_real_escape_string($con, $_POST['strain']);
-            $iacuc = isset($_POST['iacuc']) ? implode(',', array_map(function ($value) use ($con) {
+            $iacuc = isset($_POST['iacuc']) ? array_map(function ($value) use ($con) {
                 return mysqli_real_escape_string($con, $value);
-            }, $_POST['iacuc'])) : '';
-            $user = isset($_POST['user']) ? implode(',', array_map(function ($user_id) use ($con) {
+            }, $_POST['iacuc']) : [];
+            $users = isset($_POST['user']) ? array_map(function ($user_id) use ($con) {
                 return mysqli_real_escape_string($con, trim($user_id));
-            }, $_POST['user'])) : '';
+            }, $_POST['user']) : [];
             $dob = mysqli_real_escape_string($con, $_POST['dob']);
             $sex = mysqli_real_escape_string($con, $_POST['sex']);
             $parent_cg = mysqli_real_escape_string($con, $_POST['parent_cg']);
             $remarks = mysqli_real_escape_string($con, $_POST['remarks']);
 
-            // Update query for hc_basic table
-            $updateQuery = "UPDATE hc_basic SET
-                    `cage_id` = ?,
-                    `pi_name` = ?,
-                    `strain` = ?,
-                    `iacuc` = ?,
-                    `user` = ?,
-                    `dob` = ?,
-                    `sex` = ?,
-                    `parent_cg` = ?,
-                    `remarks` = ?
-                    WHERE `cage_id` = ?";
+            // Update query for holding table
+            $updateQueryHolding = "UPDATE holding SET
+                                    `strain` = ?,
+                                    `dob` = ?,
+                                    `sex` = ?,
+                                    `parent_cg` = ?
+                                    WHERE `cage_id` = ?";
 
-            // Prepare the update query
-            $stmt = $con->prepare($updateQuery);
+            $stmtHolding = $con->prepare($updateQueryHolding);
+            $stmtHolding->bind_param("sssss", $strain, $dob, $sex, $parent_cg, $cage_id);
+            $resultHolding = $stmtHolding->execute();
+            $stmtHolding->close();
 
-            // Bind parameters to the prepared statement
-            $stmt->bind_param(
-                "ssssssssss",
-                $cage_id,
-                $pi_name,
-                $strain,
-                $iacuc,
-                $user,
-                $dob,
-                $sex,
-                $parent_cg,
-                $remarks,
-                $id
-            );
+            // Update query for cages table
+            $updateQueryCages = "UPDATE cages SET
+                                 `pi_name` = ?,
+                                 `remarks` = ?
+                                 WHERE `cage_id` = ?";
 
-            // Execute the prepared statement
-            $result = $stmt->execute();
+            $stmtCages = $con->prepare($updateQueryCages);
+            $stmtCages->bind_param("iss", $pi_name, $remarks, $cage_id);
+            $resultCages = $stmtCages->execute();
+            $stmtCages->close();
 
-            // Update the mouse table with new data
+            // Update the cage_users table
+            $deleteUsersQuery = "DELETE FROM cage_users WHERE cage_id = ?";
+            $stmtDeleteUsers = $con->prepare($deleteUsersQuery);
+            $stmtDeleteUsers->bind_param("s", $cage_id);
+            $stmtDeleteUsers->execute();
+            $stmtDeleteUsers->close();
+
+            $insertUsersQuery = "INSERT INTO cage_users (cage_id, user_id) VALUES (?, ?)";
+            $stmtInsertUsers = $con->prepare($insertUsersQuery);
+            foreach ($users as $user_id) {
+                $stmtInsertUsers->bind_param("si", $cage_id, $user_id);
+                $stmtInsertUsers->execute();
+            }
+            $stmtInsertUsers->close();
+
+            // Update the cage_iacuc table
+            $deleteIacucQuery = "DELETE FROM cage_iacuc WHERE cage_id = ?";
+            $stmtDeleteIacuc = $con->prepare($deleteIacucQuery);
+            $stmtDeleteIacuc->bind_param("s", $cage_id);
+            $stmtDeleteIacuc->execute();
+            $stmtDeleteIacuc->close();
+
+            $insertIacucQuery = "INSERT INTO cage_iacuc (cage_id, iacuc_id) VALUES (?, ?)";
+            $stmtInsertIacuc = $con->prepare($insertIacucQuery);
+            foreach ($iacuc as $iacuc_id) {
+                $stmtInsertIacuc->bind_param("ss", $cage_id, $iacuc_id);
+                $stmtInsertIacuc->execute();
+            }
+            $stmtInsertIacuc->close();
+
+            // Update the mice table with new data
             $mouse_ids = $_POST['mouse_id'] ?? [];
             $genotypes = $_POST['genotype'] ?? [];
             $notes = $_POST['notes'] ?? [];
@@ -204,14 +222,14 @@ if (isset($_GET['id'])) {
                 if (!empty($mouse_id)) {
                     if ($existing_mouse_id) {
                         // Update existing mouse record
-                        $updateMouseQuery = "UPDATE mouse SET mouse_id = ?, genotype = ?, notes = ? WHERE id = ?";
+                        $updateMouseQuery = "UPDATE mice SET mouse_id = ?, genotype = ?, notes = ? WHERE id = ?";
                         $stmtMouseUpdate = $con->prepare($updateMouseQuery);
                         $stmtMouseUpdate->bind_param("sssi", $mouse_id, $genotype, $note, $existing_mouse_id);
                         $stmtMouseUpdate->execute();
                         $stmtMouseUpdate->close();
                     } else {
                         // Insert new mouse record
-                        $insertMouseQuery = "INSERT INTO mouse (cage_id, mouse_id, genotype, notes) VALUES (?, ?, ?, ?)";
+                        $insertMouseQuery = "INSERT INTO mice (cage_id, mouse_id, genotype, notes) VALUES (?, ?, ?, ?)";
                         $stmtMouseInsert = $con->prepare($insertMouseQuery);
                         $stmtMouseInsert->bind_param("ssss", $cage_id, $mouse_id, $genotype, $note);
                         $stmtMouseInsert->execute();
@@ -224,7 +242,7 @@ if (isset($_GET['id'])) {
             if (!empty($_POST['mice_to_delete'])) {
                 $miceToDelete = explode(',', $_POST['mice_to_delete']);
                 foreach ($miceToDelete as $mouseId) {
-                    $deleteMouseQuery = "DELETE FROM mouse WHERE id = ?";
+                    $deleteMouseQuery = "DELETE FROM mice WHERE id = ?";
                     $stmtMouseDelete = $con->prepare($deleteMouseQuery);
                     $stmtMouseDelete->bind_param("i", $mouseId);
                     $stmtMouseDelete->execute();
@@ -232,8 +250,8 @@ if (isset($_GET['id'])) {
                 }
             }
 
-            // Update the qty field in hc_basic based on the number of mouse records
-            $newQtyQuery = "SELECT COUNT(*) AS new_qty FROM mouse WHERE cage_id = ?";
+            // Update the qty field in cages based on the number of mouse records
+            $newQtyQuery = "SELECT COUNT(*) AS new_qty FROM mice WHERE cage_id = ?";
             $stmtNewQty = $con->prepare($newQtyQuery);
             $stmtNewQty->bind_param("s", $cage_id);
             $stmtNewQty->execute();
@@ -241,21 +259,18 @@ if (isset($_GET['id'])) {
             $stmtNewQty->fetch();
             $stmtNewQty->close();
 
-            $updateQtyQuery = "UPDATE hc_basic SET qty = ? WHERE cage_id = ?";
+            $updateQtyQuery = "UPDATE cages SET quantity = ? WHERE cage_id = ?";
             $stmtUpdateQty = $con->prepare($updateQtyQuery);
             $stmtUpdateQty->bind_param("is", $newQty, $cage_id);
             $stmtUpdateQty->execute();
             $stmtUpdateQty->close();
 
             // Check if the update was successful
-            if ($result) {
+            if ($resultHolding && $resultCages) {
                 $_SESSION['message'] = 'Entry updated successfully.';
             } else {
                 $_SESSION['message'] = 'Update failed: ' . $stmt->error;
             }
-
-            // Close the prepared statement
-            $stmt->close();
 
             // Handle file upload
             if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
@@ -309,6 +324,7 @@ if (isset($_GET['id'])) {
     exit();
 }
 
+// Function to fetch user details by IDs
 function getUserDetailsByIds($con, $userIds)
 {
     $placeholders = implode(',', array_fill(0, count($userIds), '?'));
@@ -374,6 +390,16 @@ require 'header.php';
         .table-wrapper table {
             width: 100%;
             border-collapse: collapse;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
         }
 
         .table-wrapper th,
@@ -639,20 +665,29 @@ require 'header.php';
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h4>Edit Holding Cage</h4>
-                        <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
+                        <div class="action-buttons">
+                            <!-- Button to go back to the previous page -->
+                            <a href="javascript:void(0);" onclick="goBack()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
+                                <i class="fas fa-arrow-circle-left"></i>
+                            </a>
+                            <!-- Button to save the form -->
+                            <a href="javascript:void(0);" onclick="document.getElementById('editForm').submit();" class="btn btn-success btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Save">
+                                <i class="fas fa-save"></i>
+                            </a>
+                        </div>
                     </div>
 
                     <div class="card-body">
-                        <form method="POST" action="hc_edit.php?id=<?= $id; ?>" enctype="multipart/form-data">
-
+                        <form id="editForm" method="POST" action="hc_edit.php?id=<?= $id; ?>" enctype="multipart/form-data">
+                            <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
                             <input type="hidden" id="mice_to_delete" name="mice_to_delete" value="">
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
                             <div class="mb-3">
                                 <label for="cage_id" class="form-label">Cage ID <span class="required-asterisk">*</span></label>
-                                <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= htmlspecialchars($holdingcage['cage_id']); ?>" required>
+                                <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= htmlspecialchars($holdingcage['cage_id']); ?>" readonly required>
                             </div>
 
                             <div class="mb-3">
@@ -663,7 +698,7 @@ require 'header.php';
                                         <?= htmlspecialchars($piDisplay); ?>
                                     </option>
                                     <!-- Iterate through the PI options, skipping the selected one -->
-                                    <?php while ($row = $result1->fetch_assoc()) : ?>
+                                    <?php while ($row = $piResult->fetch_assoc()) : ?>
                                         <?php if ($row['id'] !== $selectedPiId) : ?>
                                             <option value="<?= htmlspecialchars($row['id']); ?>">
                                                 <?= htmlspecialchars($row['initials']) . ' [' . htmlspecialchars($row['name']) . ']'; ?>
@@ -676,7 +711,7 @@ require 'header.php';
                             <div class="mb-3">
                                 <label for="strain" class="form-label">Strain <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="strain" name="strain" required>
-                                    <option value="" disabled>Select Strain</option>
+                                    <option value="" disabled <?= empty($holdingcage['strain']) ? 'selected' : ''; ?>>Select Strain</option>
                                     <?php
                                     // Initialize a flag to check if the current strain exists in the options
                                     $strainExists = false;
@@ -707,10 +742,6 @@ require 'header.php';
                                 <select class="form-control" id="iacuc" name="iacuc[]" multiple>
                                     <option value="" disabled>Select IACUC</option>
                                     <?php
-                                    // Retrieve selected IACUC values
-                                    $selectedIacucs = isset($holdingcage['iacuc']) ? explode(',', $holdingcage['iacuc']) : [];
-
-                                    // Check if there are any IACUC values from the database
                                     if ($iacucResult->num_rows > 0) {
                                         // Populate the dropdown with IACUC values from the database
                                         while ($iacucRow = $iacucResult->fetch_assoc()) {
@@ -721,7 +752,6 @@ require 'header.php';
                                             echo "<option value='$iacuc_id' title='$iacuc_title' $selected>$iacuc_id | $truncated_title</option>";
                                         }
                                     } else {
-                                        // Show an empty option if there are no IACUC values
                                         echo "<option value='' disabled>No IACUC available</option>";
                                     }
                                     ?>
@@ -752,17 +782,9 @@ require 'header.php';
                             <div class="mb-3">
                                 <label for="sex" class="form-label">Sex <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="sex" name="sex" required>
-                                    <option value="<?= htmlspecialchars($holdingcage['sex']); ?>" selected>
-                                        <?= htmlspecialchars($holdingcage['sex']); ?>
-                                    </option>
-                                    <?php
-                                    if ($holdingcage['sex'] != 'Male') {
-                                        echo "<option value='Male'>Male</option>";
-                                    }
-                                    if ($holdingcage['sex'] != 'Female') {
-                                        echo "<option value='Female'>Female</option>";
-                                    }
-                                    ?>
+                                    <option value="" disabled <?= empty($holdingcage['sex']) ? 'selected' : ''; ?>>Select Sex</option>
+                                    <option value="Male" <?= $holdingcage['sex'] === 'male' ? 'selected' : ''; ?>>Male</option>
+                                    <option value="Female" <?= $holdingcage['sex'] === 'female' ? 'selected' : ''; ?>>Female</option>
                                 </select>
                             </div>
 

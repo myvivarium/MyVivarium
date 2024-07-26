@@ -6,7 +6,6 @@
  * This script handles the editing of a breeding cage and its related data. It starts a session, checks if the user is logged in,
  * retrieves existing cage data, processes form submissions for updating the cage and litter information, and handles file uploads.
  * It also ensures security by regenerating session IDs and validating CSRF tokens.
- *
  */
 
 // Start a new session or resume the existing session
@@ -23,7 +22,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Check if the user is logged in
-// Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
     $currentUrl = urlencode($_SERVER['REQUEST_URI']);
     header("Location: index.php?redirect=$currentUrl");
@@ -48,10 +46,10 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the breeding cage record with the specified ID including PI name details
-    $query = "SELECT bc.*, pi.initials AS pi_initials, pi.name AS pi_full_name 
-                FROM bc_basic bc 
-                LEFT JOIN users pi ON bc.pi_name = pi.id 
-                WHERE bc.cage_id = '$id'";
+    $query = "SELECT b.*, c.remarks AS remarks, c.pi_name AS pi_name
+          FROM breeding b
+          LEFT JOIN cages c ON b.cage_id = c.cage_id
+          WHERE b.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
     // Fetch files associated with the specified cage ID
@@ -59,42 +57,40 @@ if (isset($_GET['id'])) {
     $files = $con->query($query2);
 
     // Fetch the breeding cage litter record with the specified ID
-    $query3 = "SELECT * FROM bc_litter WHERE `cage_id` = '$id'";
+    $query3 = "SELECT * FROM litters WHERE `cage_id` = '$id'";
     $litters = mysqli_query($con, $query3);
 
     // Query to retrieve IACUC values
     $iacucQuery = "SELECT iacuc_id, iacuc_title FROM iacuc";
     $iacucResult = $con->query($iacucQuery);
 
-
     // Check if the breeding cage exists
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
 
-        // If PI name is null, re-query the bc_basic table without the join
-        if (is_null($breedingcage['pi_name'])) {
-            $queryBasic = "SELECT * FROM bc_basic WHERE `cage_id` = '$id'";
-            $resultBasic = mysqli_query($con, $queryBasic);
-
-            if (mysqli_num_rows($resultBasic) === 1) {
-                $breedingcage = mysqli_fetch_assoc($resultBasic);
-                $breedingcage['pi_initials'] = 'NA'; // Set empty initials
-                $breedingcage['pi_name'] = 'NA'; // Set empty PI name
-            } else {
-                // If the re-query also fails, set an error message and redirect to the dashboard
-                $_SESSION['message'] = 'Error fetching the cage details.';
-                header("Location: bc_dash.php");
-                exit();
-            }
+        // Fetch selected IACUC values associated with the cage
+        $selectedIacucsQuery = "SELECT i.iacuc_id, i.iacuc_title 
+                                FROM cage_iacuc ci
+                                JOIN iacuc i ON ci.iacuc_id = i.iacuc_id
+                                WHERE ci.cage_id = '$id'";
+        $selectedIacucsResult = $con->query($selectedIacucsQuery);
+        $selectedIacucs = [];
+        while ($row = $selectedIacucsResult->fetch_assoc()) {
+            $selectedIacucs[] = $row['iacuc_id'];
         }
 
         // Fetch currently selected users and explode them into an array
-        $selectedUsers = explode(',', $breedingcage['user']);
+        $selectedUsersQuery = "SELECT user_id FROM cage_users WHERE cage_id = '$id'";
+        $selectedUsersResult = $con->query($selectedUsersQuery);
+        $selectedUsers = [];
+        while ($row = $selectedUsersResult->fetch_assoc()) {
+            $selectedUsers[] = $row['user_id'];
+        }
 
         // Check if the logged-in user is the owner or an admin
         $currentUserId = $_SESSION['user_id']; // User ID from session
         $userRole = $_SESSION['role']; // User role from session
-        $cageUsers = explode(',', $breedingcage['user']); // Array of user IDs associated with the cage
+        $cageUsers = $selectedUsers; // Array of user IDs associated with the cage
 
         // Check if the user is either an admin or one of the users associated with the cage
         if ($userRole !== 'admin' && !in_array($currentUserId, $cageUsers)) {
@@ -114,48 +110,79 @@ if (isset($_GET['id'])) {
                 die('CSRF token validation failed');
             }
 
-            // Retrieve and sanitize form data
-            $cage_id = mysqli_real_escape_string($con, $_POST['cage_id']);
+            /// Retrieve and sanitize form data
+            $cage_id = trim(mysqli_real_escape_string($con, $_POST['cage_id']));
             $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
             $cross = mysqli_real_escape_string($con, $_POST['cross']);
-            $iacuc = isset($_POST['iacuc']) ? implode(',', array_map(function ($value) use ($con) {
-                return mysqli_real_escape_string($con, $value);
-            }, $_POST['iacuc'])) : '';
-            $user = isset($_POST['user']) ? implode(',', array_map(function ($user_id) use ($con) {
-                return mysqli_real_escape_string($con, trim($user_id));
-            }, $_POST['user'])) : '';
+            $iacuc = isset($_POST['iacuc']) ? $_POST['iacuc'] : []; // Array of selected IACUC values
+            $users = isset($_POST['user']) ? $_POST['user'] : []; // Array of selected users
             $male_id = mysqli_real_escape_string($con, $_POST['male_id']);
             $female_id = mysqli_real_escape_string($con, $_POST['female_id']);
             $male_dob = mysqli_real_escape_string($con, $_POST['male_dob']);
             $female_dob = mysqli_real_escape_string($con, $_POST['female_dob']);
             $remarks = mysqli_real_escape_string($con, $_POST['remarks']);
 
-            // Prepare the update query with placeholders
-            $updateQuery = $con->prepare("UPDATE bc_basic SET 
-                                    `cage_id` = ?, 
-                                    `pi_name` = ?, 
+            // Begin transaction
+            $con->begin_transaction();
+
+            try {
+                // Update cages table
+                $updateCageQuery = $con->prepare("UPDATE cages SET 
+                                pi_name = ?, 
+                                remarks = ? 
+                                WHERE cage_id = ?");
+                $updateCageQuery->bind_param("sss", $pi_name, $remarks, $cage_id);
+                $updateCageQuery->execute();
+                $updateCageQuery->close();
+
+                // Update breeding table
+                $updateBreedingQuery = $con->prepare("UPDATE breeding SET 
                                     `cross` = ?, 
-                                    `iacuc` = ?, 
-                                    `user` = ?, 
-                                    `male_id` = ?, 
-                                    `female_id` = ?, 
-                                    `male_dob` = ?, 
-                                    `female_dob` = ?, 
-                                    `remarks` = ? 
-                                    WHERE `cage_id` = ?");
+                                    male_id = ?, 
+                                    female_id = ?, 
+                                    male_dob = ?, 
+                                    female_dob = ? 
+                                    WHERE cage_id = ?");
+                $updateBreedingQuery->bind_param("ssssss", $cross, $male_id, $female_id, $male_dob, $female_dob, $cage_id);
+                $updateBreedingQuery->execute();
+                $updateBreedingQuery->close();
 
-            // Bind parameters
-            $updateQuery->bind_param("sssssssssss", $cage_id, $pi_name, $cross, $iacuc, $user, $male_id, $female_id, $male_dob, $female_dob, $remarks, $id);
+                // Update IACUC values in cage_iacuc table
+                $deleteIacucQuery = $con->prepare("DELETE FROM cage_iacuc WHERE cage_id = ?");
+                $deleteIacucQuery->bind_param("s", $cage_id);
+                $deleteIacucQuery->execute();
+                $deleteIacucQuery->close();
 
-            // Execute the statement and check if it was successful
-            if ($updateQuery->execute()) {
+                $insertIacucQuery = $con->prepare("INSERT INTO cage_iacuc (cage_id, iacuc_id) VALUES (?, ?)");
+                foreach ($iacuc as $iacuc_id) {
+                    $insertIacucQuery->bind_param("ss", $cage_id, $iacuc_id);
+                    $insertIacucQuery->execute();
+                }
+                $insertIacucQuery->close();
+
+                // Update users in cage_users table
+                $deleteUsersQuery = $con->prepare("DELETE FROM cage_users WHERE cage_id = ?");
+                $deleteUsersQuery->bind_param("s", $cage_id);
+                $deleteUsersQuery->execute();
+                $deleteUsersQuery->close();
+
+                $insertUsersQuery = $con->prepare("INSERT INTO cage_users (cage_id, user_id) VALUES (?, ?)");
+                foreach ($users as $user_id) {
+                    $insertUsersQuery->bind_param("ss", $cage_id, $user_id);
+                    $insertUsersQuery->execute();
+                }
+                $insertUsersQuery->close();
+
+                // Commit transaction
+                $con->commit();
+
                 $_SESSION['message'] = 'Entry updated successfully.';
-            } else {
-                $_SESSION['message'] = 'Update failed: ' . $updateQuery->error;
+            } catch (Exception $e) {
+                // Rollback transaction on error
+                $con->rollback();
+                $_SESSION['message'] = 'Update failed: ' . $e->getMessage();
             }
 
-            // Close the prepared statement
-            $updateQuery->close();
 
             // Handle file upload
             if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
@@ -218,13 +245,13 @@ if (isset($_GET['id'])) {
 
                     // If litter_id exists, update the entry
                     if (!empty($litter_id_i)) {
-                        $updateLitterQuery = $con->prepare("UPDATE bc_litter SET `dom` = ?, `litter_dob` = ?, `pups_alive` = ?, `pups_dead` = ?, `pups_male` = ?, `pups_female` = ?, `remarks` = ? WHERE `id` = ?");
+                        $updateLitterQuery = $con->prepare("UPDATE litters SET `dom` = ?, `litter_dob` = ?, `pups_alive` = ?, `pups_dead` = ?, `pups_male` = ?, `pups_female` = ?, `remarks` = ? WHERE `id` = ?");
                         $updateLitterQuery->bind_param("ssssssss", $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i, $litter_id_i);
                         $updateLitterQuery->execute();
                         $updateLitterQuery->close();
                     } else {
                         // If no litter_id, insert a new entry
-                        $insertLitterQuery = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                        $insertLitterQuery = $con->prepare("INSERT INTO litters (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                         $insertLitterQuery->bind_param("ssssssss", $cage_id, $dom_i, $litter_dob_i, $pups_alive_i, $pups_dead_i, $pups_male_i, $pups_female_i, $remarks_litter_i);
                         $insertLitterQuery->execute();
                         $insertLitterQuery->close();
@@ -236,7 +263,7 @@ if (isset($_GET['id'])) {
             if (!empty($delete_litter_ids)) {
                 foreach ($delete_litter_ids as $delete_litter_id) {
                     if (!empty($delete_litter_id)) {
-                        $deleteLitterQuery = $con->prepare("DELETE FROM bc_litter WHERE id = ?");
+                        $deleteLitterQuery = $con->prepare("DELETE FROM litters WHERE id = ?");
                         $deleteLitterQuery->bind_param("s", $delete_litter_id);
                         $deleteLitterQuery->execute();
                         $deleteLitterQuery->close();
@@ -280,8 +307,6 @@ function getUserDetailsByIds($con, $userIds)
 // Fetch currently selected PI details
 $piDetails = getUserDetailsByIds($con, [$selectedPiId]);
 $piDisplay = isset($piDetails[$selectedPiId]) ? $piDetails[$selectedPiId] : 'Unknown PI';
-
-
 
 // Include the header file
 require 'header.php';
@@ -545,6 +570,16 @@ require 'header.php';
             text-align: left;
         }
 
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+        }
+
         .btn-icon {
             width: 30px;
             height: 30px;
@@ -611,18 +646,28 @@ require 'header.php';
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h4>Edit Breeding Cage</h4>
+                        <div class="action-buttons">
+                            <!-- Button to go back to the previous page -->
+                            <a href="javascript:void(0);" onclick="goBack()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
+                                <i class="fas fa-arrow-circle-left"></i>
+                            </a>
+                            <!-- Button to save the form -->
+                            <a href="javascript:void(0);" onclick="document.getElementById('editForm').submit();" class="btn btn-success btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Save">
+                                <i class="fas fa-save"></i>
+                            </a>
+                        </div>
                     </div>
-                    <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
-                    <div class="card-body">
-                        <form method="POST" action="bc_edit.php?id=<?= htmlspecialchars($id); ?>" enctype="multipart/form-data">
 
+                    <div class="card-body">
+                        <form id="editForm" method="POST" action="bc_edit.php?id=<?= htmlspecialchars($id); ?>" enctype="multipart/form-data">
+                            <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
                             <div class="mb-3">
                                 <label for="cage_id" class="form-label">Cage ID <span class="required-asterisk">*</span></label>
-                                <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= htmlspecialchars($breedingcage['cage_id']); ?>" required>
+                                <input type="text" class="form-control" id="cage_id" name="cage_id" value="<?= htmlspecialchars($breedingcage['cage_id']); ?>" readonly required>
                             </div>
 
                             <div class="mb-3">
@@ -653,9 +698,6 @@ require 'header.php';
                                 <select class="form-control" id="iacuc" name="iacuc[]" multiple>
                                     <option value="" disabled>Select IACUC</option>
                                     <?php
-                                    // Retrieve selected IACUC values
-                                    $selectedIacucs = isset($breedingcage['iacuc']) ? explode(',', $breedingcage['iacuc']) : [];
-
                                     // Check if there are any IACUC values from the database
                                     if ($iacucResult->num_rows > 0) {
                                         // Populate the dropdown with IACUC values from the database

@@ -40,11 +40,12 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     // Fetch the holding cage record with the specified ID
-    $query = "SELECT hc.*, pi.initials AS pi_initials, pi.name AS pi_name, s.str_name, s.str_url, hc.iacuc
-                FROM hc_basic hc 
-                LEFT JOIN users pi ON hc.pi_name = pi.id 
-                LEFT JOIN strain s ON hc.strain = s.str_id
-                WHERE hc.cage_id = '$id'";
+    $query = "SELECT h.*, pi.initials AS pi_initials, pi.name AS pi_name, s.str_id, s.str_name, s.str_url, c.quantity, c.remarks
+              FROM holding h
+              LEFT JOIN cages c ON h.cage_id = c.cage_id
+              LEFT JOIN users pi ON c.pi_name = pi.id 
+              LEFT JOIN strains s ON h.strain = s.str_id
+              WHERE h.cage_id = '$id'";
     $result = mysqli_query($con, $query);
 
     // Fetch files related to the cage ID
@@ -57,13 +58,14 @@ if (isset($_GET['id'])) {
 
         // Handle null or unmatched strain by setting default values
         if (is_null($holdingcage['str_name']) || empty($holdingcage['str_name'])) {
+            $holdingcage['str_id'] = 'NA';
             $holdingcage['str_name'] = 'Unknown Strain';
             $holdingcage['str_url'] = '#'; // Set a placeholder or default URL
         }
 
-        // Handle null or unmatched PI name by re-querying the hc_basic table without the join
+        // Handle null or unmatched PI name by re-querying the holding table without the join
         if (is_null($holdingcage['pi_name'])) {
-            $queryBasic = "SELECT * FROM hc_basic WHERE `cage_id` = '$id'";
+            $queryBasic = "SELECT * FROM holding WHERE `cage_id` = '$id'";
             $resultBasic = mysqli_query($con, $queryBasic);
 
             if (mysqli_num_rows($resultBasic) === 1) {
@@ -78,11 +80,20 @@ if (isset($_GET['id'])) {
             }
         }
 
-        // Split the IACUC field into individual codes
-        $iacucCodes = explode(',', $holdingcage['iacuc']);
+        // Fetch IACUC IDs associated with this cage from cage_iacuc
+        $iacucQuery = "SELECT GROUP_CONCAT(iacuc_id SEPARATOR ', ') AS iacuc_ids FROM cage_iacuc WHERE cage_id = '$id'";
+        $iacucResult = mysqli_query($con, $iacucQuery);
+        $iacucRow = mysqli_fetch_assoc($iacucResult);
+        $iacucCodes = [];
+
+        // Check if any IACUC IDs are found
+        if (!empty($iacucRow['iacuc_ids'])) {
+            $iacucCodes = explode(',', $iacucRow['iacuc_ids']);
+        }
+
         $iacucLinks = [];
 
-        // Fetch IACUC URLs
+        // Fetch IACUC URLs for each IACUC ID
         foreach ($iacucCodes as $iacucCode) {
             $iacucCode = trim($iacucCode);
             $iacucQuery = "SELECT file_url FROM iacuc WHERE iacuc_id = '$iacucCode'";
@@ -101,8 +112,30 @@ if (isset($_GET['id'])) {
 
         $iacucDisplayString = implode(', ', $iacucLinks);
 
+        // Fetch user IDs associated with this cage from cage_users
+        $userQuery = "SELECT user_id FROM cage_users WHERE cage_id = '$id'";
+        $userResult = mysqli_query($con, $userQuery);
+        $userIds = [];
+        while ($userRow = mysqli_fetch_assoc($userResult)) {
+            $userIds[] = $userRow['user_id'];
+        }
+
+        // Fetch the user details based on IDs
+        $userDetails = getUserDetailsByIds($con, $userIds);
+
+        // Prepare a string to display user details
+        $userDisplay = [];
+        foreach ($userIds as $userId) {
+            if (isset($userDetails[$userId])) {
+                $userDisplay[] = $userDetails[$userId];
+            } else {
+                $userDisplay[] = htmlspecialchars($userId);
+            }
+        }
+        $userDisplayString = implode(', ', $userDisplay);
+
         // Fetch the mouse data related to this cage
-        $mouseQuery = "SELECT * FROM mouse WHERE cage_id = '$id'";
+        $mouseQuery = "SELECT * FROM mice WHERE cage_id = '$id'";
         $mouseResult = mysqli_query($con, $mouseQuery);
         $mice = mysqli_fetch_all($mouseResult, MYSQLI_ASSOC);
     } else {
@@ -116,7 +149,6 @@ if (isset($_GET['id'])) {
     header("Location: hc_dash.php");
     exit();
 }
-
 
 function getUserDetailsByIds($con, $userIds)
 {
@@ -133,23 +165,6 @@ function getUserDetailsByIds($con, $userIds)
     $stmt->close();
     return $userDetails;
 }
-
-// Explode the user IDs if they are comma-separated
-$userIds = array_map('intval', explode(',', $holdingcage['user']));
-
-// Fetch the user details based on IDs
-$userDetails = getUserDetailsByIds($con, $userIds);
-
-// Prepare a string to display user details
-$userDisplay = [];
-foreach ($userIds as $userId) {
-    if (isset($userDetails[$userId])) {
-        $userDisplay[] = $userDetails[$userId];
-    } else {
-        $userDisplay[] = htmlspecialchars($userId);
-    }
-}
-$userDisplayString = implode(', ', $userDisplay);
 
 // Include the header file
 require 'header.php';
@@ -323,7 +338,7 @@ require 'header.php';
                     <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage">
                         <i class="fas fa-edit"></i>
                     </a>
-                    <!-- Button to mange tasks for the cage -->
+                    <!-- Button to manage tasks for the cage -->
                     <a href="manage_tasks.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Manage Tasks">
                         <i class="fas fa-tasks"></i>
                     </a>
@@ -352,9 +367,13 @@ require 'header.php';
                     <tr>
                         <th>Strain</th>
                         <td>
-                            <a href="<?= htmlspecialchars($holdingcage['str_url']); ?>" target="_blank">
-                                <?= htmlspecialchars($holdingcage['strain']); ?> | <?= htmlspecialchars($holdingcage['str_name']); ?>
-                            </a>
+                            <?php if (!empty($holdingcage['str_url']) && $holdingcage['str_url'] !== '#') : ?>
+                                <a href="<?= htmlspecialchars($holdingcage['str_url']); ?>" target="_blank">
+                                    <?= htmlspecialchars($holdingcage['str_id']); ?> | <?= htmlspecialchars($holdingcage['str_name']); ?>
+                                </a>
+                            <?php else : ?>
+                                <?= htmlspecialchars($holdingcage['str_id']); ?> | <?= htmlspecialchars($holdingcage['str_name']); ?>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <tr>
@@ -367,7 +386,7 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>Qty</th>
-                        <td><?= htmlspecialchars($holdingcage['qty']); ?></td>
+                        <td><?= htmlspecialchars($holdingcage['quantity']); ?></td>
                     </tr>
                     <tr>
                         <th>DOB</th>
@@ -375,7 +394,7 @@ require 'header.php';
                     </tr>
                     <tr>
                         <th>Sex</th>
-                        <td><?= htmlspecialchars($holdingcage['sex']); ?></td>
+                        <td><?= htmlspecialchars(ucfirst($holdingcage['sex'])); ?></td>
                     </tr>
                     <tr>
                         <th>Parent Cage</th>

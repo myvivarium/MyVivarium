@@ -44,20 +44,21 @@ function redirectToPage($message, $cageId = null)
 }
 
 /**
- * Schedule an email by inserting it into the email_queue table
+ * Schedule an email by inserting it into the outbox table
  *
+ * @param int $task_id The ID of the task associated with the email
  * @param mixed $recipients The recipients of the email
  * @param string $subject The subject of the email
  * @param string $body The body of the email
  * @param string $scheduledAt The scheduled time to send the email
  * @return bool True if the email was scheduled successfully, false otherwise
  */
-function scheduleEmail($recipients, $subject, $body, $scheduledAt)
+function scheduleEmail($task_id, $recipients, $subject, $body, $scheduledAt)
 {
     global $con;
-    $stmt = $con->prepare("INSERT INTO email_queue (recipient, subject, body, scheduled_at) VALUES (?, ?, ?, ?)");
+    $stmt = $con->prepare("INSERT INTO outbox (task_id, recipient, subject, body, scheduled_at) VALUES (?, ?, ?, ?, ?)");
     $recipientList = is_array($recipients) ? implode(',', $recipients) : $recipients;
-    $stmt->bind_param("ssss", $recipientList, $subject, $body, $scheduledAt);
+    $stmt->bind_param("issss", $task_id, $recipientList, $subject, $body, $scheduledAt);
 
     if ($stmt->execute()) {
         return true;
@@ -82,100 +83,125 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $assignedTo = htmlspecialchars(implode(',', $_POST['assigned_to'] ?? []));
     $status = htmlspecialchars($_POST['status']);
     $completionDate = !empty($_POST['completion_date']) ? htmlspecialchars($_POST['completion_date']) : NULL;
-    $cageId = htmlspecialchars($_POST['cage_id']);
+    $cageId = empty($_POST['cage_id']) ? NULL : htmlspecialchars($_POST['cage_id']);
     $taskAction = '';
+    $task_id = null; // Initialize task_id variable
 
     // Determine the action to perform (add, edit, or delete)
     if (isset($_POST['add'])) {
         $stmt = $con->prepare("INSERT INTO tasks (title, description, assigned_by, assigned_to, status, completion_date, cage_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssssss", $title, $description, $assignedBy, $assignedTo, $status, $completionDate, $cageId);
-        $taskAction = 'added';
+        if ($stmt->execute()) {
+            $task_id = $stmt->insert_id; // Get the last inserted task ID
+            $taskAction = 'added';
+        } else {
+            redirectToPage("Error: " . $stmt->error);
+        }
     } elseif (isset($_POST['edit'])) {
         $id = htmlspecialchars($_POST['id']);
         $stmt = $con->prepare("UPDATE tasks SET title = ?, description = ?, assigned_by = ?, assigned_to = ?, status = ?, completion_date = ?, cage_id = ? WHERE id = ?");
         $stmt->bind_param("sssssssi", $title, $description, $assignedBy, $assignedTo, $status, $completionDate, $cageId, $id);
-        $taskAction = 'updated';
+        if ($stmt->execute()) {
+            $task_id = $id; // Use the ID of the task being updated
+            $taskAction = 'updated';
+        } else {
+            redirectToPage("Error: " . $stmt->error);
+        }
     } elseif (isset($_POST['delete'])) {
         $id = htmlspecialchars($_POST['id']);
+        
+        // Fetch task details before deletion for email notification
+        $taskQuery = $con->prepare("SELECT title, description, assigned_by, assigned_to, status, completion_date, cage_id FROM tasks WHERE id = ?");
+        $taskQuery->bind_param("i", $id);
+        $taskQuery->execute();
+        $taskQuery->bind_result($title, $description, $assignedBy, $assignedTo, $status, $completionDate, $cageId);
+        $taskQuery->fetch();
+        $taskQuery->close();
+    
+        // Now delete the task
         $stmt = $con->prepare("DELETE FROM tasks WHERE id = ?");
         $stmt->bind_param("i", $id);
-        $taskAction = 'deleted';
+        if ($stmt->execute()) {
+            $task_id = NULL; // Set task_id to NULL for deletion case
+            $taskAction = 'deleted';
+        } else {
+            redirectToPage("Error: " . $stmt->error);
+        }
     }
 
-    // Execute the statement and handle the result
-    if (!$stmt || !$stmt->execute()) {
-        redirectToPage("Error: " . ($stmt ? $stmt->error : $con->error));
+    // Fetch emails of assigned by and assigned to users
+    $emails = [];
+    $assignedByEmailQuery = "SELECT username FROM users WHERE id = ?";
+    $assignedByEmailStmt = $con->prepare($assignedByEmailQuery);
+    $assignedByEmailStmt->bind_param("i", $assignedBy);
+    $assignedByEmailStmt->execute();
+    $assignedByEmailStmt->bind_result($assignedByEmail);
+    $assignedByEmailStmt->fetch();
+    $assignedByEmailStmt->close();
+    $emails[] = $assignedByEmail;
+
+    $assignedToArray = explode(',', $assignedTo);
+    foreach ($assignedToArray as $assignedToUserId) {
+        $assignedToEmailQuery = "SELECT username FROM users WHERE id = ?";
+        $assignedToEmailStmt = $con->prepare($assignedToEmailQuery);
+        $assignedToEmailStmt->bind_param("i", $assignedToUserId);
+        $assignedToEmailStmt->execute();
+        $assignedToEmailStmt->bind_result($assignedToEmail);
+        while ($assignedToEmailStmt->fetch()) {
+            $emails[] = $assignedToEmail;
+        }
+        $assignedToEmailStmt->close();
+    }
+
+    // Fetch the timezone from the settings table
+    $timezoneQuery = "SELECT value FROM settings WHERE name = 'timezone'";
+    $timezoneResult = mysqli_query($con, $timezoneQuery);
+    $timezoneRow = mysqli_fetch_assoc($timezoneResult);
+    $timezone = $timezoneRow['value'] ?? 'America/New_York';
+
+    // Set the default timezone
+    date_default_timezone_set($timezone);
+
+    // Get the current date and time
+    $dateTime = date('Y-m-d H:i:s');
+
+    // Convert assignedBy and assignedTo IDs to names
+    $assignedByName = isset($users[$assignedBy]) ? $users[$assignedBy] : 'Unknown';
+    $assignedToNames = array_map(function ($id) use ($users) {
+        return isset($users[$id]) ? $users[$id] : 'Unknown';
+    }, explode(',', $assignedTo));
+    $assignedToNamesStr = implode(', ', $assignedToNames);
+
+    // Update the subject to include date and time
+    $subject = "Task $taskAction: $title on $dateTime";
+    // Determine the task ID to use in the email body
+    $emailTaskId = is_null($task_id) ? $id : $task_id;
+
+    $body = "The task id '$emailTaskId' has been $taskAction. Here are the details:<br><br>" .
+        "<strong>Title:</strong> $title<br>" .
+        "<strong>Description/Update:</strong> $description<br>" .
+        "<strong>Status:</strong> $status<br>" .
+        "<strong>Assigned By:</strong> $assignedByName<br>" .
+        "<strong>Assigned To:</strong> $assignedToNamesStr<br>" .
+        "<strong>Completion Date:</strong> $completionDate<br>" .
+        "<strong>Cage ID:</strong> $cageId<br>";
+
+    // Schedule the email
+    $scheduledAt = date('Y-m-d H:i:s'); // You can modify this to schedule at a later time if needed
+    $result = scheduleEmail($task_id, $emails, $subject, $body, $scheduledAt);
+
+    // Debug output: print email result
+    if ($result) {
+        error_log("Email scheduled successfully.");
+        redirectToPage("Task $taskAction successfully.");
     } else {
-        // Fetch emails of assigned by and assigned to users
-        $emails = [];
-        $assignedByEmailQuery = "SELECT username FROM users WHERE id = ?";
-        $assignedByEmailStmt = $con->prepare($assignedByEmailQuery);
-        $assignedByEmailStmt->bind_param("i", $assignedBy);
-        $assignedByEmailStmt->execute();
-        $assignedByEmailStmt->bind_result($assignedByEmail);
-        $assignedByEmailStmt->fetch();
-        $assignedByEmailStmt->close();
-        $emails[] = $assignedByEmail;
-
-        $assignedToArray = explode(',', $assignedTo);
-        foreach ($assignedToArray as $assignedToUserId) {
-            $assignedToEmailQuery = "SELECT username FROM users WHERE id = ?";
-            $assignedToEmailStmt = $con->prepare($assignedToEmailQuery);
-            $assignedToEmailStmt->bind_param("i", $assignedToUserId);
-            $assignedToEmailStmt->execute();
-            $assignedToEmailStmt->bind_result($assignedToEmail);
-            while ($assignedToEmailStmt->fetch()) {
-                $emails[] = $assignedToEmail;
-            }
-            $assignedToEmailStmt->close();
-        }
-
-        // Fetch the timezone from the settings table
-        $timezoneQuery = "SELECT value FROM settings WHERE name = 'timezone'";
-        $timezoneResult = mysqli_query($con, $timezoneQuery);
-        $timezoneRow = mysqli_fetch_assoc($timezoneResult);
-        $timezone = $timezoneRow['value'] ?? 'America/New_York';
-
-        // Set the default timezone
-        date_default_timezone_set($timezone);
-
-        // Get the current date and time
-        $dateTime = date('Y-m-d H:i:s');
-
-        // Convert assignedBy and assignedTo IDs to names
-        $assignedByName = isset($users[$assignedBy]) ? $users[$assignedBy] : 'Unknown';
-        $assignedToNames = array_map(function ($id) use ($users) {
-            return isset($users[$id]) ? $users[$id] : 'Unknown';
-        }, explode(',', $assignedTo));
-        $assignedToNamesStr = implode(', ', $assignedToNames);
-
-        // Update the subject to include date and time
-        $subject = "Task $taskAction: $title on $dateTime";
-        $body = "The task id '$id' has been $taskAction. Here are the details:<br><br>" .
-            "<strong>Title:</strong> $title<br>" .
-            "<strong>Description/Update:</strong> $description<br>" .
-            "<strong>Status:</strong> $status<br>" .
-            "<strong>Assigned By:</strong> $assignedByName<br>" .
-            "<strong>Assigned To:</strong> $assignedToNamesStr<br>" .
-            "<strong>Completion Date:</strong> $completionDate<br>" .
-            "<strong>Cage ID:</strong> $cageId<br>";
-
-        // Schedule the email
-        //$scheduledAt = date('Y-m-d H:i:s'); // You can modify this to schedule at a later time if needed
-        $result = scheduleEmail($emails, $subject, $body, $scheduledAt);
-
-        // Debug output: print email result
-        if ($result) {
-            error_log("Email scheduled successfully.");
-            redirectToPage("Task $taskAction successfully.");
-        } else {
-            error_log("Email scheduling failed.");
-            redirectToPage("Task $taskAction, but email scheduling failed.");
-        }
+        error_log("Email scheduling failed.");
+        redirectToPage("Task $taskAction, but email scheduling failed.");
     }
 
     $stmt->close();
 }
+
 
 // Fetch tasks for display
 $search = htmlspecialchars($_GET['search'] ?? '');
@@ -183,27 +209,27 @@ $cageIdFilter = htmlspecialchars($_GET['id'] ?? '');
 $filter = htmlspecialchars($_GET['filter'] ?? '');
 
 // Construct the task query with search and filter options
-$taskQuery = "SELECT * FROM tasks WHERE 1";
+$taskQueries = "SELECT * FROM tasks WHERE 1";
 if ($search) {
-    $taskQuery .= " AND (title LIKE '%$search%' OR assigned_by LIKE '%$search%' OR assigned_to LIKE '%$search%' OR status LIKE '%$search%' OR cage_id LIKE '%$search%')";
+    $taskQueries .= " AND (title LIKE '%$search%' OR assigned_by LIKE '%$search%' OR assigned_to LIKE '%$search%' OR status LIKE '%$search%' OR cage_id LIKE '%$search%')";
 }
 
 if ($filter == 'assigned_by_me') {
-    $taskQuery .= " AND assigned_by = '$currentUserId'";
+    $taskQueries .= " AND assigned_by = '$currentUserId'";
 } elseif ($filter == 'assigned_to_me') {
-    $taskQuery .= " AND FIND_IN_SET('$currentUserId', assigned_to)";
+    $taskQueries .= " AND FIND_IN_SET('$currentUserId', assigned_to)";
 } elseif (!$isAdmin) {
-    $taskQuery .= " AND (assigned_by = '$currentUserId' OR FIND_IN_SET('$currentUserId', assigned_to))";
+    $taskQueries .= " AND (assigned_by = '$currentUserId' OR FIND_IN_SET('$currentUserId', assigned_to))";
 }
 
 if ($cageIdFilter) {
-    $taskQuery .= " AND cage_id = '$cageIdFilter'";
+    $taskQueries .= " AND cage_id = '$cageIdFilter'";
 }
 
-$taskResult = $con->query($taskQuery);
+$taskResult = $con->query($taskQueries);
 
 // Fetch cages for the dropdown
-$cageQuery = "SELECT cage_id FROM hc_basic UNION SELECT cage_id FROM bc_basic";
+$cageQuery = "SELECT cage_id FROM cages";
 $cageResult = $con->query($cageQuery);
 $cages = $cageResult ? array_column($cageResult->fetch_all(MYSQLI_ASSOC), 'cage_id') : [];
 

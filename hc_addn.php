@@ -41,17 +41,17 @@ $iacucQuery = "SELECT iacuc_id, iacuc_title FROM iacuc";
 $iacucResult = $con->query($iacucQuery);
 
 // Query to retrieve strain details including common names
-$strainQuery = "SELECT str_id, str_name, str_aka FROM strain";
+$strainQuery = "SELECT str_id, str_name, str_aka FROM strains";
 $strainResult = $con->query($strainQuery);
 
 // Initialize an array to hold all options
 $strainOptions = [];
 
 // Process each row to generate options
-while ($strainrow = $strainResult->fetch_assoc()) {
-    $str_id = htmlspecialchars($strainrow['str_id'] ?? 'Unknown');
-    $str_name = htmlspecialchars($strainrow['str_name'] ?? 'Unnamed Strain');
-    $str_aka = $strainrow['str_aka'] ? htmlspecialchars($strainrow['str_aka']) : '';
+while ($strainRow = $strainResult->fetch_assoc()) {
+    $str_id = htmlspecialchars($strainRow['str_id'] ?? 'Unknown');
+    $str_name = htmlspecialchars($strainRow['str_name'] ?? 'Unnamed Strain');
+    $str_aka = $strainRow['str_aka'] ? htmlspecialchars($strainRow['str_aka']) : '';
 
     // Add the main strain option
     $strainOptions[] = "$str_id | $str_name";
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Retrieve form data
-    $cage_id = mysqli_real_escape_string($con, $_POST['cage_id']);
+    $cage_id = trim(mysqli_real_escape_string($con, $_POST['cage_id']));
     $pi_name = mysqli_real_escape_string($con, $_POST['pi_name']);
     $strain = mysqli_real_escape_string($con, $_POST['strain']);
     $iacuc = isset($_POST['iacuc']) ? mysqli_real_escape_string($con, implode(',', $_POST['iacuc'])) : '';
@@ -109,55 +109,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $qty = count($mouse_data); // Calculate the quantity based on the number of mouse records
 
-    // Check if the cage_id already exists in hc_basic or bc_basic
-    $check_query_hc = "SELECT * FROM hc_basic WHERE cage_id = '$cage_id'";
-    $check_query_bc = "SELECT * FROM bc_basic WHERE cage_id = '$cage_id'";
-    $check_result_hc = mysqli_query($con, $check_query_hc);
-    $check_result_bc = mysqli_query($con, $check_query_bc);
+    // Check if the cage_id already exists in the cages table
+    $check_query = "SELECT * FROM cages WHERE cage_id = '$cage_id'";
+    $check_result = mysqli_query($con, $check_query);
 
-    if (mysqli_num_rows($check_result_hc) > 0 || mysqli_num_rows($check_result_bc) > 0) {
+    if (mysqli_num_rows($check_result) > 0) {
         // Cage_id already exists, throw an error
         $_SESSION['message'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
     } else {
-        // Insert data into hc_basic table
-        $query1 = "INSERT INTO hc_basic 
-         (`cage_id`, `pi_name`, `strain`, `iacuc`, `user`, `qty`, `dob`, `sex`, `parent_cg`, `remarks`) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Start a transaction
+        mysqli_begin_transaction($con);
 
-        $stmt = $con->prepare($query1);
-        $stmt->bind_param(
-            "sssssissss",
-            $cage_id,
-            $pi_name,
-            $strain,
-            $iacuc,
-            $user,
-            $qty,
-            $dob,
-            $sex,
-            $parent_cg,
-            $remarks
-        );
+        try {
+            // Insert data into cages table
+            $query1 = "INSERT INTO cages (cage_id, pi_name, quantity, remarks) VALUES (?, ?, ?, ?)";
+            $stmt = $con->prepare($query1);
+            $stmt->bind_param("siss", $cage_id, $pi_name, $qty, $remarks);
+            $stmt->execute();
 
-        // Execute the statement
-        $result1 = $stmt->execute();
+            // Insert data into holding table
+            $query2 = "INSERT INTO holding (cage_id, strain, dob, sex, parent_cg) VALUES (?, ?, ?, ?, ?)";
+            $stmt2 = $con->prepare($query2);
+            $stmt2->bind_param("sssss", $cage_id, $strain, $dob, $sex, $parent_cg);
+            $stmt2->execute();
 
-        if ($result1) {
             // Insert mouse data into mouse table
             foreach ($mouse_data as $mouse) {
-                $query2 = "INSERT INTO mouse (cage_id, mouse_id, genotype, notes) VALUES (?, ?, ?, ?)";
-                $stmt2 = $con->prepare($query2);
-                $stmt2->bind_param("ssss", $cage_id, $mouse['mouse_id'], $mouse['genotype'], $mouse['notes']);
-                $stmt2->execute();
-                $stmt2->close();
+                $query3 = "INSERT INTO mice (cage_id, mouse_id, genotype, notes) VALUES (?, ?, ?, ?)";
+                $stmt3 = $con->prepare($query3);
+                $stmt3->bind_param("ssss", $cage_id, $mouse['mouse_id'], $mouse['genotype'], $mouse['notes']);
+                $stmt3->execute();
             }
+
+            // Insert data into cage_iacuc table
+            if (!empty($iacuc)) {
+                $iacuc_codes = explode(',', $iacuc);
+                foreach ($iacuc_codes as $iacuc_code) {
+                    $query4 = "INSERT INTO cage_iacuc (cage_id, iacuc_id) VALUES (?, ?)";
+                    $stmt4 = $con->prepare($query4);
+                    $stmt4->bind_param("ss", $cage_id, $iacuc_code);
+                    $stmt4->execute();
+                }
+            }
+
+            // Insert data into cage_users table
+            if (!empty($user)) {
+                $user_ids = explode(',', $user);
+                foreach ($user_ids as $user_id) {
+                    $query5 = "INSERT INTO cage_users (cage_id, user_id) VALUES (?, ?)";
+                    $stmt5 = $con->prepare($query5);
+                    $stmt5->bind_param("si", $cage_id, $user_id);
+                    $stmt5->execute();
+                }
+            }
+
+            // Commit the transaction
+            mysqli_commit($con);
+
             $_SESSION['message'] = "New holding cage added successfully.";
-        } else {
+        } catch (Exception $e) {
+            // Rollback the transaction in case of an error
+            mysqli_rollback($con);
             $_SESSION['message'] = "Failed to add new holding cage.";
         }
 
         // Close the prepared statement
         $stmt->close();
+        if (isset($stmt2)) $stmt2->close();
+        if (isset($stmt3)) $stmt3->close();
+        if (isset($stmt4)) $stmt4->close();
+        if (isset($stmt5)) $stmt5->close();
     }
 
     // Redirect back to the main page

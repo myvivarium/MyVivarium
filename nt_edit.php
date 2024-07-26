@@ -9,12 +9,6 @@
  * 
  */
 
- // Check if the user is logged in
-if (!isset($_SESSION['username'])) {
-    echo json_encode(['success' => false, 'message' => 'You must be logged in to edit a note.']);
-    exit;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require 'dbcon.php'; // Include the database connection file
 
@@ -23,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $noteText = $_POST['note_text'];
 
     // Prepare the SQL statement to update the note in the database
-    $sql = "UPDATE nt_data SET note_text = ? WHERE id = ?";
+    $sql = "UPDATE notes SET note_text = ? WHERE id = ?";
     $stmt = $con->prepare($sql);
     $stmt->bind_param('si', $noteText, $noteId);
 

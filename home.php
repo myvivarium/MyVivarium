@@ -22,11 +22,11 @@ if (!isset($_SESSION['name'])) {
 }
 
 // Fetch the counts for holding and breeding cages
-$holdingCountResult = $con->query("SELECT COUNT(*) AS count FROM hc_basic");
+$holdingCountResult = $con->query("SELECT COUNT(*) AS count FROM holding");
 $holdingCountRow = $holdingCountResult->fetch_assoc();
 $holdingCount = $holdingCountRow['count'];
 
-$matingCountResult = $con->query("SELECT COUNT(*) AS count FROM bc_basic");
+$matingCountResult = $con->query("SELECT COUNT(*) AS count FROM breeding");
 $matingCountRow = $matingCountResult->fetch_assoc();
 $matingCount = $matingCountRow['count'];
 
@@ -39,7 +39,7 @@ $taskStatsQuery = "
         SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) AS in_progress,
         SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) AS pending
     FROM tasks
-    WHERE FIND_IN_SET('$userId', assigned_to)
+    WHERE assigned_to = '$userId'
 ";
 $taskStatsResult = $con->query($taskStatsQuery);
 $taskStatsRow = $taskStatsResult->fetch_assoc();

@@ -35,7 +35,7 @@ if (empty($_SESSION['csrf_token'])) {
 $userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
 $userResult = $con->query($userQuery);
 
-// Query to retrieve options where role is 'Principal Investigator'
+// Query to retrieve options where position is 'Principal Investigator'
 $piQuery = "SELECT id, initials, name FROM users WHERE position = 'Principal Investigator' AND status = 'approved'";
 $piResult = $con->query($piQuery);
 
@@ -52,42 +52,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Retrieve and sanitize form data
-    $cage_id = $_POST['cage_id'];
-    $pi_name = $_POST['pi_name'];
+    $cage_id = trim($_POST['cage_id']);
+    $pi_id = $_POST['pi_name'];
     $cross = $_POST['cross'];
-    $iacuc = isset($_POST['iacuc']) ? implode(',', $_POST['iacuc']) : ''; // Concatenate selected IACUC values
-    $user = isset($_POST['user']) ? implode(',', array_map('trim', $_POST['user'])) : '';
+    $iacuc_ids = $_POST['iacuc'] ?? [];
+    $user_ids = $_POST['user'] ?? [];
     $male_id = $_POST['male_id'];
     $female_id = $_POST['female_id'];
     $male_dob = $_POST['male_dob'];
     $female_dob = $_POST['female_dob'];
     $remarks = $_POST['remarks'];
 
-    // Check if the cage_id already exists in either bc_basic or hc_basic
-    $check_query_bc = $con->prepare("SELECT * FROM bc_basic WHERE cage_id = ?");
-    $check_query_bc->bind_param("s", $cage_id);
-    $check_query_bc->execute();
-    $check_result_bc = $check_query_bc->get_result();
+    // Check if the cage_id already exists in the cages table
+    $check_query = $con->prepare("SELECT * FROM cages WHERE cage_id = ?");
+    $check_query->bind_param("s", $cage_id);
+    $check_query->execute();
+    $check_result = $check_query->get_result();
 
-    $check_query_hc = $con->prepare("SELECT * FROM hc_basic WHERE cage_id = ?");
-    $check_query_hc->bind_param("s", $cage_id);
-    $check_query_hc->execute();
-    $check_result_hc = $check_query_hc->get_result();
-
-    if ($check_result_bc->num_rows > 0 || $check_result_hc->num_rows > 0) {
+    if ($check_result->num_rows > 0) {
         // Set an error message if cage_id already exists
         $_SESSION['message'] = "Cage ID '$cage_id' already exists. Please use a different Cage ID.";
     } else {
-        // Prepare the insert query with placeholders
-        $insert_query = $con->prepare("INSERT INTO bc_basic (`cage_id`, `pi_name`, `cross`, `iacuc`, `user`, `male_id`, `female_id`, `male_dob`, `female_dob`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        // Insert into the cages table
+        $insert_cage_query = $con->prepare("INSERT INTO cages (`cage_id`, `pi_name`, `remarks`) VALUES (?, ?, ?)");
+        $insert_cage_query->bind_param("sss", $cage_id, $pi_id, $remarks);
 
-        // Bind parameters to the query
-        $insert_query->bind_param("ssssssssss", $cage_id, $pi_name, $cross, $iacuc, $user, $male_id, $female_id, $male_dob, $female_dob, $remarks);
+        // Insert into the breeding table
+        $insert_breeding_query = $con->prepare("INSERT INTO breeding (`cage_id`, `cross`, `male_id`, `female_id`, `male_dob`, `female_dob`) VALUES (?, ?, ?, ?, ?, ?)");
+        $insert_breeding_query->bind_param("ssssss", $cage_id, $cross, $male_id, $female_id, $male_dob, $female_dob);
 
-        // Execute the statement and check if it was successful
-        if ($insert_query->execute()) {
+        // Execute the statements and check if they were successful
+        if ($insert_cage_query->execute() && $insert_breeding_query->execute()) {
             // Set a success message
             $_SESSION['message'] = "New breeding cage added successfully.";
+
+            // Insert IACUC associations
+            foreach ($iacuc_ids as $iacuc_id) {
+                $insert_cage_iacuc_query = $con->prepare("INSERT INTO cage_iacuc (`cage_id`, `iacuc_id`) VALUES (?, ?)");
+                $insert_cage_iacuc_query->bind_param("ss", $cage_id, $iacuc_id);
+                $insert_cage_iacuc_query->execute();
+                $insert_cage_iacuc_query->close();
+            }
+
+            // Insert user associations
+            foreach ($user_ids as $user_id) {
+                $insert_cage_user_query = $con->prepare("INSERT INTO cage_users (`cage_id`, `user_id`) VALUES (?, ?)");
+                $insert_cage_user_query->bind_param("ss", $cage_id, $user_id);
+                $insert_cage_user_query->execute();
+                $insert_cage_user_query->close();
+            }
 
             // Handle litter data insertion if provided
             if (isset($_POST['dom'])) {
@@ -101,9 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Loop through each litter entry and insert into the database
                 for ($i = 0; $i < count($dom); $i++) {
-                    $insert_litter_query = $con->prepare("INSERT INTO bc_litter (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-
-                    // Bind parameters for each litter entry
+                    $insert_litter_query = $con->prepare("INSERT INTO litters (`cage_id`, `dom`, `litter_dob`, `pups_alive`, `pups_dead`, `pups_male`, `pups_female`, `remarks`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                     $insert_litter_query->bind_param("ssssssss", $cage_id, $dom[$i], $litter_dob[$i], $pups_alive[$i], $pups_dead[$i], $pups_male[$i], $pups_female[$i], $litter_remarks[$i]);
 
                     // Execute the statement and check if it was successful
@@ -124,13 +135,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['message'] = "Failed to add new breeding cage.";
         }
 
-        // Close the prepared statement for cage data
-        $insert_query->close();
+        // Close the prepared statements for cage and breeding data
+        $insert_cage_query->close();
+        $insert_breeding_query->close();
     }
 
-    // Close the check query prepared statements
-    $check_query_bc->close();
-    $check_query_hc->close();
+    // Close the check query prepared statement
+    $check_query->close();
 
     // Redirect back to the main page
     header("Location: bc_dash.php");
@@ -220,37 +231,37 @@ require 'header.php';
                 litterDiv.className = 'litter-entry';
 
                 litterDiv.innerHTML = `
-                <hr>
-                <div class="mb-3">
-                    <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
-                    <input type="date" class="form-control" name="dom[]" required min="1900-01-01">
-                </div>
-                <div class="mb-3">
-                    <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
-                    <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
-                    <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
-                    <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_male[]" class="form-label">Pups Male</label>
-                    <input type="number" class="form-control" name="pups_male[]" min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="pups_female[]" class="form-label">Pups Female</label>
-                    <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="remarks_litter[]" class="form-label">Remarks</label>
-                    <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
-                </div>
-                <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
-            `;
+            <hr>
+            <div class="mb-3">
+                <label for="dom[]" class="form-label">DOM <span class="required-asterisk">*</span></label>
+                <input type="date" class="form-control" name="dom[]" required min="1900-01-01">
+            </div>
+            <div class="mb-3">
+                <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
+                <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01">
+            </div>
+            <div class="mb-3">
+                <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
+                <input type="number" class="form-control" name="pups_alive[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_dead[]" class="form-label">Pups Dead <span class="required-asterisk">*</span></label>
+                <input type="number" class="form-control" name="pups_dead[]" required min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_male[]" class="form-label">Pups Male</label>
+                <input type="number" class="form-control" name="pups_male[]" min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="pups_female[]" class="form-label">Pups Female</label>
+                <input type="number" class="form-control" name="pups_female[]" min="0" step="1">
+            </div>
+            <div class="mb-3">
+                <label for="remarks_litter[]" class="form-label">Remarks</label>
+                <textarea class="form-control" name="remarks_litter[]" oninput="adjustTextareaHeight(this)"></textarea>
+            </div>
+            <button type="button" class="btn btn-danger" onclick="removeLitter(this)">Remove</button>
+        `;
 
                 document.getElementById('litterEntries').appendChild(litterDiv);
 
@@ -269,9 +280,11 @@ require 'header.php';
                 element.parentElement.remove();
             }
 
-            // Ensure the function addLitter is available globally
+            // Ensure the functions are available globally
             window.addLitter = addLitter;
+            window.removeLitter = removeLitter;
         });
+
 
         // Function to navigate back to the previous page
         function goBack() {

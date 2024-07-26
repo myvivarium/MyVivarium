@@ -23,16 +23,25 @@ if (!isset($_SESSION['username'])) {
     exit; // Exit to ensure no further code is executed
 }
 
-$currentUserId = $_SESSION['username']; // Assuming 'username' is the user's identifier
+$currentUserId = $_SESSION['user_id']; // Assuming 'username' is the user's identifier
 
-// Retrieve user's sticky notes along with user names
+// For retrieving notes by cage_id
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $sql = "SELECT nt_data.*, COALESCE(users.name, nt_data.user_id) AS user_name FROM nt_data LEFT JOIN users ON nt_data.user_id = users.username WHERE nt_data.cage_id = ? ORDER BY nt_data.created_at DESC";
+    $sql = "SELECT notes.*, COALESCE(users.name, notes.user_id) AS user_name 
+            FROM notes 
+            LEFT JOIN users ON notes.user_id = users.id 
+            WHERE notes.cage_id = ? 
+            ORDER BY notes.created_at DESC";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("s", $id);
 } else {
-    $sql = "SELECT nt_data.*, COALESCE(users.name, nt_data.user_id) AS user_name FROM nt_data LEFT JOIN users ON nt_data.user_id = users.username WHERE nt_data.cage_id IS NULL ORDER BY nt_data.created_at DESC";
+    // For retrieving notes with no specific cage_id
+    $sql = "SELECT notes.*, COALESCE(users.name, notes.user_id) AS user_name 
+            FROM notes 
+            LEFT JOIN users ON notes.user_id = users.id 
+            WHERE notes.cage_id IS NULL 
+            ORDER BY notes.created_at DESC";
     $stmt = $con->prepare($sql);
 }
 $stmt->execute();
