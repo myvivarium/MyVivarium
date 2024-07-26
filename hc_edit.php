@@ -85,7 +85,6 @@ if (isset($_GET['id'])) {
     $stmt->bind_param("s", $id);
     $stmt->execute();
     $result = $stmt->get_result();
-    echo $query;
 
     // Fetch associated files for the holding cage
     $query2 = "SELECT * FROM files WHERE cage_id = ?";
@@ -693,11 +692,14 @@ require 'header.php';
                             <div class="mb-3">
                                 <label for="pi_name" class="form-label">PI Name <span class="required-asterisk">*</span></label>
                                 <select class="form-control" id="pi_name" name="pi_name" required>
-                                    <!-- Display the currently selected PI, with the option to disable if "Unknown PI" -->
-                                    <option value="<?= htmlspecialchars($selectedPiId); ?>" <?= ($piDisplay === 'Unknown PI') ? 'disabled' : '' ?> selected>
-                                        <?= htmlspecialchars($piDisplay); ?>
-                                    </option>
-                                    <!-- Iterate through the PI options, skipping the selected one -->
+                                    <!-- Display a placeholder option for selection -->
+                                    <option value="" disabled>Select PI</option>
+                                    <?php if ($piDisplay !== 'Unknown PI') : ?>
+                                        <option value="<?= htmlspecialchars($selectedPiId); ?>" selected>
+                                            <?= htmlspecialchars($piDisplay); ?>
+                                        </option>
+                                    <?php endif; ?>
+                                    <!-- Iterate through the PI options -->
                                     <?php while ($row = $piResult->fetch_assoc()) : ?>
                                         <?php if ($row['id'] !== $selectedPiId) : ?>
                                             <option value="<?= htmlspecialchars($row['id']); ?>">
