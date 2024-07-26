@@ -173,6 +173,35 @@ if (isset($_GET['id'])) {
                 }
                 $insertUsersQuery->close();
 
+                // Handle maintenance log updates
+                if (isset($_POST['log_ids']) && isset($_POST['log_comments'])) {
+                    $logIds = $_POST['log_ids'];
+                    $logComments = $_POST['log_comments'];
+
+                    for ($i = 0; $i < count($logIds); $i++) {
+                        $edit_log_id = intval($logIds[$i]);
+                        $edit_comment = trim(mysqli_real_escape_string($con, $logComments[$i]));
+
+                        $updateLogQuery = "UPDATE maintenance SET comments = ? WHERE id = ?";
+                        $stmtUpdateLog = $con->prepare($updateLogQuery);
+                        $stmtUpdateLog->bind_param("si", $edit_comment, $edit_log_id);
+                        $stmtUpdateLog->execute();
+                        $stmtUpdateLog->close();
+                    }
+                }
+
+                // Process maintenance logs deletion
+                if (!empty($_POST['logs_to_delete'])) {
+                    $logsToDelete = explode(',', $_POST['logs_to_delete']);
+                    foreach ($logsToDelete as $logId) {
+                        $deleteLogQuery = "DELETE FROM maintenance WHERE id = ?";
+                        $stmtDeleteLog = $con->prepare($deleteLogQuery);
+                        $stmtDeleteLog->bind_param("i", $logId);
+                        $stmtDeleteLog->execute();
+                        $stmtDeleteLog->close();
+                    }
+                }
+
                 // Commit transaction
                 $con->commit();
 
@@ -356,8 +385,8 @@ require 'header.php';
                 <input type="date" class="form-control" name="dom[]" required min="1900-01-01">
             </div>
             <div class="mb-3">
-                <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
-                <input type="date" class="form-control" name="litter_dob[]" required min="1900-01-01">
+                <label for="litter_dob[]" class="form-label">Litter DOB </label>
+                <input type="date" class="form-control" name="litter_dob[]" min="1900-01-01">
             </div>
             <div class="mb-3">
                 <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
@@ -524,6 +553,27 @@ require 'header.php';
                 }
             });
         });
+
+        // Function to mark maintenance log for deletion and hide the row
+        function markLogForDeletion(logId) {
+            if (confirm('Are you sure you want to delete this maintenance record?')) {
+                const logIdsInput = document.getElementById('logs_to_delete');
+                let logsToDelete = logIdsInput.value ? logIdsInput.value.split(',') : [];
+                logsToDelete.push(logId);
+                logIdsInput.value = logsToDelete.join(',');
+
+                // Hide the log row from the table
+                const logRow = document.getElementById(`log-row-${logId}`);
+                if (logRow) {
+                    logRow.style.display = 'none';
+                }
+            }
+        }
+
+        // Function to navigate to the hc_dash.php page
+        function goBackToDashboard() {
+            window.location.href = 'bc_dash.php';
+        }
     </script>
 
     <title>Edit Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
@@ -650,7 +700,8 @@ require 'header.php';
                         <h4>Edit Breeding Cage</h4>
                         <div class="action-buttons">
                             <!-- Button to go back to the previous page -->
-                            <a href="javascript:void(0);" onclick="goBack()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
+                            <!-- Button to go back to the previous page -->
+                            <a href="javascript:void(0);" onclick="goBackToDashboard()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
                                 <i class="fas fa-arrow-circle-left"></i>
                             </a>
                             <!-- Button to save the form -->
@@ -827,8 +878,8 @@ require 'header.php';
                                                 <input type="date" class="form-control" name="dom[]" value="<?= htmlspecialchars($litter['dom']); ?>" required min="1900-01-01">
                                             </div>
                                             <div class="mb-3">
-                                                <label for="litter_dob[]" class="form-label">Litter DOB <span class="required-asterisk">*</span></label>
-                                                <input type="date" class="form-control" name="litter_dob[]" value="<?= htmlspecialchars($litter['litter_dob']); ?>" required min="1900-01-01">
+                                                <label for="litter_dob[]" class="form-label">Litter DOB</label>
+                                                <input type="date" class="form-control" name="litter_dob[]" value="<?= htmlspecialchars($litter['litter_dob']); ?>" min="1900-01-01">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="pups_alive[]" class="form-label">Pups Alive <span class="required-asterisk">*</span></label>
@@ -862,6 +913,64 @@ require 'header.php';
 
                             <br>
 
+                            <!-- Display Maintenance Logs Section -->
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h4>Maintenance Log for Cage ID: <?= htmlspecialchars($id ?? 'Unknown'); ?></h4>
+                                </div>
+                                <?php
+                                // Fetch the maintenance logs for the current cage
+                                $maintenanceQuery = "
+                                    SELECT m.id, m.timestamp, u.name AS user_name, m.comments, m.user_id 
+                                    FROM maintenance m
+                                    JOIN users u ON m.user_id = u.id
+                                    WHERE m.cage_id = ?
+                                    ORDER BY m.timestamp DESC";
+                                $stmtMaintenance = $con->prepare($maintenanceQuery);
+                                $stmtMaintenance->bind_param("s", $id);
+                                $stmtMaintenance->execute();
+                                $maintenanceLogs = $stmtMaintenance->get_result();
+                                ?>
+
+                                <?php if ($maintenanceLogs->num_rows > 0) : ?>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>User</th>
+                                                    <th>Comment</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php while ($log = $maintenanceLogs->fetch_assoc()) : ?>
+                                                    <tr id="log-row-<?= $log['id']; ?>">
+                                                        <td><?= htmlspecialchars($log['timestamp'] ?? ''); ?></td>
+                                                        <td><?= htmlspecialchars($log['user_name'] ?? 'Unknown'); ?></td>
+                                                        <td>
+                                                            <input type="hidden" name="log_ids[]" value="<?= htmlspecialchars($log['id']); ?>">
+                                                            <textarea name="log_comments[]" class="form-control"><?= htmlspecialchars($log['comments'] ?? 'No comment'); ?></textarea>
+                                                        </td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-danger btn-icon" onclick="markLogForDeletion(<?= $log['id']; ?>)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                <?php endwhile; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <?php else : ?>
+                                    <p>No maintenance records found for this cage.</p>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Hidden input field to store IDs of logs to delete -->
+                            <input type="hidden" id="logs_to_delete" name="logs_to_delete" value="">
+
+                            <br>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                             <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
 

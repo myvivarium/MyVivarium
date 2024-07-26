@@ -75,7 +75,6 @@ if (isset($_GET['id'])) {
             }
         }
         $iacucDisplayString = implode(', ', $iacucLinks);
-
     } else {
         // If the record does not exist, set an error message and redirect to the dashboard
         $_SESSION['message'] = 'Invalid ID.';
@@ -105,15 +104,15 @@ function getUserDetailsByIds($con, $userIds)
     return $userDetails;
 }
 
-    // Fetch user IDs associated with the cage
-    $userIdsQuery = "SELECT cu.user_id 
+// Fetch user IDs associated with the cage
+$userIdsQuery = "SELECT cu.user_id 
                  FROM cage_users cu 
                  WHERE cu.cage_id = '$id'";
-    $userIdsResult = mysqli_query($con, $userIdsQuery);
-    $userIds = [];
-    while ($row = mysqli_fetch_assoc($userIdsResult)) {
-        $userIds[] = $row['user_id'];
-    }
+$userIdsResult = mysqli_query($con, $userIdsQuery);
+$userIds = [];
+while ($row = mysqli_fetch_assoc($userIdsResult)) {
+    $userIds[] = $row['user_id'];
+}
 
 // Fetch the user details based on IDs
 $userDetails = getUserDetailsByIds($con, $userIds);
@@ -128,6 +127,19 @@ foreach ($userIds as $userId) {
     }
 }
 $userDisplayString = implode(', ', $userDisplay);
+
+// Fetch the maintenance logs for the current cage
+$maintenanceQuery = "
+    SELECT m.timestamp, u.name AS user_name, m.comments 
+    FROM maintenance m
+    JOIN users u ON m.user_id = u.id
+    WHERE m.cage_id = ?
+    ORDER BY m.timestamp DESC";
+
+$stmtMaintenance = $con->prepare($maintenanceQuery);
+$stmtMaintenance->bind_param("s", $id); // Assuming $id holds the current cage_id
+$stmtMaintenance->execute();
+$maintenanceLogs = $stmtMaintenance->get_result();
 
 // Include the header file
 require 'header.php';
@@ -421,6 +433,39 @@ require 'header.php';
                         </div>
                     <?php endwhile; ?>
 
+                </div>
+
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h4>Maintenance Log for Cage ID: <?= htmlspecialchars($id ?? 'Unknown'); ?></h4>
+                    </div>
+                    <div class="card-body">
+                        <?php if ($maintenanceLogs->num_rows > 0) : ?>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>User</th>
+                                            <th>Comment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php while ($log = $maintenanceLogs->fetch_assoc()) : ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($log['timestamp'] ?? ''); ?></td>
+                                                <td><?= htmlspecialchars($log['user_name'] ?? 'Unknown'); ?></td>
+                                                <td><?= htmlspecialchars($log['comments'] ?? 'No comment'); ?></td>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php else : ?>
+                            <p>No maintenance records found for this cage.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
             </div>

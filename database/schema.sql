@@ -175,6 +175,18 @@ CREATE TABLE `outbox` (
   FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE SET NULL
 );
 
+-- Table for storing maintenance logs
+CREATE TABLE `maintenance` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cage_id` varchar(255) NOT NULL,
+  `user_id` int NOT NULL,
+  `comments` text DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+);
+
 -- Table for storing system settings
 CREATE TABLE `settings` (
   `name` varchar(255) NOT NULL,

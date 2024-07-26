@@ -187,6 +187,10 @@ require 'header.php';
                             <a href="hc_slct_crd.php" class="btn btn-success btn-icon" data-toggle="tooltip" data-placement="top" title="Print Cage Card">
                                 <i class="fas fa-print"></i>
                             </a>
+                            <!-- Maintenance button with tooltip -->
+                            <a href="maintenance.php?from=hc_dash" class="btn btn-warning btn-icon" data-toggle="tooltip" data-placement="top" title="Cage Maintenance">
+                                <i class="fas fa-wrench"></i>
+                            </a>
                         </div>
                     </div>
 

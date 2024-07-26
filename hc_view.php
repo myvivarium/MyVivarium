@@ -142,6 +142,19 @@ function getUserDetailsByIds($con, $userIds)
     return $userDetails;
 }
 
+// Fetch the maintenance logs for the current cage
+$maintenanceQuery = "
+    SELECT m.timestamp, u.name AS user_name, m.comments 
+    FROM maintenance m
+    JOIN users u ON m.user_id = u.id
+    WHERE m.cage_id = ?
+    ORDER BY m.timestamp DESC";
+
+$stmtMaintenance = $con->prepare($maintenanceQuery);
+$stmtMaintenance->bind_param("s", $id); // Assuming $id holds the current cage_id
+$stmtMaintenance->execute();
+$maintenanceLogs = $stmtMaintenance->get_result();
+
 require 'header.php';
 ?>
 
@@ -420,7 +433,41 @@ require 'header.php';
                     </div>
                 </div>
             </div>
+
             <br>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h4>Maintenance Log for Cage ID: <?= htmlspecialchars($id ?? 'Unknown'); ?></h4>
+                </div>
+                <div class="card-body">
+                    <?php if ($maintenanceLogs->num_rows > 0) : ?>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>User</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php while ($log = $maintenanceLogs->fetch_assoc()) : ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($log['timestamp'] ?? ''); ?></td>
+                                            <td><?= htmlspecialchars($log['user_name'] ?? 'Unknown'); ?></td>
+                                            <td><?= htmlspecialchars($log['comments'] ?? 'No comment'); ?></td>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else : ?>
+                        <p>No maintenance records found for this cage.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+
         </div>
 
         <div class="note-app-container">

@@ -3,7 +3,7 @@
 /**
  * Edit Holding Cage Script
  * 
- * This script handles the editing of holding cage records, including mouse data. It allows for dynamic addition and deletion of mouse records.
+ * This script handles the editing of holding cage records, including maintenance logs and mouse data.
  * 
  */
 
@@ -264,12 +264,37 @@ if (isset($_GET['id'])) {
             $stmtUpdateQty->execute();
             $stmtUpdateQty->close();
 
-            // Check if the update was successful
-            if ($resultHolding && $resultCages) {
-                $_SESSION['message'] = 'Entry updated successfully.';
-            } else {
-                $_SESSION['message'] = 'Update failed: ' . $stmt->error;
+            // Handle maintenance log updates
+            if (isset($_POST['log_ids']) && isset($_POST['log_comments'])) {
+                $logIds = $_POST['log_ids'];
+                $logComments = $_POST['log_comments'];
+
+                for ($i = 0; $i < count($logIds); $i++) {
+                    $edit_log_id = intval($logIds[$i]);
+                    $edit_comment = trim(mysqli_real_escape_string($con, $logComments[$i]));
+
+                    $updateLogQuery = "UPDATE maintenance SET comments = ? WHERE id = ?";
+                    $stmtUpdateLog = $con->prepare($updateLogQuery);
+                    $stmtUpdateLog->bind_param("si", $edit_comment, $edit_log_id);
+                    $stmtUpdateLog->execute();
+                    $stmtUpdateLog->close();
+                }
+
+                $_SESSION['message'] = 'Maintenance logs updated successfully.';
             }
+
+            // Process maintenance logs deletion
+            if (!empty($_POST['logs_to_delete'])) {
+                $logsToDelete = explode(',', $_POST['logs_to_delete']);
+                foreach ($logsToDelete as $logId) {
+                    $deleteLogQuery = "DELETE FROM maintenance WHERE id = ?";
+                    $stmtDeleteLog = $con->prepare($deleteLogQuery);
+                    $stmtDeleteLog->bind_param("i", $logId);
+                    $stmtDeleteLog->execute();
+                    $stmtDeleteLog->close();
+                }
+            }
+
 
             // Handle file upload
             if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
@@ -306,7 +331,7 @@ if (isset($_GET['id'])) {
                 }
             }
 
-            // Redirect to the dashboard page
+            // Redirect to the same page to prevent resubmission on refresh
             header("Location: hc_dash.php");
             exit();
         }
@@ -654,6 +679,27 @@ require 'header.php';
                 }
             });
         });
+
+        // Function to mark maintenance log for deletion and hide the row
+        function markLogForDeletion(logId) {
+            if (confirm('Are you sure you want to delete this maintenance record?')) {
+                const logIdsInput = document.getElementById('logs_to_delete');
+                let logsToDelete = logIdsInput.value ? logIdsInput.value.split(',') : [];
+                logsToDelete.push(logId);
+                logIdsInput.value = logsToDelete.join(',');
+
+                // Hide the log row from the table
+                const logRow = document.getElementById(`log-row-${logId}`);
+                if (logRow) {
+                    logRow.style.display = 'none';
+                }
+            }
+        }
+
+        // Function to navigate to the hc_dash.php page
+        function goBackToDashboard() {
+            window.location.href = 'hc_dash.php';
+        }
     </script>
 
 </head>
@@ -668,7 +714,7 @@ require 'header.php';
                         <h4>Edit Holding Cage</h4>
                         <div class="action-buttons">
                             <!-- Button to go back to the previous page -->
-                            <a href="javascript:void(0);" onclick="goBack()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
+                            <a href="javascript:void(0);" onclick="goBackToDashboard()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
                                 <i class="fas fa-arrow-circle-left"></i>
                             </a>
                             <!-- Button to save the form -->
@@ -882,6 +928,68 @@ require 'header.php';
                                     </div>
                                 </div>
                             </div>
+
+                            <br>
+                            <!-- Separator -->
+                            <hr class="mt-4 mb-4" style="border-top: 3px solid #000;">
+
+
+                            <div class="card-body">
+                                <div class="card-header">
+                                    <h4>Maintenance Log for Cage ID: <?= htmlspecialchars($id ?? 'Unknown'); ?></h4>
+                                </div>
+                                <?php
+                                // Fetch the maintenance logs for the current cage
+                                $maintenanceQuery = "
+                                    SELECT m.id, m.timestamp, u.name AS user_name, m.comments, m.user_id 
+                                    FROM maintenance m
+                                    JOIN users u ON m.user_id = u.id
+                                    WHERE m.cage_id = ?
+                                    ORDER BY m.timestamp DESC";
+                                $stmtMaintenance = $con->prepare($maintenanceQuery);
+                                $stmtMaintenance->bind_param("s", $id);
+                                $stmtMaintenance->execute();
+                                $maintenanceLogs = $stmtMaintenance->get_result();
+                                ?>
+
+                                <?php if ($maintenanceLogs->num_rows > 0) : ?>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>User</th>
+                                                    <th>Comment</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php while ($log = $maintenanceLogs->fetch_assoc()) : ?>
+                                                    <tr id="log-row-<?= $log['id']; ?>">
+                                                        <td><?= htmlspecialchars($log['timestamp'] ?? ''); ?></td>
+                                                        <td><?= htmlspecialchars($log['user_name'] ?? 'Unknown'); ?></td>
+                                                        <td>
+                                                            <input type="hidden" name="log_ids[]" value="<?= htmlspecialchars($log['id']); ?>">
+                                                            <textarea name="log_comments[]" class="form-control"><?= htmlspecialchars($log['comments'] ?? 'No comment'); ?></textarea>
+                                                        </td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-danger btn-icon" onclick="markLogForDeletion(<?= $log['id']; ?>)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                <?php endwhile; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <?php else : ?>
+                                    <p>No maintenance records found for this cage.</p>
+                                <?php endif; ?>
+                            </div>
+
+
+                            <!-- Hidden input field to store IDs of logs to delete -->
+                            <input type="hidden" id="logs_to_delete" name="logs_to_delete" value="">
 
                             <br>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
