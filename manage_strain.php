@@ -380,7 +380,7 @@ $strainResult = $con->query($strainQuery);
             document.getElementById('view_strain_url').innerText = url;
             document.getElementById('view_strain_url').href = url; // Set the href for the URL link
             document.getElementById('view_strain_rrid').innerText = rrid;
-            document.getElementById('view_strain_notes').innerText = notes.replace(/\\n/g, '<br>'); // Replace \n with <br>
+            document.getElementById('view_strain_notes').innerHTML = notes.replace(/\n/g, '<br>'); // Replace \n with <br> for display
         }
 
         // Function to close the view popup form
@@ -389,6 +389,7 @@ $strainResult = $con->query($strainQuery);
             document.getElementById('viewPopupForm').style.display = 'none';
         }
     </script>
+
 
     <div class="extra-space"></div> <!-- Add extra space before the footer -->
     <?php require 'footer.php'; // Include the footer 
