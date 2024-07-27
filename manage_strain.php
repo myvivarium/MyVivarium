@@ -318,8 +318,8 @@ $strainResult = $con->query($strainQuery);
                         <td data-label="RRID"><?= htmlspecialchars($row['str_rrid']); ?></td>
                         <td data-label="Actions" class="table-actions">
                             <div class="action-buttons">
-                                <button class="btn btn-info btn-sm" title="View" onclick="viewStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>', '<?= htmlspecialchars($row['str_notes']); ?>')"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-warning btn-sm" title="Edit" onclick="editStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>', '<?= htmlspecialchars($row['str_notes']); ?>')"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-info btn-sm" title="View" onclick="viewStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>', `<?= htmlspecialchars($row['str_notes']); ?>`)"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-warning btn-sm" title="Edit" onclick="editStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>', `<?= htmlspecialchars($row['str_notes']); ?>`)"><i class="fas fa-edit"></i></button>
                                 <form action="manage_strain.php" method="post" style="display:inline-block;">
                                     <input type="hidden" name="strain_id" value="<?= $row['str_id']; ?>">
                                     <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this strain?');"><i class="fas fa-trash-alt"></i></button>
@@ -389,7 +389,6 @@ $strainResult = $con->query($strainQuery);
             document.getElementById('viewPopupForm').style.display = 'none';
         }
     </script>
-
 
     <div class="extra-space"></div> <!-- Add extra space before the footer -->
     <?php require 'footer.php'; // Include the footer 
