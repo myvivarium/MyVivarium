@@ -168,7 +168,7 @@ require 'header.php';
                 <textarea class="form-control" id="lab_name" name="lab_name" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['lab_name']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="url">URL</label>
+                <label for="url">URL (domain name only i.e domain.com)</label>
                 <textarea class="form-control" id="url" name="url" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['url']); ?></textarea>
             </div>
             <div class="form-group">
