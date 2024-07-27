@@ -935,9 +935,16 @@ require 'header.php';
 
 
                             <div class="card-body">
-                                <div class="card-header">
+                                <div class="card-header d-flex flex-column flex-md-row justify-content-between">
                                     <h4>Maintenance Log for Cage ID: <?= htmlspecialchars($id ?? 'Unknown'); ?></h4>
+                                    <div class="action-icons mt-3 mt-md-0">
+                                        <!-- Maintenance button with tooltip -->
+                                        <a href="maintenance.php?from=hc_dash" class="btn btn-warning btn-icon" data-toggle="tooltip" data-placement="top" title="Add Maintenance Record">
+                                            <i class="fas fa-wrench"></i>
+                                        </a>
+                                    </div>
                                 </div>
+
                                 <?php
                                 // Fetch the maintenance logs for the current cage
                                 $maintenanceQuery = "
@@ -957,22 +964,22 @@ require 'header.php';
                                         <table class="table table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th>Date</th>
-                                                    <th>User</th>
-                                                    <th>Comment</th>
-                                                    <th>Action</th>
+                                                    <th style="width: 25%;">Date</th>
+                                                    <th style="width: 25%;">User</th>
+                                                    <th style="width: 40%;">Comment</th>
+                                                    <th style="width: 10%;">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php while ($log = $maintenanceLogs->fetch_assoc()) : ?>
                                                     <tr id="log-row-<?= $log['id']; ?>">
-                                                        <td><?= htmlspecialchars($log['timestamp'] ?? ''); ?></td>
-                                                        <td><?= htmlspecialchars($log['user_name'] ?? 'Unknown'); ?></td>
-                                                        <td>
+                                                        <td style="width: 25%;"><?= htmlspecialchars($log['timestamp'] ?? ''); ?></td>
+                                                        <td style="width: 25%;"><?= htmlspecialchars($log['user_name'] ?? 'Unknown'); ?></td>
+                                                        <td style="width: 40%;">
                                                             <input type="hidden" name="log_ids[]" value="<?= htmlspecialchars($log['id']); ?>">
                                                             <textarea name="log_comments[]" class="form-control"><?= htmlspecialchars($log['comments'] ?? 'No comment'); ?></textarea>
                                                         </td>
-                                                        <td>
+                                                        <td style="width: 10%;">
                                                             <button type="button" class="btn btn-danger btn-icon" onclick="markLogForDeletion(<?= $log['id']; ?>)">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
@@ -986,6 +993,7 @@ require 'header.php';
                                     <p>No maintenance records found for this cage.</p>
                                 <?php endif; ?>
                             </div>
+
 
 
                             <!-- Hidden input field to store IDs of logs to delete -->

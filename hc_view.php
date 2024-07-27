@@ -437,8 +437,17 @@ require 'header.php';
             <br>
 
             <div class="card mt-4">
-                <div class="card-header">
+                <div class="card-header d-flex flex-column flex-md-row justify-content-between">
                     <h4>Maintenance Log for Cage ID: <?= htmlspecialchars($id ?? 'Unknown'); ?></h4>
+                    <div class="action-icons mt-3 mt-md-0">
+                        <!-- Maintenance button with tooltip -->
+                        <a href="maintenance.php?from=hc_dash" class="btn btn-warning btn-icon" data-toggle="tooltip" data-placement="top" title="Add Maintenance Record">
+                            <i class="fas fa-wrench"></i>
+                        </a>
+                        <a href="hc_edit.php?id=<?= rawurlencode($holdingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <?php if ($maintenanceLogs->num_rows > 0) : ?>
@@ -446,17 +455,17 @@ require 'header.php';
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Date</th>
-                                        <th>User</th>
-                                        <th>Comment</th>
+                                        <th style="width: 25%;">Date</th>
+                                        <th style="width: 25%;">User</th>
+                                        <th style="width: 50%;">Comment</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php while ($log = $maintenanceLogs->fetch_assoc()) : ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($log['timestamp'] ?? ''); ?></td>
-                                            <td><?= htmlspecialchars($log['user_name'] ?? 'Unknown'); ?></td>
-                                            <td><?= htmlspecialchars($log['comments'] ?? 'No comment'); ?></td>
+                                            <td style="width: 25%;"><?= htmlspecialchars($log['timestamp'] ?? ''); ?></td>
+                                            <td style="width: 25%;"><?= htmlspecialchars($log['user_name'] ?? 'Unknown'); ?></td>
+                                            <td style="width: 50%;"><?= htmlspecialchars($log['comments'] ?? 'No comment'); ?></td>
                                         </tr>
                                     <?php endwhile; ?>
                                 </tbody>
@@ -467,6 +476,7 @@ require 'header.php';
                     <?php endif; ?>
                 </div>
             </div>
+
 
         </div>
 

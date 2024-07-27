@@ -139,7 +139,7 @@ require 'header.php';
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4>Cage Maintenance</h4>
+                        <h4>Add Cage Maintenance Record</h4>
                         <div class="action-buttons">
                             <!-- Button to go back to the previous page -->
                             <a href="javascript:void(0);" onclick="goBack()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
@@ -156,7 +156,7 @@ require 'header.php';
                         <form method="post">
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                             <div class="mb-3">
-                                <label for="cage_id" class="form-label">Select Cages</label>
+                                <label for="cage_id" class="form-label">Select Cages (multi select)</label>
                                 <select id="cage_id" name="cage_id[]" multiple="multiple" style="width: 100%;" required>
                                     <?php foreach ($cageOptions as $cage_id) : ?>
                                         <option value="<?php echo $cage_id; ?>"><?php echo $cage_id; ?></option>
