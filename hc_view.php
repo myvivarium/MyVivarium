@@ -557,7 +557,7 @@ require 'header.php';
             document.getElementById('view_strain_aka').innerText = aka;
             document.getElementById('view_strain_url').innerText = url;
             document.getElementById('view_strain_rrid').innerText = rrid;
-            document.getElementById('view_strain_notes').innerText = notes;
+            document.getElementById('view_strain_notes').innerHTML = notes.replace(/\n/g, '<br>');
             document.getElementById('viewPopupOverlay').style.display = 'block';
             document.getElementById('viewPopupForm').style.display = 'block';
             document.getElementById('view_strain_url').href = url; // Set the href for the URL link
