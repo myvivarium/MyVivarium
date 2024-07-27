@@ -524,24 +524,24 @@ require 'header.php';
     <script>
         function showQrCodePopup(cageId) {
             var popup = window.open("", "QR Code for Cage " + cageId, "width=400,height=400");
-            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://' + <?php echo json_encode($url); ?> + '/hc_view.php?id=' + cageId;
+            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://' + <?php echo json_encode($url); ?> + '/hc_view.php?id=' + encodeURIComponent(cageId);
 
             var htmlContent = `
-            <html>
-            <head>
-                <title>QR Code for Cage ${cageId}</title>
-                <style>
-                    body { font-family: Arial, sans-serif; text-align: center; padding-top: 40px; }
-                    h1 { color: #333; }
-                    img { margin-top: 20px; }
-                </style>
-            </head>
-            <body>
-                <h1>QR Code for Cage ${cageId}</h1>
-                <img src="${qrUrl}" alt="QR Code for Cage ${cageId}" />
-            </body>
-            </html>
-        `;
+                <html>
+                <head>
+                    <title>QR Code for Cage ${cageId}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; text-align: center; padding-top: 40px; }
+                        h1 { color: #333; }
+                        img { margin-top: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>QR Code for Cage ${cageId}</h1>
+                    <img src="${qrUrl}" alt="QR Code for Cage ${cageId}" />
+                </body>
+                </html>
+            `;
 
             popup.document.write(htmlContent);
             popup.document.close();
