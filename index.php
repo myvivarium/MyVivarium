@@ -378,7 +378,7 @@ mysqli_close($con);
                 </div>
             </div>
 
-            
+
 
             <!-- New Row for Unique Features -->
             <div class="row mt-4">
@@ -415,20 +415,22 @@ mysqli_close($con);
             const footer = document.getElementById('footer');
             const container = document.querySelector('.top-container');
 
-            // Remove inline styles to calculate natural height
-            footer.style.position = 'relative';
-            footer.style.bottom = 'auto';
-
-            const containerHeight = container.offsetHeight;
-            const windowHeight = window.innerHeight;
-
-            // If content is shorter than viewport, fix the footer at the bottom
-            if (containerHeight < windowHeight) {
-                footer.style.position = 'absolute';
-                footer.style.bottom = '0';
-            } else {
+            if (footer && container) {
+                // Remove inline styles to calculate natural height
                 footer.style.position = 'relative';
                 footer.style.bottom = 'auto';
+
+                const containerHeight = container.offsetHeight;
+                const windowHeight = window.innerHeight;
+
+                // If content is shorter than viewport, fix the footer at the bottom
+                if (containerHeight < windowHeight) {
+                    footer.style.position = 'absolute';
+                    footer.style.bottom = '0';
+                } else {
+                    footer.style.position = 'relative';
+                    footer.style.bottom = 'auto';
+                }
             }
         }
 
