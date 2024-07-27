@@ -344,7 +344,7 @@ require 'header.php';
                                 '<?= htmlspecialchars($holdingcage['str_aka'] ?? ''); ?>', 
                                 '<?= htmlspecialchars($holdingcage['str_url'] ?? '#'); ?>', 
                                 '<?= htmlspecialchars($holdingcage['str_rrid'] ?? ''); ?>', 
-                                '<?= nl2br(htmlspecialchars($holdingcage['str_notes'] ?? '')) ?>')">
+                                `<?= htmlspecialchars($holdingcage['str_notes'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE) ?>`)">
                                 <?= htmlspecialchars($holdingcage['str_id'] ?? 'NA'); ?> | <?= htmlspecialchars($holdingcage['str_name'] ?? 'Unknown Name'); ?>
                             </a>
                         </td>
