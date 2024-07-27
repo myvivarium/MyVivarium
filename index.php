@@ -332,18 +332,18 @@ mysqli_close($con);
                 <div class="col-md-6">
                     <div id="labCarousel" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
-                            <div class="carousel-item active"> <img class="d-block w-100" src="images/DSC_0536.JPG" alt="Image 1"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0537.JPG" alt="Image 2"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0539.JPG" alt="Image 3"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0540.JPG" alt="Image 4"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0560.JPG" alt="Image 7"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0562.JPG" alt="Image 8"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0586.JPG" alt="Image 11"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0593.JPG" alt="Image 12"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0607.JPG" alt="Image 13"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0623.JPG" alt="Image 14"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0658.JPG" alt="Image 15"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0665.JPG" alt="Image 16"> </div>
+                            <div class="carousel-item active"> <img class="d-block w-100" src="images/DSC_0536.webp" alt="Image 1"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0537.webp" alt="Image 2"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0539.webp" alt="Image 3"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0540.webp" alt="Image 4"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0560.webp" alt="Image 7"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0562.webp" alt="Image 8"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0586.webp" alt="Image 11"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0593.webp" alt="Image 12"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0607.webp" alt="Image 13"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0623.webp" alt="Image 14"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0658.webp" alt="Image 15"> </div>
+                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0665.webp" alt="Image 16"> </div>
                         </div>
                     </div>
                     <?php if ($demo === "yes") include('demo/demo-disclaimer.php'); ?>
