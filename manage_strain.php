@@ -319,7 +319,7 @@ $strainResult = $con->query($strainQuery);
                         <td data-label="Actions" class="table-actions">
                             <div class="action-buttons">
                                 <button class="btn btn-info btn-sm" title="View" onclick="viewStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>', '<?= htmlspecialchars($row['str_notes']); ?>')"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-warning btn-sm" title="Edit" onclick="editStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>')"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-warning btn-sm" title="Edit" onclick="editStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>', '<?= htmlspecialchars($row['str_notes']); ?>')"><i class="fas fa-edit"></i></button>
                                 <form action="manage_strain.php" method="post" style="display:inline-block;">
                                     <input type="hidden" name="strain_id" value="<?= $row['str_id']; ?>">
                                     <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this strain?');"><i class="fas fa-trash-alt"></i></button>
@@ -367,7 +367,7 @@ $strainResult = $con->query($strainQuery);
             document.getElementById('strain_aka').value = aka;
             document.getElementById('strain_url').value = url;
             document.getElementById('strain_rrid').value = rrid;
-            document.getElementById('strain_notes').value = notes; // Set notes value
+            document.getElementById('strain_notes').value = notes.replace(/\\n/g, '\n'); // Set notes value with new lines
         }
 
         // Function to open the view popup form
@@ -380,7 +380,7 @@ $strainResult = $con->query($strainQuery);
             document.getElementById('view_strain_url').innerText = url;
             document.getElementById('view_strain_url').href = url; // Set the href for the URL link
             document.getElementById('view_strain_rrid').innerText = rrid;
-            document.getElementById('view_strain_notes').innerText = notes;
+            document.getElementById('view_strain_notes').innerText = notes.replace(/\\n/g, '<br>'); // Replace \n with <br>
         }
 
         // Function to close the view popup form
