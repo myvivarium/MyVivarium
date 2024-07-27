@@ -61,7 +61,7 @@ CREATE TABLE `strains` (
   `str_aka` varchar(255) DEFAULT NULL,
   `str_url` varchar(255) DEFAULT NULL,
   `str_rrid` varchar(255) DEFAULT NULL,
-  `str_notes` text DEFAULT NULL;
+  `str_notes` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_strains_str_id` (`str_id`)
 );
@@ -102,7 +102,7 @@ CREATE TABLE `litters` (
   `pups_dead` int NOT NULL,
   `pups_male` int NOT NULL,
   `pups_female` int NOT NULL,
-  `remarks` text NOT NULL,
+  `remarks` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE
 );
@@ -136,7 +136,7 @@ CREATE TABLE `mice` (
   `cage_id` varchar(255) NOT NULL,
   `mouse_id` varchar(255) NOT NULL,
   `genotype` varchar(255) NOT NULL,
-  `notes` text NOT NULL,
+  `notes` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE
 );

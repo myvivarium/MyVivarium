@@ -187,6 +187,7 @@ For initial setup, use the following default admin credentials:
 - `demo-banner.php`: Displays a banner at the top of the page in demo mode.
 - `demo-credentials.php`: Displays the demo admin credentials on the login page.
 - `demo-disclaimer.php`: Displays the demo disclaimer on the login page.
+- `maintenance.php`: Adds maintenance records for cages with optional comments.
 
 ## Demo Website
 
