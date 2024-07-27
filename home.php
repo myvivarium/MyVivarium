@@ -210,6 +210,16 @@ require 'header.php';
             const header = document.querySelector('.header');
             const navcontainer = document.querySelector('.nav-container');
 
+            if (!footer) {
+                console.warn("Footer element not found.");
+                return;
+            }
+
+            if (!container) {
+                console.warn("Top container element not found.");
+                return;
+            }
+
             // Reset footer styles to compute natural height
             footer.style.position = 'relative';
             footer.style.bottom = 'auto';
