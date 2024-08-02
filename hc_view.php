@@ -548,7 +548,10 @@ require 'header.php';
         }
 
         function goBack() {
-            window.history.back();
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page') || 1;
+            const search = urlParams.get('search') || '';
+            window.location.href = 'hc_dash.php?page=' + page + '&search=' + encodeURIComponent(search);
         }
 
         function viewStrainDetails(id, name, aka, url, rrid, notes) {

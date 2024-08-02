@@ -33,6 +33,12 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+function getCurrentUrlParams() {
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $search = isset($_GET['search']) ? urlencode($_GET['search']) : '';
+    return "page=$page&search=$search";
+}
+
 // Query to retrieve users with initials and names
 $userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
 $userResult = $con->query($userQuery);
@@ -95,7 +101,7 @@ if (isset($_GET['id'])) {
         // Check if the user is either an admin or one of the users associated with the cage
         if ($userRole !== 'admin' && !in_array($currentUserId, $cageUsers)) {
             $_SESSION['message'] = 'Access denied. Only the admin or the assigned user can edit.';
-            header("Location: bc_dash.php");
+            header("Location: bc_dash.php?" . getCurrentUrlParams());
             exit();
         }
 
@@ -301,19 +307,19 @@ if (isset($_GET['id'])) {
             }
 
             // Redirect to the dashboard
-            header("Location: bc_dash.php");
+            header("Location: bc_dash.php?" . getCurrentUrlParams());
             exit();
         }
     } else {
         // Set an error message if the ID is invalid
         $_SESSION['message'] = 'Invalid ID.';
-        header("Location: bc_dash.php");
+        header("Location: bc_dash.php?" . getCurrentUrlParams());
         exit();
     }
 } else {
     // Set an error message if the ID parameter is missing
     $_SESSION['message'] = 'ID parameter is missing.';
-    header("Location: bc_dash.php");
+    header("Location: bc_dash.php?" . getCurrentUrlParams());
     exit();
 }
 
@@ -348,7 +354,10 @@ require 'header.php';
     <script>
         // Function to navigate back to the previous page
         function goBack() {
-            window.history.back();
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page') || 1;
+            const search = urlParams.get('search') || '';
+            window.location.href = 'bc_dash.php?page=' + page + '&search=' + encodeURIComponent(search);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -570,10 +579,6 @@ require 'header.php';
             }
         }
 
-        // Function to navigate to the hc_dash.php page
-        function goBackToDashboard() {
-            window.location.href = 'bc_dash.php';
-        }
     </script>
 
     <title>Edit Breeding Cage | <?php echo htmlspecialchars($labName); ?></title>
@@ -701,7 +706,7 @@ require 'header.php';
                         <div class="action-buttons">
                             <!-- Button to go back to the previous page -->
                             <!-- Button to go back to the previous page -->
-                            <a href="javascript:void(0);" onclick="goBackToDashboard()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
+                            <a href="javascript:void(0);" onclick="goBack()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
                                 <i class="fas fa-arrow-circle-left"></i>
                             </a>
                             <!-- Button to save the form -->
@@ -712,7 +717,7 @@ require 'header.php';
                     </div>
 
                     <div class="card-body">
-                        <form id="editForm" method="POST" action="bc_edit.php?id=<?= htmlspecialchars($id); ?>" enctype="multipart/form-data">
+                    <form id="editForm" method="POST" action="bc_edit.php?id=<?= $id; ?>&<?= getCurrentUrlParams(); ?>" enctype="multipart/form-data">
                             <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
@@ -919,7 +924,7 @@ require 'header.php';
                                     <h4>Maintenance Log for Cage ID: <?= htmlspecialchars($id ?? 'Unknown'); ?></h4>
                                     <div class="action-icons mt-3 mt-md-0">
                                         <!-- Maintenance button with tooltip -->
-                                        <a href="maintenance.php?from=hc_dash" class="btn btn-warning btn-icon" data-toggle="tooltip" data-placement="top" title="Add Maintenance Record">
+                                        <a href="maintenance.php?from=bc_dash" class="btn btn-warning btn-icon" data-toggle="tooltip" data-placement="top" title="Add Maintenance Record">
                                             <i class="fas fa-wrench"></i>
                                         </a>
                                     </div>

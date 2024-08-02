@@ -178,7 +178,10 @@ require 'header.php';
 
         // Function to navigate back to the previous page
         function goBack() {
-            window.history.back();
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page') || 1;
+            const search = urlParams.get('search') || '';
+            window.location.href = 'bc_dash.php?page=' + page + '&search=' + encodeURIComponent(search);
         }
     </script>
 
@@ -441,7 +444,7 @@ require 'header.php';
                         <h4>Maintenance Log for Cage ID: <?= htmlspecialchars($id ?? 'Unknown'); ?></h4>
                         <div class="action-icons mt-3 mt-md-0">
                             <!-- Maintenance button with tooltip -->
-                            <a href="maintenance.php?from=hc_dash" class="btn btn-warning btn-icon" data-toggle="tooltip" data-placement="top" title="Add Maintenance Record">
+                            <a href="maintenance.php?from=bc_dash" class="btn btn-warning btn-icon" data-toggle="tooltip" data-placement="top" title="Add Maintenance Record">
                                 <i class="fas fa-wrench"></i>
                             </a>
                             <a href="bc_edit.php?id=<?= rawurlencode($breedingcage['cage_id']); ?>" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage">

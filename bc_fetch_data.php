@@ -34,7 +34,7 @@ $userRole = $_SESSION['role'];
 $currentUserId = $_SESSION['user_id'];
 
 // Pagination variables
-$limit = 15; // Number of entries to show in a page
+$limit = 10; // Number of entries to show in a page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page number, default to 1
 $offset = ($page - 1) * $limit; // Offset for the SQL query
 
@@ -60,7 +60,7 @@ $result = mysqli_query($con, $query); // Execute the query to get the paginated 
 $tableRows = '';
 while ($row = mysqli_fetch_assoc($result)) {
     $cageID = $row['cage_id']; // Get the cage ID
-    $query = "SELECT * FROM breeding WHERE `cage_id` = '$cageID'"; // Query to fetch all records for the cage ID
+    $query = "SELECT * FROM breeding WHERE `cage_id` = '$cageID'"; // Fetch all records for the current cage ID
     $cageResult = mysqli_query($con, $query); // Execute the query
     $numRows = mysqli_num_rows($cageResult); // Get the number of rows for the cage ID
     $firstRow = true; // Flag to check if it is the first row for the cage ID
@@ -68,17 +68,17 @@ while ($row = mysqli_fetch_assoc($result)) {
     while ($breedingcage = mysqli_fetch_assoc($cageResult)) {
         $tableRows .= '<tr>';
         if ($firstRow) {
-            $tableRows .= '<td style="width: 50%;">' . htmlspecialchars($breedingcage['cage_id']) . '</td>'; // Add the cage ID to the table row
-            $firstRow = false; // Set the flag to false after the first row
+            $tableRows .= '<td style="width: 50%;">' . htmlspecialchars($breedingcage['cage_id']) . '</td>'; // Display cage ID only once per group
+            $firstRow = false;
         }
         $tableRows .= '<td class="action-icons" style="width: 50%; white-space: nowrap;">
-                        <a href="bc_view.php?id=' . rawurlencode($breedingcage['cage_id']) . '" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="View Cage"><i class="fas fa-eye"></i></a>
-                        <a href="manage_tasks.php?id=' . rawurlencode($breedingcage['cage_id']) . '" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Manage Tasks"><i class="fas fa-tasks"></i></a>';
+                        <a href="bc_view.php?id=' . rawurlencode($breedingcage['cage_id']) . '&page=' . $page . '&search=' . urlencode($searchQuery) . '" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="View Cage"><i class="fas fa-eye"></i></a>
+                        <a href="manage_tasks.php?id=' . rawurlencode($breedingcage['cage_id']) . '&page=' . $page . '&search=' . urlencode($searchQuery) . '" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Manage Tasks"><i class="fas fa-tasks"></i></a>';
                         
         // Check if the user is an admin or assigned to this cage
         $assignedUsers = explode(',', $breedingcage['user']);
         if ($userRole === 'admin' || in_array($currentUserId, $assignedUsers)) {
-            $tableRows .= '<a href="bc_edit.php?id=' . rawurlencode($breedingcage['cage_id']) . '" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage"><i class="fas fa-edit"></i></a>
+            $tableRows .= '<a href="bc_edit.php?id=' . rawurlencode($breedingcage['cage_id']) . '&page=' . $page . '&search=' . urlencode($searchQuery) . '" class="btn btn-secondary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Edit Cage"><i class="fas fa-edit"></i></a>
                            <a href="#" onclick="confirmDeletion(\'' . htmlspecialchars($breedingcage['cage_id']) . '\')" class="btn btn-danger btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Delete Cage"><i class="fas fa-trash"></i></a>';
         }
         $tableRows .= '</td></tr>';

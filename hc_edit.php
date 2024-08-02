@@ -32,6 +32,12 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+function getCurrentUrlParams() {
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $search = isset($_GET['search']) ? urlencode($_GET['search']) : '';
+    return "page=$page&search=$search";
+}
+
 // Query to retrieve users with initials and names
 $userQuery = "SELECT id, initials, name FROM users WHERE status = 'approved'";
 $userResult = $con->query($userQuery);
@@ -332,19 +338,19 @@ if (isset($_GET['id'])) {
             }
 
             // Redirect to the same page to prevent resubmission on refresh
-            header("Location: hc_dash.php");
+            header("Location: hc_dash.php?" . getCurrentUrlParams());
             exit();
         }
     } else {
         // Set an error message if the ID is invalid
         $_SESSION['message'] = 'Invalid ID.';
-        header("Location: hc_dash.php");
+        header("Location: hc_dash.php?" . getCurrentUrlParams());
         exit();
     }
 } else {
     // Set an error message if the ID parameter is missing
     $_SESSION['message'] = 'ID parameter is missing.';
-    header("Location: hc_dash.php");
+    header("Location: hc_dash.php?" . getCurrentUrlParams());
     exit();
 }
 
@@ -525,7 +531,10 @@ require 'header.php';
 
         // Function to go back to the previous page
         function goBack() {
-            window.history.back();
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page') || 1;
+            const search = urlParams.get('search') || '';
+            window.location.href = 'hc_dash.php?page=' + page + '&search=' + encodeURIComponent(search);
         }
 
         // Function to dynamically add new mouse fields
@@ -696,10 +705,6 @@ require 'header.php';
             }
         }
 
-        // Function to navigate to the hc_dash.php page
-        function goBackToDashboard() {
-            window.location.href = 'hc_dash.php';
-        }
     </script>
 
 </head>
@@ -714,7 +719,7 @@ require 'header.php';
                         <h4>Edit Holding Cage</h4>
                         <div class="action-buttons">
                             <!-- Button to go back to the previous page -->
-                            <a href="javascript:void(0);" onclick="goBackToDashboard()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
+                            <a href="javascript:void(0);" onclick="goBack()" class="btn btn-primary btn-sm btn-icon" data-toggle="tooltip" data-placement="top" title="Go Back">
                                 <i class="fas fa-arrow-circle-left"></i>
                             </a>
                             <!-- Button to save the form -->
@@ -725,7 +730,7 @@ require 'header.php';
                     </div>
 
                     <div class="card-body">
-                        <form id="editForm" method="POST" action="hc_edit.php?id=<?= $id; ?>" enctype="multipart/form-data">
+                    <form id="editForm" method="POST" action="hc_edit.php?id=<?= $id; ?>&<?= getCurrentUrlParams(); ?>" enctype="multipart/form-data">
                             <p class="warning-text">Fields marked with <span class="required-asterisk">*</span> are required.</p>
                             <input type="hidden" id="mice_to_delete" name="mice_to_delete" value="">
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">

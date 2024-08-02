@@ -60,11 +60,32 @@ require 'header.php';
             xhr.open('GET', 'bc_fetch_data.php?page=' + page + '&search=' + encodeURIComponent(search), true);
             xhr.onload = function() {
                 if (xhr.status === 200) {
-                    var response = JSON.parse(xhr.responseText);
-                    document.getElementById('tableBody').innerHTML = response.tableRows; // Insert table rows
-                    document.getElementById('paginationLinks').innerHTML = response.paginationLinks; // Insert pagination links
-                    document.getElementById('searchInput').value = search; // Preserve search input
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.tableRows && response.paginationLinks) {
+                            document.getElementById('tableBody').innerHTML = response.tableRows; // Insert table rows
+                            document.getElementById('paginationLinks').innerHTML = response.paginationLinks; // Insert pagination links
+                            document.getElementById('searchInput').value = search; // Preserve search input
+
+                            // Update the URL with the current page and search query
+                            const newUrl = new URL(window.location.href);
+                            newUrl.searchParams.set('page', page);
+                            newUrl.searchParams.set('search', search);
+                            window.history.replaceState({
+                                path: newUrl.href
+                            }, '', newUrl.href);
+                        } else {
+                            console.error('Invalid response format:', response);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing JSON response:', e);
+                    }
+                } else {
+                    console.error('Request failed. Status:', xhr.status);
                 }
+            };
+            xhr.onerror = function() {
+                console.error('Request failed. An error occurred during the transaction.');
             };
             xhr.send();
         }
@@ -77,7 +98,10 @@ require 'header.php';
 
         // Fetch initial data when the DOM content is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            fetchData();
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page') || 1;
+            const search = urlParams.get('search') || '';
+            fetchData(page, search);
         });
     </script>
 
