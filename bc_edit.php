@@ -271,10 +271,10 @@ if (isset($_GET['id'])) {
                 for ($i = 0; $i < count($_POST['dom']); $i++) {
                     $dom_i = mysqli_real_escape_string($con, $_POST['dom'][$i]);
                     $litter_dob_i = mysqli_real_escape_string($con, $_POST['litter_dob'][$i]);
-                    $pups_alive_i = mysqli_real_escape_string($con, $_POST['pups_alive'][$i]);
-                    $pups_dead_i = mysqli_real_escape_string($con, $_POST['pups_dead'][$i]);
-                    $pups_male_i = mysqli_real_escape_string($con, $_POST['pups_male'][$i]);
-                    $pups_female_i = mysqli_real_escape_string($con, $_POST['pups_female'][$i]);
+                    $pups_alive_i = !empty($_POST['pups_alive'][$i]) ? intval($_POST['pups_alive'][$i]) : 0;
+                    $pups_dead_i = !empty($_POST['pups_dead'][$i]) ? intval($_POST['pups_dead'][$i]) : 0;
+                    $pups_male_i = !empty($_POST['pups_male'][$i]) ? intval($_POST['pups_male'][$i]) : 0;
+                    $pups_female_i = !empty($_POST['pups_female'][$i]) ? intval($_POST['pups_female'][$i]) : 0;
                     $remarks_litter_i = mysqli_real_escape_string($con, $_POST['remarks_litter'][$i]);
                     $litter_id_i = isset($_POST['litter_id'][$i]) ? mysqli_real_escape_string($con, $_POST['litter_id'][$i]) : '';
 
