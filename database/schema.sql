@@ -100,8 +100,8 @@ CREATE TABLE `litters` (
   `litter_dob` date DEFAULT NULL,
   `pups_alive` int NOT NULL,
   `pups_dead` int NOT NULL,
-  `pups_male` int NOT NULL,
-  `pups_female` int NOT NULL,
+  `pups_male` int DEFAULT NULL,
+  `pups_female` int DEFAULT NULL,
   `remarks` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE
