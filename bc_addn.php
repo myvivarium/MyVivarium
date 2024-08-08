@@ -102,14 +102,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $insert_cage_user_query->close();
             }
 
-            // Handle litter data insertion if provided
+            // Process litter data insertion if provided
             if (isset($_POST['dom'])) {
                 $dom = $_POST['dom'];
                 $litter_dob = $_POST['litter_dob'];
-                $pups_alive = $_POST['pups_alive'];
-                $pups_dead = $_POST['pups_dead'];
-                $pups_male = $_POST['pups_male'];
-                $pups_female = $_POST['pups_female'];
+                $pups_alive = array_map(function ($value) {
+                    return !empty($value) ? intval($value) : 0;
+                }, $_POST['pups_alive']);
+                $pups_dead = array_map(function ($value) {
+                    return !empty($value) ? intval($value) : 0;
+                }, $_POST['pups_dead']);
+                $pups_male = array_map(function ($value) {
+                    return !empty($value) ? intval($value) : 0;
+                }, $_POST['pups_male']);
+                $pups_female = array_map(function ($value) {
+                    return !empty($value) ? intval($value) : 0;
+                }, $_POST['pups_female']);
                 $litter_remarks = $_POST['remarks_litter'];
 
                 // Loop through each litter entry and insert into the database
