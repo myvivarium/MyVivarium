@@ -23,7 +23,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 - User registration and login with email verification.
 - User profile management and password reset.
 - Admin functionalities for managing users and labs.
-- Real-time environmental monitoring using IoT sensors.
+- Real-time environmental monitoring using IoT sensors. For more details, refer to the [RPi-IoT Repository](https://github.com/myvivarium/RPi-IoT).
 - Secure and compliant data management.
 
 ![image](https://myvivarium.online/images/illustration.jpg)
