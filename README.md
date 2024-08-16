@@ -222,13 +222,16 @@ Vidva, R., Raza, M. A., Prabhakaran, J., Sheikh, A., Sharp, A., Ott, H., Moore, 
 ### BibTeX
 
 ```bibtex
-@article{Vidva2024myvivarium,
-  author    = {Robinson Vidva and Mir Abbas Raza and Jaswant Prabhakaran and Ayesha Sheikh and Alaina Sharp and Hayden Ott and Amelia Moore and Christopher Fleisher and Pothitos M. Pitychoutis and Tam V. Nguyen and Aaron Sathyanesan},
-  title     = {MyVivarium: A cloud-based lab animal colony management application with near-realtime ambient sensing},
-  journal   = {bioRxiv},
-  year      = {2024},
-  doi       = {10.1101/2024.08.10.607395},
-  url       = {https://doi.org/10.1101/2024.08.10.607395},
+@article {Vidva2024.08.10.607395,
+	author = {Vidva, Robinson and Raza, Mir Abbas and Prabhakaran, Jaswant and Sheikh, Ayesha and Sharp, Alaina and Ott, Hayden and Moore, Amelia and Fleisher, Christopher and Pitychoutis, Pothitos M. and Nguyen, Tam V. and Sathyanesan, Aaron},
+	title = {MyVivarium: A cloud-based lab animal colony management application with near-realtime ambient sensing},
+	elocation-id = {2024.08.10.607395},
+	year = {2024},
+	doi = {10.1101/2024.08.10.607395},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2024/08/10/2024.08.10.607395},
+	eprint = {https://www.biorxiv.org/content/early/2024/08/10/2024.08.10.607395.full.pdf},
+	journal = {bioRxiv}
 }
 ```
 
