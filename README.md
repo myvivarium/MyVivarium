@@ -16,6 +16,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 - [Installation](#installation)
 - [Usage](#usage)
 - [Function of Each File](#function-of-each-file)
+- [Citation](#citation)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -211,6 +212,24 @@ To log in and explore the functionalities, please use the following access detai
 Feel free to explore, test, and provide feedback. Enjoy your experience with MyVivarium!
 
 ---
+
+## Citations
+
+If you use this code, please cite the following paper:
+
+Vidva, R., Raza, M. A., Prabhakaran, J., Sheikh, A., Sharp, A., Ott, H., Moore, A., Fleisher, C., Pitychoutis, P. M., Nguyen, T. V., & Sathyanesan, A. (2024). MyVivarium: A cloud-based lab animal colony management application with near-realtime ambient sensing. *bioRxiv*. https://doi.org/10.1101/2024.08.10.607395
+
+### BibTeX
+
+```bibtex
+@article{Vidva2024myvivarium,
+  author    = {Robinson Vidva and Mir Abbas Raza and Jaswant Prabhakaran and Ayesha Sheikh and Alaina Sharp and Hayden Ott and Amelia Moore and Christopher Fleisher and Pothitos M. Pitychoutis and Tam V. Nguyen and Aaron Sathyanesan},
+  title     = {MyVivarium: A cloud-based lab animal colony management application with near-realtime ambient sensing},
+  journal   = {bioRxiv},
+  year      = {2024},
+  doi       = {10.1101/2024.08.10.607395},
+  url       = {https://doi.org/10.1101/2024.08.10.607395},
+}
 
 ## Contributing
 We welcome contributions to improve MyVivarium. Please follow these steps to contribute:
