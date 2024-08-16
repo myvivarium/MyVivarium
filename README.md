@@ -229,7 +229,7 @@ Vidva, R., Raza, M. A., Prabhakaran, J., Sheikh, A., Sharp, A., Ott, H., Moore, 
   year      = {2024},
   doi       = {10.1101/2024.08.10.607395},
   url       = {https://doi.org/10.1101/2024.08.10.607395},
-}
+}```
 
 ## Contributing
 We welcome contributions to improve MyVivarium. Please follow these steps to contribute:
