@@ -79,7 +79,8 @@ if (isset($_GET['id'], $_GET['confirm']) && $_GET['confirm'] == 'true') {
             'cage_iacuc' => 'cage_id',
             'cage_users' => 'cage_id',
             'tasks' => 'cage_id',
-            'cages' => 'cage_id'
+            'cages' => 'cage_id',
+            'maintenance' => 'cage_id'
         ];
 
         foreach ($tables as $table => $column) {
