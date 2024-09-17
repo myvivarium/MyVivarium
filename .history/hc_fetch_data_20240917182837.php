@@ -62,8 +62,8 @@ switch ($field) {
     case 'age':
         $fieldsToSelect .= ", dob";
         break;
-    case 'strain':
-        $fieldsToSelect .= ", strain";
+    case 'strain_id':
+        $fieldsToSelect .= ", strain_id";
         break;
     case 'iacuc':
         $fieldsToSelect .= ", iacuc";

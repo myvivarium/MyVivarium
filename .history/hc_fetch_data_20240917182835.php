@@ -49,7 +49,7 @@ $sortField = isset($_GET['sortField']) ? $_GET['sortField'] : 'cage_id';
 $sortOrder = isset($_GET['sortOrder']) && strtoupper($_GET['sortOrder']) === 'DESC' ? 'DESC' : 'ASC';
 
 // Validate sortField to prevent SQL injection
-$allowedSortFields = ['cage_id', 'dob', 'strain', 'iacuc', 'quantity', 'sex'];
+$allowedSortFields = ['cage_id', 'dob', 'straix', 'iacuc', 'quantity', 'sex'];
 if (!in_array($sortField, $allowedSortFields)) {
     $sortField = 'cage_id';
 }
@@ -62,8 +62,8 @@ switch ($field) {
     case 'age':
         $fieldsToSelect .= ", dob";
         break;
-    case 'strain':
-        $fieldsToSelect .= ", strain";
+    case 'strain_id':
+        $fieldsToSelect .= ", strain_id";
         break;
     case 'iacuc':
         $fieldsToSelect .= ", iacuc";
