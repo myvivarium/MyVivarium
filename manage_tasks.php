@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Manage Tasks
+ * Manage Tasks 2
  * 
  * This script provides functionality for managing tasks in a database. It allows users to add new tasks,
  * edit existing tasks, and delete tasks. The interface includes a responsive popup form for data entry and 
