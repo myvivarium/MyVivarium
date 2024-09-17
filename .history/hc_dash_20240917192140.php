@@ -4,8 +4,8 @@
  * Holding Cage Dashboard Script
  * 
  * This script displays the holding cage dashboard for logged-in users. It includes functionalities such as 
- * adding new cages, printing cage cards, searching cages, and pagination. The page content is dynamically
- * loaded using JavaScript and AJAX.
+ * adding new cages, printing cage cards, searching cages, sorting, and pagination. The page content is 
+ * dynamically loaded using JavaScript and AJAX.
  *
  */
 
@@ -54,9 +54,10 @@ require 'header.php';
         }
 
         // Fetch data function to load data dynamically
-        function fetchData(page = 1, search = '') {
+        function fetchData(page = 1, search = '', sortBy = '', sortOrder = 'asc', columns = []) {
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', 'hc_fetch_data.php?page=' + page + '&search=' + encodeURIComponent(search), true);
+            xhr.open('GET', 'hc_fetch_data.php?page=' + page + '&search=' + encodeURIComponent(search) +
+                '&sortBy=' + sortBy + '&sortOrder=' + sortOrder + '&columns=' + columns.join(','), true);
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     try {
@@ -66,10 +67,12 @@ require 'header.php';
                             document.getElementById('paginationLinks').innerHTML = response.paginationLinks; // Insert pagination links
                             document.getElementById('searchInput').value = search; // Preserve search input
 
-                            // Update the URL with the current page and search query
+                            // Update the URL with the current page, search query, and sort order
                             const newUrl = new URL(window.location.href);
                             newUrl.searchParams.set('page', page);
                             newUrl.searchParams.set('search', search);
+                            newUrl.searchParams.set('sortBy', sortBy);
+                            newUrl.searchParams.set('sortOrder', sortOrder);
                             window.history.replaceState({
                                 path: newUrl.href
                             }, '', newUrl.href);
@@ -95,17 +98,30 @@ require 'header.php';
             fetchData(1, searchQuery);
         }
 
+        // Sorting functionality
+        function sortCages(column) {
+            var currentSortOrder = document.getElementById('sortOrder').value;
+            var newSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
+            document.getElementById('sortOrder').value = newSortOrder;
+            fetchData(1, document.getElementById('searchInput').value, column, newSortOrder);
+        }
+
+        // Handle column selection
+        function updateColumns() {
+            var selectedColumns = Array.from(document.querySelectorAll('input[name="columns"]:checked')).map(cb => cb.value);
+            fetchData(1, document.getElementById('searchInput').value, '', 'asc', selectedColumns);
+        }
+
         // Fetch initial data when the DOM content is loaded
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const page = urlParams.get('page') || 1;
             const search = urlParams.get('search') || '';
-            fetchData(page, search);
+            const sortBy = urlParams.get('sortBy') || '';
+            const sortOrder = urlParams.get('sortOrder') || 'asc';
+            fetchData(page, search, sortBy, sortOrder);
         });
-
     </script>
-
-
 
     <title>Dashboard Holding Cage | <?php echo htmlspecialchars($labName); ?></title>
 
@@ -214,12 +230,27 @@ require 'header.php';
                             <button class="btn btn-primary" type="button" onclick="searchCages()">Search</button>
                         </div>
 
+                        <!-- Custom Columns Selector -->
+                        <div class="mb-3">
+                            <label for="columnSelector">Select Columns:</label>
+                            <select class="form-control" id="columnSelector" multiple onchange="updateColumns()">
+                            <option value="strain">Strain</option>
+                                <option value="iacuc">IACUC</option>
+                                <option value="sex">Sex</option>
+                                <option value="quantity">Quantity of Mice</option>
+                                <option value="age">Age (in days)</option>
+                            </select>
+                        </div>
+
                         <div class="table-wrapper" id="tableContainer">
                             <table class="table table-bordered" id="mouseTable">
                                 <thead>
                                     <tr>
-                                        <th style="width: 50%;">Cage ID</th>
-                                        <th style="width: 50%;">Action</th>
+                                        <th style="width: 20%;" onclick="sortCages('cage_id')">
+                                            Cage ID 
+                                            <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th style="width: 80%;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tableBody">
@@ -248,3 +279,4 @@ require 'header.php';
 </body>
 
 </html>
+                              
