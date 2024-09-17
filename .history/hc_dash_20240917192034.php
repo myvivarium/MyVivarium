@@ -234,48 +234,4 @@ require 'header.php';
                         <div class="mb-3">
                             <label for="columnSelector">Select Columns:</label>
                             <select class="form-control" id="columnSelector" multiple onchange="updateColumns()">
-                                <option value="strain">Strain</option>
-                                <option value="iacuc">IACUC</option>
-                                <option value="sex">Sex</option>
-                                <option value="quantity">Quantity of Mice</option>
-                                <option value="age">Age (in days)</option>
-                            </select>
-                        </div>
-
-                        <div class="table-wrapper" id="tableContainer">
-                            <table class="table table-bordered" id="mouseTable">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 20%;" onclick="sortCages('cage_id')">
-                                            Cage ID
-                                            <i class="fas fa-sort"></i>
-                                        </th>
-                                        <th style="width: 80%;">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tableBody">
-                                    <!-- Table rows will be inserted here by JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Pagination -->
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-center" id="paginationLinks">
-                                <!-- Pagination links will be inserted here by JavaScript -->
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <?php include 'footer.php'; ?> <!-- Include footer file -->
-
-    <!-- Bootstrap and jQuery for tooltips -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</body>
-
-</html>
+                               

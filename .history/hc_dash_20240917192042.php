@@ -234,7 +234,7 @@ require 'header.php';
                         <div class="mb-3">
                             <label for="columnSelector">Select Columns:</label>
                             <select class="form-control" id="columnSelector" multiple onchange="updateColumns()">
-                                <option value="strain">Strain</option>
+                            <option value="strain">Strain</option>
                                 <option value="iacuc">IACUC</option>
                                 <option value="sex">Sex</option>
                                 <option value="quantity">Quantity of Mice</option>
@@ -247,7 +247,7 @@ require 'header.php';
                                 <thead>
                                     <tr>
                                         <th style="width: 20%;" onclick="sortCages('cage_id')">
-                                            Cage ID
+                                            Cage ID 
                                             <i class="fas fa-sort"></i>
                                         </th>
                                         <th style="width: 80%;">Action</th>
@@ -279,3 +279,4 @@ require 'header.php';
 </body>
 
 </html>
+                              
