@@ -134,7 +134,7 @@ if (isset($_GET['id'])) {
             }
             if (empty($ageComponents)) {
                 // If the age is less than a day
-                $ageComponents[] = '0 Day';
+                $ageComponents[] = '0 Days';
             }
             $ageString = implode(' ', $ageComponents);
         } else {
