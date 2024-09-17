@@ -147,6 +147,7 @@ if (isset($_GET['id'])) {
             $ageString = 'Unknown';
         }
 
+
     } else {
         $_SESSION['message'] = 'Invalid ID.';
         header("Location: hc_dash.php");
