@@ -117,29 +117,29 @@ if (isset($_GET['id'])) {
         $mice = mysqli_fetch_all($mouseResult, MYSQLI_ASSOC);
 
         // Calculate age
-        if (!empty($holdingcage['dob'])) {
-            $dob = new DateTime($holdingcage['dob']);
-            $now = new DateTime();
-            $ageInterval = $dob->diff($now);
+if (!empty($holdingcage['dob'])) {
+    $dob = new DateTime($holdingcage['dob']);
+    $now = new DateTime();
+    $ageInterval = $dob->diff($now);
 
-            $ageComponents = [];
-            if ($ageInterval->y > 0) {
-                $ageComponents[] = $ageInterval->y . ' Years';
-            }
-            if ($ageInterval->m > 0) {
-                $ageComponents[] = $ageInterval->m . ' Months';
-            }
-            if ($ageInterval->d > 0) {
-                $ageComponents[] = $ageInterval->d . ' Days';
-            }
-            if (empty($ageComponents)) {
-                // If the age is less than a day
-                $ageComponents[] = '0 Days';
-            }
-            $ageString = implode(' ', $ageComponents);
-        } else {
-            $ageString = 'Unknown';
-        }
+    $ageComponents = [];
+    if ($ageInterval->y > 0) {
+        $ageComponents[] = $ageInterval->y . ' Years';
+    }
+    if ($ageInterval->m > 0) {
+        $ageComponents[] = $ageInterval->m . ' Months';
+    }
+    if ($ageInterval->d > 0) {
+        $ageComponents[] = $ageInterval->d . ' Days';
+    }
+    if (empty($ageComponents)) {
+        // If the age is less than a day
+        $ageComponents[] = '0 Days';
+    }
+    $ageString = implode(' ', $ageComponents);
+} else {
+    $ageString = 'Unknown';
+}
 
     } else {
         $_SESSION['message'] = 'Invalid ID.';
