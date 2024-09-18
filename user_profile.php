@@ -1,5 +1,4 @@
 <?php
-
 /**
  * User Profile Management Page
  *
@@ -7,13 +6,19 @@
  * and email address. It also provides an option to request a password change. The page fetches user details
  * from the database, displays them in a form, and handles form submissions to update the profile or request a
  * password reset.
- * 
  */
 
-session_start();
-require 'dbcon.php'; // Database connection
-require 'config.php'; // Configuration file for email settings
-require 'header.php'; // Include the header file
+// Start the session with secure settings
+session_start([
+    'cookie_lifetime' => 0,
+    'cookie_secure'   => isset($_SERVER['HTTPS']),
+    'cookie_httponly' => true,
+    'cookie_samesite' => 'Strict',
+]);
+
+require 'dbcon.php';         // Database connection
+require 'config.php';        // Configuration file for email settings
+require 'header.php';        // Include the header file
 require 'vendor/autoload.php'; // Include PHPMailer autoload file
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -28,12 +33,12 @@ if (!isset($_SESSION['username'])) {
 
 // Fetch user details from the database
 $username = $_SESSION['username'];
-$query = "SELECT * FROM users WHERE username = ?";
-$stmt = $con->prepare($query);
+$query    = "SELECT * FROM users WHERE username = ?";
+$stmt     = $con->prepare($query);
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
-$user = $result->fetch_assoc();
+$user   = $result->fetch_assoc();
 $stmt->close();
 
 $updateMessage = ''; // Initialize message for profile update
@@ -41,7 +46,7 @@ $updateMessage = ''; // Initialize message for profile update
 // Function to generate initials from the user's name
 function generateInitials($name)
 {
-    $parts = explode(" ", $name);
+    $parts    = explode(" ", $name);
     $initials = "";
 
     foreach ($parts as $part) {
@@ -56,59 +61,69 @@ function generateInitials($name)
 // Function to ensure unique initials
 function ensureUniqueInitials($con, $initials, $currentUsername)
 {
-    $uniqueInitials = substr($initials, 0, 3); // Limit initials to a maximum of 3 characters
-    $suffix = 1;
-    $maxLength = 10; // Define the maximum length for initials including suffix
+    $baseInitials  = substr($initials, 0, 3);
+    $uniqueInitials = $baseInitials;
+    $suffix        = 1;
 
-    $checkQuery = "SELECT initials FROM users WHERE initials = ? AND username != ?";
-    $stmt = $con->prepare($checkQuery);
+    $checkQuery = "SELECT 1 FROM users WHERE initials = ? AND username != ?";
+    $stmt       = $con->prepare($checkQuery);
 
-    if (!$stmt) {
-        error_log("Failed to prepare statement: " . $con->error);
-        return $initials; // Return the original initials if statement preparation fails
-    }
-
-    do {
+    while (true) {
         $stmt->bind_param("ss", $uniqueInitials, $currentUsername);
         $stmt->execute();
         $stmt->store_result();
 
-        if ($stmt->num_rows > 0) {
-            $uniqueInitials = substr($initials, 0, 3) . $suffix; // Ensure initials part is still limited to 3 characters
-            $suffix++;
-        } else {
-            break;
+        if ($stmt->num_rows == 0) {
+            break; // Unique initials found
         }
 
-        $stmt->free_result(); // Clear the result set for the next iteration
+        $uniqueInitials = $baseInitials . $suffix;
+        $suffix++;
 
-    } while (strlen($uniqueInitials) <= $maxLength);
+        if ($suffix > 99) { // Limit suffix to two digits
+            throw new Exception("Unable to generate unique initials. Please try different initials.");
+        }
 
-    $stmt->close();
-
-    if (strlen($uniqueInitials) > $maxLength) {
-        $uniqueInitials = substr($uniqueInitials, 0, $maxLength);
+        $stmt->free_result();
     }
 
+    $stmt->close();
     return $uniqueInitials;
 }
 
+// Initialize CSRF token
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrfToken = $_SESSION['csrf_token'];
+
 // Handle form submission for profile update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
-    $newUsername = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_EMAIL);
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-    $initials = filter_input(INPUT_POST, 'initials', FILTER_SANITIZE_STRING);
-    $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Invalid CSRF token");
+    }
 
-    // Check if the email address (username) has changed
-    $emailChanged = ($newUsername !== $username);
+    // Validate and sanitize input data
+    $newUsername = filter_input(INPUT_POST, 'username', FILTER_VALIDATE_EMAIL);
+    $name        = trim($_POST['name']);
+    $initials    = strtoupper(trim($_POST['initials']));
+    $position    = trim($_POST['position']);
 
-    // Ensure initials are unique
-    $uniqueInitials = ensureUniqueInitials($con, $initials, $username);
-
-    if ($uniqueInitials !== $initials) {
-        $updateMessage = "The initials '$initials' are already in use by another user. Please choose different initials.";
+    if (!$newUsername || empty($name) || empty($initials) || empty($position)) {
+        $updateMessage = "Please fill in all required fields with valid information.";
     } else {
+        // Ensure initials are unique
+        try {
+            $uniqueInitials = ensureUniqueInitials($con, $initials, $username);
+        } catch (Exception $e) {
+            $updateMessage  = $e->getMessage();
+            $uniqueInitials = $initials;
+        }
+
+        // Check if the email address (username) has changed
+        $emailChanged = ($newUsername !== $username);
+
         // Update user details in the database
         $updateQuery = "UPDATE users SET username = ?, name = ?, position = ?, initials = ?";
         if ($emailChanged) {
@@ -127,13 +142,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
             // Update the session username if it was changed
             if ($emailChanged) {
                 $_SESSION['username'] = $newUsername;
-                $username = $newUsername;
-                $updateMessage = "Profile information updated successfully. Please log out and log back in to reflect the changes everywhere.";
+                $username             = $newUsername;
+                $updateMessage        = "Profile information updated successfully. Please log out and log back in to reflect the changes everywhere.";
             } else {
                 $updateMessage = "Profile information updated successfully.";
             }
         } else {
-            $updateMessage = "An error occurred while updating the profile. Please try again.";
+            error_log("Database error: " . $updateStmt->error);
+            $updateMessage = "An error occurred while updating your profile. Please try again or contact support.";
         }
 
         $updateStmt->close();
@@ -143,7 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+        $user   = $result->fetch_assoc();
         $stmt->close();
     }
 }
@@ -151,52 +167,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
 // Handle form submission for password reset
 $resultMessage = ''; // Initialize message for password reset
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Invalid CSRF token");
+    }
+
     $email = $username;
 
     // Check if the email exists in the database
     $query = "SELECT * FROM users WHERE username = ?";
-    $stmt = $con->prepare($query);
+    $stmt  = $con->prepare($query);
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows == 1) {
         // Email exists, generate and save a reset token
-        $resetToken = bin2hex(random_bytes(32));
+        $resetToken         = bin2hex(random_bytes(32));
         $expirationTimeUnix = time() + 3600; // 1 hour expiration time
-        $expirationTime = date('Y-m-d H:i:s', $expirationTimeUnix);
+        $expirationTime     = date('Y-m-d H:i:s', $expirationTimeUnix);
 
         $updateQuery = "UPDATE users SET reset_token = ?, reset_token_expiration = ?, login_attempts = 0, account_locked = NULL WHERE username = ?";
-        $updateStmt = $con->prepare($updateQuery);
+        $updateStmt  = $con->prepare($updateQuery);
         $updateStmt->bind_param("sss", $resetToken, $expirationTime, $email);
         $updateStmt->execute();
 
         // Send the password reset email
-        $resetLink = "https://" . $url . "/reset_password.php?token=$resetToken";
-        $to = $email;
-        $subject = 'Password Reset';
-        $message = "To reset your password, click the following link:\n$resetLink";
+        $resetLink = "https://" . $url . "/reset_password.php";
+        $to        = $email;
+        $subject   = 'Password Reset';
+        $message   = "To reset your password, use the following token:\n\n$resetToken\n\nVisit this link to reset your password:\n$resetLink";
 
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
-            $mail->Host = SMTP_HOST;
-            $mail->Port = SMTP_PORT;
-            $mail->SMTPAuth = true;
-            $mail->Username = SMTP_USERNAME;
-            $mail->Password = SMTP_PASSWORD;
+            $mail->Host       = SMTP_HOST;
+            $mail->Port       = SMTP_PORT;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = SMTP_USERNAME;
+            $mail->Password   = SMTP_PASSWORD;
             $mail->SMTPSecure = SMTP_ENCRYPTION;
 
             $mail->setFrom(SENDER_EMAIL, SENDER_NAME);
             $mail->addAddress($to);
             $mail->isHTML(false);
             $mail->Subject = $subject;
-            $mail->Body = $message;
+            $mail->Body    = $message;
 
             $mail->send();
             $resultMessage = "Password reset instructions have been sent to your email address.";
         } catch (Exception $e) {
-            $resultMessage = "Email could not be sent. Error: " . $mail->ErrorInfo;
+            error_log("Email error: " . $mail->ErrorInfo);
+            $resultMessage = "Email could not be sent. Please try again later.";
         }
     } else {
         $resultMessage = "Email address not found in our records. Please try again.";
@@ -207,23 +229,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         $updateStmt->close();
     }
 }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <!-- Existing head content -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>User Profile</title>
+    <!-- Include Bootstrap CSS for styling (assuming it's used) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <!-- Additional styles -->
     <style>
+        /* Styles as per your existing code */
         .container {
             max-width: 800px;
             margin-top: 50px;
             margin-bottom: 50px;
             padding: 20px;
-            border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
         }
@@ -236,25 +260,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
             display: block;
             width: 100%;
             padding: 10px;
-            border: none;
             border-radius: 3px;
             cursor: pointer;
         }
 
-        .btn1:hover {
-            background-color: #0056b3;
-        }
-
-        .result-message {
-            text-align: center;
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #dff0d8;
-            border: 1px solid #3c763d;
-            color: #3c763d;
-            border-radius: 5px;
-        }
-
+        .result-message,
         .update-message {
             text-align: center;
             margin-top: 15px;
@@ -281,67 +291,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 
 <body>
     <div class="container content">
-        <br>
         <h2>User Profile</h2>
-        <br>
-        <br>
+        <?php if ($updateMessage) : ?>
+            <p class='update-message'><?php echo htmlspecialchars($updateMessage, ENT_QUOTES, 'UTF-8'); ?></p>
+        <?php endif; ?>
         <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
             <div class="form-group">
                 <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
+                <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8'); ?>" required>
             </div>
-            <br>
             <div class="form-group">
-                <label for="initials">Initials <span class="note1">(Your Initials will be displayed in Cage Card)</span></label>
-                <input type="text" class="form-control" id="initials" name="initials" value="<?php echo htmlspecialchars($user['initials']); ?>" maxlength="3" required>
+                <label for="initials">Initials <span class="note1">(Your initials will be displayed in Cage Card)</span></label>
+                <input type="text" class="form-control" id="initials" name="initials" value="<?php echo htmlspecialchars($user['initials'], ENT_QUOTES, 'UTF-8'); ?>" maxlength="3" required>
             </div>
-            <br>
             <div class="form-group">
                 <label for="position">Position</label>
-                <select class="form-control" id="position" name="position">
+                <select class="form-control" id="position" name="position" required>
                     <option value="" disabled>Select Position</option>
-                    <option value="Principal Investigator" <?php echo ($user['position'] == 'Principal Investigator') ? 'selected' : ''; ?>>Principal Investigator</option>
-                    <option value="Research Scientist" <?php echo ($user['position'] == 'Research Scientist') ? 'selected' : ''; ?>>Research Scientist</option>
-                    <option value="Postdoctoral Researcher" <?php echo ($user['position'] == 'Postdoctoral Researcher') ? 'selected' : ''; ?>>Postdoctoral Researcher</option>
-                    <option value="PhD Student" <?php echo ($user['position'] == 'PhD Student') ? 'selected' : ''; ?>>PhD Student</option>
-                    <option value="Masters Student" <?php echo ($user['position'] == 'Masters Student') ? 'selected' : ''; ?>>Masters Student</option>
-                    <option value="Undergraduate" <?php echo ($user['position'] == 'Undergraduate') ? 'selected' : ''; ?>>Undergraduate</option>
-                    <option value="Laboratory Technician" <?php echo ($user['position'] == 'Laboratory Technician') ? 'selected' : ''; ?>>Laboratory Technician</option>
-                    <option value="Research Associate" <?php echo ($user['position'] == 'Research Associate') ? 'selected' : ''; ?>>Research Associate</option>
-                    <option value="Lab Manager" <?php echo ($user['position'] == 'Lab Manager') ? 'selected' : ''; ?>>Lab Manager</option>
-                    <option value="Animal Care Technician" <?php echo ($user['position'] == 'Animal Care Technician') ? 'selected' : ''; ?>>Animal Care Technician</option>
-                    <option value="Interns and Volunteers" <?php echo ($user['position'] == 'Interns and Volunteers') ? 'selected' : ''; ?>>Interns and Volunteers</option>
+                    <?php
+                    $positions = [
+                        "Principal Investigator",
+                        "Research Scientist",
+                        "Postdoctoral Researcher",
+                        "PhD Student",
+                        "Masters Student",
+                        "Undergraduate",
+                        "Laboratory Technician",
+                        "Research Associate",
+                        "Lab Manager",
+                        "Animal Care Technician",
+                        "Interns and Volunteers"
+                    ];
+                    foreach ($positions as $positionOption) {
+                        $selected = ($user['position'] == $positionOption) ? 'selected' : '';
+                        echo "<option value=\"" . htmlspecialchars($positionOption, ENT_QUOTES, 'UTF-8') . "\" $selected>" . htmlspecialchars($positionOption, ENT_QUOTES, 'UTF-8') . "</option>";
+                    }
+                    ?>
                 </select>
             </div>
-            <br>
             <?php if ($demo !== "yes") : ?>
                 <div class="form-group">
                     <label for="username">Email Address</label>
-                    <input type="email" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
+                    <input type="email" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?>" required>
                 </div>
             <?php endif; ?>
-            <br>
             <button type="submit" class="btn1 btn-primary" name="update_profile">Update Profile</button>
         </form>
-        <br>
-        <?php if ($updateMessage) {
-            echo "<p class='update-message'>$updateMessage</p>";
-        } ?>
-        <br>
-        <br>
-        <br>
-        <br>
+        <p class="note">In order to reflect the changes everywhere, please log out and log back in.</p>
+
         <h2>Request Password Change</h2>
-        <br>
-        <br>
+        <?php if ($resultMessage) : ?>
+            <p class='result-message'><?php echo htmlspecialchars($resultMessage, ENT_QUOTES, 'UTF-8'); ?></p>
+        <?php endif; ?>
         <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
             <button type="submit" class="btn1 btn-warning" name="reset">Request Password Change</button>
         </form>
-        <?php if ($resultMessage) {
-            echo "<p class='result-message'>$resultMessage</p>";
-        } ?>
-        <br>
-        <p class="note">In order to reflect the changes everywhere, please log out and log back in.</p>
     </div>
     <?php include 'footer.php'; ?>
 </body>
