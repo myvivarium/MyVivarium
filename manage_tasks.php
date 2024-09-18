@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     } elseif (isset($_POST['delete'])) {
         $id = htmlspecialchars($_POST['id']);
-        
+
         // Fetch task details before deletion for email notification
         $taskQuery = $con->prepare("SELECT title, description, assigned_by, assigned_to, status, completion_date, cage_id FROM tasks WHERE id = ?");
         $taskQuery->bind_param("i", $id);
@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $taskQuery->bind_result($title, $description, $assignedBy, $assignedTo, $status, $completionDate, $cageId);
         $taskQuery->fetch();
         $taskQuery->close();
-    
+
         // Now delete the task
         $stmt = $con->prepare("DELETE FROM tasks WHERE id = ?");
         $stmt->bind_param("i", $id);
@@ -499,9 +499,16 @@ ob_end_flush(); // Flush the output buffer
 
         <!-- Buttons to add a new task and show all tasks -->
         <div class="add-button">
-            <button id="addNewTaskButton" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Task</button>
+            <button id="addNewTaskButton" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Task
+            </button>
             <?php if (isset($_GET['id']) && !empty($_GET['id'])) : ?>
                 <a href="manage_tasks.php" class="btn btn-secondary ml-2">Show All Tasks</a>
+            <?php endif; ?>
+            <?php if ($isAdmin) : ?>
+                <a href="manage_reminder.php" class="btn btn-warning ml-2">
+                    <i class="fas fa-bell"></i> Add New Reminder
+                </a>
             <?php endif; ?>
         </div>
 
