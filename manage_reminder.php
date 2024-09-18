@@ -1,16 +1,13 @@
 <?php
-
 /**
  * Manage Reminders
  * 
  * This script provides functionality for managing reminders in the database.
  * It allows users to add new reminders, edit existing ones, and delete them.
  * The interface includes a responsive popup form for data entry and a table for displaying existing reminders.
- * The script uses PHP sessions for message handling and includes basic input sanitization for security.
  */
 
 session_start();
-require 'header.php';
 require 'dbcon.php';
 
 // Check if the user is logged in
@@ -43,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $dayOfMonth = isset($_POST['day_of_month']) ? htmlspecialchars($_POST['day_of_month']) : null;
     $timeOfDay = htmlspecialchars($_POST['time_of_day']);
     $status = htmlspecialchars($_POST['status']);
-    $reminder_id = null;
 
     // Determine the action to perform (add, edit, or delete)
     if (isset($_POST['add'])) {
@@ -86,20 +82,18 @@ $users = $userResult ? array_column($userResult->fetch_all(MYSQLI_ASSOC), 'name'
 // Fetch reminders for display
 $reminderQuery = "SELECT * FROM reminders";
 $reminderResult = $con->query($reminderQuery);
-?>
 
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
     <title>Manage Reminders</title>
-    <!-- Include necessary styles and scripts -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <?php include 'header.php'; ?>
+    <!-- Include any additional styles or scripts specific to this page -->
+    <!-- Include Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
-
+    <!-- Page-specific styles -->
     <style>
         /* Popup and Overlay Styles */
         .popup-form,
@@ -330,6 +324,7 @@ $reminderResult = $con->query($reminderQuery);
 </head>
 
 <body>
+    <!-- Page Content -->
     <div class="container content mt-5">
         <?php include('message.php'); ?>
         <h2>Manage Reminders</h2>
@@ -467,8 +462,10 @@ $reminderResult = $con->query($reminderQuery);
     </div>
 
     <!-- Include necessary scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+
+    <!-- Your custom scripts -->
     <script>
         // JavaScript code to handle form interactions
         $(document).ready(function() {
@@ -516,6 +513,11 @@ $reminderResult = $con->query($reminderQuery);
             $('#popupOverlay').on('click', function() {
                 $('#popupOverlay').hide();
                 $('#popupForm').hide();
+            });
+
+            // Stop propagation when clicking inside the form
+            $('.popup-form').on('click', function(e) {
+                e.stopPropagation();
             });
 
             // Edit reminder
