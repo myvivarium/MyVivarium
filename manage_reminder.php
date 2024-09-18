@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Determine the action to perform (add, edit, or delete)
     if (isset($_POST['add'])) {
         $stmt = $con->prepare("INSERT INTO reminders (cage_id, title, description, assigned_by, assigned_to, recurrence_type, day_of_week, day_of_month, time_of_day, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ississssss", $cageId, $title, $description, $assignedBy, $assignedTo, $recurrenceType, $dayOfWeek, $dayOfMonth, $timeOfDay, $status);
+        $stmt->bind_param("sssissssss", $cageId, $title, $description, $assignedBy, $assignedTo, $recurrenceType, $dayOfWeek, $dayOfMonth, $timeOfDay, $status);
         if ($stmt->execute()) {
             redirectToPage("Reminder added successfully.");
         } else {
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['edit'])) {
         $id = htmlspecialchars($_POST['id']);
         $stmt = $con->prepare("UPDATE reminders SET cage_id = ?, title = ?, description = ?, assigned_to = ?, recurrence_type = ?, day_of_week = ?, day_of_month = ?, time_of_day = ?, status = ? WHERE id = ?");
-        $stmt->bind_param("ississsssi", $cageId, $title, $description, $assignedTo, $recurrenceType, $dayOfWeek, $dayOfMonth, $timeOfDay, $status, $id);
+        $stmt->bind_param("sssisssssi", $cageId, $title, $description, $assignedTo, $recurrenceType, $dayOfWeek, $dayOfMonth, $timeOfDay, $status, $id);
         if ($stmt->execute()) {
             redirectToPage("Reminder updated successfully.");
         } else {
