@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage Reminders
  * 
@@ -89,14 +90,16 @@ $reminderResult = $con->query($reminderQuery);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Manage Reminders</title>
     <!-- Include necessary styles and scripts -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <style>
         /* Popup and Overlay Styles */
         .popup-form,
@@ -325,6 +328,7 @@ $reminderResult = $con->query($reminderQuery);
         }
     </style>
 </head>
+
 <body>
     <div class="container content mt-5">
         <?php include('message.php'); ?>
@@ -547,7 +551,9 @@ $reminderResult = $con->query($reminderQuery);
             $.ajax({
                 url: 'get_reminder.php',
                 type: 'GET',
-                data: { id: id },
+                data: {
+                    id: id
+                },
                 dataType: 'json',
                 success: function(response) {
                     if (response.error) {
@@ -584,4 +590,5 @@ $reminderResult = $con->query($reminderQuery);
     </script>
     <?php require 'footer.php'; ?>
 </body>
+
 </html>
