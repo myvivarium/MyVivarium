@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $dayOfMonth = !empty($_POST['day_of_month']) ? (int)$_POST['day_of_month'] : null;
     $timeOfDay = htmlspecialchars($_POST['time_of_day']);
     $status = htmlspecialchars($_POST['status']);
-    $cageId = isset($_POST['cage_id']) ? intval($_POST['cage_id']) : null;
+    $cageId = empty($_POST['cage_id']) ? NULL : htmlspecialchars($_POST['cage_id']);
     $reminder_id = null;
 
     // Determine the action to perform (add, edit, or delete)
@@ -88,6 +88,13 @@ $users = $userResult ? array_column($userResult->fetch_all(MYSQLI_ASSOC), 'name'
 // Fetch reminders for display
 $reminderQuery = "SELECT * FROM reminders";
 $reminderResult = $con->query($reminderQuery);
+
+// Fetch cages for the dropdown
+$cageQuery = "SELECT cage_id FROM cages";
+$cageResult = $con->query($cageQuery);
+$cages = $cageResult ? array_column($cageResult->fetch_all(MYSQLI_ASSOC), 'cage_id') : [];
+
+ob_end_flush(); // Flush the output buffer
 ?>
 
 <!DOCTYPE html>
@@ -450,8 +457,13 @@ $reminderResult = $con->query($reminderQuery);
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="cage_id">Cage ID <span class="required-asterisk">*</span></label>
-                    <input type="number" name="cage_id" id="cage_id" class="form-control" required>
+                    <label for="cage_id">Cage ID</label>
+                    <select name="cage_id" id="cage_id" class="form-control">
+                        <option value="">Select Cage</option>
+                        <?php foreach ($cages as $cageId) : ?>
+                            <option value="<?= htmlspecialchars($cageId); ?>"><?= htmlspecialchars($cageId); ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 <div class="form-buttons">
                     <button type="submit" name="add" id="addButton" class="btn btn-primary"><i class="fas fa-plus"></i> Add Reminder</button>
