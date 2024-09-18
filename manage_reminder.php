@@ -44,12 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $dayOfMonth = !empty($_POST['day_of_month']) ? (int)$_POST['day_of_month'] : null;
     $timeOfDay = htmlspecialchars($_POST['time_of_day']);
     $status = htmlspecialchars($_POST['status']);
+    $cageId = isset($_POST['cage_id']) ? intval($_POST['cage_id']) : null;
     $reminder_id = null;
 
     // Determine the action to perform (add, edit, or delete)
     if (isset($_POST['add'])) {
-        $stmt = $con->prepare("INSERT INTO reminders (title, description, assigned_by, assigned_to, recurrence_type, day_of_week, day_of_month, time_of_day, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssissssss", $title, $description, $assignedBy, $assignedTo, $recurrenceType, $dayOfWeek, $dayOfMonth, $timeOfDay, $status);
+        $stmt = $con->prepare("INSERT INTO reminders (cage_id, title, description, assigned_by, assigned_to, recurrence_type, day_of_week, day_of_month, time_of_day, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ississssss", $cageId, $title, $description, $assignedBy, $assignedTo, $recurrenceType, $dayOfWeek, $dayOfMonth, $timeOfDay, $status);
         if ($stmt->execute()) {
             redirectToPage("Reminder added successfully.");
         } else {
@@ -58,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->close();
     } elseif (isset($_POST['edit'])) {
         $id = htmlspecialchars($_POST['id']);
-        $stmt = $con->prepare("UPDATE reminders SET title = ?, description = ?, assigned_to = ?, recurrence_type = ?, day_of_week = ?, day_of_month = ?, time_of_day = ?, status = ? WHERE id = ?");
-        $stmt->bind_param("sissssssi", $title, $description, $assignedTo, $recurrenceType, $dayOfWeek, $dayOfMonth, $timeOfDay, $status, $id);
+        $stmt = $con->prepare("UPDATE reminders SET cage_id = ?, title = ?, description = ?, assigned_to = ?, recurrence_type = ?, day_of_week = ?, day_of_month = ?, time_of_day = ?, status = ? WHERE id = ?");
+        $stmt->bind_param("ississsssi", $cageId, $title, $description, $assignedTo, $recurrenceType, $dayOfWeek, $dayOfMonth, $timeOfDay, $status, $id);
         if ($stmt->execute()) {
             redirectToPage("Reminder updated successfully.");
         } else {
@@ -448,6 +449,10 @@ $reminderResult = $con->query($reminderQuery);
                         <option value="inactive">Inactive</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="cage_id">Cage ID <span class="required-asterisk">*</span></label>
+                    <input type="number" name="cage_id" id="cage_id" class="form-control" required>
+                </div>
                 <div class="form-buttons">
                     <button type="submit" name="add" id="addButton" class="btn btn-primary"><i class="fas fa-plus"></i> Add Reminder</button>
                     <button type="submit" name="edit" id="editButton" class="btn btn-success" style="display: none;"><i class="fas fa-save"></i> Update Reminder</button>
@@ -484,6 +489,10 @@ $reminderResult = $con->query($reminderQuery);
                 <label>Status:</label>
                 <p id="viewStatus"></p>
             </div>
+            <div class="form-group">
+                <label>Cage ID:</label>
+                <p id="viewCageId"></p>
+            </div>
             <div class="form-buttons">
                 <button type="button" class="btn btn-secondary" id="closeViewButton">Close</button>
             </div>
@@ -498,7 +507,6 @@ $reminderResult = $con->query($reminderQuery);
                         <th>ID</th>
                         <th>Title</th>
                         <th>Recurrence</th>
-                        <th>Assigned To</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -516,14 +524,6 @@ $reminderResult = $con->query($reminderQuery);
                                     (Day <?= $row['day_of_month']; ?>)
                                 <?php endif; ?>
                                 at <?= date('h:i A', strtotime($row['time_of_day'])); ?>
-                            </td>
-                            <td data-label="Assigned To">
-                                <?php
-                                $assignedToNames = array_map(function ($id) use ($users) {
-                                    return isset($users[$id]) ? $users[$id] : 'Unknown';
-                                }, explode(',', $row['assigned_to']));
-                                echo htmlspecialchars(implode(', ', $assignedToNames));
-                                ?>
                             </td>
                             <td data-label="Status"><?= htmlspecialchars(ucfirst($row['status'])); ?></td>
                             <td data-label="Actions" class="table-actions">
@@ -559,7 +559,7 @@ $reminderResult = $con->query($reminderQuery);
     <script>
         // Map PHP users array to JavaScript
         const users = <?= json_encode($users); ?>;
-        
+
         // JavaScript code to handle form interactions
         $(document).ready(function() {
             $('#assigned_to').select2({
@@ -683,6 +683,7 @@ $reminderResult = $con->query($reminderQuery);
                     $('#day_of_month').val(response.day_of_month);
                     $('#time_of_day').val(response.time_of_day);
                     $('#status').val(response.status);
+                    $('#cage_id').val(response.cage_id);
 
                     // Update character counters
                     $('#titleCounter').text(`${response.title.length}/100 characters used`);
@@ -745,6 +746,7 @@ $reminderResult = $con->query($reminderQuery);
 
                     $('#viewTimeOfDay').text(response.time_of_day);
                     $('#viewStatus').text(response.status);
+                    $('#viewCageId').text(response.cage_id);
 
                     // Show the view popup
                     $('#viewPopupOverlay').show();

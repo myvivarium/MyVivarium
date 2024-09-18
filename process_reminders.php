@@ -31,20 +31,24 @@ if ($reminderResult) {
         $reminderTime = DateTime::createFromFormat('H:i:s', $reminder['time_of_day']);
         $reminderTime->setDate($now->format('Y'), $now->format('m'), $now->format('d'));
 
+        // Clone reminderTime to avoid modifying the original object
+        $reminderTimeClone = clone $reminderTime;
+        $reminderTimePlus5 = $reminderTimeClone->modify('+5 minutes');
+
         // Check if the reminder should trigger
         if ($reminder['recurrence_type'] == 'daily') {
-            if ($now >= $reminderTime && $now < clone $reminderTime->modify('+5 minutes')) {
+            if ($now >= $reminderTime && $now < $reminderTimePlus5) {
                 $shouldTrigger = true;
             }
         } elseif ($reminder['recurrence_type'] == 'weekly') {
             if ($now->format('l') == $reminder['day_of_week']) {
-                if ($now >= $reminderTime && $now < clone $reminderTime->modify('+5 minutes')) {
+                if ($now >= $reminderTime && $now < $reminderTimePlus5) {
                     $shouldTrigger = true;
                 }
             }
         } elseif ($reminder['recurrence_type'] == 'monthly') {
             if ($now->format('j') == $reminder['day_of_month']) {
-                if ($now >= $reminderTime && $now < clone $reminderTime->modify('+5 minutes')) {
+                if ($now >= $reminderTime && $now < $reminderTimePlus5) {
                     $shouldTrigger = true;
                 }
             }
@@ -57,57 +61,83 @@ if ($reminderResult) {
             $assignedBy = $reminder['assigned_by'];
             $assignedTo = $reminder['assigned_to'];
             $status = 'Pending';
+            $cageId = $reminder['cage_id'];
             $completionDate = NULL;
-            $cageId = NULL;
+            $dueDate = $now->format('Y-m-d H:i:s');
 
-            $stmt = $con->prepare("INSERT INTO tasks (title, description, assigned_by, assigned_to, status, completion_date, cage_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssissss", $title, $description, $assignedBy, $assignedTo, $status, $completionDate, $cageId);
-            if ($stmt->execute()) {
-                $task_id = $stmt->insert_id;
-
-                // Fetch emails of assigned_by and assigned_to users
-                $emails = [];
-                $assignedByEmailQuery = "SELECT username FROM users WHERE id = ?";
-                $assignedByEmailStmt = $con->prepare($assignedByEmailQuery);
-                $assignedByEmailStmt->bind_param("i", $assignedBy);
-                $assignedByEmailStmt->execute();
-                $assignedByEmailStmt->bind_result($assignedByEmail);
-                $assignedByEmailStmt->fetch();
-                $assignedByEmailStmt->close();
-                $emails[] = $assignedByEmail;
-
-                $assignedToArray = explode(',', $assignedTo);
-                foreach ($assignedToArray as $assignedToUserId) {
-                    $assignedToEmailQuery = "SELECT username FROM users WHERE id = ?";
-                    $assignedToEmailStmt = $con->prepare($assignedToEmailQuery);
-                    $assignedToEmailStmt->bind_param("i", $assignedToUserId);
-                    $assignedToEmailStmt->execute();
-                    $assignedToEmailStmt->bind_result($assignedToEmail);
-                    while ($assignedToEmailStmt->fetch()) {
-                        $emails[] = $assignedToEmail;
-                    }
-                    $assignedToEmailStmt->close();
-                }
-
-                // Prepare email content
-                $subject = "New Task Created from Reminder: $title";
-                $body = "A new task has been created from a reminder. Here are the details:<br><br>" .
-                    "<strong>Title:</strong> $title<br>" .
-                    "<strong>Description:</strong> $description<br>" .
-                    "<strong>Status:</strong> $status<br>" .
-                    "<strong>Assigned By:</strong> $assignedBy<br>" .
-                    "<strong>Assigned To:</strong> $assignedTo<br>";
-
-                // Schedule the email
-                $scheduledAt = $now->format('Y-m-d H:i:s');
-                $recipientList = implode(',', $emails);
-
-                $emailStmt = $con->prepare("INSERT INTO outbox (task_id, recipient, subject, body, scheduled_at) VALUES (?, ?, ?, ?, ?)");
-                $emailStmt->bind_param("issss", $task_id, $recipientList, $subject, $body, $scheduledAt);
-                $emailStmt->execute();
-                $emailStmt->close();
-            }
+            $stmt = $con->prepare("INSERT INTO tasks (cage_id, title, description, assigned_by, assigned_to, due_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ississs", $cageId, $title, $description, $assignedBy, $assignedTo, $dueDate, $status);
+            $stmt->execute();
+            $task_id = $stmt->insert_id;
             $stmt->close();
+
+            // Fetch emails of assigned_by and assigned_to users
+            $emails = [];
+
+            // Fetch assigned_by email
+            $assignedByEmailQuery = "SELECT email FROM users WHERE id = ?";
+            $assignedByEmailStmt = $con->prepare($assignedByEmailQuery);
+            $assignedByEmailStmt->bind_param("i", $assignedBy);
+            $assignedByEmailStmt->execute();
+            $assignedByEmailStmt->bind_result($assignedByEmail);
+            $assignedByEmailStmt->fetch();
+            $assignedByEmailStmt->close();
+            $emails[] = $assignedByEmail;
+
+            // Fetch assigned_by name
+            $assignedByNameQuery = "SELECT name FROM users WHERE id = ?";
+            $assignedByNameStmt = $con->prepare($assignedByNameQuery);
+            $assignedByNameStmt->bind_param("i", $assignedBy);
+            $assignedByNameStmt->execute();
+            $assignedByNameStmt->bind_result($assignedByName);
+            $assignedByNameStmt->fetch();
+            $assignedByNameStmt->close();
+
+            // Fetch assigned_to emails and names
+            $assignedToNames = [];
+            $assignedToArray = explode(',', $assignedTo);
+            foreach ($assignedToArray as $assignedToUserId) {
+                // Fetch email
+                $assignedToEmailQuery = "SELECT email FROM users WHERE id = ?";
+                $assignedToEmailStmt = $con->prepare($assignedToEmailQuery);
+                $assignedToEmailStmt->bind_param("i", $assignedToUserId);
+                $assignedToEmailStmt->execute();
+                $assignedToEmailStmt->bind_result($assignedToEmail);
+                if ($assignedToEmailStmt->fetch()) {
+                    $emails[] = $assignedToEmail;
+                }
+                $assignedToEmailStmt->close();
+
+                // Fetch name
+                $assignedToNameQuery = "SELECT name FROM users WHERE id = ?";
+                $assignedToNameStmt = $con->prepare($assignedToNameQuery);
+                $assignedToNameStmt->bind_param("i", $assignedToUserId);
+                $assignedToNameStmt->execute();
+                $assignedToNameStmt->bind_result($assignedToName);
+                if ($assignedToNameStmt->fetch()) {
+                    $assignedToNames[] = $assignedToName;
+                }
+                $assignedToNameStmt->close();
+            }
+            $assignedToNamesString = implode(', ', $assignedToNames);
+
+            // Prepare email content
+            $subject = "New Task Created from Reminder: $title";
+            $body = "A new task has been created from a reminder. Here are the details:<br><br>" .
+                "<strong>Title:</strong> $title<br>" .
+                "<strong>Description:</strong> $description<br>" .
+                "<strong>Status:</strong> $status<br>" .
+                "<strong>Assigned By:</strong> $assignedByName<br>" .
+                "<strong>Assigned To:</strong> $assignedToNamesString<br>";
+
+            // Schedule the email
+            $scheduledAt = $now->format('Y-m-d H:i:s');
+            $recipientList = implode(',', $emails);
+
+            $emailStmt = $con->prepare("INSERT INTO outbox (task_id, recipient, subject, body, scheduled_at) VALUES (?, ?, ?, ?, ?)");
+            $emailStmt->bind_param("issss", $task_id, $recipientList, $subject, $body, $scheduledAt);
+            $emailStmt->execute();
+            $emailStmt->close();
         }
     }
 }
