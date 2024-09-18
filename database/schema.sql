@@ -187,9 +187,10 @@ CREATE TABLE `reminders` (
   `day_of_month` INT DEFAULT NULL,
   `time_of_day` TIME NOT NULL,
   `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
-  `cage_id` varchar(255) DEFAULT NULL,
+  `cage_id` VARCHAR(255) DEFAULT NULL,
   `creation_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `last_task_created` DATETIME NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`cage_id`) REFERENCES `cages` (`cage_id`) ON UPDATE CASCADE,
   FOREIGN KEY (`assigned_by`) REFERENCES `users` (`id`) ON DELETE CASCADE

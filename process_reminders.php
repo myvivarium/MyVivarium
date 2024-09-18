@@ -28,29 +28,48 @@ $reminderResult = $con->query($reminderQuery);
 if ($reminderResult) {
     while ($reminder = $reminderResult->fetch_assoc()) {
         $shouldTrigger = false;
-        $reminderTime = DateTime::createFromFormat('H:i:s', $reminder['time_of_day']);
-        $reminderTime->setDate($now->format('Y'), $now->format('m'), $now->format('d'));
 
-        // Clone reminderTime to avoid modifying the original object
-        $reminderTimeClone = clone $reminderTime;
-        $reminderTimePlus5 = $reminderTimeClone->modify('+5 minutes');
+        // Calculate the reminder time and task creation time
+        $reminderTime = new DateTime($reminder['time_of_day']);
+        $taskCreationTime = clone $reminderTime;
+        $taskCreationTime->modify('-1 day');
 
-        // Check if the reminder should trigger
+        // Adjust the reminder time based on recurrence
         if ($reminder['recurrence_type'] == 'daily') {
-            if ($now >= $reminderTime && $now < $reminderTimePlus5) {
+            // Set to today's date
+            $reminderTime->setDate($now->format('Y'), $now->format('m'), $now->format('d'));
+            $taskCreationTime->setDate($now->format('Y'), $now->format('m'), $now->format('d'));
+            $taskCreationTime->modify('-1 day');
+        } elseif ($reminder['recurrence_type'] == 'weekly') {
+            // Set to the next occurrence of the specified day of the week
+            $reminderTime->modify('next ' . $reminder['day_of_week']);
+            $taskCreationTime = clone $reminderTime;
+            $taskCreationTime->modify('-1 day');
+        } elseif ($reminder['recurrence_type'] == 'monthly') {
+            // Set to the specified day of the month
+            $reminderDay = $reminder['day_of_month'];
+            $reminderTime->setDate($now->format('Y'), $now->format('m'), $reminderDay);
+            $taskCreationTime = clone $reminderTime;
+            $taskCreationTime->modify('-1 day');
+            // If the date has passed, move to next month
+            if ($reminderTime < $now) {
+                $reminderTime->modify('+1 month');
+                $taskCreationTime = clone $reminderTime;
+                $taskCreationTime->modify('-1 day');
+            }
+        }
+
+        // Check if we should create the task
+        $lastTaskCreated = $reminder['last_task_created'] ? new DateTime($reminder['last_task_created']) : null;
+
+        if ($now >= $taskCreationTime && $now < $reminderTime) {
+            if (!$lastTaskCreated || $lastTaskCreated < $taskCreationTime) {
                 $shouldTrigger = true;
             }
-        } elseif ($reminder['recurrence_type'] == 'weekly') {
-            if ($now->format('l') == $reminder['day_of_week']) {
-                if ($now >= $reminderTime && $now < $reminderTimePlus5) {
-                    $shouldTrigger = true;
-                }
-            }
-        } elseif ($reminder['recurrence_type'] == 'monthly') {
-            if ($now->format('j') == $reminder['day_of_month']) {
-                if ($now >= $reminderTime && $now < $reminderTimePlus5) {
-                    $shouldTrigger = true;
-                }
+        } elseif ($now >= $reminderTime) {
+            // If we're past the reminder time and task wasn't created, create it immediately
+            if (!$lastTaskCreated || $lastTaskCreated < $taskCreationTime) {
+                $shouldTrigger = true;
             }
         }
 
@@ -62,8 +81,7 @@ if ($reminderResult) {
             $assignedTo = $reminder['assigned_to'];
             $status = 'Pending';
             $cageId = $reminder['cage_id'];
-            $completionDate = NULL;
-            $dueDate = $now->format('Y-m-d H:i:s');
+            $dueDate = $reminderTime->format('Y-m-d H:i:s');
 
             $stmt = $con->prepare("INSERT INTO tasks (cage_id, title, description, assigned_by, assigned_to, due_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("ississs", $cageId, $title, $description, $assignedBy, $assignedTo, $dueDate, $status);
@@ -71,53 +89,40 @@ if ($reminderResult) {
             $task_id = $stmt->insert_id;
             $stmt->close();
 
-            // Fetch emails of assigned_by and assigned_to users
-            $emails = [];
+            // Update the last_task_created in the reminders table
+            $updateStmt = $con->prepare("UPDATE reminders SET last_task_created = ? WHERE id = ?");
+            $currentTimeStr = $now->format('Y-m-d H:i:s');
+            $updateStmt->bind_param("si", $currentTimeStr, $reminder['id']);
+            $updateStmt->execute();
+            $updateStmt->close();
 
-            // Fetch assigned_by email
-            $assignedByEmailQuery = "SELECT email FROM users WHERE id = ?";
-            $assignedByEmailStmt = $con->prepare($assignedByEmailQuery);
-            $assignedByEmailStmt->bind_param("i", $assignedBy);
-            $assignedByEmailStmt->execute();
-            $assignedByEmailStmt->bind_result($assignedByEmail);
-            $assignedByEmailStmt->fetch();
-            $assignedByEmailStmt->close();
+            // Fetch emails and names for assigned_by and assigned_to
+            $emails = [];
+            $assignedByName = '';
+            $assignedToNames = [];
+
+            // Fetch assigned_by details
+            $userQuery = "SELECT name, email FROM users WHERE id = ?";
+            $userStmt = $con->prepare($userQuery);
+            $userStmt->bind_param("i", $assignedBy);
+            $userStmt->execute();
+            $userStmt->bind_result($assignedByName, $assignedByEmail);
+            $userStmt->fetch();
+            $userStmt->close();
             $emails[] = $assignedByEmail;
 
-            // Fetch assigned_by name
-            $assignedByNameQuery = "SELECT name FROM users WHERE id = ?";
-            $assignedByNameStmt = $con->prepare($assignedByNameQuery);
-            $assignedByNameStmt->bind_param("i", $assignedBy);
-            $assignedByNameStmt->execute();
-            $assignedByNameStmt->bind_result($assignedByName);
-            $assignedByNameStmt->fetch();
-            $assignedByNameStmt->close();
-
-            // Fetch assigned_to emails and names
-            $assignedToNames = [];
+            // Fetch assigned_to details
             $assignedToArray = explode(',', $assignedTo);
             foreach ($assignedToArray as $assignedToUserId) {
-                // Fetch email
-                $assignedToEmailQuery = "SELECT email FROM users WHERE id = ?";
-                $assignedToEmailStmt = $con->prepare($assignedToEmailQuery);
-                $assignedToEmailStmt->bind_param("i", $assignedToUserId);
-                $assignedToEmailStmt->execute();
-                $assignedToEmailStmt->bind_result($assignedToEmail);
-                if ($assignedToEmailStmt->fetch()) {
+                $userStmt = $con->prepare($userQuery);
+                $userStmt->bind_param("i", $assignedToUserId);
+                $userStmt->execute();
+                $userStmt->bind_result($assignedToName, $assignedToEmail);
+                if ($userStmt->fetch()) {
+                    $assignedToNames[] = $assignedToName;
                     $emails[] = $assignedToEmail;
                 }
-                $assignedToEmailStmt->close();
-
-                // Fetch name
-                $assignedToNameQuery = "SELECT name FROM users WHERE id = ?";
-                $assignedToNameStmt = $con->prepare($assignedToNameQuery);
-                $assignedToNameStmt->bind_param("i", $assignedToUserId);
-                $assignedToNameStmt->execute();
-                $assignedToNameStmt->bind_result($assignedToName);
-                if ($assignedToNameStmt->fetch()) {
-                    $assignedToNames[] = $assignedToName;
-                }
-                $assignedToNameStmt->close();
+                $userStmt->close();
             }
             $assignedToNamesString = implode(', ', $assignedToNames);
 
@@ -127,6 +132,7 @@ if ($reminderResult) {
                 "<strong>Title:</strong> $title<br>" .
                 "<strong>Description:</strong> $description<br>" .
                 "<strong>Status:</strong> $status<br>" .
+                "<strong>Due Date:</strong> $dueDate<br>" .
                 "<strong>Assigned By:</strong> $assignedByName<br>" .
                 "<strong>Assigned To:</strong> $assignedToNamesString<br>";
 
