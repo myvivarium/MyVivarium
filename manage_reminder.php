@@ -5,9 +5,9 @@
  * This script provides functionality for managing reminders in the database.
  * It allows users to add new reminders, edit existing ones, and delete them.
  * The interface includes a responsive popup form for data entry and a table for displaying existing reminders.
+ * The script uses PHP sessions for message handling and includes basic input sanitization for security.
  */
 
-ob_start(); // Start output buffering
 session_start();
 require 'header.php';
 require 'dbcon.php';
@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $assignedBy = $currentUserId;
     $assignedTo = htmlspecialchars(implode(',', $_POST['assigned_to'] ?? []));
     $recurrenceType = htmlspecialchars($_POST['recurrence_type']);
-    $dayOfWeek = htmlspecialchars($_POST['day_of_week'] ?? null);
-    $dayOfMonth = htmlspecialchars($_POST['day_of_month'] ?? null);
+    $dayOfWeek = isset($_POST['day_of_week']) ? htmlspecialchars($_POST['day_of_week']) : null;
+    $dayOfMonth = isset($_POST['day_of_month']) ? htmlspecialchars($_POST['day_of_month']) : null;
     $timeOfDay = htmlspecialchars($_POST['time_of_day']);
     $status = htmlspecialchars($_POST['status']);
     $reminder_id = null;
@@ -95,9 +95,234 @@ $reminderResult = $con->query($reminderQuery);
     <!-- Include necessary styles and scripts -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Add your custom styles here */
-        /* ... (similar to the styles in manage_tasks.php) ... */
+        /* Popup and Overlay Styles */
+        .popup-form,
+        .view-popup-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Button and Form Styles */
+        .add-button {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .add-button .btn {
+            margin-bottom: 20px;
+        }
+
+        .ml-2 {
+            margin-left: 10px;
+            /* Adjust the spacing between buttons as needed */
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+        }
+
+        .form-buttons button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .required-asterisk {
+            color: red;
+        }
+
+        .radio-group label {
+            margin-right: 15px;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .form-control[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            box-shadow: none;
+            border: 2px solid #ffffff;
+        }
+
+        .table th,
+        .table td {
+            border: 1px solid #ffffff;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .table thead {
+            background-color: #343a40;
+            color: #ffffff;
+            border-bottom: 2px solid #ffffff;
+        }
+
+        .table thead th {
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+        }
+
+        /* Specific Column Widths */
+        .table th:nth-child(1),
+        .table td:nth-child(1) {
+            width: 10%;
+        }
+
+        .table th:nth-child(2),
+        .table td:nth-child(2) {
+            width: 20%;
+        }
+
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            width: 20%;
+        }
+
+        .table th:nth-child(4),
+        .table td:nth-child(4) {
+            width: 20%;
+        }
+
+        .table th:nth-child(5),
+        .table td:nth-child(5) {
+            width: 10%;
+        }
+
+        .table th:nth-child(6),
+        .table td:nth-child(6) {
+            width: 20%;
+        }
+
+        /* Action Buttons */
+        .table-actions,
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+
+        .table-actions {
+            border: none !important;
+        }
+
+        .table-actions button,
+        .action-buttons .btn {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 576px) {
+            .table thead {
+                display: none;
+            }
+
+            .table tbody {
+                display: block;
+                width: 100%;
+            }
+
+            .table tbody tr {
+                display: block;
+                margin-bottom: 15px;
+                border-bottom: 1px solid #dee2e6;
+                padding-bottom: 15px;
+            }
+
+            .table tbody tr td {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                border: none;
+                position: relative;
+                padding-left: 40%;
+                text-align: left;
+            }
+
+            .table tbody tr td:before {
+                content: attr(data-label);
+                font-weight: bold;
+                text-transform: uppercase;
+                position: absolute;
+                left: 10px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+                color: #343a40;
+                text-align: left;
+            }
+
+            .table-actions {
+                flex-direction: column;
+                flex-wrap: wrap;
+            }
+        }
+
+        .pr-0 {
+            padding-right: 0 !important;
+        }
+
+        .pl-0 {
+            padding-left: 0 !important;
+        }
+
+        .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .btn-primary {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
     </style>
 </head>
 <body>
@@ -201,17 +426,18 @@ $reminderResult = $con->query($reminderQuery);
                 <tbody>
                     <?php while ($row = $reminderResult->fetch_assoc()) : ?>
                         <tr>
-                            <td><?= htmlspecialchars($row['id']); ?></td>
-                            <td><?= htmlspecialchars($row['title']); ?></td>
-                            <td>
+                            <td data-label="ID"><?= htmlspecialchars($row['id']); ?></td>
+                            <td data-label="Title"><?= htmlspecialchars($row['title']); ?></td>
+                            <td data-label="Recurrence">
                                 <?= ucfirst($row['recurrence_type']); ?>
                                 <?php if ($row['recurrence_type'] == 'weekly') : ?>
                                     (<?= $row['day_of_week']; ?>)
                                 <?php elseif ($row['recurrence_type'] == 'monthly') : ?>
                                     (Day <?= $row['day_of_month']; ?>)
                                 <?php endif; ?>
+                                at <?= date('h:i A', strtotime($row['time_of_day'])); ?>
                             </td>
-                            <td>
+                            <td data-label="Assigned To">
                                 <?php
                                 $assignedToNames = array_map(function ($id) use ($users) {
                                     return isset($users[$id]) ? $users[$id] : 'Unknown';
@@ -219,8 +445,8 @@ $reminderResult = $con->query($reminderQuery);
                                 echo htmlspecialchars(implode(', ', $assignedToNames));
                                 ?>
                             </td>
-                            <td><?= htmlspecialchars(ucfirst($row['status'])); ?></td>
-                            <td>
+                            <td data-label="Status"><?= htmlspecialchars(ucfirst($row['status'])); ?></td>
+                            <td data-label="Actions" class="table-actions">
                                 <div class="action-buttons">
                                     <button class="btn btn-warning btn-sm editButton" data-id="<?= $row['id']; ?>"><i class="fas fa-edit"></i></button>
                                     <form action="manage_reminder.php" method="post" style="display:inline-block;">
@@ -282,6 +508,12 @@ $reminderResult = $con->query($reminderQuery);
                 $('#popupForm').hide();
             });
 
+            // Close the form when clicking outside
+            $('#popupOverlay').on('click', function() {
+                $('#popupOverlay').hide();
+                $('#popupForm').hide();
+            });
+
             // Edit reminder
             $('.editButton').on('click', function() {
                 const id = $(this).data('id');
@@ -307,6 +539,7 @@ $reminderResult = $con->query($reminderQuery);
             $('#monthlyOptions').hide();
             $('#titleCounter').text(`0/100 characters used`);
             $('#descriptionCounter').text(`0/500 characters used`);
+            $('#assigned_by').val('<?= $currentUserName; ?>');
         }
 
         // Fetch reminder data for editing
@@ -315,6 +548,7 @@ $reminderResult = $con->query($reminderQuery);
                 url: 'get_reminder.php',
                 type: 'GET',
                 data: { id: id },
+                dataType: 'json',
                 success: function(response) {
                     if (response.error) {
                         alert(response.error);
