@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['edit'])) {
         $id = htmlspecialchars($_POST['id']);
         $stmt = $con->prepare("UPDATE reminders SET title = ?, description = ?, assigned_to = ?, recurrence_type = ?, day_of_week = ?, day_of_month = ?, time_of_day = ?, status = ? WHERE id = ?");
-        $stmt->bind_param("sisssssii", $title, $description, $assignedTo, $recurrenceType, $dayOfWeek, $dayOfMonth, $timeOfDay, $status, $id);
+        $stmt->bind_param("sissssssi", $title, $description, $assignedTo, $recurrenceType, $dayOfWeek, $dayOfMonth, $timeOfDay, $status, $id);
         if ($stmt->execute()) {
             redirectToPage("Reminder updated successfully.");
         } else {
