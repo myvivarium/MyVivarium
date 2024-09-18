@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $assignedBy = $currentUserId;
     $assignedTo = htmlspecialchars(implode(',', $_POST['assigned_to'] ?? []));
     $recurrenceType = htmlspecialchars($_POST['recurrence_type']);
-    $dayOfWeek = isset($_POST['day_of_week']) ? htmlspecialchars($_POST['day_of_week']) : null;
-    $dayOfMonth = isset($_POST['day_of_month']) ? htmlspecialchars($_POST['day_of_month']) : null;
+    $dayOfWeek = !empty($_POST['day_of_week']) ? htmlspecialchars($_POST['day_of_week']) : null;
+    $dayOfMonth = !empty($_POST['day_of_month']) ? (int)$_POST['day_of_month'] : null;    
     $timeOfDay = htmlspecialchars($_POST['time_of_day']);
     $status = htmlspecialchars($_POST['status']);
     $reminder_id = null;
