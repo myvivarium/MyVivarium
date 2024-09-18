@@ -175,6 +175,24 @@ CREATE TABLE `outbox` (
   FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE SET NULL
 );
 
+-- Table for storing reminders
+CREATE TABLE `reminders` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+  `description` TEXT NOT NULL,
+  `assigned_by` INT NOT NULL,
+  `assigned_to` VARCHAR(255) NOT NULL,
+  `recurrence_type` ENUM('daily', 'weekly', 'monthly') NOT NULL,
+  `day_of_week` ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday') DEFAULT NULL,
+  `day_of_month` INT DEFAULT NULL,
+  `time_of_day` TIME NOT NULL,
+  `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+  `creation_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`assigned_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
+);
+
 -- Table for storing maintenance logs
 CREATE TABLE `maintenance` (
   `id` int NOT NULL AUTO_INCREMENT,
