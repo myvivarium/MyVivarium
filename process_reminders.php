@@ -102,7 +102,7 @@ if ($reminderResult) {
             $assignedToNames = [];
 
             // Fetch assigned_by details
-            $userQuery = "SELECT name, email FROM users WHERE id = ?";
+            $userQuery = "SELECT name, username FROM users WHERE id = ?";
             $userStmt = $con->prepare($userQuery);
             $userStmt->bind_param("i", $assignedBy);
             $userStmt->execute();
