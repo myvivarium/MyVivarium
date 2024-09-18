@@ -84,7 +84,7 @@ if ($reminderResult) {
             $dueDate = $reminderTime->format('Y-m-d H:i:s');
 
             $stmt = $con->prepare("INSERT INTO tasks (cage_id, title, description, assigned_by, assigned_to, completion_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ississs", $cageId, $title, $description, $assignedBy, $assignedTo, $dueDate, $status);
+            $stmt->bind_param("sssisss", $cageId, $title, $description, $assignedBy, $assignedTo, $dueDate, $status);
             $stmt->execute();
             $task_id = $stmt->insert_id;
             $stmt->close();
