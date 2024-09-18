@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage Reminders
  * 
@@ -40,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $assignedTo = htmlspecialchars(implode(',', $_POST['assigned_to'] ?? []));
     $recurrenceType = htmlspecialchars($_POST['recurrence_type']);
     $dayOfWeek = !empty($_POST['day_of_week']) ? htmlspecialchars($_POST['day_of_week']) : null;
-    $dayOfMonth = !empty($_POST['day_of_month']) ? (int)$_POST['day_of_month'] : null;    
+    $dayOfMonth = !empty($_POST['day_of_month']) ? (int)$_POST['day_of_month'] : null;
     $timeOfDay = htmlspecialchars($_POST['time_of_day']);
     $status = htmlspecialchars($_POST['status']);
     $reminder_id = null;
@@ -90,16 +91,16 @@ $reminderResult = $con->query($reminderQuery);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Reminders</title>
     <!-- Include necessary styles and scripts -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-
         /* Popup and Overlay Styles */
         .popup-form,
         .view-popup-form {
@@ -325,8 +326,52 @@ $reminderResult = $con->query($reminderQuery);
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
         }
+
+        /* Styles for the View Popup */
+        #viewPopupOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        #viewPopupForm {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            z-index: 1001;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        #viewPopupForm .form-group {
+            margin-bottom: 15px;
+        }
+
+        #viewPopupForm label {
+            font-weight: bold;
+        }
+
+        #viewPopupForm p {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
     </style>
 </head>
+
 <body>
     <div class="container content mt-5">
         <?php include('message.php'); ?>
@@ -411,6 +456,39 @@ $reminderResult = $con->query($reminderQuery);
             </form>
         </div>
 
+        <!-- Popup form for viewing reminders -->
+        <div class="popup-overlay" id="viewPopupOverlay"></div>
+        <div class="popup-form" id="viewPopupForm">
+            <h4>View Reminder Details</h4>
+            <div class="form-group">
+                <label>Title:</label>
+                <p id="viewTitle"></p>
+            </div>
+            <div class="form-group">
+                <label>Description:</label>
+                <p id="viewDescription"></p>
+            </div>
+            <div class="form-group">
+                <label>Assigned To:</label>
+                <p id="viewAssignedTo"></p>
+            </div>
+            <div class="form-group">
+                <label>Recurrence Type:</label>
+                <p id="viewRecurrenceType"></p>
+            </div>
+            <div class="form-group">
+                <label>Time of Day:</label>
+                <p id="viewTimeOfDay"></p>
+            </div>
+            <div class="form-group">
+                <label>Status:</label>
+                <p id="viewStatus"></p>
+            </div>
+            <div class="form-buttons">
+                <button type="button" class="btn btn-secondary" id="closeViewButton">Close</button>
+            </div>
+        </div>
+
         <!-- Table for displaying reminders -->
         <h3>Existing Reminders</h3>
         <div class="table-responsive">
@@ -450,16 +528,27 @@ $reminderResult = $con->query($reminderQuery);
                             <td data-label="Status"><?= htmlspecialchars(ucfirst($row['status'])); ?></td>
                             <td data-label="Actions" class="table-actions">
                                 <div class="action-buttons">
-                                    <button class="btn btn-warning btn-sm editButton" data-id="<?= $row['id']; ?>"><i class="fas fa-edit"></i></button>
+                                    <!-- Add the View button here -->
+                                    <button class="btn btn-info btn-sm viewButton" data-id="<?= $row['id']; ?>">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+
+                                    <!-- Existing Edit and Delete buttons -->
+                                    <button class="btn btn-warning btn-sm editButton" data-id="<?= $row['id']; ?>">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
                                     <form action="manage_reminder.php" method="post" style="display:inline-block;">
                                         <input type="hidden" name="id" value="<?= $row['id']; ?>">
-                                        <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this reminder?');"><i class="fas fa-trash-alt"></i></button>
+                                        <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this reminder?');">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
+
             </table>
         </div>
     </div>
@@ -531,6 +620,32 @@ $reminderResult = $con->query($reminderQuery);
                 const currentLength = $(this).val().length;
                 $('#descriptionCounter').text(`${currentLength}/500 characters used`);
             });
+
+            // Map PHP users array to JavaScript
+            const users = <?= json_encode($users); ?>;
+
+            // View reminder
+            $('.viewButton').on('click', function() {
+                const id = $(this).data('id');
+                fetchViewReminderData(id);
+            });
+
+            // Close the view popup
+            $('#closeViewButton').on('click', function() {
+                $('#viewPopupOverlay').hide();
+                $('#viewPopupForm').hide();
+            });
+
+            // Close the view popup when clicking outside
+            $('#viewPopupOverlay').on('click', function() {
+                $('#viewPopupOverlay').hide();
+                $('#viewPopupForm').hide();
+            });
+
+            // Stop propagation when clicking inside the view popup
+            $('#viewPopupForm').on('click', function(e) {
+                e.stopPropagation();
+            });
         });
 
         // Reset form fields
@@ -549,7 +664,9 @@ $reminderResult = $con->query($reminderQuery);
             $.ajax({
                 url: 'get_reminder.php',
                 type: 'GET',
-                data: { id: id },
+                data: {
+                    id: id
+                },
                 dataType: 'json',
                 success: function(response) {
                     if (response.error) {
@@ -583,7 +700,63 @@ $reminderResult = $con->query($reminderQuery);
                 }
             });
         }
+
+        // Function to fetch and display reminder data in the view popup
+        function fetchViewReminderData(id) {
+            $.ajax({
+                url: 'get_reminder.php',
+                type: 'GET',
+                data: {
+                    id: id
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.error) {
+                        alert(response.error);
+                        return;
+                    }
+                    // Populate the view popup with reminder details
+                    $('#viewTitle').text(response.title);
+                    $('#viewDescription').text(response.description);
+
+                    // Get assigned to names
+                    let assignedToNames = [];
+                    if (response.assigned_to) {
+                        const assignedToIds = response.assigned_to.split(',');
+                        assignedToIds.forEach(function(id) {
+                            const name = users[id];
+                            if (name) {
+                                assignedToNames.push(name);
+                            } else {
+                                assignedToNames.push('Unknown');
+                            }
+                        });
+                    }
+                    $('#viewAssignedTo').text(assignedToNames.join(', '));
+
+                    // Display recurrence type and details
+                    let recurrenceDetails = response.recurrence_type;
+                    if (response.recurrence_type === 'weekly') {
+                        recurrenceDetails += ' (' + response.day_of_week + ')';
+                    } else if (response.recurrence_type === 'monthly') {
+                        recurrenceDetails += ' (Day ' + response.day_of_month + ')';
+                    }
+                    $('#viewRecurrenceType').text(recurrenceDetails);
+
+                    $('#viewTimeOfDay').text(response.time_of_day);
+                    $('#viewStatus').text(response.status);
+
+                    // Show the view popup
+                    $('#viewPopupOverlay').show();
+                    $('#viewPopupForm').show();
+                },
+                error: function(xhr, status, error) {
+                    alert('Error fetching reminder data: ' + error);
+                }
+            });
+        }
     </script>
     <?php require 'footer.php'; ?>
 </body>
+
 </html>

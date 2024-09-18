@@ -15,15 +15,16 @@ if (isset($_GET['id'])) {
         $result = $stmt->get_result();
         $reminder = $result->fetch_assoc();
         if ($reminder) {
+            // Return the reminder details as JSON
             echo json_encode($reminder);
         } else {
-            echo json_encode(['error' => 'Reminder not found.']);
+            echo json_encode(['error' => 'Reminder not found']);
         }
     } else {
-        echo json_encode(['error' => 'Database error: ' . $stmt->error]);
+        echo json_encode(['error' => 'Error executing query']);
     }
     $stmt->close();
 } else {
-    echo json_encode(['error' => 'No ID provided.']);
+    echo json_encode(['error' => 'Invalid request']);
 }
 ?>
