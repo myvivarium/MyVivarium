@@ -7,16 +7,17 @@
  * The interface includes a responsive popup form for data entry and a table for displaying existing reminders.
  * The script uses PHP sessions for message handling and includes basic input sanitization for security.
  */
-
+ob_start();
 session_start();
-require 'header.php';
-require 'dbcon.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['name'])) {
     header("Location: index.php");
     exit;
 }
+
+require 'header.php';
+require 'dbcon.php';
 
 // Get the current user ID and name from the session
 $currentUserId = $_SESSION['user_id'] ?? null;
