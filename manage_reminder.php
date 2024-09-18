@@ -557,6 +557,9 @@ $reminderResult = $con->query($reminderQuery);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
+        // Map PHP users array to JavaScript
+        const users = <?= json_encode($users); ?>;
+        
         // JavaScript code to handle form interactions
         $(document).ready(function() {
             $('#assigned_to').select2({
@@ -620,9 +623,6 @@ $reminderResult = $con->query($reminderQuery);
                 const currentLength = $(this).val().length;
                 $('#descriptionCounter').text(`${currentLength}/500 characters used`);
             });
-
-            // Map PHP users array to JavaScript
-            const users = <?= json_encode($users); ?>;
 
             // View reminder
             $('.viewButton').on('click', function() {
