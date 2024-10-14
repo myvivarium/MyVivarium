@@ -13,9 +13,6 @@ session_start();
 // Include the database connection file
 require 'dbcon.php';
 
-// Regenerate session ID to prevent session fixation
-session_regenerate_id(true);
-
 // Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
     $currentUrl = urlencode($_SERVER['REQUEST_URI']);

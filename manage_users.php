@@ -8,14 +8,11 @@
  * 
  */
 
-// Include the database connection file
-require 'dbcon.php';
-
 // Start a new session or resume the existing session
 session_start();
 
-// Regenerate session ID to prevent session fixation
-session_regenerate_id(true);
+// Include the database connection file
+require 'dbcon.php';
 
 // Check if the user is logged in and has admin role
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -31,7 +28,6 @@ if (empty($_SESSION['csrf_token'])) {
 
 // Handle POST requests for user status and role updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate the CSRF token
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die('CSRF token validation failed');
     }
@@ -86,7 +82,6 @@ $userresult = mysqli_query($con, $userquery);
 require 'header.php';
 mysqli_close($con);
 ?>
-
 
 <!doctype html>
 <html lang="en">

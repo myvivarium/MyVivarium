@@ -174,6 +174,9 @@ if (isset($_POST['login'])) {
                             $_SESSION['position'] = $row['position'];
                             $_SESSION['user_id'] = $row['id'];
 
+                            // Regenerate session ID to prevent session fixation    
+                            session_regenerate_id(true);
+
                             // Reset login attempts and unlock the account
                             $reset_attempts = "UPDATE users SET login_attempts = 0, account_locked = NULL WHERE username=?";
                             $reset_stmt = mysqli_prepare($con, $reset_attempts);
