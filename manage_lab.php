@@ -3,7 +3,8 @@
 /**
  * Manage Lab Page
  * 
- * This script allows logged-in users to view and update lab details, including the lab name, URL, timezone, and IoT sensor links for two rooms.
+ * This script allows logged-in users to view and update lab details, including the lab name, URL, timezone, IoT sensor links for two rooms,
+ * and Cloudflare Turnstile secret and site keys.
  * 
  */
 
@@ -48,7 +49,6 @@ $defaultLabData = [
     'r2_pres' => '',
     'cf-turnstile-secretKey' => '',
     'cf-turnstile-sitekey' => ''
-
 ];
 
 $labData = array_merge($defaultLabData, $labData);
@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_lab'])) {
     }
 
     // Sanitize and fetch form inputs
-    $inputFields = ['lab_name', 'url', 'timezone', 'r1_temp', 'r1_humi', 'r1_illu', 'r1_pres', 'r2_temp', 'r2_humi', 'r2_illu', 'r2_pres'];
+    $inputFields = ['lab_name', 'url', 'timezone', 'r1_temp', 'r1_humi', 'r1_illu', 'r1_pres', 'r2_temp', 'r2_humi', 'r2_illu', 'r2_pres', 'cf-turnstile-secretKey', 'cf-turnstile-sitekey'];
     $inputData = [];
     foreach ($inputFields as $field) {
         $inputData[$field] = filter_input(INPUT_POST, $field, FILTER_SANITIZE_STRING);
@@ -210,6 +210,14 @@ require 'header.php';
             <div class="form-group">
                 <label for="r2_pres">Room 2 Pressure Sensor</label>
                 <textarea class="form-control" id="r2_pres" name="r2_pres" oninput="adjustTextareaHeight(this)"><?php echo htmlspecialchars($labData['r2_pres']); ?></textarea>
+            </div>
+            <div class="form-group">
+                <label for="cf-turnstile-sitekey">Cloudflare Turnstile Site Key</label>
+                <input type="text" class="form-control" id="cf-turnstile-sitekey" name="cf-turnstile-sitekey" value="<?php echo htmlspecialchars($labData['cf-turnstile-sitekey']); ?>">
+            </div>
+            <div class="form-group">
+                <label for="cf-turnstile-secretKey">Cloudflare Turnstile Secret Key</label>
+                <input type="text" class="form-control" id="cf-turnstile-secretKey" name="cf-turnstile-secretKey" value="<?php echo htmlspecialchars($labData['cf-turnstile-secretKey']); ?>">
             </div>
             <button type="submit" class="btn1 btn-primary" name="update_lab">Update Lab Information</button>
         </form>
