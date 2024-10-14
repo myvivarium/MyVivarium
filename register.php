@@ -121,12 +121,11 @@ function notifyAdmins($newUserDetails)
 }
 
 // Function to verify Cloudflare Turnstile token
-function verifyTurnstile($turnstileResponse)
+function verifyTurnstile($turnstileResponse, $turnstileSecretKey)
 {
-    $secretKey = '0x4AAAAAAAxY9lYVO4s30kxlouhrHy5xkhg'; // Your secret key
     $verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
     $data = [
-        'secret' => $secretKey,
+        'secret' => $turnstileSecretKey,
         'response' => $turnstileResponse,
         'remoteip' => $_SERVER['REMOTE_ADDR']
     ];
@@ -150,57 +149,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['honeypot'])) {
         $_SESSION['resultMessage'] = "Spam detected! Please try again.";
     } else {
-        // Verify the Cloudflare Turnstile token
-        $turnstileResponse = $_POST['cf-turnstile-response'];
-        if (!verifyTurnstile($turnstileResponse)) {
-            $_SESSION['resultMessage'] = "Turnstile verification failed. Please try again.";
-        } else {
-            // Retrieve and sanitize user input
-            $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-            $username = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-            $password = $_POST['password'];
-            $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
-            $role = "user";
-            $status = "pending";
-            $email_verified = 0; // Explicitly set to integer 0
-            $email_token = bin2hex(random_bytes(16)); // Generate a random token
-
-            // Check if the email already exists
-            $checkEmailQuery = "SELECT username FROM users WHERE username = ?";
-            $checkEmailStmt = $con->prepare($checkEmailQuery);
-            $checkEmailStmt->bind_param("s", $username);
-            $checkEmailStmt->execute();
-            $checkEmailStmt->store_result();
-
-            if ($checkEmailStmt->num_rows > 0) {
-                $_SESSION['resultMessage'] = "Email address already registered. Please try logging in or use a different email.";
-            } else {
-                // Hash the password and insert the new user into the database
-                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-                $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status, email_verified, email_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("ssssssis", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token);
-
-                if ($stmt->execute()) {
-                    sendConfirmationEmail($username, $email_token);
-
-                    // Prepare new user details for admin notification
-                    $newUserDetails = [
-                        'name' => $name,
-                        'email' => $username,
-                        'position' => $position,
-                        'email_verified' => $email_verified
-                    ];
-                    notifyAdmins($newUserDetails);
-
-                    $_SESSION['resultMessage'] = "Registration successful. Please check your email to confirm your email address.";
-                } else {
-                    $_SESSION['resultMessage'] = "Registration failed. Please try again.";
-                }
-                $stmt->close();
+        // Proceed with Turnstile verification if keys are set
+        if (!empty($turnstileSiteKey) && !empty($turnstileSecretKey)) {
+            $turnstileResponse = $_POST['cf-turnstile-response'];
+            if (!verifyTurnstile($turnstileResponse, $turnstileSecretKey)) {
+                $_SESSION['resultMessage'] = "Turnstile verification failed. Please try again.";
+                $con->close();
+                header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+                exit;
             }
-            $checkEmailStmt->close();
         }
+
+        // Retrieve and sanitize user input
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $username = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+        $password = $_POST['password'];
+        $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
+        $role = "user";
+        $status = "pending";
+        $email_verified = 0; // Explicitly set to integer 0
+        $email_token = bin2hex(random_bytes(16)); // Generate a random token
+
+        // Check if the email already exists
+        $checkEmailQuery = "SELECT username FROM users WHERE username = ?";
+        $checkEmailStmt = $con->prepare($checkEmailQuery);
+        $checkEmailStmt->bind_param("s", $username);
+        $checkEmailStmt->execute();
+        $checkEmailStmt->store_result();
+
+        if ($checkEmailStmt->num_rows > 0) {
+            $_SESSION['resultMessage'] = "Email address already registered. Please try logging in or use a different email.";
+        } else {
+            // Hash the password and insert the new user into the database
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+            $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status, email_verified, email_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssssis", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token);
+
+            if ($stmt->execute()) {
+                sendConfirmationEmail($username, $email_token);
+
+                // Prepare new user details for admin notification
+                $newUserDetails = [
+                    'name' => $name,
+                    'email' => $username,
+                    'position' => $position,
+                    'email_verified' => $email_verified
+                ];
+                notifyAdmins($newUserDetails);
+
+                $_SESSION['resultMessage'] = "Registration successful. Please check your email to confirm your email address.";
+            } else {
+                $_SESSION['resultMessage'] = "Registration failed. Please try again.";
+            }
+            $stmt->close();
+        }
+        $checkEmailStmt->close();
     }
     $con->close();
     // Redirect to the same script to avoid POST resubmission issues
@@ -373,9 +377,11 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
 
-            <!-- Cloudflare Turnstile Widget -->
-            <div class="cf-turnstile" data-sitekey="<?php echo htmlspecialchars($turnstileSiteKey); ?>"></div>
-            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            <!-- Conditionally include Cloudflare Turnstile widget -->
+            <?php if (!empty($turnstileSiteKey)) { ?>
+                <div class="cf-turnstile" data-sitekey="<?php echo htmlspecialchars($turnstileSiteKey); ?>"></div>
+                <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            <?php } ?>
 
             <br>
             <button type="submit" class="btn btn-primary" name="signup">Register</button>
