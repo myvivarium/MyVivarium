@@ -13,7 +13,7 @@ session_start();
 require 'dbcon.php';
 
 // Regenerate session ID to prevent session fixation
-session_regenerate_id(true);
+// session_regenerate_id(true);
 
 // Enable error reporting for debugging
 error_reporting(E_ALL);
