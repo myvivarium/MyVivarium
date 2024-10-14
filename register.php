@@ -114,66 +114,27 @@ function notifyAdmins($newUserDetails)
     }
 }
 
-function generateInitials($name) {
-    $parts = explode(" ", $name);
-    $initials = "";
+// Function to verify Cloudflare Turnstile token
+function verifyTurnstile($turnstileResponse) {
+    $secretKey = '0x4AAAAAAAxY9lYVO4s30kxlouhrHy5xkhg'; // Your secret key
+    $verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+    $data = [
+        'secret' => $secretKey,
+        'response' => $turnstileResponse,
+        'remoteip' => $_SERVER['REMOTE_ADDR']
+    ];
 
-    foreach ($parts as $part) {
-        if (!empty($part) && ctype_alpha($part[0])) {  // Check if the first character is an alphabet letter
-            $initials .= strtoupper($part[0]);
-        }
-    }
+    // Send request to verify Turnstile response
+    $ch = curl_init($verifyUrl);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-    return substr($initials, 0, 3);  // Return up to 3 characters
-}
+    $response = curl_exec($ch);
+    curl_close($ch);
+    $result = json_decode($response, true);
 
-function ensureUniqueInitials($con, $initials) {
-    $uniqueInitials = $initials;
-    $suffix = 1;
-    $maxLength = 10;  // Define the maximum length for initials including suffix
-
-    $checkQuery = "SELECT initials FROM users WHERE initials = ?";
-    $stmt = $con->prepare($checkQuery);
-    
-    if (!$stmt) {
-        error_log("Failed to prepare statement: " . $con->error);
-        return $initials;  // Return the original initials if statement preparation fails
-    }
-
-    do {
-        $stmt->bind_param("s", $uniqueInitials);
-        $stmt->execute();
-        $stmt->store_result();
-
-        if ($stmt->num_rows > 0) {
-            $uniqueInitials = $initials . $suffix;
-            $suffix++;
-        } else {
-            break;
-        }
-        
-        $stmt->free_result();  // Clear the result set for the next iteration
-
-    } while (strlen($uniqueInitials) <= $maxLength);
-
-    $stmt->close();
-    
-    // Truncate if the initials exceed the maximum length
-    if (strlen($uniqueInitials) > $maxLength) {
-        $uniqueInitials = substr($uniqueInitials, 0, $maxLength);
-    }
-
-    return $uniqueInitials;
-}
-
-// Query to fetch the lab name from the settings table
-$labQuery = "SELECT value FROM settings WHERE name = 'lab_name' LIMIT 1";
-$labResult = mysqli_query($con, $labQuery);
-
-// Default value if the query fails or returns no result
-$labName = "My Vivarium";
-if ($row = mysqli_fetch_assoc($labResult)) {
-    $labName = $row['value'];
+    return $result['success'];
 }
 
 // Handle form submission
@@ -182,55 +143,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['honeypot'])) {
         $_SESSION['resultMessage'] = "Spam detected! Please try again.";
     } else {
-        // Retrieve and sanitize user input
-        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-        $username = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-        $password = $_POST['password'];
-        $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
-        $role = "user";
-        $status = "pending";
-        $email_verified = 0; // Explicitly set to integer 0
-        $email_token = bin2hex(random_bytes(16)); // Generate a random token
-
-        // Check if the email already exists
-        $checkEmailQuery = "SELECT username FROM users WHERE username = ?";
-        $checkEmailStmt = $con->prepare($checkEmailQuery);
-        $checkEmailStmt->bind_param("s", $username);
-        $checkEmailStmt->execute();
-        $checkEmailStmt->store_result();
-
-        if ($checkEmailStmt->num_rows > 0) {
-            $_SESSION['resultMessage'] = "Email address already registered. Please try logging in or use a different email.";
+        // Verify the Cloudflare Turnstile token
+        $turnstileResponse = $_POST['cf-turnstile-response'];
+        if (!verifyTurnstile($turnstileResponse)) {
+            $_SESSION['resultMessage'] = "Turnstile verification failed. Please try again.";
         } else {
-            // Hash the password and insert the new user into the database
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+            // Retrieve and sanitize user input
+            $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+            $username = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+            $password = $_POST['password'];
+            $position = filter_input(INPUT_POST, 'position', FILTER_SANITIZE_STRING);
+            $role = "user";
+            $status = "pending";
+            $email_verified = 0; // Explicitly set to integer 0
+            $email_token = bin2hex(random_bytes(16)); // Generate a random token
 
-            // Generate and ensure unique initials
-            $initials = generateInitials($name);
-            $uniqueInitials = ensureUniqueInitials($con, $initials);
+            // Check if the email already exists
+            $checkEmailQuery = "SELECT username FROM users WHERE username = ?";
+            $checkEmailStmt = $con->prepare($checkEmailQuery);
+            $checkEmailStmt->bind_param("s", $username);
+            $checkEmailStmt->execute();
+            $checkEmailStmt->store_result();
 
-            $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status, email_verified, email_token, initials) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssssiss", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token, $uniqueInitials);
-
-            if ($stmt->execute()) {
-                sendConfirmationEmail($username, $email_token);
-
-                // Prepare new user details for admin notification
-                $newUserDetails = [
-                    'name' => $name,
-                    'email' => $username,
-                    'position' => $position,
-                    'email_verified' => $email_verified
-                ];
-                notifyAdmins($newUserDetails);
-
-                $_SESSION['resultMessage'] = "Registration successful. Please check your email to confirm your email address.";
+            if ($checkEmailStmt->num_rows > 0) {
+                $_SESSION['resultMessage'] = "Email address already registered. Please try logging in or use a different email.";
             } else {
-                $_SESSION['resultMessage'] = "Registration failed. Please try again.";
+                // Hash the password and insert the new user into the database
+                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+                $stmt = $con->prepare("INSERT INTO users (name, username, position, role, password, status, email_verified, email_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param("ssssssis", $name, $username, $position, $role, $hashedPassword, $status, $email_verified, $email_token);
+
+                if ($stmt->execute()) {
+                    sendConfirmationEmail($username, $email_token);
+
+                    // Prepare new user details for admin notification
+                    $newUserDetails = [
+                        'name' => $name,
+                        'email' => $username,
+                        'position' => $position,
+                        'email_verified' => $email_verified
+                    ];
+                    notifyAdmins($newUserDetails);
+
+                    $_SESSION['resultMessage'] = "Registration successful. Please check your email to confirm your email address.";
+                } else {
+                    $_SESSION['resultMessage'] = "Registration failed. Please try again.";
+                }
+                $stmt->close();
             }
-            $stmt->close();
+            $checkEmailStmt->close();
         }
-        $checkEmailStmt->close();
     }
     $con->close();
     // Redirect to the same script to avoid POST resubmission issues
@@ -402,6 +365,11 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
                 <label for="password">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
+
+            <!-- Cloudflare Turnstile Widget -->
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAAxY9t5xqgdAs5j3"></div>
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
             <br>
             <button type="submit" class="btn btn-primary" name="signup">Register</button>
             <br>
