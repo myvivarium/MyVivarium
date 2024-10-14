@@ -18,19 +18,25 @@ require 'vendor/autoload.php';  // Include PHPMailer autoload file
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Query to fetch the lab name and URL from the settings table
-$labQuery = "SELECT name, value FROM settings WHERE name IN ('lab_name', 'url')";
+// Query to fetch the lab name, URL, and Turnstile keys from the settings table
+$labQuery = "SELECT name, value FROM settings WHERE name IN ('lab_name', 'url', 'cf-turnstile-secretKey', 'cf-turnstile-sitekey')";
 $labResult = mysqli_query($con, $labQuery);
 
 // Default values if the query fails or returns no result
 $labName = "My Vivarium";
 $url = "";
+$turnstileSecretKey = "";
+$turnstileSiteKey = "";
 
 while ($row = mysqli_fetch_assoc($labResult)) {
     if ($row['name'] === 'lab_name') {
         $labName = $row['value'];
     } elseif ($row['name'] === 'url') {
         $url = $row['value'];
+    } elseif ($row['name'] === 'cf-turnstile-secretKey') {
+        $turnstileSecretKey = $row['value'];
+    } elseif ($row['name'] === 'cf-turnstile-sitekey') {
+        $turnstileSiteKey = $row['value'];
     }
 }
 
@@ -115,7 +121,8 @@ function notifyAdmins($newUserDetails)
 }
 
 // Function to verify Cloudflare Turnstile token
-function verifyTurnstile($turnstileResponse) {
+function verifyTurnstile($turnstileResponse)
+{
     $secretKey = '0x4AAAAAAAxY9lYVO4s30kxlouhrHy5xkhg'; // Your secret key
     $verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
     $data = [
@@ -367,7 +374,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
             </div>
 
             <!-- Cloudflare Turnstile Widget -->
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAAAxY9t5xqgdAs5j3"></div>
+            <div class="cf-turnstile" data-sitekey="<?php echo htmlspecialchars($turnstileSiteKey); ?>"></div>
             <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
             <br>

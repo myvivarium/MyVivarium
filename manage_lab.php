@@ -45,7 +45,10 @@ $defaultLabData = [
     'r2_temp' => '',
     'r2_humi' => '',
     'r2_illu' => '',
-    'r2_pres' => ''
+    'r2_pres' => '',
+    'cf-turnstile-secretKey' => '',
+    'cf-turnstile-sitekey' => ''
+
 ];
 
 $labData = array_merge($defaultLabData, $labData);

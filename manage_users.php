@@ -15,7 +15,7 @@ session_start();
 require 'dbcon.php';
 
 // Regenerate session ID to prevent session fixation
-// session_regenerate_id(true);
+session_regenerate_id(true);
 
 // Check if the user is logged in and has admin role
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
