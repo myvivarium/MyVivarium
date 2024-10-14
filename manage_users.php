@@ -8,11 +8,13 @@
  * 
  */
 
-// Start a new session or resume the existing session
-session_start();
+
 
 // Include the database connection file
 require 'dbcon.php';
+
+// Start a new session or resume the existing session
+session_start();
 
 // Regenerate session ID to prevent session fixation
 session_regenerate_id(true);
