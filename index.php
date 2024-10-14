@@ -98,125 +98,130 @@ if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
     
-    // Check Turnstile token
-    $turnstileResponse = $_POST['cf-turnstile-response'];
+    // Proceed with Turnstile verification only if Turnstile keys are set
+    if (!empty($turnstileSiteKey) && !empty($turnstileSecretKey)) {
+        $turnstileResponse = $_POST['cf-turnstile-response'];
+        
+        // Verify Turnstile token
+        $verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+        $data = [
+            'secret' => $turnstileSecretKey,
+            'response' => $turnstileResponse,
+            'remoteip' => $_SERVER['REMOTE_ADDR']
+        ];
 
-    $verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-    $data = [
-        'secret' => $turnstileSecretKey,
-        'response' => $turnstileResponse,
-        'remoteip' => $_SERVER['REMOTE_ADDR']
-    ];
+        // Send request to verify Turnstile response
+        $ch = curl_init($verifyUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-    // Send request to verify Turnstile response
-    $ch = curl_init($verifyUrl);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $result = json_decode($response, true);
 
-    $response = curl_exec($ch);
-    curl_close($ch);
-    $result = json_decode($response, true);
+        // Check Turnstile response success
+        if (!$result['success']) {
+            $error_message = "Cloudflare Turnstile verification failed. Please try again.";
+            mysqli_close($con);
+            return;
+        }
+    }
 
-    // Check Turnstile response success
-    if (!$result['success']) {
-        $error_message = "Cloudflare Turnstile verification failed. Please try again.";
-    } else {
-        // Proceed with login validation if Turnstile passed
-        $query = "SELECT * FROM users WHERE username=?";
-        $statement = mysqli_prepare($con, $query);
-        mysqli_stmt_bind_param($statement, "s", $username);
-        mysqli_stmt_execute($statement);
-        $result = mysqli_stmt_get_result($statement);
+    // Proceed with login validation if Turnstile passed or not required
+    $query = "SELECT * FROM users WHERE username=?";
+    $statement = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($statement, "s", $username);
+    mysqli_stmt_execute($statement);
+    $result = mysqli_stmt_get_result($statement);
 
-        if ($row = mysqli_fetch_assoc($result)) {
-            // Check if the email is verified
-            if ($row['email_verified'] == 0) {
-                // Check if email_token is empty
-                if (empty($row['email_token'])) {
-                    // Generate a new token
-                    $new_token = bin2hex(random_bytes(16));
+    if ($row = mysqli_fetch_assoc($result)) {
+        // Check if the email is verified
+        if ($row['email_verified'] == 0) {
+            // Check if email_token is empty
+            if (empty($row['email_token'])) {
+                // Generate a new token
+                $new_token = bin2hex(random_bytes(16));
 
-                    // Update the database with the new token
-                    $update_token_query = "UPDATE users SET email_token = ? WHERE username = ?";
-                    $update_token_stmt = mysqli_prepare($con, $update_token_query);
-                    mysqli_stmt_bind_param($update_token_stmt, "ss", $new_token, $username);
-                    mysqli_stmt_execute($update_token_stmt);
-                    mysqli_stmt_close($update_token_stmt);
+                // Update the database with the new token
+                $update_token_query = "UPDATE users SET email_token = ? WHERE username = ?";
+                $update_token_stmt = mysqli_prepare($con, $update_token_query);
+                mysqli_stmt_bind_param($update_token_stmt, "ss", $new_token, $username);
+                mysqli_stmt_execute($update_token_stmt);
+                mysqli_stmt_close($update_token_stmt);
 
-                    // Use the new token for sending the confirmation email
-                    $token = $new_token;
-                } else {
-                    // Use the existing token
-                    $token = $row['email_token'];
-                }
-
-                // Send the confirmation email
-                sendConfirmationEmail($username, $token);
-
-                // Set error message for the user
-                $error_message = "Your email is not verified. A new verification email has been sent. Please check your email to verify your account.";
+                // Use the new token for sending the confirmation email
+                $token = $new_token;
             } else {
-                // Check if the account status is approved
-                if ($row['status'] != 'approved') {
-                    $error_message = "Your account is pending admin approval.";
+                // Use the existing token
+                $token = $row['email_token'];
+            }
+
+            // Send the confirmation email
+            sendConfirmationEmail($username, $token);
+
+            // Set error message for the user
+            $error_message = "Your email is not verified. A new verification email has been sent. Please check your email to verify your account.";
+        } else {
+            // Check if the account status is approved
+            if ($row['status'] != 'approved') {
+                $error_message = "Your account is pending admin approval.";
+            } else {
+                // Check if the account is locked
+                if (!is_null($row['account_locked']) && new DateTime() < new DateTime($row['account_locked'])) {
+                    $error_message = "Account is temporarily locked. Please try again later.";
                 } else {
-                    // Check if the account is locked
-                    if (!is_null($row['account_locked']) && new DateTime() < new DateTime($row['account_locked'])) {
-                        $error_message = "Account is temporarily locked. Please try again later.";
-                    } else {
-                        // Verify password
-                        if (password_verify($password, $row['password'])) {
-                            // Set session variables
-                            $_SESSION['name'] = $row['name'];
-                            $_SESSION['username'] = $row['username'];
-                            $_SESSION['role'] = $row['role'];
-                            $_SESSION['position'] = $row['position'];
-                            $_SESSION['user_id'] = $row['id'];
+                    // Verify password
+                    if (password_verify($password, $row['password'])) {
+                        // Set session variables
+                        $_SESSION['name'] = $row['name'];
+                        $_SESSION['username'] = $row['username'];
+                        $_SESSION['role'] = $row['role'];
+                        $_SESSION['position'] = $row['position'];
+                        $_SESSION['user_id'] = $row['id'];
 
-                            // Regenerate session ID to prevent session fixation    
-                            session_regenerate_id(true);
+                        // Regenerate session ID to prevent session fixation    
+                        session_regenerate_id(true);
 
-                            // Reset login attempts and unlock the account
-                            $reset_attempts = "UPDATE users SET login_attempts = 0, account_locked = NULL WHERE username=?";
-                            $reset_stmt = mysqli_prepare($con, $reset_attempts);
-                            mysqli_stmt_bind_param($reset_stmt, "s", $username);
-                            mysqli_stmt_execute($reset_stmt);
+                        // Reset login attempts and unlock the account
+                        $reset_attempts = "UPDATE users SET login_attempts = 0, account_locked = NULL WHERE username=?";
+                        $reset_stmt = mysqli_prepare($con, $reset_attempts);
+                        mysqli_stmt_bind_param($reset_stmt, "s", $username);
+                        mysqli_stmt_execute($reset_stmt);
 
-                            // Redirect to the specified URL or default to home.php
-                            if (isset($_GET['redirect'])) {
-                                $rurl = urldecode($_GET['redirect']);
-                                header("Location: $rurl");
-                                exit;
-                            } else {
-                                header("Location: home.php");
-                                exit;
-                            }
+                        // Redirect to the specified URL or default to home.php
+                        if (isset($_GET['redirect'])) {
+                            $rurl = urldecode($_GET['redirect']);
+                            header("Location: $rurl");
+                            exit;
                         } else {
-                            // Handle failed login attempts
-                            $new_attempts = $row['login_attempts'] + 1;
-                            if ($new_attempts >= 3) {
-                                $lock_time = "UPDATE users SET account_locked = DATE_ADD(NOW(), INTERVAL 15 MINUTE), login_attempts = 3 WHERE username=?";
-                                $lock_stmt = mysqli_prepare($con, $lock_time);
-                                mysqli_stmt_bind_param($lock_stmt, "s", $username);
-                                mysqli_stmt_execute($lock_stmt);
-                                $error_message = "Account is temporarily locked for 10 mins due to too many failed login attempts.";
-                            } else {
-                                $update_attempts = "UPDATE users SET login_attempts = ? WHERE username=?";
-                                $update_stmt = mysqli_prepare($con, $update_attempts);
-                                mysqli_stmt_bind_param($update_stmt, "is", $new_attempts, $username);
-                                mysqli_stmt_execute($update_stmt);
-                                $error_message = "Invalid password. Please try again.";
-                            }
+                            header("Location: home.php");
+                            exit;
+                        }
+                    } else {
+                        // Handle failed login attempts
+                        $new_attempts = $row['login_attempts'] + 1;
+                        if ($new_attempts >= 3) {
+                            $lock_time = "UPDATE users SET account_locked = DATE_ADD(NOW(), INTERVAL 15 MINUTE), login_attempts = 3 WHERE username=?";
+                            $lock_stmt = mysqli_prepare($con, $lock_time);
+                            mysqli_stmt_bind_param($lock_stmt, "s", $username);
+                            mysqli_stmt_execute($lock_stmt);
+                            $error_message = "Account is temporarily locked for 10 mins due to too many failed login attempts.";
+                        } else {
+                            $update_attempts = "UPDATE users SET login_attempts = ? WHERE username=?";
+                            $update_stmt = mysqli_prepare($con, $update_attempts);
+                            mysqli_stmt_bind_param($update_stmt, "is", $new_attempts, $username);
+                            mysqli_stmt_execute($update_stmt);
+                            $error_message = "Invalid password. Please try again.";
                         }
                     }
                 }
             }
-        } else {
-            $error_message = "No user found with that username.";
         }
-        mysqli_stmt_close($statement);
+    } else {
+        $error_message = "No user found with that username.";
     }
+    mysqli_stmt_close($statement);
 }
 mysqli_close($con);
 ?>
@@ -374,7 +379,7 @@ mysqli_close($con);
                             <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0586.webp" alt="Image 11"> </div>
                             <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0593.webp" alt="Image 12"> </div>
                             <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0607.webp" alt="Image 13"> </div>
-                            <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0623.webp" alt="Image 14"> </div>
+                            <div class="carousel-item"> < img class="d-block w-100" src="images/DSC_0623.webp" alt="Image 14"> </div>
                             <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0658.webp" alt="Image 15"> </div>
                             <div class="carousel-item"> <img class="d-block w-100" src="images/DSC_0665.webp" alt="Image 16"> </div>
                         </div>
@@ -401,9 +406,11 @@ mysqli_close($con);
                                 <input type="password" class="form-control" id="password" name="password" required>
                             </div>
 
-                            <!-- Cloudflare Turnstile Widget -->
-                            <div class="cf-turnstile" data-sitekey="<?php echo htmlspecialchars($turnstileSiteKey); ?>"></div>
-                            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+                            <!-- Conditionally include Cloudflare Turnstile Widget -->
+                            <?php if (!empty($turnstileSiteKey)) { ?>
+                                <div class="cf-turnstile" data-sitekey="<?php echo htmlspecialchars($turnstileSiteKey); ?>"></div>
+                                <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+                            <?php } ?>
 
                             <button type="submit" class="btn btn-primary" name="login">Login</button>
                             <a href="register.php" class="btn btn-secondary">Register</a>
