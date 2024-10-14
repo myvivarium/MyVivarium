@@ -252,7 +252,7 @@ mysqli_close($con);
         }
 
         .carousel img {
-            height: 320px;
+            height: 390px;
             object-fit: cover;
             width: 100%;
         }
