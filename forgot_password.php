@@ -42,89 +42,101 @@ while ($row = mysqli_fetch_assoc($labResult)) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
     $email = $_POST['email'];
 
-    // Check Turnstile token
-    $turnstileResponse = $_POST['cf-turnstile-response'];
+    // Proceed with Turnstile verification only if both sitekey and secret key are set
+    if (!empty($turnstileSiteKey) && !empty($turnstileSecretKey)) {
+        // Check Turnstile token
+        $turnstileResponse = $_POST['cf-turnstile-response'];
 
-    // Verify the Turnstile token with Cloudflare's API
-    $verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-    $data = [
-        'secret' => $turnstileSecretKey,
-        'response' => $turnstileResponse,
-        'remoteip' => $_SERVER['REMOTE_ADDR']
-    ];
+        // Verify the Turnstile token with Cloudflare's API
+        $verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+        $data = [
+            'secret' => $turnstileSecretKey,
+            'response' => $turnstileResponse,
+            'remoteip' => $_SERVER['REMOTE_ADDR']
+        ];
 
-    // Send the verification request
-    $ch = curl_init($verifyUrl);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $response = curl_exec($ch);
-    curl_close($ch);
+        // Send the verification request
+        $ch = curl_init($verifyUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
 
-    $result = json_decode($response, true);
+        $result = json_decode($response, true);
 
-    // Check if Turnstile verification was successful
-    if (!$result['success']) {
-        $resultMessage = "Cloudflare Turnstile verification failed. Please try again.";
-    } else {
-        // Proceed with password reset process if Turnstile verification is successful
-
-        // Check if the email exists in the database
-        $query = "SELECT * FROM users WHERE username = ?";
-        $stmt = $con->prepare($query);
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows == 1) {
-            // Email exists, generate and save a reset token
-            $resetToken = bin2hex(random_bytes(32));
-            $expirationTimeUnix = time() + 3600; // 1 hour expiration time
-            $expirationTime = date('Y-m-d H:i:s', $expirationTimeUnix);
-
-            $updateQuery = "UPDATE users SET reset_token = ?, reset_token_expiration = ?, login_attempts = 0, account_locked = NULL WHERE username = ?";
-            $updateStmt = $con->prepare($updateQuery);
-            $updateStmt->bind_param("sss", $resetToken, $expirationTime, $email);
-            $updateStmt->execute();
-
-            // Send the password reset email
-            $resetLink = "https://" . $url . "/reset_password.php?token=$resetToken";
-
-            $to = $email;
-            $subject = 'Password Reset';
-            $message = "To reset your password, click the following link:\n$resetLink";
-
-            $mail = new PHPMailer(true);
-            try {
-                $mail->isSMTP();
-                $mail->Host = SMTP_HOST;
-                $mail->Port = SMTP_PORT;
-                $mail->SMTPAuth = true;
-                $mail->Username = SMTP_USERNAME;
-                $mail->Password = SMTP_PASSWORD;
-                $mail->SMTPSecure = SMTP_ENCRYPTION;
-
-                $mail->setFrom(SENDER_EMAIL, SENDER_NAME);
-                $mail->addAddress($to);
-                $mail->isHTML(false);
-                $mail->Subject = $subject;
-                $mail->Body = $message;
-
-                $mail->send();
-                $resultMessage = "Password reset instructions have been sent to your email address.";
-            } catch (Exception $e) {
-                $resultMessage = "Email could not be sent. Error: " . $mail->ErrorInfo;
-            }
+        // Check if Turnstile verification was successful
+        if (!$result['success']) {
+            $resultMessage = "Cloudflare Turnstile verification failed. Please try again.";
         } else {
-            $resultMessage = "Email address not found in our records. Please try again.";
+            // Continue with password reset process if Turnstile verification is successful
+            handlePasswordReset($con, $email, $url);
         }
-
-        $stmt->close();
-        if (isset($updateStmt)) {
-            $updateStmt->close();
-        }
-        $con->close();
+    } else {
+        // Skip Turnstile verification if keys are not set and proceed with password reset
+        handlePasswordReset($con, $email, $url);
     }
+}
+
+function handlePasswordReset($con, $email, $url) {
+    // Check if the email exists in the database
+    $query = "SELECT * FROM users WHERE username = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows == 1) {
+        // Email exists, generate and save a reset token
+        $resetToken = bin2hex(random_bytes(32));
+        $expirationTimeUnix = time() + 3600; // 1 hour expiration time
+        $expirationTime = date('Y-m-d H:i:s', $expirationTimeUnix);
+
+        $updateQuery = "UPDATE users SET reset_token = ?, reset_token_expiration = ?, login_attempts = 0, account_locked = NULL WHERE username = ?";
+        $updateStmt = $con->prepare($updateQuery);
+        $updateStmt->bind_param("sss", $resetToken, $expirationTime, $email);
+        $updateStmt->execute();
+
+        // Send the password reset email
+        $resetLink = "https://" . $url . "/reset_password.php?token=$resetToken";
+
+        $to = $email;
+        $subject = 'Password Reset';
+        $message = "To reset your password, click the following link:\n$resetLink";
+
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host = SMTP_HOST;
+            $mail->Port = SMTP_PORT;
+            $mail->SMTPAuth = true;
+            $mail->Username = SMTP_USERNAME;
+            $mail->Password = SMTP_PASSWORD;
+            $mail->SMTPSecure = SMTP_ENCRYPTION;
+
+            $mail->setFrom(SENDER_EMAIL, SENDER_NAME);
+            $mail->addAddress($to);
+            $mail->isHTML(false);
+            $mail->Subject = $subject;
+            $mail->Body = $message;
+
+            $mail->send();
+            $resultMessage = "Password reset instructions have been sent to your email address.";
+        } catch (Exception $e) {
+            $resultMessage = "Email could not be sent. Error: " . $mail->ErrorInfo;
+        }
+    } else {
+        $resultMessage = "Email address not found in our records. Please try again.";
+    }
+
+    $stmt->close();
+    if (isset($updateStmt)) {
+        $updateStmt->close();
+    }
+    $con->close();
+
+    // Display the result message after form submission
+    echo "<p class='result-message'>$resultMessage</p>";
 }
 ?>
 
@@ -232,7 +244,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
 
         .warning-text {
             color: #dc3545;
-            /* Subtle red color */
             font-size: 14px;
         }
 
@@ -283,9 +294,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
 
-            <!-- Cloudflare Turnstile Widget -->
-            <div class="cf-turnstile" data-sitekey="<?php echo htmlspecialchars($turnstileSiteKey); ?>"></div>
-            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            <!-- Conditionally include the Cloudflare Turnstile Widget -->
+            <?php if (!empty($turnstileSiteKey)) { ?>
+                <div class="cf-turnstile" data-sitekey="<?php echo htmlspecialchars($turnstileSiteKey); ?>"></div>
+                <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            <?php } ?>
 
             <button type="submit" class="btn btn-primary" name="reset">Reset Password</button>
         </form>
