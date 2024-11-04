@@ -83,6 +83,7 @@ if (isset($_GET['id'], $_GET['confirm']) && $_GET['confirm'] == 'true') {
             'cage_users' => 'cage_id',
             'tasks' => 'cage_id',
             'maintenance' => 'cage_id',
+            'reminders' => 'cage_id',
             'cages' => 'cage_id'
         ];
 
