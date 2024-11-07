@@ -38,6 +38,7 @@ for pkg in "${packages[@]}"; do
     fi
 done
 
+
 # Step 2: Clone the Full Repository if Needed
 # Check if repository contents already exist
 if [ ! -f "$APP_DIR/setup/setup.sh" ]; then
