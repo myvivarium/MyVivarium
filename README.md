@@ -62,7 +62,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
    sudo ./setup.sh
     ```
 7. **Follow the Script Prompts**:
-   - Provide details such as database password, email, domain name, and SMTP settings to complete the installation and configuration.
+   - Provide details such as email, domain name, set database password, and SMTP settings to complete the installation and configuration.
 
 8. **Complete Setup**:
    - Once DNS settings propagate (if using a domain), the site will be accessible, and you can begin using MyVivarium
