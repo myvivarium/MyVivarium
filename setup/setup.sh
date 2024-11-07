@@ -28,7 +28,7 @@ fi
 
 # Step 1: Check and Install Required Packages
 echo "Checking and installing necessary packages..."
-declare -a packages=("git" "composer" "unzip" "apache2" "mysql-server" "certbot" "python3-certbot-apache" "php8.2-mbstring" "php8.2-intl")
+declare -a packages=("git" "composer" "unzip" "apache2" "mysql-server" "certbot" "python3-certbot-apache")
 for pkg in "${packages[@]}"; do
     if ! dpkg -l | grep -q $pkg; then
         echo "Installing $pkg..."
