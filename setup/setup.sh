@@ -38,9 +38,7 @@ for pkg in "${packages[@]}"; do
     fi
 done
 
-
 # Step 2: Clone the Full Repository if Needed
-# Check if repository contents already exist
 if [ ! -f "$APP_DIR/setup/setup.sh" ]; then
     echo "Cloning the repository..."
     sudo rm -rf $APP_DIR/*  # Clear any default files
@@ -66,24 +64,30 @@ sed -i "s/DB_DATABASE=.*/DB_DATABASE=$DB_NAME/" .env
 sed -i "s/DB_USERNAME=.*/DB_USERNAME=$DB_USER/" .env
 sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" .env
 
-# Prompt for SMTP settings if not present in .env
-SMTP_HOST=$(grep -E '^MAIL_HOST=' .env)
-SMTP_USER=$(grep -E '^MAIL_USERNAME=' .env)
-SMTP_PASS=$(grep -E '^MAIL_PASSWORD=' .env)
+echo "Update SMTP settings..."
 
-if [ -z "$SMTP_HOST" ]; then
-    read -p "Enter SMTP Host (e.g., smtp.yourdomain.com): " SMTP_HOST
-    sed -i "s/^MAIL_HOST=.*/MAIL_HOST=$SMTP_HOST/" .env
-fi
-if [ -z "$SMTP_USER" ]; then
-    read -p "Enter SMTP Username: " SMTP_USER
-    sed -i "s/^MAIL_USERNAME=.*/MAIL_USERNAME=$SMTP_USER/" .env
-fi
-if [ -z "$SMTP_PASS" ]; then
-    read -sp "Enter SMTP Password: " SMTP_PASS
-    echo
-    sed -i "s/^MAIL_PASSWORD=.*/MAIL_PASSWORD=$SMTP_PASS/" .env
-fi
+# Prompt for SMTP settings and update or add them in .env
+read -p "Enter SMTP Host (e.g., smtp.gmail.com): " SMTP_HOST
+sed -i "s/^SMTP_HOST=.*/SMTP_HOST=$SMTP_HOST/" .env || echo "SMTP_HOST=$SMTP_HOST" >> .env
+
+read -p "Enter SMTP Port (e.g., 587): " SMTP_PORT
+sed -i "s/^SMTP_PORT=.*/SMTP_PORT=$SMTP_PORT/" .env || echo "SMTP_PORT=$SMTP_PORT" >> .env
+
+read -p "Enter SMTP Username (e.g., myvivarium.online@gmail.com): " SMTP_USERNAME
+sed -i "s/^SMTP_USERNAME=.*/SMTP_USERNAME=$SMTP_USERNAME/" .env || echo "SMTP_USERNAME=$SMTP_USERNAME" >> .env
+
+read -sp "Enter SMTP Password: " SMTP_PASSWORD
+echo
+sed -i "s/^SMTP_PASSWORD=.*/SMTP_PASSWORD=$SMTP_PASSWORD/" .env || echo "SMTP_PASSWORD=$SMTP_PASSWORD" >> .env
+
+read -p "Enter SMTP Encryption (e.g., tls): " SMTP_ENCRYPTION
+sed -i "s/^SMTP_ENCRYPTION=.*/SMTP_ENCRYPTION=$SMTP_ENCRYPTION/" .env || echo "SMTP_ENCRYPTION=$SMTP_ENCRYPTION" >> .env
+
+read -p "Enter Sender Email Address (e.g., myvivarium.online@gmail.com): " SENDER_EMAIL
+sed -i "s/^SENDER_EMAIL=.*/SENDER_EMAIL=$SENDER_EMAIL/" .env || echo "SENDER_EMAIL=$SENDER_EMAIL" >> .env
+
+read -p "Enter Sender Name (e.g., MyVivarium): " SENDER_NAME
+sed -i "s/^SENDER_NAME=.*/SENDER_NAME=$SENDER_NAME/" .env || echo "SENDER_NAME=$SENDER_NAME" >> .env
 
 # Step 6: Set Up MySQL Database and Import Schema
 echo "Setting up MySQL database with fixed name and user..."
@@ -108,7 +112,30 @@ echo "Setting permissions for Apache..."
 sudo chown -R www-data:www-data $APP_DIR
 sudo chmod -R 755 $APP_DIR
 
-# Step 8: Obtain SSL Certificate (Optional)
+# Step 8: Set Up Apache Virtual Host
+echo "Setting up Apache virtual host for $DOMAIN..."
+VHOST_CONFIG="/etc/apache2/sites-available/$DOMAIN.conf"
+sudo bash -c "cat > $VHOST_CONFIG" <<EOL
+<VirtualHost *:80>
+    ServerAdmin $EMAIL
+    ServerName $DOMAIN
+    DocumentRoot $APP_DIR
+
+    <Directory $APP_DIR>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog \${APACHE_LOG_DIR}/$DOMAIN_error.log
+    CustomLog \${APACHE_LOG_DIR}/$DOMAIN_access.log combined
+</VirtualHost>
+EOL
+
+sudo a2ensite $DOMAIN.conf
+sudo systemctl reload apache2
+
+# Step 9: Obtain SSL Certificate (Optional)
 if [ "$DOMAIN" != "" ]; then
     echo "Obtaining SSL certificate with Certbot..."
     sudo certbot --apache --non-interactive --agree-tos -m $EMAIL -d $DOMAIN
