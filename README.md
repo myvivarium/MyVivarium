@@ -51,7 +51,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
     After connecting to your Linux server's console, use the following command to download the installation shell script:
 
    ```bash
-   curl -O https://raw.githubusercontent.com/myvivarium/MyVivarium/main/setup/setup.sh```
+   curl -O https://raw.githubusercontent.com/myvivarium/MyVivarium/main/setup/setup.sh
     ```
 5. **Make the Script Executable**:
    ```bash
