@@ -29,9 +29,13 @@ for pkg in "${packages[@]}"; do
 done
 
 # Step 2: Clone the Full Repository if Needed
-if [ ! -d "$APP_DIR" ]; then
+# Check if repository contents already exist
+if [ ! -f "$APP_DIR/setup/setup.sh" ]; then
     echo "Cloning the repository..."
+    sudo rm -rf $APP_DIR/*  # Clear any default files
     sudo git clone $REPO_URL $APP_DIR
+else
+    echo "Repository already cloned."
 fi
 cd $APP_DIR
 
