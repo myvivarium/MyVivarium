@@ -107,28 +107,7 @@ echo "Setting permissions for Apache..."
 sudo chown -R www-data:www-data $APP_DIR
 sudo chmod -R 755 $APP_DIR
 
-# Step 8: Configure Apache Virtual Host
-echo "Configuring Apache..."
-sudo bash -c "cat > /etc/apache2/sites-available/$DOMAIN.conf <<EOL
-<VirtualHost *:80>
-    ServerAdmin $EMAIL
-    ServerName $DOMAIN
-    DocumentRoot $APP_DIR/public
-
-    <Directory $APP_DIR/public>
-        AllowOverride All
-    </Directory>
-
-    ErrorLog \${APACHE_LOG_DIR}/error.log
-    CustomLog \${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-EOL"
-
-sudo a2ensite $DOMAIN.conf
-sudo a2enmod rewrite
-sudo systemctl restart apache2
-
-# Step 9: Obtain SSL Certificate (Optional)
+# Step 8: Obtain SSL Certificate (Optional)
 if [ "$DOMAIN" != "" ]; then
     echo "Obtaining SSL certificate with Certbot..."
     sudo certbot --apache --non-interactive --agree-tos -m $EMAIL -d $DOMAIN
