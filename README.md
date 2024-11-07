@@ -70,11 +70,12 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 ### 2. Custom Installation
 
 #### Prerequisites
-- PHP 7.4 or higher
-- MySQL
-- Composer
-- Web server (e.g., Apache, Nginx)
+- PHP [8.1.2]
+- MySQL Server [8.0.32]
+- Apache [2.4.41]
+- phpMyAdmin [5.2.1]
 - Tutorial to install Linux, Apache, MySQL, PHP (LAMP) Stack on Ubuntu - [DigitalOcean LAMP Stack Tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-lamp-stack-on-ubuntu)
+- Composer
 
 #### Steps
 
