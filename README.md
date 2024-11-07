@@ -238,16 +238,20 @@ For initial setup, use the following default admin credentials:
 
 We have a demo website available for you to explore the features of MyVivarium. Click the button below to access the demo site:
 
-[![Visit Demo Site](https://img.shields.io/badge/Visit-Demo%20Site-blue?style=for-the-badge)](https://demo.myvivarium.online) _(opens in a new tab)_
+[![Visit Demo Site](https://img.shields.io/badge/Visit-Demo%20Site-blue?style=for-the-badge)](https://demo.myvivarium.online)
 
 ### Access Details
 
 To log in and explore the functionalities, please use the following access details:
 
 - **Email**: 
-```admin@myvivarium.online```
+    ```
+    admin@myvivarium.online
+    ```
 - **Password**: 
-```P@ssw0rd```
+    ```
+    P@ssw0rd
+    ```
 
 ### Important Notice
 
