@@ -126,7 +126,7 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
         SOURCE /path/to/your/public_html/database/schema.sql;
         ```
 
-6. **Set up a cron job for `send_email.php`:**
+6. **Set up a cron job for `send_email.php` & `process_reminders.php`:**
     Follow the instructions on [Cloudways Blog](https://www.cloudways.com/blog/schedule-cron-jobs-in-php/#run-a-cron-job-in-php) to schedule a cron job for `send_email.php`.
 
 7. **Set ownership and permissions (if required):**
@@ -228,6 +228,9 @@ For initial setup, use the following default admin credentials:
 - `demo-credentials.php`: Displays the demo admin credentials on the login page.
 - `demo-disclaimer.php`: Displays the demo disclaimer on the login page.
 - `maintenance.php`: Adds maintenance records for cages with optional comments.
+- `get_reminder.php`: Retrieves scheduled reminders from the database, likely for notifications.
+- `manage_reminder.php`: Manages reminders within the application, allowing users to add, edit, or delete reminders.
+- `process_reminders.php`: Processes and sends scheduled reminders, possibly running as a cron job.
 
 ## Demo Website
 
