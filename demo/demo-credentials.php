@@ -39,7 +39,7 @@
     <!-- Demo credentials display box -->
     <div class="demo-credentials">
         <p><strong>DEMO Admin Credentials</strong></p>
-        <p><strong>Email:</strong> admin@myvivarium.online <strong>Password:</strong> password</p>
+        <p><strong>Email:</strong> admin@myvivarium.online <strong>Password:</strong> P@ssw0rd</p>
     </div>
 </body>
 
