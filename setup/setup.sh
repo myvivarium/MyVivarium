@@ -171,6 +171,20 @@ fi
 
 sudo systemctl reload apache2
 
+# === Step 10: Set Up Cron Jobs for PHP Scripts ===
+echo "Setting up cron jobs to run send_email.php and process_reminders.php every minute..."
+
+# Define paths for the PHP scripts
+SEND_EMAIL_PATH="$APP_DIR/send_email.php"
+PROCESS_REMINDERS_PATH="$APP_DIR/process_reminders.php"
+
+# Add cron jobs
+(crontab -l 2>/dev/null; echo "* * * * * /usr/bin/php $SEND_EMAIL_PATH > /dev/null 2>&1") | crontab -
+(crontab -l 2>/dev/null; echo "* * * * * /usr/bin/php $PROCESS_REMINDERS_PATH > /dev/null 2>&1") | crontab -
+
+echo "Cron jobs have been set up to run every minute."
+echo
+
 echo
 echo "Deployment completed successfully! You can access your application at:"
 echo " - http://$DOMAIN (without SSL)"
