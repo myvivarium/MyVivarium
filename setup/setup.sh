@@ -93,7 +93,7 @@ read -p "Enter SMTP Port (e.g., 587): " SMTP_PORT
 sed -i "s/^SMTP_PORT=.*/SMTP_PORT=$SMTP_PORT/" .env || echo "SMTP_PORT=$SMTP_PORT" >> .env
 echo
 
-read -p "Enter SMTP Username (e.g., myvivarium.online@gmail.com): " SMTP_USERNAME
+read -p "Enter SMTP Username (e.g., $EMAIL): " SMTP_USERNAME
 sed -i "s/^SMTP_USERNAME=.*/SMTP_USERNAME=$SMTP_USERNAME/" .env || echo "SMTP_USERNAME=$SMTP_USERNAME" >> .env
 echo
 
@@ -106,7 +106,7 @@ read -p "Enter SMTP Encryption (e.g., tls): " SMTP_ENCRYPTION
 sed -i "s/^SMTP_ENCRYPTION=.*/SMTP_ENCRYPTION=$SMTP_ENCRYPTION/" .env || echo "SMTP_ENCRYPTION=$SMTP_ENCRYPTION" >> .env
 echo
 
-read -p "Enter Sender Email Address (e.g., myvivarium.online@gmail.com): " SENDER_EMAIL
+read -p "Enter Sender Email Address (e.g., $EMAIL): " SENDER_EMAIL
 sed -i "s/^SENDER_EMAIL=.*/SENDER_EMAIL=$SENDER_EMAIL/" .env || echo "SENDER_EMAIL=$SENDER_EMAIL" >> .env
 echo
 

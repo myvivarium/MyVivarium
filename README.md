@@ -31,14 +31,52 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 
 ## Installation
 
-### Prerequisites
+### 1. DigitalOcean One-Click Install (Recommended for Ease of Use)
+
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%203.svg)](https://www.digitalocean.com/?refcode=fdb1aa3adb7d&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
+
+> Get $200 in credit over 60 days when you sign up using the above referral link!
+
+#### Steps:
+
+1. **Sign up for a DigitalOcean account** using the referral link above to get your credits.
+
+2. **Create a PHPMyAdmin Droplet**: Use this link to deploy DigitalOcean's [PHPMyAdmin Droplet](https://marketplace.digitalocean.com/apps/phpmyadmin), which installs PHPMyAdmin, MySQL Server, Apache, PHP, and Certbot as a 1-click setup.
+
+3. **Access the Droplet**:
+   - Once your droplet is ready, use the console option in the DigitalOcean dashboard to access the server.
+   - If you have a domain, use the droplet’s IPv4 address to set up an A record in your domain DNS settings.
+
+4. **Download the Installation Script**:
+    After connecting to your Linux server's console, use the following command to download the installation shell script:
+
+   ```bash
+   curl -O https://raw.githubusercontent.com/myvivarium/MyVivarium/main/setup/setup.sh```
+    ```
+5. **Make the Script Executable**:
+   ```bash
+   chmod +x setup.sh
+    ```
+6. **Run the Script**:
+   ```bash
+   sudo ./setup.sh
+    ```
+7. **Follow the Script Prompts**:
+   - Provide details such as database password, email, domain name, and SMTP settings to complete the installation and configuration.
+
+8. **Complete Setup**:
+   - Once DNS settings propagate (if using a domain), the site will be accessible, and you can begin using MyVivarium
+
+### 2. Custom Installation
+
+#### Prerequisites
 - PHP 7.4 or higher
 - MySQL
 - Composer
 - Web server (e.g., Apache, Nginx)
 - Tutorial to install Linux, Apache, MySQL, PHP (LAMP) Stack on Ubuntu - [DigitalOcean LAMP Stack Tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-lamp-stack-on-ubuntu)
 
-### Steps
+#### Steps
 
 1. **Clone the repository:**
     ```bash
@@ -96,8 +134,8 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
     sudo chmod -R 755 /path/to/your/public_html
     ```
 
-### Configuration
-#### SMTP Configuration
+#### Configuration
+##### SMTP Configuration
 Update the following environment variables in your `.env` file:
  ```bash
 SMTP_HOST=smtp.example.com
@@ -109,7 +147,7 @@ SENDER_EMAIL=sender@example.com
 SENDER_NAME=MyVivarium
  ```
 
-#### Database Configuration
+##### Database Configuration
 Ensure the database credentials are set correctly in the `.env` file:
  ```bash
 DB_HOST=localhost
