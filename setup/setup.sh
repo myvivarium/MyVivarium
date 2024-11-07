@@ -16,6 +16,16 @@ echo
 read -p "Enter your email (for SSL certificate setup and SMTP): " EMAIL
 read -p "Enter your domain name (or droplet IP if not using a domain): " DOMAIN
 
+# Step 0: Create deployuser if it doesn't exist
+if id "deployuser" &>/dev/null; then
+    echo "User deployuser already exists."
+else
+    echo "Creating user deployuser..."
+    sudo adduser --disabled-password --gecos "" deployuser
+    sudo usermod -aG www-data deployuser
+    sudo chown -R deployuser:www-data $APP_DIR
+fi
+
 # Step 1: Check and Install Required Packages
 echo "Checking and installing necessary packages..."
 declare -a packages=("git" "composer" "unzip" "apache2" "mysql-server" "certbot" "python3-certbot-apache")
@@ -39,9 +49,9 @@ else
 fi
 cd $APP_DIR
 
-# Step 3: Install Composer Dependencies
+# Step 3: Install Composer Dependencies as deployuser
 echo "Installing Composer dependencies..."
-composer install
+sudo -u deployuser composer install --no-interaction --no-scripts
 
 # Step 4: Configure Environment Variables
 if [ ! -f ".env" ]; then
