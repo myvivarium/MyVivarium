@@ -41,13 +41,14 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 
 1. **Sign up for a DigitalOcean account** using the referral link above to get your credits.
 
-2. **Create a PHPMyAdmin Droplet**: 
-- Use this link to deploy DigitalOcean's [PHPMyAdmin Droplet](https://marketplace.digitalocean.com/apps/phpmyadmin), which installs PHPMyAdmin, MySQL Server, Apache, PHP, and Certbot as a 1-click setup.
-- Choose the **Region** and **Datacenter** for your server.
-- Ensure the **PHPMyAdmin** image from the Marketplace is selected.
-- Under **Choose a plan**, select **Basic** and **Regular (1 GB / 1 CPU)** for the CPU options.
-- Set up access by creating an **SSH Key** or choosing a **password**.
-- Finally, click on **Create Droplet**.
+2. **Create a PHPMyAdmin Droplet**:
+   - Use this link to deploy DigitalOcean's [PHPMyAdmin Droplet](https://marketplace.digitalocean.com/apps/phpmyadmin), which installs PHPMyAdmin, MySQL Server, Apache, PHP, and Certbot as a 1-click setup.
+   - After clicking **Create PHPMyAdmin Droplet**, log in to your DigitalOcean account and follow these steps:
+     - Choose the **Region** and **Datacenter** for your server.
+     - Ensure the **PHPMyAdmin** image from the Marketplace is selected.
+     - Under **Choose a plan**, select **Basic** and **Regular (1 GB / 1 CPU)** for the CPU options.
+     - Set up access by creating an **SSH Key** or choosing a **password**.
+     - Finally, click on **Create Droplet**.
 
 3. **Access the Droplet**:
    - Once your droplet is ready, use the console option in the DigitalOcean dashboard to access the server.
