@@ -141,4 +141,6 @@ if [ "$DOMAIN" != "" ]; then
     sudo certbot --apache --non-interactive --agree-tos -m $EMAIL -d $DOMAIN
 fi
 
+sudo systemctl reload apache2
+
 echo "Deployment completed successfully! Access your application at http://$DOMAIN or https://$DOMAIN if SSL is enabled."
