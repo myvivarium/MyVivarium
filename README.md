@@ -244,8 +244,10 @@ We have a demo website available for you to explore the features of MyVivarium. 
 
 To log in and explore the functionalities, please use the following access details:
 
-- **Email**: `admin@myvivarium.online`
-- **Password**: `P@ssw0rd`
+- **Email**: 
+```admin@myvivarium.online```
+- **Password**: 
+```P@ssw0rd```
 
 ### Important Notice
 
