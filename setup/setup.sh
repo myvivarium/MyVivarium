@@ -26,18 +26,6 @@ else
     sudo chown -R deployuser:www-data $APP_DIR
 fi
 
-# Step 1: Check and Install Required Packages
-echo "Checking and installing necessary packages..."
-declare -a packages=("git" "composer" "unzip" "apache2" "mysql-server" "certbot" "python3-certbot-apache")
-for pkg in "${packages[@]}"; do
-    if ! dpkg -l | grep -q $pkg; then
-        echo "Installing $pkg..."
-        sudo apt install -y $pkg
-    else
-        echo "$pkg is already installed."
-    fi
-done
-
 # Step 2: Clone the Full Repository if Needed
 # Check if repository contents already exist
 if [ ! -f "$APP_DIR/setup/setup.sh" ]; then
