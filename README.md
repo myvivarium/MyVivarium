@@ -183,7 +183,7 @@ DB_DATABASE=myvivarium
 For initial setup, use the following default admin credentials:
 
 - **Email**: admin@myvivarium.online
-- **Password**: password
+- **Password**: P@ssw0rd
 
 **Important**: Delete this default admin user and create a new admin user after the initial setup for security reasons.
 
