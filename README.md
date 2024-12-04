@@ -35,8 +35,6 @@ MyVivarium is an online platform designed to manage your vivarium effectively. I
 
 [![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%203.svg)](https://www.digitalocean.com/?refcode=fdb1aa3adb7d&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
 
-> Get $200 in credit over 60 days when you sign up using the above referral link!
-
 #### Steps:
 
 1. **Sign up for a DigitalOcean account** using the referral link above to get your credits.
