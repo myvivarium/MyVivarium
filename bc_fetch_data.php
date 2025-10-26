@@ -13,9 +13,9 @@
 // Start a new session or resume the existing session
 session_start();
 
-// Enable error reporting for debugging (disable in production)
+// Disable error display in production (errors logged to server logs)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 // Include the database connection
 require 'dbcon.php';
@@ -44,25 +44,50 @@ if (isset($_GET['search'])) {
     $searchQuery = mysqli_real_escape_string($con, urldecode($_GET['search'])); // Decode and escape the search parameter
 }
 
-// Fetch the distinct cage IDs with pagination
-$query = "SELECT DISTINCT `cage_id` FROM breeding";
+// Fetch the distinct cage IDs with pagination using prepared statements
 if (!empty($searchQuery)) {
-    $query .= " WHERE `cage_id` LIKE '%$searchQuery%'"; // Add search filter to the query
-}
-$totalResult = mysqli_query($con, $query); // Execute the query to get the total number of records
-$totalRecords = mysqli_num_rows($totalResult); // Get the total number of records
-$totalPages = ceil($totalRecords / $limit); // Calculate the total number of pages
+    $searchPattern = '%' . $searchQuery . '%';
+    // Query with search filter
+    $totalQuery = "SELECT DISTINCT `cage_id` FROM breeding WHERE `cage_id` LIKE ?";
+    $stmtTotal = $con->prepare($totalQuery);
+    $stmtTotal->bind_param("s", $searchPattern);
+    $stmtTotal->execute();
+    $totalResult = $stmtTotal->get_result();
+    $totalRecords = $totalResult->num_rows;
+    $totalPages = ceil($totalRecords / $limit);
+    $stmtTotal->close();
 
-$query .= " LIMIT $limit OFFSET $offset"; // Add pagination to the query
-$result = mysqli_query($con, $query); // Execute the query to get the paginated records
+    // Query with pagination
+    $query = "SELECT DISTINCT `cage_id` FROM breeding WHERE `cage_id` LIKE ? LIMIT ? OFFSET ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("sii", $searchPattern, $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    // Query without search filter
+    $totalQuery = "SELECT DISTINCT `cage_id` FROM breeding";
+    $totalResult = mysqli_query($con, $totalQuery);
+    $totalRecords = mysqli_num_rows($totalResult);
+    $totalPages = ceil($totalRecords / $limit);
+
+    $query = "SELECT DISTINCT `cage_id` FROM breeding LIMIT ? OFFSET ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("ii", $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+}
 
 // Generate the table rows
 $tableRows = '';
 while ($row = mysqli_fetch_assoc($result)) {
     $cageID = $row['cage_id']; // Get the cage ID
-    $query = "SELECT * FROM breeding WHERE `cage_id` = '$cageID'"; // Fetch all records for the current cage ID
-    $cageResult = mysqli_query($con, $query); // Execute the query
-    $numRows = mysqli_num_rows($cageResult); // Get the number of rows for the cage ID
+    // Use prepared statement to fetch records for the current cage ID
+    $cageQuery = "SELECT * FROM breeding WHERE `cage_id` = ?";
+    $stmtCage = $con->prepare($cageQuery);
+    $stmtCage->bind_param("s", $cageID);
+    $stmtCage->execute();
+    $cageResult = $stmtCage->get_result();
+    $numRows = $cageResult->num_rows; // Get the number of rows for the cage ID
     $firstRow = true; // Flag to check if it is the first row for the cage ID
 
     while ($breedingcage = mysqli_fetch_assoc($cageResult)) {
@@ -83,6 +108,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         }
         $tableRows .= '</td></tr>';
     }
+    $stmtCage->close();
 }
 
 // Generate the pagination links

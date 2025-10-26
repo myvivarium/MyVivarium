@@ -13,9 +13,9 @@ session_start();
 // Include the database connection file
 require 'dbcon.php';
 
-// Enable error reporting for debugging
+// Disable error display in production (errors logged to server logs)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 // Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {
@@ -299,38 +299,56 @@ if (isset($_GET['id'])) {
             }
 
 
-            // Handle file upload
+            // Handle file upload with validation
             if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
-                $targetDirectory = "uploads/$cage_id/"; // Define the target directory
+                // Define allowed file types and maximum size
+                $allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'ppt', 'pptx',
+                                      'jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
+                $maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
 
-                // Create the cage_id specific sub-directory if it doesn't exist
-                if (!file_exists($targetDirectory)) {
-                    if (!mkdir($targetDirectory, 0777, true)) {
-                        $_SESSION['message'] .= " Failed to create directory.";
-                        exit;
-                    }
-                }
-
-                $originalFileName = basename($_FILES['fileUpload']['name']);
-                $targetFilePath = $targetDirectory . $originalFileName;
-                $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-
-                // Check if file already exists
-                if (!file_exists($targetFilePath)) {
-                    if (move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetFilePath)) {
-                        // Insert file info into the database
-                        $insert = $con->prepare("INSERT INTO files (file_name, file_path, cage_id) VALUES (?, ?, ?)");
-                        $insert->bind_param("sss", $originalFileName, $targetFilePath, $cage_id);
-                        if ($insert->execute()) {
-                            $_SESSION['message'] .= " File uploaded successfully.";
-                        } else {
-                            $_SESSION['message'] .= " File upload failed, please try again.";
-                        }
-                    } else {
-                        $_SESSION['message'] .= " Sorry, there was an error uploading your file.";
-                    }
+                // Validate file size
+                if ($_FILES['fileUpload']['size'] > $maxFileSize) {
+                    $_SESSION['message'] .= " File size exceeds 10MB limit.";
                 } else {
-                    $_SESSION['message'] .= " Sorry, file already exists.";
+                    // Get and validate file extension
+                    $fileExtension = strtolower(pathinfo($_FILES['fileUpload']['name'], PATHINFO_EXTENSION));
+
+                    if (!in_array($fileExtension, $allowedExtensions)) {
+                        $_SESSION['message'] .= " Invalid file type. Allowed: pdf, doc, docx, txt, xls, xlsx, ppt, pptx, jpg, jpeg, png, gif, bmp, svg, webp";
+                    } else {
+                        // Sanitize filename to prevent directory traversal
+                        $originalFileName = preg_replace("/[^a-zA-Z0-9._-]/", "_", basename($_FILES['fileUpload']['name']));
+
+                        $targetDirectory = "uploads/$cage_id/"; // Define the target directory
+
+                        // Create the cage_id specific sub-directory if it doesn't exist
+                        if (!file_exists($targetDirectory)) {
+                            if (!mkdir($targetDirectory, 0777, true)) {
+                                $_SESSION['message'] .= " Failed to create directory.";
+                                exit;
+                            }
+                        }
+
+                        $targetFilePath = $targetDirectory . $originalFileName;
+
+                        // Check if file already exists
+                        if (!file_exists($targetFilePath)) {
+                            if (move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetFilePath)) {
+                                // Insert file info into the database
+                                $insert = $con->prepare("INSERT INTO files (file_name, file_path, cage_id) VALUES (?, ?, ?)");
+                                $insert->bind_param("sss", $originalFileName, $targetFilePath, $cage_id);
+                                if ($insert->execute()) {
+                                    $_SESSION['message'] .= " File uploaded successfully.";
+                                } else {
+                                    $_SESSION['message'] .= " File upload failed, please try again.";
+                                }
+                            } else {
+                                $_SESSION['message'] .= " Sorry, there was an error uploading your file.";
+                            }
+                        } else {
+                            $_SESSION['message'] .= " Sorry, file already exists.";
+                        }
+                    }
                 }
             }
 

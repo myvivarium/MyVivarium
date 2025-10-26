@@ -18,8 +18,9 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+// Disable error display in production (errors logged to server logs)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 // Get lab URL
 $labQuery = "SELECT value FROM settings WHERE name = 'url' LIMIT 1";
@@ -30,18 +31,24 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 }
 
 if (isset($_GET['id'])) {
-    $id = $_GET['id'];
+    $id = mysqli_real_escape_string($con, $_GET['id']);
 
     $query = "SELECT h.*, pi.initials AS pi_initials, pi.name AS pi_name, s.*, c.quantity, c.remarks
               FROM holding h
               LEFT JOIN cages c ON h.cage_id = c.cage_id
-              LEFT JOIN users pi ON c.pi_name = pi.id 
+              LEFT JOIN users pi ON c.pi_name = pi.id
               LEFT JOIN strains s ON h.strain = s.str_id
-              WHERE h.cage_id = '$id'";
-    $result = mysqli_query($con, $query);
+              WHERE h.cage_id = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("s", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
-    $files = $con->query($query2);
+    $query2 = "SELECT * FROM files WHERE cage_id = ?";
+    $stmt2 = $con->prepare($query2);
+    $stmt2->bind_param("s", $id);
+    $stmt2->execute();
+    $files = $stmt2->get_result();
 
     if (mysqli_num_rows($result) === 1) {
         $holdingcage = mysqli_fetch_assoc($result);
@@ -53,8 +60,11 @@ if (isset($_GET['id'])) {
         }
 
         if (is_null($holdingcage['pi_name'])) {
-            $queryBasic = "SELECT * FROM holding WHERE `cage_id` = '$id'";
-            $resultBasic = mysqli_query($con, $queryBasic);
+            $queryBasic = "SELECT * FROM holding WHERE `cage_id` = ?";
+            $stmtBasic = $con->prepare($queryBasic);
+            $stmtBasic->bind_param("s", $id);
+            $stmtBasic->execute();
+            $resultBasic = $stmtBasic->get_result();
             if (mysqli_num_rows($resultBasic) === 1) {
                 $holdingcage = mysqli_fetch_assoc($resultBasic);
                 $holdingcage['pi_initials'] = 'NA';
@@ -66,19 +76,26 @@ if (isset($_GET['id'])) {
             }
         }
 
-        $iacucQuery = "SELECT GROUP_CONCAT(iacuc_id SEPARATOR ', ') AS iacuc_ids FROM cage_iacuc WHERE cage_id = '$id'";
-        $iacucResult = mysqli_query($con, $iacucQuery);
+        $iacucQuery = "SELECT GROUP_CONCAT(iacuc_id SEPARATOR ', ') AS iacuc_ids FROM cage_iacuc WHERE cage_id = ?";
+        $stmtIacuc = $con->prepare($iacucQuery);
+        $stmtIacuc->bind_param("s", $id);
+        $stmtIacuc->execute();
+        $iacucResult = $stmtIacuc->get_result();
         $iacucRow = mysqli_fetch_assoc($iacucResult);
         $iacucCodes = [];
         if (!empty($iacucRow['iacuc_ids'])) {
             $iacucCodes = explode(',', $iacucRow['iacuc_ids']);
         }
+        $stmtIacuc->close();
 
         $iacucLinks = [];
         foreach ($iacucCodes as $iacucCode) {
             $iacucCode = trim($iacucCode);
-            $iacucQuery = "SELECT file_url FROM iacuc WHERE iacuc_id = '$iacucCode'";
-            $iacucResult = mysqli_query($con, $iacucQuery);
+            $iacucQuery = "SELECT file_url FROM iacuc WHERE iacuc_id = ?";
+            $stmtIacucFile = $con->prepare($iacucQuery);
+            $stmtIacucFile->bind_param("s", $iacucCode);
+            $stmtIacucFile->execute();
+            $iacucResult = $stmtIacucFile->get_result();
             if ($iacucResult && mysqli_num_rows($iacucResult) === 1) {
                 $iacucRow = mysqli_fetch_assoc($iacucResult);
                 if (!empty($iacucRow['file_url'])) {
@@ -89,12 +106,16 @@ if (isset($_GET['id'])) {
             } else {
                 $iacucLinks[] = htmlspecialchars($iacucCode);
             }
+            $stmtIacucFile->close();
         }
 
         $iacucDisplayString = implode(', ', $iacucLinks);
 
-        $userQuery = "SELECT user_id FROM cage_users WHERE cage_id = '$id'";
-        $userResult = mysqli_query($con, $userQuery);
+        $userQuery = "SELECT user_id FROM cage_users WHERE cage_id = ?";
+        $stmtUser = $con->prepare($userQuery);
+        $stmtUser->bind_param("s", $id);
+        $stmtUser->execute();
+        $userResult = $stmtUser->get_result();
         $userIds = [];
         while ($userRow = mysqli_fetch_assoc($userResult)) {
             $userIds[] = $userRow['user_id'];
@@ -111,9 +132,13 @@ if (isset($_GET['id'])) {
             }
         }
         $userDisplayString = implode(', ', $userDisplay);
+        $stmtUser->close();
 
-        $mouseQuery = "SELECT * FROM mice WHERE cage_id = '$id'";
-        $mouseResult = mysqli_query($con, $mouseQuery);
+        $mouseQuery = "SELECT * FROM mice WHERE cage_id = ?";
+        $stmtMouse = $con->prepare($mouseQuery);
+        $stmtMouse->bind_param("s", $id);
+        $stmtMouse->execute();
+        $mouseResult = $stmtMouse->get_result();
         $mice = mysqli_fetch_all($mouseResult, MYSQLI_ASSOC);
 
         // Calculate age

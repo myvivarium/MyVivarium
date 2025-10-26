@@ -13,16 +13,48 @@ session_start(); // Start the session to use session variables
 require 'dbcon.php'; // Include database connection
 require 'header.php'; // Include the header for consistent page structure
 
-// Handle file upload
+// Handle file upload with validation
 function handleFileUpload($file) {
+    // Define allowed file types and maximum size
+    $allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'ppt', 'pptx',
+                          'jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
+    $maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+
+    // Check if file was uploaded without errors
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return false;
+    }
+
+    // Validate file size
+    if ($file['size'] > $maxFileSize) {
+        $_SESSION['message'] = "File size exceeds 10MB limit.";
+        return false;
+    }
+
+    // Get file extension
+    $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    // Validate file extension
+    if (!in_array($fileExtension, $allowedExtensions)) {
+        $_SESSION['message'] = "Invalid file type. Allowed: pdf, doc, docx, txt, xls, xlsx, ppt, pptx, jpg, jpeg, png, gif, bmp, svg, webp";
+        return false;
+    }
+
+    // Sanitize filename to prevent directory traversal
+    $safeFilename = preg_replace("/[^a-zA-Z0-9._-]/", "_", basename($file["name"]));
+
     $targetDir = "uploads/iacuc/";
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0755, true); // Create directory if it doesn't exist
     }
-    $targetFile = $targetDir . basename($file["name"]);
+
+    $targetFile = $targetDir . $safeFilename;
+
+    // Move uploaded file
     if (move_uploaded_file($file["tmp_name"], $targetFile)) {
         return $targetFile;
     } else {
+        $_SESSION['message'] = "Error uploading file.";
         return false;
     }
 }

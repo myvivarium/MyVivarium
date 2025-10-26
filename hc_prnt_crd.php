@@ -39,53 +39,71 @@ if (isset($_GET['id'])) {
     $holdingcages = [];
 
     foreach ($ids as $id) {
+        $id = mysqli_real_escape_string($con, $id); // Sanitize the ID
+
         // Fetch the holding cage record with the specified ID
-        $query = "SELECT h.*, pi.name AS pi_name, c.quantity as qty, h.dob, h.sex, h.parent_cg, s.str_name 
+        $query = "SELECT h.*, pi.name AS pi_name, c.quantity as qty, h.dob, h.sex, h.parent_cg, s.str_name
                   FROM holding h
                   LEFT JOIN cages c ON h.cage_id = c.cage_id
-                  LEFT JOIN users pi ON c.pi_name = pi.id 
+                  LEFT JOIN users pi ON c.pi_name = pi.id
                   LEFT JOIN strains s ON h.strain = s.str_id
-                  WHERE h.cage_id = '$id'";
-        $result = mysqli_query($con, $query);
+                  WHERE h.cage_id = ?";
+        $stmt = $con->prepare($query);
+        $stmt->bind_param("s", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         // If a valid record is found, add it to the holdingcages array
         if (mysqli_num_rows($result) === 1) {
             $holdingcage = mysqli_fetch_assoc($result);
 
             // Fetch mouse data for this cage, limit to first 5 records
-            $mouseQuery = "SELECT mouse_id, genotype 
-                           FROM mice 
-                           WHERE cage_id = '$id' 
+            $mouseQuery = "SELECT mouse_id, genotype
+                           FROM mice
+                           WHERE cage_id = ?
                            LIMIT 5";
-            $mouseResult = mysqli_query($con, $mouseQuery);
+            $stmtMouse = $con->prepare($mouseQuery);
+            $stmtMouse->bind_param("s", $id);
+            $stmtMouse->execute();
+            $mouseResult = $stmtMouse->get_result();
             $mouseData = mysqli_fetch_all($mouseResult, MYSQLI_ASSOC);
+            $stmtMouse->close();
 
             // Fetch IACUC data
-            $iacucQuery = "SELECT GROUP_CONCAT(i.iacuc_id SEPARATOR ', ') AS iacuc_ids 
+            $iacucQuery = "SELECT GROUP_CONCAT(i.iacuc_id SEPARATOR ', ') AS iacuc_ids
                            FROM cage_iacuc ci
                            JOIN iacuc i ON ci.iacuc_id = i.iacuc_id
-                           WHERE ci.cage_id = '$id'";
-            $iacucResult = mysqli_query($con, $iacucQuery);
+                           WHERE ci.cage_id = ?";
+            $stmtIacuc = $con->prepare($iacucQuery);
+            $stmtIacuc->bind_param("s", $id);
+            $stmtIacuc->execute();
+            $iacucResult = $stmtIacuc->get_result();
             $iacucRow = mysqli_fetch_assoc($iacucResult);
             $holdingcage['iacuc'] = $iacucRow['iacuc_ids'] ?? 'N/A';
+            $stmtIacuc->close();
 
             // Fetch user initials for this cage
             $userQuery = "SELECT u.initials
                           FROM cage_users cu
                           JOIN users u ON cu.user_id = u.id
-                          WHERE cu.cage_id = '$id'";
-            $userResult = mysqli_query($con, $userQuery);
+                          WHERE cu.cage_id = ?";
+            $stmtUser = $con->prepare($userQuery);
+            $stmtUser->bind_param("s", $id);
+            $stmtUser->execute();
+            $userResult = $stmtUser->get_result();
             $userInitials = [];
             while ($userRow = mysqli_fetch_assoc($userResult)) {
                 $userInitials[] = htmlspecialchars($userRow['initials']);
             }
             $holdingcage['user_initials'] = implode(', ', $userInitials);
+            $stmtUser->close();
 
             // Append the mouse data to the holding cage record
             $holdingcage['mice'] = $mouseData;
 
             // Add the holding cage with mouse data to the array
             $holdingcages[] = $holdingcage;
+            $stmt->close();
         } else {
             // Set an error message for an invalid ID and redirect to the dashboard
             $_SESSION['message'] = "Invalid ID: $id";
