@@ -40,6 +40,27 @@ if (isset($_GET['id'])) {
         // Get the cage ID from the file record
         $cage_id = $file['cage_id'];
 
+        // SECURITY: Authorization check - verify user has permission to delete this file
+        // Only users assigned to the cage or admins can delete files
+        $currentUserId = $_SESSION['user_id'];
+        $userRole = $_SESSION['role'];
+
+        // Fetch users assigned to this cage
+        $cageUsersQuery = "SELECT user_id FROM cage_users WHERE cage_id = ?";
+        $stmtCageUsers = $con->prepare($cageUsersQuery);
+        $stmtCageUsers->bind_param("s", $cage_id);
+        $stmtCageUsers->execute();
+        $cageUsersResult = $stmtCageUsers->get_result();
+        $cageUsers = array_column($cageUsersResult->fetch_all(MYSQLI_ASSOC), 'user_id');
+        $stmtCageUsers->close();
+
+        // Check if user is authorized (admin or assigned to cage)
+        if ($userRole !== 'admin' && !in_array($currentUserId, $cageUsers)) {
+            $_SESSION['message'] = 'Access denied. Only assigned users or admins can delete files.';
+            header("Location: index.php");
+            exit();
+        }
+
         // Check if the file exists on the server
         if (file_exists($file['file_path'])) {
             unlink($file['file_path']); // Delete the file from the server
