@@ -14,9 +14,9 @@ session_start();
 // Include the database connection
 require 'dbcon.php';
 
-// Enable error reporting for debugging
+// Disable error display in production (errors logged to server logs)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
@@ -46,22 +46,31 @@ $result1 = $con->query($query1);
 
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
-    $id = $_GET['id'];
+    $id = mysqli_real_escape_string($con, $_GET['id']);
 
     // Fetch the breeding cage record with the specified ID including PI name details
     $query = "SELECT b.*, c.remarks AS remarks, c.pi_name AS pi_name
           FROM breeding b
           LEFT JOIN cages c ON b.cage_id = c.cage_id
-          WHERE b.cage_id = '$id'";
-    $result = mysqli_query($con, $query);
+          WHERE b.cage_id = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("s", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     // Fetch files associated with the specified cage ID
-    $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
-    $files = $con->query($query2);
+    $query2 = "SELECT * FROM files WHERE cage_id = ?";
+    $stmt2 = $con->prepare($query2);
+    $stmt2->bind_param("s", $id);
+    $stmt2->execute();
+    $files = $stmt2->get_result();
 
     // Fetch the breeding cage litter record with the specified ID
-    $query3 = "SELECT * FROM litters WHERE `cage_id` = '$id'";
-    $litters = mysqli_query($con, $query3);
+    $query3 = "SELECT * FROM litters WHERE `cage_id` = ?";
+    $stmt3 = $con->prepare($query3);
+    $stmt3->bind_param("s", $id);
+    $stmt3->execute();
+    $litters = $stmt3->get_result();
 
     // Query to retrieve IACUC values
     $iacucQuery = "SELECT iacuc_id, iacuc_title FROM iacuc";
@@ -72,23 +81,31 @@ if (isset($_GET['id'])) {
         $breedingcage = mysqli_fetch_assoc($result);
 
         // Fetch selected IACUC values associated with the cage
-        $selectedIacucsQuery = "SELECT i.iacuc_id, i.iacuc_title 
+        $selectedIacucsQuery = "SELECT i.iacuc_id, i.iacuc_title
                                 FROM cage_iacuc ci
                                 JOIN iacuc i ON ci.iacuc_id = i.iacuc_id
-                                WHERE ci.cage_id = '$id'";
-        $selectedIacucsResult = $con->query($selectedIacucsQuery);
+                                WHERE ci.cage_id = ?";
+        $stmtIacucs = $con->prepare($selectedIacucsQuery);
+        $stmtIacucs->bind_param("s", $id);
+        $stmtIacucs->execute();
+        $selectedIacucsResult = $stmtIacucs->get_result();
         $selectedIacucs = [];
         while ($row = $selectedIacucsResult->fetch_assoc()) {
             $selectedIacucs[] = $row['iacuc_id'];
         }
+        $stmtIacucs->close();
 
         // Fetch currently selected users and explode them into an array
-        $selectedUsersQuery = "SELECT user_id FROM cage_users WHERE cage_id = '$id'";
-        $selectedUsersResult = $con->query($selectedUsersQuery);
+        $selectedUsersQuery = "SELECT user_id FROM cage_users WHERE cage_id = ?";
+        $stmtUsers = $con->prepare($selectedUsersQuery);
+        $stmtUsers->bind_param("s", $id);
+        $stmtUsers->execute();
+        $selectedUsersResult = $stmtUsers->get_result();
         $selectedUsers = [];
         while ($row = $selectedUsersResult->fetch_assoc()) {
             $selectedUsers[] = $row['user_id'];
         }
+        $stmtUsers->close();
 
         // Check if the logged-in user is the owner or an admin
         $currentUserId = $_SESSION['user_id']; // User ID from session
@@ -216,38 +233,56 @@ if (isset($_GET['id'])) {
             }
 
 
-            // Handle file upload
+            // Handle file upload with validation
             if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] == UPLOAD_ERR_OK) {
-                $targetDirectory = "uploads/$cage_id/"; // Define the target directory
+                // Define allowed file types and maximum size
+                $allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'ppt', 'pptx',
+                                      'jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
+                $maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
 
-                // Create the cage_id specific sub-directory if it doesn't exist
-                if (!file_exists($targetDirectory)) {
-                    if (!mkdir($targetDirectory, 0777, true)) {
-                        $_SESSION['message'] .= " Failed to create directory.";
-                        exit;
-                    }
-                }
-
-                $originalFileName = basename($_FILES['fileUpload']['name']);
-                $targetFilePath = $targetDirectory . $originalFileName;
-                $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-
-                // Check if file already exists
-                if (!file_exists($targetFilePath)) {
-                    if (move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetFilePath)) {
-                        // Insert file info into the database
-                        $insert = $con->prepare("INSERT INTO files (file_name, file_path, cage_id) VALUES (?, ?, ?)");
-                        $insert->bind_param("sss", $originalFileName, $targetFilePath, $cage_id);
-                        if ($insert->execute()) {
-                            $_SESSION['message'] .= " File uploaded successfully.";
-                        } else {
-                            $_SESSION['message'] .= " File upload failed, please try again.";
-                        }
-                    } else {
-                        $_SESSION['message'] .= " Sorry, there was an error uploading your file.";
-                    }
+                // Validate file size
+                if ($_FILES['fileUpload']['size'] > $maxFileSize) {
+                    $_SESSION['message'] .= " File size exceeds 10MB limit.";
                 } else {
-                    $_SESSION['message'] .= " Sorry, file already exists.";
+                    // Get and validate file extension
+                    $fileExtension = strtolower(pathinfo($_FILES['fileUpload']['name'], PATHINFO_EXTENSION));
+
+                    if (!in_array($fileExtension, $allowedExtensions)) {
+                        $_SESSION['message'] .= " Invalid file type. Allowed: pdf, doc, docx, txt, xls, xlsx, ppt, pptx, jpg, jpeg, png, gif, bmp, svg, webp";
+                    } else {
+                        // Sanitize filename to prevent directory traversal
+                        $originalFileName = preg_replace("/[^a-zA-Z0-9._-]/", "_", basename($_FILES['fileUpload']['name']));
+
+                        $targetDirectory = "uploads/$cage_id/"; // Define the target directory
+
+                        // Create the cage_id specific sub-directory if it doesn't exist
+                        if (!file_exists($targetDirectory)) {
+                            if (!mkdir($targetDirectory, 0777, true)) {
+                                $_SESSION['message'] .= " Failed to create directory.";
+                                exit;
+                            }
+                        }
+
+                        $targetFilePath = $targetDirectory . $originalFileName;
+
+                        // Check if file already exists
+                        if (!file_exists($targetFilePath)) {
+                            if (move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetFilePath)) {
+                                // Insert file info into the database
+                                $insert = $con->prepare("INSERT INTO files (file_name, file_path, cage_id) VALUES (?, ?, ?)");
+                                $insert->bind_param("sss", $originalFileName, $targetFilePath, $cage_id);
+                                if ($insert->execute()) {
+                                    $_SESSION['message'] .= " File uploaded successfully.";
+                                } else {
+                                    $_SESSION['message'] .= " File upload failed, please try again.";
+                                }
+                            } else {
+                                $_SESSION['message'] .= " Sorry, there was an error uploading your file.";
+                            }
+                        } else {
+                            $_SESSION['message'] .= " Sorry, file already exists.";
+                        }
+                    }
                 }
             }
 

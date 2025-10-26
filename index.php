@@ -8,9 +8,9 @@
  * 
  */
 
-// Enable error reporting for debugging
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+// Disable error display in production (errors logged to server logs)
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
 error_reporting(E_ALL);
 
 // Start a new session or resume the existing session
@@ -85,12 +85,16 @@ if (isset($_SESSION['name'])) {
     // Redirect to the specified URL or default to home.php
     if (isset($_GET['redirect'])) {
         $rurl = urldecode($_GET['redirect']);
-        header("Location: $rurl");
-        exit;
-    } else {
-        header("Location: home.php");
-        exit;
+        // Validate redirect URL to prevent open redirects
+        // Only allow relative URLs starting with /  or page names
+        if (preg_match('/^[a-zA-Z0-9_\-\.\/\?=&]+\.php/', $rurl) && !preg_match('/^(https?:)?\/\//', $rurl)) {
+            header("Location: $rurl");
+            exit;
+        }
     }
+    // Default redirect if validation fails or no redirect specified
+    header("Location: home.php");
+    exit;
 }
 
 // Handle login form submission

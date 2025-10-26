@@ -22,9 +22,9 @@ if (!isset($_SESSION['username'])) {
     exit; // Exit to ensure no further code is executed
 }
 
-// Enable error reporting for debugging
+// Disable error display in production (errors logged to server logs)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 // Query to get lab data (URL) from the settings table
 $labQuery = "SELECT value FROM settings WHERE name = 'url' LIMIT 1";
@@ -38,34 +38,46 @@ if ($row = mysqli_fetch_assoc($labResult)) {
 
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
-    $id = $_GET['id'];
+    $id = mysqli_real_escape_string($con, $_GET['id']);
 
     // Fetch the breeding cage record with the specified ID
     $query = "SELECT b.*, c.remarks AS remarks, pi.initials AS pi_initials, pi.name AS pi_name
           FROM breeding b
           LEFT JOIN cages c ON b.cage_id = c.cage_id
           LEFT JOIN users pi ON c.pi_name = pi.id
-          WHERE b.cage_id = '$id'";
-    $result = mysqli_query($con, $query);
+          WHERE b.cage_id = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("s", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     // Fetch files associated with the specified cage ID
-    $query2 = "SELECT * FROM files WHERE cage_id = '$id'";
-    $files = $con->query($query2);
+    $query2 = "SELECT * FROM files WHERE cage_id = ?";
+    $stmt2 = $con->prepare($query2);
+    $stmt2->bind_param("s", $id);
+    $stmt2->execute();
+    $files = $stmt2->get_result();
 
     // Fetch the breeding cage litter records with the specified ID
-    $query3 = "SELECT * FROM litters WHERE `cage_id` = '$id'";
-    $litters = mysqli_query($con, $query3);
+    $query3 = "SELECT * FROM litters WHERE `cage_id` = ?";
+    $stmt3 = $con->prepare($query3);
+    $stmt3->bind_param("s", $id);
+    $stmt3->execute();
+    $litters = $stmt3->get_result();
 
     // Check if the breeding cage record exists
     if (mysqli_num_rows($result) === 1) {
         $breedingcage = mysqli_fetch_assoc($result);
 
         // Fetch IACUC codes associated with the cage
-        $iacucQuery = "SELECT ci.iacuc_id, i.file_url 
-                        FROM cage_iacuc ci 
+        $iacucQuery = "SELECT ci.iacuc_id, i.file_url
+                        FROM cage_iacuc ci
                         LEFT JOIN iacuc i ON ci.iacuc_id = i.iacuc_id
-                        WHERE ci.cage_id = '$id'";
-        $iacucResult = mysqli_query($con, $iacucQuery);
+                        WHERE ci.cage_id = ?";
+        $stmtIacuc = $con->prepare($iacucQuery);
+        $stmtIacuc->bind_param("s", $id);
+        $stmtIacuc->execute();
+        $iacucResult = $stmtIacuc->get_result();
         $iacucLinks = [];
         while ($row = mysqli_fetch_assoc($iacucResult)) {
             if (!empty($row['file_url'])) {
@@ -105,10 +117,13 @@ function getUserDetailsByIds($con, $userIds)
 }
 
 // Fetch user IDs associated with the cage
-$userIdsQuery = "SELECT cu.user_id 
-                 FROM cage_users cu 
-                 WHERE cu.cage_id = '$id'";
-$userIdsResult = mysqli_query($con, $userIdsQuery);
+$userIdsQuery = "SELECT cu.user_id
+                 FROM cage_users cu
+                 WHERE cu.cage_id = ?";
+$stmtUserIds = $con->prepare($userIdsQuery);
+$stmtUserIds->bind_param("s", $id);
+$stmtUserIds->execute();
+$userIdsResult = $stmtUserIds->get_result();
 $userIds = [];
 while ($row = mysqli_fetch_assoc($userIdsResult)) {
     $userIds[] = $row['user_id'];

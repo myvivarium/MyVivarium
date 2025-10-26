@@ -53,10 +53,19 @@ if (isset($_GET['id'])) {
         $deleteStmt->bind_param("i", $id);
         $deleteStmt->execute();
 
-        // Decode the URL parameter and append the cage ID
-        $url = urldecode($_GET['url']) . ".php?id=" . $cage_id;
+        // Validate and sanitize the redirect URL parameter
+        $allowedPages = ['bc_edit', 'hc_edit', 'bc_view', 'hc_view', 'bc_dash', 'hc_dash'];
+        $redirect = isset($_GET['url']) ? $_GET['url'] : 'bc_edit';
 
-        // Redirect to the specified URL
+        // Only allow whitelisted page names (prevents open redirect vulnerability)
+        if (!in_array($redirect, $allowedPages)) {
+            $redirect = 'bc_edit'; // Default to safe page
+        }
+
+        // Build safe redirect URL
+        $url = $redirect . ".php?id=" . urlencode($cage_id);
+
+        // Redirect to the validated URL
         header("Location: $url");
         exit();
     } else {

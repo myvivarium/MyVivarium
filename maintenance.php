@@ -12,9 +12,9 @@ session_start();
 // Include the database connection file
 require 'dbcon.php';
 
-// Enable error reporting for debugging
+// Disable error display in production (errors logged to server logs)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 // Check if the user is not logged in, redirect them to index.php with the current URL for redirection after login
 if (!isset($_SESSION['username'])) {

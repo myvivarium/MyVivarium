@@ -107,8 +107,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $qty = count($mouse_data); // Calculate the quantity based on the number of mouse records
 
     // Check if the cage_id already exists in the cages table
-    $check_query = "SELECT * FROM cages WHERE cage_id = '$cage_id'";
-    $check_result = mysqli_query($con, $check_query);
+    $check_query = "SELECT * FROM cages WHERE cage_id = ?";
+    $check_stmt = $con->prepare($check_query);
+    $check_stmt->bind_param("s", $cage_id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
 
     if (mysqli_num_rows($check_result) > 0) {
         // Cage_id already exists, throw an error
