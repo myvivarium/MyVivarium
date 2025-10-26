@@ -26,6 +26,11 @@ if (!isset($_SESSION['username'])) {
     exit; // Exit to ensure no further code is executed
 }
 
+// Generate CSRF token if not already set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Fetch user details from the database
 $username = $_SESSION['username'];
 $query = "SELECT * FROM users WHERE username = ?";
@@ -95,6 +100,11 @@ function ensureUniqueInitials($con, $initials, $currentUsername)
 
 // Handle form submission for profile update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('CSRF token validation failed');
+    }
+
     $newUsername = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_EMAIL);
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
     $initials = filter_input(INPUT_POST, 'initials', FILTER_SANITIZE_STRING);
@@ -151,6 +161,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_profile'])) {
 // Handle form submission for password reset
 $resultMessage = ''; // Initialize message for password reset
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('CSRF token validation failed');
+    }
+
     $email = $username;
 
     // Check if the email exists in the database
@@ -286,6 +301,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         <br>
         <br>
         <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
@@ -335,6 +351,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset'])) {
         <br>
         <br>
         <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <button type="submit" class="btn1 btn-warning" name="reset">Request Password Change</button>
         </form>
         <?php if ($resultMessage) {

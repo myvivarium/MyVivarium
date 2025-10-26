@@ -2,11 +2,18 @@
 
 /**
  * Header and Navigation Menu
- * 
- * This script generates a header and navigation menu for the web application. The header displays the lab name and logo, 
+ *
+ * This script generates a header and navigation menu for the web application. The header displays the lab name and logo,
  * and the navigation menu includes links to various dashboards and settings, with additional options for admin users.
- * 
+ *
  */
+
+// Security Headers - Protect against common web vulnerabilities
+header("X-Frame-Options: SAMEORIGIN"); // Prevent clickjacking
+header("X-Content-Type-Options: nosniff"); // Prevent MIME type sniffing
+header("X-XSS-Protection: 1; mode=block"); // Enable browser XSS protection
+header("Referrer-Policy: strict-origin-when-cross-origin"); // Control referrer information
+header("Permissions-Policy: geolocation=(), microphone=(), camera=()"); // Restrict powerful features
 
 // Include the database connection file
 require 'dbcon.php';

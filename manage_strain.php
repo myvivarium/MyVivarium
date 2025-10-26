@@ -14,11 +14,21 @@ session_start(); // Start the session to use session variables
 require 'dbcon.php'; // Include database connection
 require 'header.php'; // Include the header for consistent page structure
 
+// Generate CSRF token if not already set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Initialize variables for strain data
 $strainId = $strainName = $strainAka = $strainUrl = $strainRrid = $strainNotes = "";
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('CSRF token validation failed');
+    }
+
     if (isset($_POST['add'])) {
         // Add new strain
         $strainId = htmlspecialchars($_POST['strain_id']); // Sanitize input
@@ -232,6 +242,7 @@ $strainResult = $con->query($strainQuery);
         <div class="popup-form" id="popupForm">
             <h4 id="formTitle">Add New Strain</h4>
             <form action="manage_strain.php" method="post">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <div class="form-group">
                     <label for="strain_id">Strain ID <span class="required-asterisk">*</span></label>
                     <input type="text" name="strain_id" id="strain_id" class="form-control" required>
@@ -321,6 +332,7 @@ $strainResult = $con->query($strainQuery);
                                 <button class="btn btn-info btn-sm" title="View" onclick="viewStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>', `<?= htmlspecialchars($row['str_notes']); ?>`)"><i class="fas fa-eye"></i></button>
                                 <button class="btn btn-warning btn-sm" title="Edit" onclick="editStrain('<?= $row['str_id']; ?>', '<?= htmlspecialchars($row['str_name']); ?>', '<?= htmlspecialchars($row['str_aka']); ?>', '<?= htmlspecialchars($row['str_url']); ?>', '<?= htmlspecialchars($row['str_rrid']); ?>', `<?= htmlspecialchars($row['str_notes']); ?>`)"><i class="fas fa-edit"></i></button>
                                 <form action="manage_strain.php" method="post" style="display:inline-block;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                     <input type="hidden" name="strain_id" value="<?= $row['str_id']; ?>">
                                     <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this strain?');"><i class="fas fa-trash-alt"></i></button>
                                 </form>

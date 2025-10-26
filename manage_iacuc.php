@@ -13,6 +13,11 @@ session_start(); // Start the session to use session variables
 require 'dbcon.php'; // Include database connection
 require 'header.php'; // Include the header for consistent page structure
 
+// Generate CSRF token if not already set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Handle file upload with validation
 function handleFileUpload($file) {
     // Define allowed file types and maximum size
@@ -61,6 +66,11 @@ function handleFileUpload($file) {
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('CSRF token validation failed');
+    }
+
     if (isset($_POST['add'])) {
         // Add new IACUC
         $iacucId = htmlspecialchars($_POST['iacuc_id']); // Sanitize input
@@ -280,6 +290,7 @@ $iacucResult = $con->query($iacucQuery);
         <div class="popup-form" id="popupForm">
             <h4 id="formTitle">Add New IACUC</h4>
             <form action="manage_iacuc.php" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <div class="form-group">
                     <label for="iacuc_id">IACUC ID <span class="required-asterisk">*</span></label>
                     <input type="text" name="iacuc_id" id="iacuc_id" class="form-control" required>
@@ -329,6 +340,7 @@ $iacucResult = $con->query($iacucQuery);
                             <div class="action-buttons">
                                 <button class="btn btn-warning btn-sm" title="Edit" onclick="editIACUC('<?= $row['iacuc_id']; ?>', '<?= htmlspecialchars($row['iacuc_title']); ?>', '<?= htmlspecialchars($row['file_url']); ?>')"><i class="fas fa-edit"></i></button>
                                 <form action="manage_iacuc.php" method="post" style="display:inline-block;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                     <input type="hidden" name="iacuc_id" value="<?= $row['iacuc_id']; ?>">
                                     <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this IACUC record?');"><i class="fas fa-trash-alt"></i></button>
                                 </form>
