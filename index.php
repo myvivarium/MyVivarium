@@ -197,8 +197,10 @@ if (isset($_POST['login'])) {
                         // Redirect to the specified URL or default to home.php
                         if (isset($_GET['redirect'])) {
                             $rurl = urldecode($_GET['redirect']);
-                            // Validate redirect URL to prevent open redirects
-                            // Only allow relative URLs starting with /  or page names
+                            // SECURITY: Validate redirect URL to prevent open redirect attacks
+                            // Open redirects can be exploited for phishing by redirecting users to malicious sites
+                            // Only allow relative URLs to .php pages within this application
+                            // Reject any URLs containing http:// or https:// (external sites)
                             if (preg_match('/^[a-zA-Z0-9_\-\.\/\?=&]+\.php/', $rurl) && !preg_match('/^(https?:)?\/\//', $rurl)) {
                                 header("Location: $rurl");
                                 exit;

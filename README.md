@@ -188,6 +188,7 @@ For initial setup, use the following default admin credentials:
 ## Function of Each File
 - `dbcon.php`: Manages database connections.
 - `config.php`: Contains SMTP configuration.
+- `session_config.php`: Configures secure session settings including HttpOnly cookies, HTTPS-only transmission, CSRF protection, and 30-minute timeout. See file comments for deployment instructions.
 - `index.php`: Main entry point for the application, handles user login.
 - `register.php`: Handles user registration and email verification.
 - `home.php`: Displays the home page with a welcome message, cage statistics, and general notes.

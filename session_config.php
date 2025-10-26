@@ -7,11 +7,37 @@
  * session fixation, and other session-based attacks. It should be included at the
  * beginning of any file that uses sessions.
  *
+ * SECURITY FEATURES:
+ * - HttpOnly cookies: Prevents JavaScript from accessing session cookies (XSS protection)
+ * - Secure flag: Only sends cookies over HTTPS (prevents interception)
+ * - SameSite protection: Prevents CSRF attacks
+ * - Session timeout: 30 minutes of inactivity
+ * - Session ID regeneration: Every 30 minutes
+ *
+ * DEPLOYMENT NOTES:
+ *
+ * FOR PRODUCTION (HTTPS REQUIRED):
+ * - Ensure your site runs on HTTPS before enabling session.cookie_secure
+ * - All security features will be active
+ * - To use: Replace session_start() with: require 'session_config.php';
+ *
+ * FOR DEVELOPMENT (HTTP):
+ * - Comment out the session.cookie_secure line (line 26) if using HTTP
+ * - Otherwise sessions will not work without HTTPS
+ * - Change: ini_set('session.cookie_secure', 1);
+ * - To:     // ini_set('session.cookie_secure', 1);  // DISABLED FOR HTTP DEVELOPMENT
+ *
+ * USAGE:
+ * Replace all instances of session_start() with:
+ *   require 'session_config.php';
+ *
+ * This ensures consistent session security across the entire application.
+ *
  */
 
 // Configure session cookie parameters for security
 ini_set('session.cookie_httponly', 1);  // Prevent JavaScript access to session cookie (XSS protection)
-ini_set('session.cookie_secure', 1);    // Only send cookie over HTTPS connections
+ini_set('session.cookie_secure', 1);    // Only send cookie over HTTPS connections (COMMENT OUT FOR HTTP DEV)
 ini_set('session.cookie_samesite', 'Strict'); // Prevent CSRF attacks
 ini_set('session.use_only_cookies', 1); // Only use cookies for session ID
 ini_set('session.use_strict_mode', 1);  // Reject uninitialized session IDs

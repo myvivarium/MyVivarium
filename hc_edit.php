@@ -117,7 +117,9 @@ if (isset($_GET['id'])) {
         $selectedUsers = array_column($usersResult->fetch_all(MYSQLI_ASSOC), 'user_id');
         $stmtUsers->close();
 
-        // Check if the logged-in user is authorized to edit this cage
+        // SECURITY: Authorization check to prevent unauthorized cage editing
+        // Prevents users from editing cages they're not assigned to by manipulating the URL
+        // This check matches the security pattern used in bc_edit.php
         $currentUserId = $_SESSION['user_id']; // User ID from session
         $userRole = $_SESSION['role']; // User role from session
         $cageUsers = $selectedUsers; // Array of user IDs associated with the cage
