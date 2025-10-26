@@ -21,6 +21,11 @@ if (!isset($_SESSION['name'])) {
     exit; // Exit script
 }
 
+// Generate CSRF token if not already set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Get the current user ID and name from the session
 $currentUserId = $_SESSION['user_id'] ?? null;
 $currentUserName = $_SESSION['name'] ?? '';
@@ -77,6 +82,11 @@ $users = $userResult ? array_column($userResult->fetch_all(MYSQLI_ASSOC), 'name'
 
 // Handle form submission for adding, editing, or deleting tasks
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('CSRF token validation failed');
+    }
+
     $title = htmlspecialchars($_POST['title']);
     $description = htmlspecialchars($_POST['description']);
     $assignedBy = htmlspecialchars($_POST['assigned_by_id']);
@@ -537,6 +547,7 @@ ob_end_flush(); // Flush the output buffer
         <div class="popup-form" id="popupForm">
             <h4 id="formTitle">Add New Task</h4>
             <form id="taskForm" action="manage_tasks.php" method="post">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <input type="hidden" name="id" id="id">
                 <div class="form-group">
                     <label for="title">Title <span class="required-asterisk">*</span></label>
@@ -626,6 +637,7 @@ ob_end_flush(); // Flush the output buffer
 
                                     <?php if ($row['assigned_by'] == $_SESSION['user_id'] || $_SESSION['role'] == 'admin') : ?>
                                         <form action="manage_tasks.php" method="post" style="display:inline-block;">
+                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                             <input type="hidden" name="id" value="<?= $row['id']; ?>">
                                             <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this task?');"><i class="fas fa-trash-alt"></i></button>
                                         </form>

@@ -95,6 +95,18 @@ require 'header.php';
     <div class="main-content content">
         <!-- Display session messages if any -->
         <?php include('message.php'); ?>
+
+        <!-- Security warning for default admin account -->
+        <?php if ($_SESSION['username'] === 'admin@myvivarium.online' && $_SESSION['role'] === 'admin'): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong><i class="fas fa-exclamation-triangle"></i> Security Warning:</strong> You are using the default admin account.
+            For security reasons, please create a new admin user and delete this default account immediately.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <?php endif; ?>
+
         <br>
         <div class="row align-items-center">
             <!-- Welcome message with user information -->
