@@ -363,7 +363,7 @@ unset($_SESSION['resultMessage']);  // Clear the message from session
                     <option value="Undergraduate">Undergraduate</option>
                     <option value="Laboratory Technician">Laboratory Technician</option>
                     <option value="Research Associate">Research Associate</option>
-                    <option value="Lab Manager">Lab Manager</option>
+                    <option value="Vivarium Manager">Vivarium Manager</option>
                     <option value="Animal Care Technician">Animal Care Technician</option>
                     <option value="Interns and Volunteers">Interns and Volunteers</option>
                 </select>
