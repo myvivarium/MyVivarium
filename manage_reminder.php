@@ -17,6 +17,11 @@ if (!isset($_SESSION['name'])) {
     exit;
 }
 
+// Generate CSRF token if not already set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 require 'header.php';
 require 'dbcon.php';
 
@@ -35,6 +40,11 @@ function redirectToPage($message)
 
 // Handle form submission for adding, editing, or deleting reminders
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('CSRF token validation failed');
+    }
+
     $title = htmlspecialchars($_POST['title']);
     $description = htmlspecialchars($_POST['description']);
     $assignedBy = $currentUserId;
@@ -401,6 +411,7 @@ ob_end_flush(); // Flush the output buffer
         <div class="popup-form" id="popupForm">
             <h4 id="formTitle">Add New Reminder</h4>
             <form id="reminderForm" action="manage_reminder.php" method="post">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <input type="hidden" name="id" id="id">
                 <div class="form-group">
                     <label for="title">Title <span class="required-asterisk">*</span></label>
@@ -550,6 +561,7 @@ ob_end_flush(); // Flush the output buffer
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <form action="manage_reminder.php" method="post" style="display:inline-block;">
+                                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                         <input type="hidden" name="id" value="<?= $row['id']; ?>">
                                         <button type="submit" name="delete" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this reminder?');">
                                             <i class="fas fa-trash-alt"></i>

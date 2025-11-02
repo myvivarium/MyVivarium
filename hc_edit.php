@@ -115,6 +115,21 @@ if (isset($_GET['id'])) {
         $stmtUsers->execute();
         $usersResult = $stmtUsers->get_result();
         $selectedUsers = array_column($usersResult->fetch_all(MYSQLI_ASSOC), 'user_id');
+        $stmtUsers->close();
+
+        // SECURITY: Authorization check to prevent unauthorized cage editing
+        // Prevents users from editing cages they're not assigned to by manipulating the URL
+        // This check matches the security pattern used in bc_edit.php
+        $currentUserId = $_SESSION['user_id']; // User ID from session
+        $userRole = $_SESSION['role']; // User role from session
+        $cageUsers = $selectedUsers; // Array of user IDs associated with the cage
+
+        // Check if the user is either an admin or one of the users associated with the cage
+        if ($userRole !== 'admin' && !in_array($currentUserId, $cageUsers)) {
+            $_SESSION['message'] = 'Access denied. Only the admin or the assigned user can edit.';
+            header("Location: hc_dash.php?" . getCurrentUrlParams());
+            exit();
+        }
 
         // Fetching the selected IACUC values for the cage
         $selectedIacucs = [];
