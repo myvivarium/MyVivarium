@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Initialize query variables
     $query = "";
 
-    // Determine the action to take: approve, set to pending, delete user, set role to admin or user
+    // Determine the action to take: approve, set to pending, delete user, set role to admin, vivarium_manager, or user
     switch ($action) {
         case 'approve':
             $query = "UPDATE users SET status='approved' WHERE username=?";
@@ -51,6 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
         case 'admin':
             $query = "UPDATE users SET role='admin' WHERE username=?";
+            break;
+        case 'vivarium_manager':
+            $query = "UPDATE users SET role='vivarium_manager' WHERE username=?";
             break;
         case 'user':
             $query = "UPDATE users SET role='user' WHERE username=?";
@@ -191,8 +194,13 @@ mysqli_close($con);
 
                                         <?php if ($row['role'] === 'user') { ?>
                                             <button type="submit" class="btn btn-warning btn-sm" name="action" value="admin" title="Make Admin"><i class="fas fa-user-shield"></i></button>
+                                            <button type="submit" class="btn btn-info btn-sm" name="action" value="vivarium_manager" title="Make Vivarium Manager"><i class="fas fa-flask"></i></button>
                                         <?php } elseif ($row['role'] == 'admin') { ?>
                                             <button type="submit" class="btn btn-info btn-sm" name="action" value="user" title="Make User"><i class="fas fa-user"></i></button>
+                                            <button type="submit" class="btn btn-info btn-sm" name="action" value="vivarium_manager" title="Make Vivarium Manager"><i class="fas fa-flask"></i></button>
+                                        <?php } elseif ($row['role'] == 'vivarium_manager') { ?>
+                                            <button type="submit" class="btn btn-warning btn-sm" name="action" value="admin" title="Make Admin"><i class="fas fa-user-shield"></i></button>
+                                            <button type="submit" class="btn btn-secondary btn-sm" name="action" value="user" title="Make User"><i class="fas fa-user"></i></button>
                                         <?php } ?>
 
                                         <button type="submit" class="btn btn-danger btn-sm" name="action" value="delete" title="Delete User"><i class="fas fa-trash"></i></button>

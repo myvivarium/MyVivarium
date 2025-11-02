@@ -234,6 +234,7 @@ For initial setup, use the following default admin credentials:
 - `demo-credentials.php`: Displays the demo admin credentials on the login page.
 - `demo-disclaimer.php`: Displays the demo disclaimer on the login page.
 - `maintenance.php`: Adds maintenance records for cages with optional comments.
+- `vivarium_manager_notes.php`: Comprehensive maintenance notes management interface for Vivarium Managers and Admins. Features include viewing all maintenance notes across all cages, searching/filtering, adding, editing, and deleting notes, plus print functionality.
 - `get_reminder.php`: Retrieves scheduled reminders from the database, likely for notifications.
 - `manage_reminder.php`: Manages reminders within the application, allowing users to add, edit, or delete reminders.
 - `process_reminders.php`: Processes and sends scheduled reminders, possibly running as a cron job.
